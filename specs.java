@@ -15,6 +15,9 @@ abstract class Being {
 	List<Group> groups;
 	Shape shape;
 	
+	//TODO: need to add methods for recieving messages?
+	//Has to be defined in Being
+	
 }
 
 /**
@@ -43,7 +46,7 @@ interface Optimizer<A,B> {
 }
 
 /**
- * Need Group def?
+ * TODO: Need Group def?
  */
 
 /**
@@ -76,5 +79,45 @@ abstract class World {
 }
 
 /**
- * Need God def?
+ * TODO: Need God def?
  */
+
+/**
+ * Handles communication between game and outside world
+ * Detects key events, mouse events, and osc messages
+ * Beings filter passed messages internally
+ */
+class PostOffice {
+	
+	//Fields containing subscribing Beings
+	ArrayList<Being> keySubscribed;
+	ArrayList<Being> mouseSubscribed;
+	ArrayList<Being> oscSubscribed;
+	
+	//Constructor
+	PostOffice() {}
+	
+	//Runs Post Office
+	//Waits for events, and adds them to queue for handling
+	//Does not handle events while a world update loop is running
+	void run() {}
+	
+	//Sends key presses to subscribing Beings
+	void handleKeyPress(char keyPressed) {}
+	
+	//Sends mouse clicks to subscribing Beings
+	void handleMouseClick(Point clickLocation) {}
+	
+	//Sends osc messages to subscribing Beings
+	//Q: how will we internally represent OSC messages?
+	void handleOSC(Message recievedMessage) {}
+	
+	//Registers Being for keyboard subscription
+	void registerKeySubscribe(Being b) {}
+	
+	//Registers Being for mouse subscription
+	void registerMouseSubscribe(Being b) {}
+	
+	//Registers Being for osc subscription
+	void registerOSCSubscribe(Being b) {}
+}
