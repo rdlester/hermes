@@ -21,6 +21,10 @@ abstract class Being {
 }
 
 /**
+ * TODO: Timer class?
+ */
+
+/**
  * Contains necessary logic to interact two beings
  * detect method determines if two bodies should interact
  * handle "interacts" the two beings by updating them
@@ -80,6 +84,7 @@ abstract class World {
 
 /**
  * TODO: Need God def?
+ * Another note: way to draw smooth transitions between screens?
  */
 
 /**
