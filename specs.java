@@ -135,7 +135,7 @@ interface Optimizer<A,B> {
  */
 abstract class World {
 
-	List<Being> masterList;
+	Group<Being> masterList;
 
 	//Setup loop
 	//Written by user
@@ -154,7 +154,7 @@ abstract class World {
 	void draw() {}
 	
 	// locks the update rate to happen no more than once per interval (in seconds)
-	void loackUpdateRate(double interval) {}
+	void lockUpdateRate(double interval) {}
 
 }
 
@@ -234,7 +234,7 @@ class Sprite {
 	// plays the animation denoted by the given keys, will loop indefinitely if loop is true
 	void play(int key, boolean loop = false);
 	
-	// draws the sprite next animation frame at the gien screen position
+	// draws the sprite next animation frame at the given screen position
 	//  advances frame count by given value
 	void draw(double x, double y, int advanceFrame = 1);
 }
