@@ -22,7 +22,9 @@ abstract class Being {
 
 	List<Group> groups;
 	Shape shape; // do beings necessarily need this? -- sam
-
+	
+	void update() {}
+	
 	//TODO: need to add methods for recieving messages?
 	//Has to be defined in Being
 

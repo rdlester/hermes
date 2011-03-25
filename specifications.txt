@@ -2,4 +2,7 @@ There are two main parts of our library: our game framework: which is basically 
 
 The most basic unit of our framework is the Being, which is the representation of an object in the game. Being have their own draw method, which determines exactly how it is drawn to the screen, and coordinates. Obviously, user implementations of bodies will have many other parameters. The basic idea of beings, however, is that beings are "dumb", that is, they don't know much about one another or about the environment they exist in.
 
-Being are contained within Groups. A Group is pretty much just an alias for a Collection of Beings. However, one of the few things Beings do know is what groups they are contained in. 
+Being are contained within Groups. A Group is pretty much just an alias for a Collection of Beings. However, one of the few things Beings do know is what groups they are contained in. This is needed for easy deletion when Beings need to be destroyed (for example, when characters die).
+
+Beings are governed by Environments and Interactors. An Environment is a child of Group, and is used for updating beings. Updating an environment simply applies an update sequentially to all contained beings. For example, this can be used to apply a uniform downward force of gravity, or friction. Environments can be bounded spatially to filter the beings within them, for example a game level could have both air and water areas, with different laws of physics.
+
