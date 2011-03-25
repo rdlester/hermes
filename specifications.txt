@@ -20,6 +20,7 @@ Beings are governed by Environments and Interactors. An Environment is a child o
 2.5 God
 
 2.6 Post Office
+The PostOffice is a way to abstract controls and messaging. It will be used for communication to and from external controls (think: keyboard, gamepads, midi devices, other games, etc etc). It uses a publish/subscribe pattern, and generalizes messages such that beings and in game events will not know about the things controlling them. 
 
 3. Library Code
 
