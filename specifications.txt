@@ -1,0 +1,5 @@
+There are two main parts of our library: our game framework: which is basically our structure for creating bodies and a game loop and setting the rules by which bodies interact with each other and the outside world, and our library code, which has classes we've written for handling collision detection and response, sprite animation and graphical effects, timers, and other structures that we think our users will likely need.
+
+The most basic unit of our framework is the Being, which is the representation of an object in the game. Being have their own draw method, which determines exactly how it is drawn to the screen, and coordinates. Obviously, user implementations of bodies will have many other parameters. The basic idea of beings, however, is that beings are "dumb", that is, they don't know much about one another or about the environment they exist in.
+
+Being are contained within Groups. A Group is pretty much just an alias for a Collection of Beings. However, one of the few things Beings do know is what groups they are contained in. 
