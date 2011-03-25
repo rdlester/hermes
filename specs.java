@@ -46,7 +46,7 @@ abstract class Environment<A extends Being> extends Group<A> {
 }
 
 /**
- * an environment with a containing boundary (for example a pool of water
+ * an environment with a containing boundary (for example a pool of water)
  */
 abstract class BoundedEnvironment<A extends Being> entends Environment<A> {
 
@@ -136,6 +136,8 @@ interface Optimizer<A,B> {
 abstract class World {
 
 	Group<Being> masterList;
+	List<Being> masterList;
+	Group<Being> camera;
 
 	//Setup loop
 	//Written by user
@@ -222,6 +224,10 @@ class PostOffice {
  * an animated sprite based on an image sequence
  */
 class Sprite {
+
+	//Used to store each frame of an animation
+	PImage[] frames;
+
 	// loads a Sprite by importing a single image and splitting it into a tiles with given width and height
 	Sprite(String filename, int width, int height);
 	
@@ -237,6 +243,15 @@ class Sprite {
 	// draws the sprite next animation frame at the given screen position
 	//  advances frame count by given value
 	void draw(double x, double y, int advanceFrame = 1);
+
+	//Helper utility for splitting image into respective tiles
+	PImage[] parseTileMap(PImage map, int rows, int cols);
+
+	//Access to individual frames such that the user can do pixel level changes to a sprite's graphic
+	PImage[] getFrames(); 
+
+	//allows user to change the frames of an animation
+	setFrames(PImage[] newFrames); 
 }
 
 /**
