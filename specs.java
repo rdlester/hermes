@@ -29,6 +29,39 @@ abstract class Being {
 }
 
 /**
+ * used to group Beings
+ */
+class Group<A extends Being> implements Collection<A> {}
+
+/**
+ * used to update Beings
+ */ 
+abstract class Environment<A extends Being> extends Group<A> {
+	
+	// updates the contained beings based on the environmental physics
+	abstract void update();
+	
+}
+
+/**
+ * an environment with a containing boundary (for example a pool of water
+ */
+abstract class BoundedEnvironment<A extends Being> entends Environment<A> {
+
+	Shape boundary;
+
+	/**
+	 * expels the contained beings which lie outside the boundary, and returns
+	 */
+	Group<A> cull() {}
+
+	/**
+	 * adds beings if they lie within the boudary
+	 */
+	void add(Group<A> beings) {}
+}
+
+/**
  * TODO: Timer class?
  */
 
@@ -37,10 +70,40 @@ abstract class Being {
  * detect method determines if two bodies should interact
  * handle "interacts" the two beings by updating them
  */
-interface Interactor<A,B> {
+interface Interactor<A extends Body, B extends Body> {
 
+	// returns true if A and B should interact
 	boolean detect(A, B);
+	// handles an interaction between A and B
 	void handle(A, B);
+
+}
+
+/**
+ * pre-written, shape-based collision detection
+ */
+abstract class Collider<A extends Body, B extends Body> implements Interactor<A,B> {
+	
+	boolean detect(A body1, B body2) {
+		Shape.collide(body1.getShape, body2.getShape());
+	}
+	
+}
+
+/**
+ * used to add mass to a being
+ */
+interface Massed { double getMass(); }
+
+/**
+ * a pre-written implementation of Collider using a phyics-based collision response algorithm with variable elasticity
+ */ 
+class MassedCollider<A extends Body implements Massed, B extends Body implements Massed> extends Collider<A,B> {
+
+	// creates a collider, elasticity should be between 0 (inelastic) and 1 (elastic)
+	MassedCollider(double elasticiy) {}
+	
+	void handle(A, B) {}
 
 }
 
@@ -56,10 +119,6 @@ interface Optimizer<A,B> {
 	public void detect(A body, Interactor i);
 
 }
-
-/**
- * TODO: Need Group def?
- */
 
 /**
  * Defines a 'game state'
