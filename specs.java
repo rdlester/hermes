@@ -31,6 +31,17 @@ abstract class Being {
 }
 
 /**
+ * used to add mass to a being
+ */
+interface Massed { double getMass(); }
+
+abstract class forceBeing extends Being implements Massed {
+	
+	PVector position, velocity, force;
+	
+}
+
+/**
  * used to group Beings
  */
 class Group<A extends Being> implements Collection<A> {}
@@ -72,7 +83,7 @@ abstract class BoundedEnvironment<A extends Being> entends Environment<A> {
  * detect method determines if two bodies should interact
  * handle "interacts" the two beings by updating them
  */
-interface Interactor<A extends Body, B extends Body> {
+interface Interactor<A extends Being, B extends Being> {
 
 	// returns true if A and B should interact
 	boolean detect(A, B);
@@ -83,7 +94,7 @@ interface Interactor<A extends Body, B extends Body> {
 /**
  * pre-written, shape-based collision detection
  */
-abstract class Collider<A extends Body, B extends Body> implements Interactor<A,B> {
+abstract class Collider<A extends Being, B extends Being> implements Interactor<A,B> {
 	
 	boolean detect(A body1, B body2) {
 		Shape.collide(body1.getShape, body2.getShape());
@@ -91,15 +102,12 @@ abstract class Collider<A extends Body, B extends Body> implements Interactor<A,
 	
 }
 
-/**
- * used to add mass to a being
- */
-interface Massed { double getMass(); }
+
 
 /**
  * a pre-written implementation of Collider using a phyics-based collision response algorithm with variable elasticity
  */ 
-class MassedCollider<A extends Body implements Massed, B extends Body implements Massed> extends Collider<A,B> {
+class MassedCollider<A extends forceBeing, B extends forceBeing> extends Collider<A,B> {
 
 	// creates a collider, elasticity should be between 0 (inelastic) and 1 (elastic)
 	MassedCollider(double elasticiy) {}
