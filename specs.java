@@ -46,7 +46,7 @@ abstract class Environment<A extends Being> extends Group<A> {
 }
 
 /**
- * an environment with a containing boundary (for example a pool of water
+ * an environment with a containing boundary (for example a pool of water)
  */
 abstract class BoundedEnvironment<A extends Being> entends Environment<A> {
 

@@ -1,8 +1,29 @@
+1. Overview
 There are two main parts of our library: our game framework: which is basically our structure for creating bodies and a game loop and setting the rules by which bodies interact with each other and the outside world, and our library code, which has classes we've written for handling collision detection and response, sprite animation and graphical effects, timers, and other structures that we think our users will likely need.
 
+2. Framework
+2.1 Being
 The most basic unit of our framework is the Being, which is the representation of an object in the game. Being have their own draw method, which determines exactly how it is drawn to the screen, and coordinates. Obviously, user implementations of bodies will have many other parameters. The basic idea of beings, however, is that beings are "dumb", that is, they don't know much about one another or about the environment they exist in.
 
+2.2 Group
 Being are contained within Groups. A Group is pretty much just an alias for a Collection of Beings. However, one of the few things Beings do know is what groups they are contained in. This is needed for easy deletion when Beings need to be destroyed (for example, when characters die).
 
+2.3.1 Environment
 Beings are governed by Environments and Interactors. An Environment is a child of Group, and is used for updating beings. Updating an environment simply applies an update sequentially to all contained beings. For example, this can be used to apply a uniform downward force of gravity, or friction. Environments can be bounded spatially to filter the beings within them, for example a game level could have both air and water areas, with different laws of physics.
 
+2.3.2 Interactor
+
+2.3.3 Optimizer
+
+2.4 World
+
+2.5 God
+
+2.6 Post Office
+
+3. Library Code
+
+Need:
+User/Library split
+Core of library (what must be used)
+Extensions (standard implementations of Being, for instance)
