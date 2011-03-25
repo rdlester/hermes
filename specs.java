@@ -38,8 +38,8 @@ class Group<A extends Being> implements Collection<A> {}
  */ 
 abstract class Environment<A extends Being> extends Group<A> {
 	
-	// updates the contained beings based on the environmental physics
-	abstract void update();
+	// updates the contained beings based on the environmental physics and the time since the last update
+	abstract void update(double elapsedTime);
 	
 }
 
@@ -76,7 +76,6 @@ interface Interactor<A extends Body, B extends Body> {
 	boolean detect(A, B);
 	// handles an interaction between A and B
 	void handle(A, B);
-
 }
 
 /**
@@ -116,8 +115,13 @@ class MassedCollider<A extends Body implements Massed, B extends Body implements
  */
 interface Optimizer<A,B> {
 
-	public void detect(A body, Interactor i);
+	// returns all B that body interacts with
+	Iterator<B> detect(A body, Interactor i);
 
+	// used in the case of an optimization that can check faster than O(n), for example check mutual interaction
+	//  only between beings in the same room
+	Iterator<Pair<A,B>> detectAll(Interactor i);
+	
 }
 
 /**
@@ -146,6 +150,9 @@ abstract class World {
 
 	//Called by God's draw method to
 	void draw() {}
+	
+	// locks the update rate to happen no more than once per interval (in seconds)
+	void loackUpdateRate(double interval) {}
 
 }
 
@@ -163,6 +170,7 @@ class God {
 	
 	// adds a post graphics effect at the end of the world draw, for things like global fades, glows, etc
 	void addGraphicsEffect(GraphicsEffect fx);
+
 }
 
 /**
@@ -184,7 +192,10 @@ class PostOffice {
 	//Waits for events, and adds them to queue for handling
 	//Does not handle events while a world update loop is running
 	void run() {}
-
+	
+	// I'd rather we didn't have direct subscription to key presses and mouse clicks, but rather to general messages
+	// the whole point of the post office is to abstract away things like key presses and mouse click -- sam
+	
 	//Sends key presses to subscribing Beings
 	void handleKeyPress(char keyPressed) {}
 
