@@ -136,6 +136,8 @@ interface Optimizer<A,B> {
 abstract class World {
 
 	List<Being> masterList;
+	List<Being> camera;
+
 
 	//Setup loop
 	//Written by user
