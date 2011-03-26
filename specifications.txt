@@ -19,7 +19,7 @@ Interactors govern relationships between beings. An interactor is a parametrized
 To speed up interaction handling, we have an interface called Optimizer, which prevents O(n^2) interaction checking. The Optimizer performs some operation that sorts Beings in such a way that their interaction can be checked in an optimized manner, for example building a quadtree or sorting Being by the room or board area they occupy. This structure is used to detect many interactions at a time, preventing inefficient calculations.
 
 2.4 World
-The whole game state is governed by the World class. The World keeps track of all of the beings and runs the main loop, checking for and handling interactions. World has a registerInteraction method that allows the user to register groups of interacting beings for checking. The order in which they register will determine the order of checking. Once they have set up all their interactions and environment, they can simply call World.run() and we will handle all of the updating for them. Or they can choose to override our updating method and handle the loop themself.
+The whole game state is governed by the World class. The World keeps track of all of the beings and runs the main loop, checking for and handling interactions. World has a registerInteraction method that allows the user to register groups of interacting beings for checking. The order in which they register will determine the order of checking. Once they have set up all their interactions and environment, they can simply call World.run() and we will handle all of the updating for them. Or they can choose to override our updating method and handle the loop themself. World.draw(), which is called by the main drawing loop, uses a Camera object to determine which objects need to be drawn, sorts them by their z coordinate, and then calls their draw method after translating their world coordinates into screen coordinates.
 
 2.5 God
 All of this happens (literally) under God. God is basically a singleton object that sets whichever world the game is currently playing in, handles transitions between worlds, and deals with global drawing effects. World updating runs on its own thread (separate from the graphics thread).
@@ -43,7 +43,13 @@ This extension of Interactor implements a shape-based collision detection system
 This extension of Being and Collider respectively provides for a basic, pre-built physics engine. A ForceBeing has vectors for position, velocity, and force, as well as a mass variable. MassedCollider handles collisions between objects based on shape and mass. The user can set collision elasticity -- the percent of energy absorbed in the collision.
 
 3.4 Vector Field Environment
-This environment implementation will control the motion of objects based on a user-defined vector field.
+This environment implementation will control the motion of objects based on a user-defined vector field
+
+3.5 Graphics Effects
+We will provide implementations for a number of pixel-level graphical effects such as fades and wipes.
+
+3.6 Tile-based world implementation
+We will provide a specific implementation of world and being classes optimized for a tile-based game environment in which the coordinate system is quantized.
 
 Need:
 User/Library split

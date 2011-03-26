@@ -170,7 +170,7 @@ abstract class World {
 }
 
 /**
- * used to determine what should be drawm
+ * used to determine what should be drawn
  */
 class Camera {
 
@@ -179,6 +179,9 @@ class Camera {
 	
 	Group<Being> beings;
 
+	// translates from world coordinates to screen coordinates
+	Pair<int,int> worldToScreenCoors(double x, double y) {} 
+	
 }
 
 /**
