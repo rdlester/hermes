@@ -145,8 +145,9 @@ abstract class World {
 
 	Group<Being> masterList;
 	List<Being> masterList;
-	Group<Being> camera;
-
+	
+	Camera camera;
+	
 	//Setup loop
 	//Written by user
 	abstract void setup();
@@ -165,6 +166,18 @@ abstract class World {
 	
 	// locks the update rate to happen no more than once per interval (in seconds)
 	void lockUpdateRate(double interval) {}
+
+}
+
+/**
+ * used to determine what should be drawm
+ */
+class Camera {
+
+	Rectangle screen; 	// camera dimensions
+	double x, y;		// camera location in the world
+	
+	Group<Being> beings;
 
 }
 

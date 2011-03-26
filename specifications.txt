@@ -37,10 +37,13 @@ A shape based system that provides robust collision information. User should be 
 Our Sprite class is a helper for wrapping Processing's PImages. It is based on tile-maps, and has utilities to parse tiles based on information provided by the user at construction. The user will be able to run animated sprites, and the framerate can be locked regardless of varying levels of computational activity. The user will also be able to have safe access to the image data such that they can do pixel level effects. 
 
 3.2 Collider
-This extension of Interactor implements a shape-based collision detection system, and is probably the collision system that most users will use most of the time.
+This extension of Interactor implements a shape-based collision detection system using the collision suite, and is probably the collision system that most users will use most of the time.
 
 3.2 ForceBeing and MassedCollider
 This extension of Being and Collider respectively provides for a basic, pre-built physics engine. A ForceBeing has vectors for position, velocity, and force, as well as a mass variable. MassedCollider handles collisions between objects based on shape and mass. The user can set collision elasticity -- the percent of energy absorbed in the collision.
+
+3.4 Vector Field Environment
+This environment implementation will control the motion of objects based on a user-defined vector field.
 
 Need:
 User/Library split
