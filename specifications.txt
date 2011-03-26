@@ -32,7 +32,10 @@ The PostOffice is a way to abstract controls and messaging. It will be used for 
 
 3. Library Code
 
-3.1 Sprite 
+3.1 Collision Suite
+A shape based system that provides robust collision information. User should be able to find out if two shapes are colliding, on what sides, and degree of containment. Will support collisions across different shapes (point, line, rectangle, triangle, ellipse, and most likely arbitrary as well)
+
+3.2 Sprite 
 Our Sprite class is a helper for wrapping Processing's PImages. It is based on tile-maps, and has utilities to parse tiles based on information provided by the user at construction. The user will be able to run animated sprites, and the framerate can be locked regardless of varying levels of computational activity. The user will also be able to have safe access to the image data such that they can do pixel level effects. 
 
 Need:
