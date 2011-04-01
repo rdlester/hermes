@@ -1,2 +1,0 @@
-Here is a broad overview of how Cocos2d organizes games within its engine:
-http://www.cocos2d-iphone.org/wiki/doku.php/prog_guide:basic_concepts
