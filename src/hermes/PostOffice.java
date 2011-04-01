@@ -1,8 +1,11 @@
 package src.hermes;
 
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.ArrayList;
 
+import com.illposed.osc.*;
 import oscP5.*;
 import netP5.*;
 
@@ -18,15 +21,44 @@ public class PostOffice {
 	//Server listening for and sending messages
 	OscP5 _server;
 	
+	//If illposed.osc is used intead of oscP5
+	//OSCPorts for listening and recieving
+	OSCPortIn _receive;
+	OSCPortOut _send;
+	
+	
+	
 	//Fields containing subscribing Beings
 	ArrayList<Being> _keySubscribed;
 	ArrayList<Being> _mouseSubscribed;
 	ArrayList<Being> _oscSubscribed;
 	
-	//Constructor
+	//Constructor for OscP5
 	public PostOffice(PApplet applet, int port) {
 		_server = new OscP5(applet, port);
 	}
+	
+	//Constructors for illposed
+	//Constructor that sends out to default location on localhost
+	public PostOffice(int portIn) {
+		try {
+			_receive = new OSCPortIn(port);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			_send = new OSCPortOut();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//Constructor that defines location to send to on localhost
 	
 	//Sends key presses to subscribing Beings
 	void handleKeyPress(char keyPressed) {
