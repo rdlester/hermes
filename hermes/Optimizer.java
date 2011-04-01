@@ -4,7 +4,7 @@ import java.util.Iterator;
 
 /**
  * Determines which beings are compared and potentially interacted by Interactor
- * Group B is given as arugment to constructor and organized according to optimizer type
+ * Group B is given as argument to constructor and organized according to optimizer type
  * Basic optimizer checks all the members of A against all the members of B (order n^2)
  * Sample advanced optimizers include quadtree
  * detect checks body A against the structure formed from Group B
