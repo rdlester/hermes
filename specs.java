@@ -152,6 +152,8 @@ abstract class World {
 	//Written by user
 	abstract void setup();
 
+	void registerEnvironment(Environment environment) {}
+
 	//Is this in the world?
 	void registerInteraction(Group A, Group B, Interactor inter, Optimizer optimizer) {}
 

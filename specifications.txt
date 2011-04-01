@@ -66,3 +66,43 @@ We want our library to be as extensible and as applicable to as many situations 
 
 But, of course, the user has the option of overriding all of our framework code (or ingnoring it), and just using us for collision detection, messaging, graphics, etc.
 
+=====================================================================================
+
+Demo 1: Curtains
+
+Is a generative environment borrowing game mechanics from the "bullet-hell" aka "shoot-em-up genre." 
+It takes the trope of games like R-Type and creates a "codebendable" environment for play and exploration. 
+The user will send and receiver information over OSC addresses to interact with the environment.
+
+The user will send messages to the following OSC addresses: 
+	/SetPlayerShipX
+	/SetPlayerShipY
+		move a player ship on an x and y axis (continuous value between 0.0 and 1.0)
+	/ShootBullet
+		shoot a bullet from the player ship (trigger value of 1.0)
+	/GenerateEnemy
+		generate enemy ships (trigger value of 1.0)
+	/SetEnemySpawnX
+	/SetEnemySpawnY
+		specify the x and y coordinate of where new enemy ships are generated
+	/SetEnemySpeed
+		set how fast enemy ships travel 
+	/ChangeEnemyStyle
+		ability to step through a set of graphics, determining how new enemy ships will be drawn (trigger value of 1.0)
+	/ChangeBackgroundStyle
+		ability to step through a minimal set of background graphics / colors (trigger value of 1.0)
+
+Via the post office, the player will receiver the following information over OSC addresses:
+
+	/OldestEnemyX
+	/OldestEnemyY
+		oldest enemy ship x and y 
+	/NewestEnemyX
+	/NewestEnemyY
+		newest enemy ship x and y
+	/PlayerShipCollided
+		notification of player ship collision (trigger value of 1.0)
+	/EnemyShipDestroyed
+		notification of destruction of an enemy ship (trigger value of 1.0)
+
+=====================================================================================
