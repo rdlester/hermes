@@ -1,4 +1,4 @@
-package hermes;
+package src.hermes;
 
 import java.util.Iterator;
 import java.util.LinkedList;
