@@ -1,5 +1,6 @@
 package src.hermes;
 
+import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collection;
@@ -19,29 +20,29 @@ import processing.core.*;
  */
 public class PostOffice {
 	
-	//Central PApplet of the program
-	PApplet _applet;
-	
-	//Server listening for and sending messages
-	OscP5 _server;
-	
 	//If illposed.osc is used instead of oscP5
 	//OSCPorts for listening and receiving
 	OSCPortIn _receive;
 	OSCPortOut _send;
 	
+	ArrayList<Subscription> _subscriptions; 
 	
+	//Holder class to hold subscriptions
+	class Subscription {
+		Collection _group;
+		MessageHandler _handler;
+		
+		protected Subscription(Collection group, MessageHandler handler) {
+			group = _group;
+			handler = _handler;
+		}
+	}
 	
 	//Fields containing subscribing Beings
 	ArrayList<Being> _keySubscribed;
 	ArrayList<Being> _mouseSubscribed;
 	ArrayList<Being> _oscSubscribed;
 	
-	//Constructor for OscP5
-	public PostOffice(PApplet applet, int port) {
-		_applet = applet;
-		_server = new OscP5(applet, port);
-	}
 	
 	//Constructors for illposed
 	//Constructor that sends out to default location on localhost
@@ -64,6 +65,56 @@ public class PostOffice {
 	}
 	
 	//Constructor that defines location to send to on localhost
+	public PostOffice(int portIn, int portOut) {
+		try {
+			_receive = new OSCPortIn(portIn);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			_send = new OSCPortOut(InetAddress.getLocalHost(),portOut);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	//Constructor for PostOffice that sends messages to non-local address
+	public PostOffice(int portIn, int portOut, String netAddress) {
+		try {
+			_receive = new OSCPortIn(portIn);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			_send = new OSCPortOut(InetAddress.getByName(netAddress), portOut);
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Registers a subscription
+	 * @param g
+	 * @param handler
+	 * @param check
+	 */
+	public void registerSubscription(Collection g, MessageHandler handler, Message check) {
+		_subscriptions.add(new Subscription(g,handler));
+	}
+	
+	
+	
+	
 	
 	//Sends key presses to subscribing Beings
 	void handleKeyPress(char keyPressed) {
