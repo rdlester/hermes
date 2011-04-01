@@ -8,21 +8,25 @@ import java.util.ArrayList;
 import com.illposed.osc.*;
 import oscP5.*;
 import netP5.*;
+import processing.core.*;
 
 /**
  * Listens for and sends OSC, mouse, and keyboard messages
- * Tells subscribers of a specific type of message when one is recieved
+ * Tells subscribers of a specific type of message when one is received
  * and passes on information stored in message to subscriber
  * @author Ryan
  *
  */
 public class PostOffice {
 	
+	//Central PApplet of the program
+	PApplet _applet;
+	
 	//Server listening for and sending messages
 	OscP5 _server;
 	
-	//If illposed.osc is used intead of oscP5
-	//OSCPorts for listening and recieving
+	//If illposed.osc is used instead of oscP5
+	//OSCPorts for listening and receiving
 	OSCPortIn _receive;
 	OSCPortOut _send;
 	
@@ -35,6 +39,7 @@ public class PostOffice {
 	
 	//Constructor for OscP5
 	public PostOffice(PApplet applet, int port) {
+		_applet = applet;
 		_server = new OscP5(applet, port);
 	}
 	
@@ -42,7 +47,7 @@ public class PostOffice {
 	//Constructor that sends out to default location on localhost
 	public PostOffice(int portIn) {
 		try {
-			_receive = new OSCPortIn(port);
+			_receive = new OSCPortIn(portIn);
 		} catch (SocketException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,17 +82,17 @@ public class PostOffice {
 	}
 
 	//Registers Group of Being for keyboard subscription
-	void registerKeySubscribe(Collection g) {
-		
+	void registerKeySubscribe(Collection<Being> g) {
+		_keySubscribed.addAll(g);
 	}
 
 	//Registers Group of Being for mouse subscription
-	void registerMouseSubscribe(Collection g) {
+	void registerMouseSubscribe(Collection<Being> g) {
 		
 	}
 
 	//Registers Group of Being for osc subscription
-	void registerOSCSubscribe(Collection g) {
+	void registerOSCSubscribe(Collection<Being> g) {
 		
 	}
 	
