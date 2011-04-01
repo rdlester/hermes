@@ -15,14 +15,17 @@ import netP5.*;
  */
 public class PostOffice {
 	
+	//Server listening for and sending messages
+	OscP5 _server;
+	
 	//Fields containing subscribing Beings
-	ArrayList<Being> keySubscribed;
-	ArrayList<Being> mouseSubscribed;
-	ArrayList<Being> oscSubscribed;
+	ArrayList<Being> _keySubscribed;
+	ArrayList<Being> _mouseSubscribed;
+	ArrayList<Being> _oscSubscribed;
 	
 	//Constructor
-	public PostOffice() {
-		
+	public PostOffice(PApplet applet, int port) {
+		_server = new OscP5(applet, port);
 	}
 	
 	//Sends key presses to subscribing Beings
