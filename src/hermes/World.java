@@ -1,9 +1,10 @@
-package hermes;
+package src.hermes;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
+
 
 /**
  * Defines a 'game state'
@@ -18,8 +19,10 @@ public abstract class World {
 	
 	Camera camera;
 	
+	@SuppressWarnings("rawtypes")
 	private List<Interaction> interactions;
 	
+	@SuppressWarnings("rawtypes")
 	public World() {
 		interactions = new LinkedList<Interaction>();
 	}
@@ -32,6 +35,7 @@ public abstract class World {
 	 * @param applyImmediate	whether to apply the interaction immediately
 	 * 								upon detection or later
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void registerInteraction(Collection A, Collection B, Interactor inter, 
 			boolean applyImmediate) {
 		interactions.add(new Interaction(A, B, inter, applyImmediate, null));
@@ -43,25 +47,30 @@ public abstract class World {
 	 * @param B			the second interacting group
 	 * @param inter		the interaction handler
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void registerInteraction(Collection A, Collection B, Interactor inter, 
 			boolean applyImmediate, Optimizer optimizer) {
 		interactions.add(new Interaction(A, B, inter, applyImmediate, optimizer));
 	}
 
-	//Creates a new thread and runs the update loop in it
+	/**
+	 * runs the update loop
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
+		// go through the registered interaction in order
 		for(Iterator<Interaction> iter = interactions.iterator(); iter.hasNext(); ) {
-			System.out.println("running...");
 			Interaction interaction = iter.next();
 			Collection A = interaction.getA();
 			Collection B = interaction.getB();
+			// perform the O(n^2) calculation on all the groups
 			for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
 				for(Iterator iterB = B.iterator(); iterB.hasNext(); ) {
 					Being being1 = (Being)iterA.next();
 					Being being2 = (Being)iterB.next();
-					
+					// see if an interaction was detected
 					if(interaction.getInteractor().detect(being1, being2)) {
+						// if so, handle it
 						interaction.getInteractor().handle(being1, being2);
 					}
 				}

@@ -1,4 +1,4 @@
-package hermes;
+package src.hermes;
 
 /**
  * Contains necessary logic to interact two beings
