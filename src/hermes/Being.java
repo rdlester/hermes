@@ -14,6 +14,8 @@ public abstract class Being {
 	public abstract double getY();
 	public abstract double getZ();
 
+	
+	
 	/**
 	 * draws the object to the screen
 	 * takes a screen x and y coor
@@ -21,9 +23,13 @@ public abstract class Being {
 	 * there may be a better way to do this, with framebuffers, need to look in to this
 	 */
 	public abstract void draw(int x, int y);
-
+	
 	List<Collection<Being>> groups;
 	Shape shape; 
+	
+	public void addToGroup() {
+		
+	}
 	
 	public void update() {}
 	

@@ -42,4 +42,5 @@ class Sprite {
 	setFrames(PImage[] newFrames); 
 	
 }
+
 */
