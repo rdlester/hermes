@@ -1,4 +1,4 @@
-/*package src.hermes;
+package src.hermes;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -6,13 +6,13 @@ import java.util.List;
 import java.util.Collection;
 
 
-*//**
+/**
  * Defines a 'game state'
  * Examples include: Levels, menu screens
  * Subclassed by user to create individual worlds
  * User creates the necessary Beings, Interactors, and Optimizers in setup
  * The other functions are implemented by us; we handle the running and drawing of the world
- *//*
+ */
 public abstract class World {
 
 	// these hold add and delete operations until the end of the update
@@ -49,35 +49,35 @@ public abstract class World {
 		_deleteQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
 	}
 	
-	*//**
+	/**
 	 * register an interaction to be handled on the update loop
 	 * @param A					the first interacting group
 	 * @param B					the second interacting group
 	 * @param inter				the interaction handler
 	 * @param applyImmediate	whether to apply the interaction immediately
 	 * 								upon detection or later
-	 *//*
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void registerInteraction(Collection A, Collection B, Interactor inter, 
 			boolean applyImmediate) {
 		_interactions.add(new Interaction(A, B, inter, applyImmediate, null));
 	}
 	
-	*//**
+	/**
 	 * register an interaction to be handled on the update loop
 	 * @param A			the first interacting group
 	 * @param B			the second interacting group
 	 * @param inter		the interaction handler
-	 *//*
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void registerInteraction(Collection A, Collection B, Interactor inter, 
 			boolean applyImmediate, Optimizer optimizer) {
 		_interactions.add(new Interaction(A, B, inter, applyImmediate, optimizer));
 	}
 
-	*//**
+	/**
 	 * runs the update loop
-	 *//*
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
 		 
@@ -127,4 +127,4 @@ public abstract class World {
 
 	
 	
-}*/
+}
