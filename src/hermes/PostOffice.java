@@ -5,10 +5,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.illposed.osc.*;
-import oscP5.*;
-import netP5.*;
 import processing.core.*;
 
 /**
@@ -20,12 +19,11 @@ import processing.core.*;
  */
 public class PostOffice {
 	
-	//If illposed.osc is used instead of oscP5
 	//OSCPorts for listening and receiving
 	OSCPortIn _receive;
 	OSCPortOut _send;
 	
-	ArrayList<Subscription> _subscriptions; 
+	HashMap<Message,Subscription> _subscriptions;
 	
 	//Holder class to hold subscriptions
 	class Subscription {
@@ -38,14 +36,11 @@ public class PostOffice {
 		}
 	}
 	
-	//Fields containing subscribing Beings
-	ArrayList<Being> _keySubscribed;
-	ArrayList<Being> _mouseSubscribed;
-	ArrayList<Being> _oscSubscribed;
 	
-	
-	//Constructors for illposed
-	//Constructor that sends out to default location on localhost
+	/**
+	 * Constructor for illposed's default port out
+	 * @param portIn - port to receive messages on
+	 */
 	public PostOffice(int portIn) {
 		try {
 			_receive = new OSCPortIn(portIn);
@@ -62,9 +57,15 @@ public class PostOffice {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		_subscriptions = new HashMap<Message,Subscription>();
 	}
 	
-	//Constructor that defines location to send to on localhost
+	/**
+	 * Constructor that defines location to send to on localhost
+	 * @param portIn - port to receive messages on
+	 * @param portOut - port to send messages on
+	 */
 	public PostOffice(int portIn, int portOut) {
 		try {
 			_receive = new OSCPortIn(portIn);
@@ -81,9 +82,16 @@ public class PostOffice {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		_subscriptions = new HashMap<Message,Subscription>();
 	}
 	
-	//Constructor for PostOffice that sends messages to non-local address
+	/**
+	 * Constructor for PostOffice that sends messages to non-local address
+	 * @param portIn - port to receive messages on
+	 * @param portOut - port to send messages on
+	 * @param netAddress - url of location to send messages to
+	 */
 	public PostOffice(int portIn, int portOut, String netAddress) {
 		try {
 			_receive = new OSCPortIn(portIn);
@@ -100,16 +108,19 @@ public class PostOffice {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		_subscriptions = new HashMap<Message,Subscription>();
 	}
 	
 	/**
-	 * Registers a subscription
-	 * @param g
-	 * @param handler
-	 * @param check
+	 * Registers a subscription with the PostOffice
+	 * @param g - Subscribing group
+	 * @param handler - the MessageHandler that contains the logic needed to react to a received message
+	 * @param check - the particular message type the group is subscribing to
 	 */
 	public void registerSubscription(Collection g, MessageHandler handler, Message check) {
-		_subscriptions.add(new Subscription(g,handler));
+		Subscription newSubscription = new Subscription(g,handler);
+		_subscriptions.put(check, newSubscription);
 	}
 	
 	
