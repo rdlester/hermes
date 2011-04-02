@@ -7,7 +7,7 @@ import processing.core.*;
  * an animated sprite based on an image sequence
  *//*
 class Sprite {
-
+/*
 	//Used to store each frame of an animation
 	PImage[] frames;
 
@@ -45,7 +45,7 @@ class Sprite {
 
 	//allows user to change the frames of an animation
 	setFrames(PImage[] newFrames); 
-	
+	*/
 }
 
 

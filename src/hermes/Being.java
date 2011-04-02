@@ -22,7 +22,7 @@ public abstract class Being {
 	 */
 	public abstract void draw(int x, int y);
 
-	List<Collection> groups;
+	List<Collection<Being>> groups;
 	Shape shape; 
 	
 	public void update() {}

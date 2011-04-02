@@ -11,12 +11,18 @@ import java.util.Iterator;
  */
 public interface Optimizer<A extends Being, B extends Being> {
 
+	/**
+	 * whether to use detect or detectAll
+	 * @return	if true, the loop will use detectAll
+	 */
+	public boolean isDetectAll();
+	
 	// returns all B that body interacts with
-	Iterator<B> detect(A body, Interactor<A,B> i);
+	public Iterator<B> detect(A body, Interactor<A,B> i);
 
 	// used in the case of an optimization that can check faster than O(n), for example check mutual interaction
 	//  only between beings in the same room
-	Iterator<Pair<A,B>> detectAll(Interactor<A,B> i);
+	public Iterator<Pair<A,B>> detectAll(Interactor<A,B> i);
 	
 }
 

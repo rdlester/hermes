@@ -8,7 +8,10 @@ public class KeyMessage implements Message {
 	//Char contained by message
 	private char _keyPressed;
 	
-	//Message constructor
+	/**
+	 * 
+	 * @param keyPressed
+	 */
 	public KeyMessage(char keyPressed) {
 		keyPressed = _keyPressed;
 	}
