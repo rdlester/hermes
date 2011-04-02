@@ -1,5 +1,7 @@
 package src.hermes;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
 
@@ -14,7 +16,9 @@ public abstract class Being {
 	public abstract double getY();
 	public abstract double getZ();
 
-	
+	public Being() {
+		groups = new LinkedList<Collection<Being>>();
+	}
 	
 	/**
 	 * draws the object to the screen
@@ -27,13 +31,36 @@ public abstract class Being {
 	List<Collection<Being>> groups;
 	Shape shape; 
 	
-	public void addToGroup() {
-		
+	/**
+	 * adds the being to the group
+	 * @param group		the group to add to
+	 */
+	public void addToGroup(Collection<Being> group) {
+		group.add(this);
+		groups.add(group);
+	}
+	
+	/**
+	 * removes the being from this group
+	 * @param group		the group to remove from
+	 */
+	public void removeFromGroup(Collection<Being> group) {
+		group.remove(this);
+		groups.remove(group);
+	}
+	
+	/**
+	 * removes the being from all containing groups
+	 */
+	public void delete() {
+		for(Iterator<Collection<Being>> iter = groups.iterator(); iter.hasNext(); ) {
+			Collection<Being> group = iter.next();
+			group.remove(this);
+			iter.remove();
+		}
 	}
 	
 	public void update() {}
 	
-	//TODO: need to add methods for recieving messages?
-	//Has to be defined in Being
 
 }
