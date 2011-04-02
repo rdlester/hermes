@@ -1,11 +1,17 @@
-package src.hermes;
+package src.hermes.postoffice;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 import com.illposed.osc.*;
 import processing.core.*;
@@ -17,16 +23,18 @@ import processing.core.*;
  * @author Ryan
  *
  */
-public class PostOffice {
+public class PostOffice implements KeyListener, MouseListener, MouseMotionListener {
 	
 	//OSCPorts for listening and receiving
 	OSCPortIn _receive;
 	OSCPortOut _send;
 	
 	//Map that associates the subscriptions with the Message they want to receive
-	HashMap<Message,Subscription> _subscriptions;
+	HashMap<Message, Subscription> _subscriptions;
 	
-	//Holder class to hold subscriptions
+	/**
+	 * Helper class to hold subscriptions
+	 */
 	class Subscription {
 		Collection _group;
 		MessageHandler _handler;
@@ -37,6 +45,7 @@ public class PostOffice {
 		}
 	}
 	
+	PriorityQueue<Message> _messageQueue;
 	
 	/**
 	 * Constructor for illposed's default port out
@@ -60,6 +69,7 @@ public class PostOffice {
 		}
 		
 		_subscriptions = new HashMap<Message,Subscription>();
+		_messageQueue = new PriorityQueue<Message>();
 	}
 	
 	/**
@@ -85,6 +95,7 @@ public class PostOffice {
 		}
 		
 		_subscriptions = new HashMap<Message,Subscription>();
+		_messageQueue = new PriorityQueue<Message>();
 	}
 	
 	/**
@@ -111,6 +122,7 @@ public class PostOffice {
 		}
 		
 		_subscriptions = new HashMap<Message,Subscription>();
+		_messageQueue = new PriorityQueue<Message>();
 	}
 	
 	/**
@@ -124,7 +136,15 @@ public class PostOffice {
 		_subscriptions.put(check, newSubscription);
 	}
 	
-	
+	/**
+	 * Runs PostOffice
+	 * Waits for events, and adds them to a queue for handling
+	 * Events are handled after an update loop has finished
+	 */
+	public void run() {
+		_messageQueue = new PriorityQueue<Message>();
+		
+	}
 	
 	
 	
@@ -144,25 +164,53 @@ public class PostOffice {
 		
 	}
 
-	//Registers Group of Being for keyboard subscription
-	void registerKeySubscribe(Collection<Being> g) {
-		_keySubscribed.addAll(g);
-	}
-
-	//Registers Group of Being for mouse subscription
-	void registerMouseSubscribe(Collection<Being> g) {
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 
-	//Registers Group of Being for osc subscription
-	void registerOSCSubscribe(Collection<Being> g) {
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
-	
-	//Runs Post Office
-	//Waits for events, and adds them to queue for handling
-	//Does not handle events while a world update loop is running
-	void run() {
+
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseDragged(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }
