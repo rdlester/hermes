@@ -1,4 +1,4 @@
-package src.hermesTest;
+/*package src.hermesTest;
 
 import java.util.ArrayList;
 
@@ -20,3 +20,4 @@ public class myTestWorld extends World {
 	}
 	
 }
+*/
