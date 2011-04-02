@@ -151,6 +151,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	/**
 	 * Registers a subscription with the PostOffice
+	 * Subscriptions to key messages subscribe to press and release events from a particular key
+	 * Subscriptions to mouse messages TODO
+	 * Subscriptions to OSC messages subscribe to all messages sent on a specific address
 	 * @param g - Subscribing group
 	 * @param handler - the MessageHandler that contains the logic needed to react to a received message
 	 * @param check - the particular message type the group is subscribing to
@@ -211,28 +214,30 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	}
 
 	/**
-	 * 
+	 * Ignore keyTyped events
 	 */
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		//VOID
 	}
 
 	/**
 	 * On a key press, make a new KeyMessage and add it to the queue
+	 * Note: keyPressed events will repeat at rate set by OS if key is held down
+	 * Users should control this with keyReleased events
 	 */
 	public void keyPressed(KeyEvent e) {
-		char key = e.getKeyChar();
-		KeyMessage m = new KeyMessage(key);
+		int key = e.getKeyCode();
+		KeyMessage m = new KeyMessage(key, true);
 		_messageQueue.add(m);
 	}
 
 	/**
-	 * 
+	 * On a key release, make a new KeyMessage and add it to the queue
 	 */
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		int key = e.getKeyCode();
+		KeyMessage m = new KeyMessage(key, false);
+		_messageQueue.add(m);
 	}
 
 	/**
