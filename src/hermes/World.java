@@ -42,8 +42,8 @@ public abstract class World {
 	
 	/**
 	 * queues a being to be removed from a group at the end of an update
-	 * @param being		the being to add
-	 * @param group		the being to remove
+	 * @param being		the being to remove
+	 * @param group		the group to add the being to
 	 */
 	public void removeBeing(Being being, Collection<Being> group) {
 		_deleteQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
