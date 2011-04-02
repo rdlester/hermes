@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
-
+//TODO: remove thisis just a test
 
 /**
  * Defines a 'game state'
