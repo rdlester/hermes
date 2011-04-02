@@ -6,4 +6,5 @@ package src.hermes.postoffice;
  */
 public class MouseMessage implements Message {
 
+	//Boolean 
 }
