@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
+import java.util.Queue;
+//TODO: remove thisis just a test
 
 
 /**
@@ -129,6 +131,7 @@ public abstract class World {
 		// TODO: do this
 		
 		// 2. go through the registered interaction in order
+		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
 			Collection A = interaction.getA();
@@ -142,12 +145,19 @@ public abstract class World {
 						Being being2 = (Being)iterB.next();
 						// see if an interaction was detected
 						if(interaction.getInteractor().detect(being1, being2)) {
-							// if so, handle it
-							interaction.getInteractor().handle(being1, being2);
+							if(interaction.isImmediate()) { // if immediate, handle it now
+								synchronized(being1) {
+									synchronized(being2) {
+										interaction.getInteractor().handle(being1, being2);
+									}
+								}
+							} else {//if not immediate, queue detection to handle later
+								detectedInteractionsQ.add(new DetectedInteraction(being1, being2, interaction.getInteractor()));
+							}
 						}
 					}
-				}
-			} else {
+				} 
+			} else { //TODO: add synchronized on beings, DetectedInteraction queue -- have not yet handled
 				// if this is an optimized interaction
 				Optimizer optimizer = interaction.getOptimizer();
 				if(optimizer.isDetectAll()) 
@@ -159,15 +169,29 @@ public abstract class World {
 				}
 			}
 		}
+		//handle all detected interactions here (for not immediate interactions)
+		for(Iterator<DetectedInteraction> iter = detectedInteractionsQ.iterator(); iter.hasNext();) {
+			DetectedInteraction di = iter.next();
+			Interactor interactor = di.get_interactor();
+			Being being1 = di.get_being1();
+			Being being2 = di.get_being2();
+			synchronized(being1) {
+				synchronized(being2) {
+					interactor.handle(being1, being2);
+				}
+			}
+		}
+		
 		
 		// 3. go through the registered groups to update beings individually
 		for(Iterator<Collection<Being>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
 			Collection<Being> grp = iter.next();
 			for(Iterator<Being> iterGrp = grp.iterator(); iterGrp.hasNext(); ) {
 				Being bng = iterGrp.next();
-				bng.update();
+				synchronized(bng) {
+					bng.update();
+				}
 			}
-			
 		}
 	}
 
@@ -182,6 +206,28 @@ public abstract class World {
 	// locks the update rate to happen no more than once per interval (in seconds)
 	public void lockUpdateRate(double interval) {}
 
+	//to be used in the _detectedInteractions queue
+	private class DetectedInteraction<A extends Being, B extends Being> {
+		A _being1;
+		B _being2;
+		Interactor<A, B> _interactor;
+		DetectedInteraction(A b1, B b2, Interactor<A,B> i) {
+			_being1 =b1;
+			_being2 =b2;
+			_interactor =i;
+		}
+		public A get_being1() {
+			return _being1;
+		}
+		public B get_being2() {
+			return _being2;
+		}
+		public Interactor<A, B> get_interactor() {
+			return _interactor;
+		}
+	}
 	
 	
 }
+
+	
