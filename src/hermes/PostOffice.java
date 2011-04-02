@@ -5,9 +5,9 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.ArrayList;
 
-import com.illposed.osc.*;
-import oscP5.*;
-import netP5.*;
+//import com.illposed.osc.*;
+//import oscP5.*;
+//import netP5.*;
 
 /**
  * Listens for and sends OSC, mouse, and keyboard messages
@@ -17,7 +17,7 @@ import netP5.*;
  *
  */
 public class PostOffice {
-	
+	/*
 	//Server listening for and sending messages
 	OscP5 _server;
 	
@@ -96,5 +96,5 @@ public class PostOffice {
 	//Does not handle events while a world update loop is running
 	void run() {
 		
-	}
+	}*/
 }
