@@ -23,6 +23,7 @@ public class PostOffice {
 	OSCPortIn _receive;
 	OSCPortOut _send;
 	
+	//Map that associates the subscriptions with the Message they want to receive
 	HashMap<Message,Subscription> _subscriptions;
 	
 	//Holder class to hold subscriptions
