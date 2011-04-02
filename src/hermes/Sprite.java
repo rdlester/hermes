@@ -1,7 +1,11 @@
+/*
 package src.hermes;
-/**
+
+import processing.core.*;
+
+*//**
  * an animated sprite based on an image sequence
- */
+ *//*
 class Sprite {
 
 	//Used to store each frame of an animation
@@ -10,6 +14,12 @@ class Sprite {
 	// loads a Sprite by importing a single image and splitting it into a tiles with given rows and cols
 	Sprite(String filename, int rows, int cols) {
 		
+		PImage uncutSheet = loadImage("filename");
+		
+		for (int i = 0; i < rows; i ++) {
+			
+			
+		}
 		
 		
 	}
@@ -37,3 +47,6 @@ class Sprite {
 	setFrames(PImage[] newFrames); 
 	
 }
+
+
+*/
