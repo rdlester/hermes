@@ -6,6 +6,7 @@ import com.illposed.osc.*;
  * Message representing an OSC message
  * Very similar to illposed's OSCMessage, but implementing Message so it can be used in PostOffice
  */
+//TODO: change the name to something that conflicts less with illposed
 public class OscMessage implements Message {
 	
 	//Address of OSCMessage

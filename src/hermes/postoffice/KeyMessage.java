@@ -6,18 +6,22 @@ package src.hermes.postoffice;
 public class KeyMessage implements Message {
 
 	//Char contained by message
-	private char _keyPressed;
+	private int _keyPressed;
+	
+	//Boolean indicating if key is pressed or released
+	private boolean _isPressed;
 	
 	/**
 	 * 
 	 * @param keyPressed
 	 */
-	public KeyMessage(char keyPressed) {
-		keyPressed = _keyPressed;
+	public KeyMessage(int keyPressed, boolean isPressed) {
+		_keyPressed = keyPressed;
+		_isPressed = isPressed;
 	}
 	
 	//Getter for data represented 
-	public char getKey() {
+	public int getKey() {
 		return _keyPressed;
 	}
 	

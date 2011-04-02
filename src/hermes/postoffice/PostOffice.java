@@ -10,10 +10,13 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.PriorityQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.illposed.osc.*;
+
 import processing.core.*;
 
 /**
@@ -28,6 +31,24 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	//OSCPorts for listening and receiving
 	OSCPortIn _receive;
 	OSCPortOut _send;
+	OSCListener _listener;
+	
+	/**
+	 * Implementation of OCSListener that turns illposed messages into our messages
+	 */
+	class PostOfficeOSCListener implements OSCListener {
+		/**
+		 * Handles a received message
+		 * Converts it from illposed to our message
+		 * Adds it to queue
+		 */
+		public void acceptMessage(Date time, OSCMessage message) {
+			String address = message.getAddress();
+			Object[] contents = message.getArguments();
+			OscMessage m = new OscMessage(address,contents);
+			_messageQueue.add(m);
+		}
+	}
 	
 	//Map that associates the subscriptions with the Message they want to receive
 	HashMap<Message, Subscription> _subscriptions;
@@ -45,7 +66,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 	
-	PriorityQueue<Message> _messageQueue;
+	ConcurrentLinkedQueue<Message> _messageQueue;
 	
 	/**
 	 * Constructor for illposed's default port out
@@ -67,9 +88,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		_listener = new PostOfficeOSCListener();
 		
 		_subscriptions = new HashMap<Message,Subscription>();
-		_messageQueue = new PriorityQueue<Message>();
+		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
 	/**
@@ -93,9 +115,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		_listener = new PostOfficeOSCListener();
 		
 		_subscriptions = new HashMap<Message,Subscription>();
-		_messageQueue = new PriorityQueue<Message>();
+		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
 	/**
@@ -120,13 +143,17 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		_listener = new PostOfficeOSCListener();
 		
 		_subscriptions = new HashMap<Message,Subscription>();
-		_messageQueue = new PriorityQueue<Message>();
+		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
 	/**
 	 * Registers a subscription with the PostOffice
+	 * Subscriptions to key messages subscribe to press and release events from a particular key
+	 * Subscriptions to mouse messages TODO
+	 * Subscriptions to OSC messages subscribe to all messages sent on a specific address
 	 * @param g - Subscribing group
 	 * @param handler - the MessageHandler that contains the logic needed to react to a received message
 	 * @param check - the particular message type the group is subscribing to
@@ -142,73 +169,88 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Events are handled after an update loop has finished
 	 */
 	public void run() {
-		_messageQueue = new PriorityQueue<Message>();
-		
-	}
-	
-	
-	
-	//Sends key presses to subscribing Beings
-	void handleKeyPress(char keyPressed) {
 		
 	}
 
-	//Sends mouse clicks to subscribing Beings
-	void handleMouseClick(Point clickLocation) {
-		
-	}
-
-	//Sends osc messages to subscribing Beings
-	//Q: how will we internally represent OSC messages?
-	void handleOSC(Message recievedMessage) {
-		
-	}
-
+	//Methods defined by implemented interfaces for handling mouse+keyboard input
+	/**
+	 * 
+	 */
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * 
+	 */
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * 
+	 */
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * 
+	 */
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * 
+	 */
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Ignore keyTyped events
+	 */
 	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		//VOID
 	}
 
+	/**
+	 * On a key press, make a new KeyMessage and add it to the queue
+	 * Note: keyPressed events will repeat at rate set by OS if key is held down
+	 * Users should control this with keyReleased events
+	 */
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		int key = e.getKeyCode();
+		KeyMessage m = new KeyMessage(key, true);
+		_messageQueue.add(m);
 	}
 
+	/**
+	 * On a key release, make a new KeyMessage and add it to the queue
+	 */
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
-		
+		int key = e.getKeyCode();
+		KeyMessage m = new KeyMessage(key, false);
+		_messageQueue.add(m);
 	}
 
+	/**
+	 * 
+	 */
 	public void mouseDragged(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * 
+	 */
 	public void mouseMoved(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
