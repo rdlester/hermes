@@ -1,4 +1,4 @@
-package src.hermes;
+package src.hermes.postoffice;
 
 /**
  * Message representing a key stroke
