@@ -17,7 +17,8 @@ public abstract class World {
 
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<Being,Collection<Being>>> _addQueue;
-	private LinkedList<Pair<Being,Collection<Being>>> _deleteQueue;
+	private LinkedList<Pair<Being,Collection<Being>>> _removeQueue;
+	private LinkedList<Being> _deleteQueue;
 	
 	Camera _camera; // the camera
 	
@@ -28,7 +29,7 @@ public abstract class World {
 	public World() {
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,Collection<Being>>>();
-		_deleteQueue = new LinkedList<Pair<Being,Collection<Being>>>();
+		_removeQueue = new LinkedList<Pair<Being,Collection<Being>>>();
 	}
 	
 	/**
@@ -46,7 +47,38 @@ public abstract class World {
 	 * @param group		the group to add the being to
 	 */
 	public void removeBeing(Being being, Collection<Being> group) {
-		_deleteQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
+		_removeQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
+	}
+	
+	/**
+	 * queues a being to be deleted (removed from all groups) at the end of an update
+	 * @param being
+	 */
+	public void deleteBeing(Being being) {
+		_deleteQueue.addLast(being);
+	}
+	
+	/**
+	 * resolves the add, remove, and delete queues, in that order
+	 */
+	private void resolveGroupQueues() {
+		// resolve the add queue first
+		for(Iterator<Pair<Being,Collection<Being>>> iter = _addQueue.iterator(); iter.hasNext(); ) {
+			Pair<Being,Collection<Being>> pair = iter.next();
+			pair.first.addToGroup(pair.second); // add being to the group
+			iter.remove(); // remove the add from the queue
+		}
+		// resolve the remove queue 
+		for(Iterator<Pair<Being,Collection<Being>>> iter = _removeQueue.iterator(); iter.hasNext(); ) {
+			Pair<Being,Collection<Being>> pair = iter.next();
+			pair.first.removeFromGroup(pair.second); // add being to the group
+			iter.remove(); // remove from the queue
+		}
+		// resolve the delete queue
+		for(Iterator<Being> iter = _deleteQueue.iterator(); iter.hasNext(); ) {
+			iter.next().delete(); // delete the being
+			iter.remove(); // remove from the queue
+		}
 	}
 	
 	/**
