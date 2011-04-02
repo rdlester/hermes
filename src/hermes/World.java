@@ -23,12 +23,14 @@ public abstract class World {
 	
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
+	private List<Collection<Being>> _groupsToUpdate; //used to hold all the being groups to be updated individually
 	
 	@SuppressWarnings("rawtypes")
 	public World() {
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,Collection<Being>>>();
 		_deleteQueue = new LinkedList<Pair<Being,Collection<Being>>>();
+		_groupsToUpdate = new LinkedList<Collection<Being>>();
 	}
 	
 	/**
@@ -74,14 +76,26 @@ public abstract class World {
 			boolean applyImmediate, Optimizer optimizer) {
 		_interactions.add(new Interaction(A, B, inter, applyImmediate, optimizer));
 	}
+	
+	/**
+	 * register a group to have all its beings updated in the loop
+	 * @param grp		the group that contains the beings whose interactions
+	 */
+	public void registerUpdate(Collection<Being> grp) {
+		_groupsToUpdate.add(grp);
+	}
 
 	/**
 	 * runs the update loop
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
-		 
-		// go through the registered interaction in order
+		 // the update loop proceeds in 3 steps:
+		
+		// 1. handle the message queue from the post office
+		// TODO: do this
+		
+		// 2. go through the registered interaction in order
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
 			Collection A = interaction.getA();
@@ -111,6 +125,16 @@ public abstract class World {
 					}
 				}
 			}
+		}
+		
+		// 3. go through the registered groups to update beings individually
+		for(Iterator<Collection<Being>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
+			Collection<Being> grp = iter.next();
+			for(Iterator<Being> iterGrp = grp.iterator(); iterGrp.hasNext(); ) {
+				Being bng = iterGrp.next();
+				bng.update();
+			}
+			
 		}
 	}
 
