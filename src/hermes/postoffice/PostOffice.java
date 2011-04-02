@@ -5,6 +5,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
@@ -26,7 +28,7 @@ import processing.core.*;
  * @author Ryan
  *
  */
-public class PostOffice implements KeyListener, MouseListener, MouseMotionListener {
+public class PostOffice implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 	
 	//OSCPorts for listening and receiving
 	OSCPortIn _receive;
@@ -99,7 +101,11 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portIn - port to receive messages on
 	 * @param portOut - port to send messages on
 	 */
-	public PostOffice(int portIn, int portOut) {
+	public PostOffice(PApplet applet, int portIn, int portOut) {
+		applet.addKeyListener(this);
+		applet.addMouseListener(this);
+		applet.addMouseMotionListener(this);
+		applet.addMouseWheelListener(this);
 		try {
 			_receive = new OSCPortIn(portIn);
 		} catch (SocketException e) {
@@ -172,47 +178,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		
 	}
 
+	/////////////////////////////////////////////////////////////////////////////
 	//Methods defined by implemented interfaces for handling mouse+keyboard input
-	/**
-	 * 
-	 */
-	public void mouseClicked(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * 
-	 */
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * 
-	 */
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * 
-	 */
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	/**
-	 * 
-	 */
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	/**
 	 * Ignore keyTyped events
 	 */
@@ -227,7 +195,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		KeyMessage m = new KeyMessage(key, true);
+		String keyString = KeyEvent.getKeyText(key);
+		KeyMessage m = new KeyMessage(keyString, true);
 		_messageQueue.add(m);
 	}
 
@@ -236,8 +205,48 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
-		KeyMessage m = new KeyMessage(key, false);
+		String keyString = KeyEvent.getKeyText(key);
+		KeyMessage m = new KeyMessage(keyString, false);
 		_messageQueue.add(m);
+	}
+	
+	/**
+	 * Ignore mouseClicked events
+	 */
+	public void mouseClicked(MouseEvent e) {
+		//VOID
+	}
+
+	/**
+	 * On a mouse press, make a new MouseMessage and add it to the queue
+	 */
+	public void mousePressed(MouseEvent e) {
+		e.getButton();
+		e.getX();
+		e.getY();
+	}
+
+	/**
+	 * On a mouse button release, make a new MouseMessage and add it to the queue
+	 */
+	public void mouseReleased(MouseEvent e) {
+		e.getButton();
+		e.getX();
+		e.getY();
+	}
+
+	/**
+	 * Ignore mouseEntered events
+	 */
+	public void mouseEntered(MouseEvent e) {
+		//VOID
+	}
+
+	/**
+	 * Ignore mouseExited events
+	 */
+	public void mouseExited(MouseEvent e) {
+		//VOID
 	}
 
 	/**
@@ -249,9 +258,17 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	}
 
 	/**
-	 * 
+	 * When the mouse is moved, create a MouseMessage and add it to the queue
 	 */
 	public void mouseMoved(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * 
+	 */
+	public void mouseWheelMoved(MouseWheelEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
