@@ -1,4 +1,4 @@
-package src.hermes;
+package src.hermes.postoffice;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
