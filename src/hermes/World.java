@@ -136,35 +136,31 @@ public abstract class World {
 			Interaction interaction = iter.next();
 			Collection A = interaction.getA();
 			Collection B = interaction.getB();
-			if(interaction.getOptimizer() == null) {
-				// if this is a non-optimized interaction
+			if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
 				// perform the O(n^2) calculation on all the groups
 				for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
 					for(Iterator iterB = B.iterator(); iterB.hasNext(); ) {
 						Being being1 = (Being)iterA.next();
 						Being being2 = (Being)iterB.next();
-						// see if an interaction was detected
-						if(interaction.getInteractor().detect(being1, being2)) {
-							if(interaction.isImmediate()) { // if immediate, handle it now
-								synchronized(being1) {
-									synchronized(being2) {
-										interaction.getInteractor().handle(being1, being2);
-									}
-								}
-							} else {//if not immediate, queue detection to handle later
-								detectedInteractionsQ.add(new DetectedInteraction(being1, being2, interaction.getInteractor()));
-							}
-						}
+						this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
 					}
 				} 
-			} else { //TODO: add synchronized on beings, DetectedInteraction queue -- have not yet handled
-				// if this is an optimized interaction
+			} else { // if this is an optimized interaction
 				Optimizer optimizer = interaction.getOptimizer();
-				if(optimizer.isDetectAll()) 
-					optimizer.detectAll(interaction.getInteractor());
-				else {
+				if(optimizer.isDetectAll()) { //get back all pairs of interacting beings
+					for(Iterator<Pair> iterPairs = optimizer.detectAll(interaction.getInteractor()); iterPairs.hasNext(); ) {
+						Pair p = iterPairs.next();
+						Being being1 = (Being)p.getFirst();
+						Being being2 = (Being)p.getSecond();
+						this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
+					}
+				} else { //run through all beings in group A, get back all relevant members in group B
 					for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
-						optimizer.detect((Being)iterA.next(), interaction.getInteractor());
+						Being being1 = (Being)iterA.next();
+						for(Iterator iterB = optimizer.detect(being1, interaction.getInteractor()); iterB.hasNext(); ) {
+							Being being2 = (Being)iterB.next();
+							this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
+						}
 					}
 				}
 			}
@@ -191,6 +187,31 @@ public abstract class World {
 				synchronized(bng) {
 					bng.update();
 				}
+			}
+		}
+	}
+	/**
+	 * checks if an interaction is detected between being1 and being2; if the interaciton
+	 * is immediate, synchronizes on the beings and handles the interaction, otherwise
+	 * adds a new DetectedInteraction object to the detectedInteractionsQ
+	 * @param being1				the first interacting Being
+	 * @param being2				the second interacting Being
+	 * @param interaction			the interaction to detect, handle
+	 * @param detectedInteractionsQ	the aggregation of all detected interactions to be handled
+	 * 								later
+	 */
+	private void interactionHelper(Being being1, Being being2, Interaction interaction, 
+			LinkedList<DetectedInteraction> detectedInteractionsQ) {
+		// see if an interaction was detected
+		if(interaction.getInteractor().detect(being1, being2)) {
+			if(interaction.isImmediate()) { // if immediate, handle it now
+				synchronized(being1) {
+					synchronized(being2) {
+						interaction.getInteractor().handle(being1, being2);
+					}
+				}
+			} else {//if not immediate, queue detection to handle later
+				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction.getInteractor()));
 			}
 		}
 	}
