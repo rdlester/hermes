@@ -12,9 +12,9 @@ import java.util.Collection;
  */
 public abstract class Being {
 
-	public abstract double getX();
-	public abstract double getY();
-	public abstract double getZ();
+	public abstract float getX();
+	public abstract float getY();
+	public abstract float getZ();
 
 	public Being() {
 		groups = new LinkedList<Collection<Being>>();

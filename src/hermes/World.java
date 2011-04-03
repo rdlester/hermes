@@ -190,8 +190,8 @@ public abstract class World extends Thread {
 			if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
 				// perform the O(n^2) calculation on all the groups
 				for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
+					Being being1 = (Being)iterA.next();
 					for(Iterator iterB = B.iterator(); iterB.hasNext(); ) {
-						Being being1 = (Being)iterA.next();
 						Being being2 = (Being)iterB.next();
 						this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
 					}

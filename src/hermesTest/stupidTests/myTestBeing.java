@@ -5,19 +5,19 @@ import src.hermes.*;
 public class myTestBeing extends Being {
 
 	@Override
-	public double getX() {
+	public float getX() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getY() {
+	public float getY() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public double getZ() {
+	public float getZ() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
