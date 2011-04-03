@@ -60,7 +60,7 @@ public abstract class World extends Thread {
 	 * @param being		the being to add
 	 * @param group		the group to add the being to
 	 */
-	public void addBeing(Being being, Collection<Being> group) {
+	public void addBeing(Being being, Collection group) {
 		_addQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
 	}
 	
@@ -69,7 +69,7 @@ public abstract class World extends Thread {
 	 * @param being		the being to remove
 	 * @param group		the group to add the being to
 	 */
-	public void removeBeing(Being being, Collection<Being> group) {
+	public void removeBeing(Being being, Collection group) {
 		_removeQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
 	}
 	
@@ -134,7 +134,7 @@ public abstract class World extends Thread {
 	 * register a group to have all its beings updated in the loop
 	 * @param grp		the group that contains the beings whose interactions
 	 */
-	public void registerUpdate(Collection<Being> grp) {
+	public void registerUpdate(Collection grp) {
 		_groupsToUpdate.add(grp);
 	}
 
