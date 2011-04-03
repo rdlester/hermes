@@ -193,6 +193,8 @@ public abstract class World {
 				}
 			}
 		}
+		
+		resolveGroupQueues();
 	}
 
 	//Basic method to call to know if world is running or not

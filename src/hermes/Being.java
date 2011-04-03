@@ -36,8 +36,11 @@ public abstract class Being {
 	 * @param group		the group to add to
 	 */
 	public void addToGroup(Collection<Being> group) {
-		group.add(this);
-		groups.add(group);
+		// need to lock on the group
+		synchronized(group) {
+			group.add(this);
+			groups.add(group);
+		}
 	}
 	
 	/**
@@ -45,18 +48,25 @@ public abstract class Being {
 	 * @param group		the group to remove from
 	 */
 	public void removeFromGroup(Collection<Being> group) {
-		group.remove(this);
-		groups.remove(group);
+		// need to lock on the group
+		synchronized(group) {
+			group.remove(this);
+			groups.remove(group);
+		}
 	}
 	
 	/**
 	 * removes the being from all containing groups
 	 */
 	public void delete() {
+		// go through all the groups, deleting this being
 		for(Iterator<Collection<Being>> iter = groups.iterator(); iter.hasNext(); ) {
 			Collection<Being> group = iter.next();
-			group.remove(this);
-			iter.remove();
+			// need to lock on the group
+			synchronized(group) {
+				group.remove(this);
+				iter.remove();
+			}
 		}
 	}
 	
