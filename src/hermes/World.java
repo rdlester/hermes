@@ -189,6 +189,8 @@ public abstract class World {
 				}
 			}
 		}
+		
+		resolveGroupQueues();
 	}
 	/**
 	 * checks if an interaction is detected between being1 and being2; if the interaciton
