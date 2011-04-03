@@ -5,7 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 //TODO: remove thisis just a test
+
+import src.hermes.postoffice.*;
 
 
 /**
@@ -27,6 +30,7 @@ public abstract class World {
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
 	private List<Collection<Being>> _groupsToUpdate; //used to hold all the being groups to be updated individually
+	
 	
 	@SuppressWarnings("rawtypes")
 	public World() {
@@ -128,7 +132,6 @@ public abstract class World {
 		 // the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
-		// TODO: do this
 		
 		// 2. go through the registered interaction in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
@@ -202,6 +205,7 @@ public abstract class World {
 	 * @param detectedInteractionsQ	the aggregation of all detected interactions to be handled
 	 * 								later
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void interactionHelper(Being being1, Being being2, Interaction interaction, 
 			LinkedList<DetectedInteraction> detectedInteractionsQ) {
 		// see if an interaction was detected

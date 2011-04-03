@@ -35,6 +35,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	OSCPortOut _send;
 	OSCListener _listener;
 	
+	//Map that associates the subscriptions with the Message they want to receive
+	HashMap<Message, Subscription> _subscriptions;
+	
+
+	ConcurrentLinkedQueue<Message> _messageQueue;
+	
 	/**
 	 * Implementation of OCSListener that turns illposed messages into our messages
 	 */
@@ -52,9 +58,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 	
-	//Map that associates the subscriptions with the Message they want to receive
-	HashMap<Message, Subscription> _subscriptions;
-	
 	/**
 	 * Helper class to hold subscriptions
 	 */
@@ -68,7 +71,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 	
-	ConcurrentLinkedQueue<Message> _messageQueue;
 	
 	/**
 	 * Constructor for illposed's default port out
