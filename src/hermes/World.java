@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
 import java.util.Queue;
-//TODO: remove thisis just a test
 
 
 /**
@@ -15,14 +14,15 @@ import java.util.Queue;
  * User creates the necessary Beings, Interactors, and Optimizers in setup
  * The other functions are implemented by us; we handle the running and drawing of the world
  */
-public abstract class World {
+public abstract class World extends Thread {
 
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<Being,Collection<Being>>> _addQueue;
 	private LinkedList<Pair<Being,Collection<Being>>> _removeQueue;
 	private LinkedList<Being> _deleteQueue;
 	
-	Camera _camera; // the camera
+	private Camera _camera; // the camera
+	private boolean _active = false; // whether the world is currently runing
 	
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
@@ -36,6 +36,23 @@ public abstract class World {
 		_deleteQueue = new LinkedList<Being>();
 		_groupsToUpdate = new LinkedList<Collection<Being>>();
 	}
+	
+	/**
+	 * @return	whether the world is currently running
+	 */
+	public boolean isActive() {
+		return _active;
+	}
+	
+	/**
+	 * tells the world to stop running
+	 * you should always use this to terminate the world (not world.stop(),
+	 *	which is inherited from Thread)
+	 */
+	public void deActivate() {
+		_active = false;
+	}
+
 	
 	/**
 	 * queues a being to be added to a group at the end of an update
@@ -123,9 +140,43 @@ public abstract class World {
 	/**
 	 * runs the update loop
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void run() {
-		 // the update loop proceeds in 3 steps:
+		setup();
+		_active = true;
+		while(_active) {
+			preUpdate();
+			update();
+			postUpdate();
+		}
+		cleanup();
+	}
+	
+	/**
+	 * will be called once when the world is run, before the update loop
+	 */
+	public abstract void setup();
+	
+	/**
+	 * will be called once the world has finished running
+	 */
+	public abstract void cleanup();
+	
+	/**
+	 * will be executed on each loop before update is called
+	 */
+	public abstract void preUpdate();
+	
+	/**
+	 * will be executed on each loop after update is called
+	 */
+	public abstract void postUpdate();
+	
+	/**
+	 * executes the update loop
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void update() {
+		// the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
 		// TODO: do this
@@ -195,11 +246,6 @@ public abstract class World {
 		}
 		
 		resolveGroupQueues();
-	}
-
-	//Basic method to call to know if world is running or not
-	public boolean getState() {
-		return false;
 	}
 
 	//Called by God's draw method to
