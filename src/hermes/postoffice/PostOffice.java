@@ -172,11 +172,26 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	}
 	
 	/**
-	 * Runs PostOffice
-	 * Waits for events, and adds them to a queue for handling
-	 * Events are handled after an update loop has finished
+	 * Command that sends all messages queued by the PostOffice to subscribers
 	 */
-	public void run() {
+	public void checkMail() {
+		ConcurrentLinkedQueue<Message> received = _messageQueue;
+		_messageQueue = new ConcurrentLinkedQueue<Message>();
+		
+		while(received.size() != 0) {
+			Message m = received.remove();
+			Subscription subscriber = _subscriptions.get(m);
+			if(subscriber != null) {
+				Collection g = subscriber._group;
+				subscriber._handler.handleMessage(g, m);
+			}
+		}
+	}
+	
+	/**
+	 * Sends a provided message out into the world
+	 */
+	public void sendMail(OscMessage m) {
 		
 	}
 
