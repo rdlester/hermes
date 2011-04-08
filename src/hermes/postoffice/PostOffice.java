@@ -238,18 +238,16 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * On a mouse press, make a new MouseMessage and add it to the queue
 	 */
 	public void mousePressed(MouseEvent e) {
-		e.getButton();
-		e.getX();
-		e.getY();
+		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		_messageQueue.add(m);
 	}
 
 	/**
 	 * On a mouse button release, make a new MouseMessage and add it to the queue
 	 */
 	public void mouseReleased(MouseEvent e) {
-		e.getButton();
-		e.getX();
-		e.getY();
+		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		_messageQueue.add(m);
 	}
 
 	/**
@@ -270,7 +268,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * 
 	 */
 	public void mouseDragged(MouseEvent e) {
-		// TODO Auto-generated method stub
+		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		_messageQueue.add(m);
 		
 	}
 
@@ -278,7 +277,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is moved, create a MouseMessage and add it to the queue
 	 */
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		_messageQueue.add(m);
 		
 	}
 
@@ -286,7 +286,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * 
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		// TODO Auto-generated method stub
-		
+		MouseWheelMessage m = new MouseWheelMessage(e.getWheelRotation());
+		_messageQueue.add(m);
 	}
 }
