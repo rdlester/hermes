@@ -29,20 +29,31 @@ import processing.core.*;
 public class PostOffice implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 	
 	//OSCPorts for listening and receiving
-	OSCPortIn _receive;
-	OSCPortOut _send;
-	OSCListener _listener;
+	private OSCPortIn _receive;
+	private OSCPortOut _send;
+	private OSCListener _listener;
 	
 	//Map that associates the subscriptions with the Message they want to receive
-	HashMap<Message, ArrayList<Subscription>> _subscriptions;
+	private HashMap<Message, ArrayList<Subscription>> _subscriptions;
 	
 	//Stores messages as they are received, which are then picked off by checkMail()
-	ConcurrentLinkedQueue<Message> _messageQueue;
+	private ConcurrentLinkedQueue<Message> _messageQueue;
 	
 	/**
 	 * Implementation of OCSListener that turns illposed messages into our messages
 	 */
 	class PostOfficeOSCListener implements OSCListener {
+		
+		//Reference to containing post office
+		PostOffice _p;
+		
+		/**
+		 * Constructor passes in reference to containing post office
+		 */
+		protected PostOfficeOSCListener(PostOffice p) {
+			_p = p;
+		}
+		
 		/**
 		 * Handles a received message
 		 * Converts it from illposed to our message
@@ -50,7 +61,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		 */
 		public void acceptMessage(Date time, OSCMessage message) {
 			OscMessage m = new OscMessage(message);
-			_messageQueue.add(m);
+			_p._messageQueue.add(m);
 		}
 	}
 	
@@ -82,6 +93,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
+			_receive.startListening();
 		} catch (SocketException e) {
 			System.err.println("OSC Port In on " + portIn + " could not start");
 			e.printStackTrace();
@@ -95,7 +107,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		_listener = new PostOfficeOSCListener();
+		_listener = new PostOfficeOSCListener(this);
 		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message, ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
@@ -116,6 +128,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
+			_receive.startListening();
 		} catch (SocketException e) {
 			System.err.println("OSC Port In on " + portIn + " could not start");
 			e.printStackTrace();
@@ -129,7 +142,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			System.err.println("OSC Port Out on " + portOut + " could not start");
 			e.printStackTrace();
 		}
-		_listener = new PostOfficeOSCListener();
+		_listener = new PostOfficeOSCListener(this);
 		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message,ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
@@ -151,6 +164,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
+			_receive.startListening();
 		} catch (SocketException e) {
 			System.err.println("OSC Port In on " + portIn + " could not start");
 			e.printStackTrace();
@@ -164,7 +178,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			System.err.println("OSC Port Out on " + portOut + " could not start");
 			e.printStackTrace();
 		}
-		_listener = new PostOfficeOSCListener();
+		_listener = new PostOfficeOSCListener(this);
 		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message, ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
@@ -172,25 +186,29 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	/**
 	 * Testing constructor - DO NOT USE
+	 * Listens on 8000
+	 * Sends on 8080
 	 */
 	public PostOffice() {
 		//Start OSC to listen on 8000 and output on 8080, same as monome
 		try {
-			_receive = new OSCPortIn(8080);
+			_receive = new OSCPortIn(8000);
+			_receive.startListening();
 		} catch (SocketException e) {
-			System.err.println("OSC Port In on 8080 could not start");
+			System.err.println("OSC Port In on 8000 could not start");
 			e.printStackTrace();
 		}
 		try {
-			_send = new OSCPortOut(InetAddress.getLocalHost(), 8000);
+			_send = new OSCPortOut(InetAddress.getLocalHost(), 8080);
 		} catch (UnknownHostException e) {
-			System.err.println("OSC Port Out on 8000 could not start");
+			System.err.println("OSC Port Out on 8080 could not start");
 			e.printStackTrace();
 		} catch (SocketException e) {
-			System.err.println("OSC Port Out on 8000 could not start");
+			System.err.println("OSC Port Out on 8080 could not start");
 			e.printStackTrace();
 		}
-		_listener = new PostOfficeOSCListener();
+		_listener = new PostOfficeOSCListener(this);
+		_receive.addListener("/test", _listener);
 		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message, ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
@@ -215,6 +233,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			ArrayList<Subscription> subscriptionList = new ArrayList<Subscription>();
 			subscriptionList.add(newSubscription);
 			_subscriptions.put(check, subscriptionList);
+		}
+		if(check instanceof OscMessage) {
+			OscMessage osc = (OscMessage) check;
+			_receive.addListener(osc.getAddress(), _listener);
 		}
 	}
 	
