@@ -55,7 +55,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	}
 	
 	/**
-	 * Helper class to hold subscriptions
+	 * Helper struct to hold subscriptions
 	 */
 	class Subscription {
 		Collection _group;
@@ -70,13 +70,20 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	/**
 	 * Constructor for illposed's default port out
+	 * @param applet - Top Processing PApplet running the PostOffice 
 	 * @param portIn - port to receive messages on
 	 */
-	public PostOffice(int portIn) {
+	public PostOffice(PApplet applet, int portIn) {
+		//Set PostOffice to listen for events
+		applet.addKeyListener(this);
+		applet.addMouseListener(this);
+		applet.addMouseMotionListener(this);
+		applet.addMouseWheelListener(this);
+		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port In on " + portIn + " could not start");
 			e.printStackTrace();
 		}
 		try {
@@ -89,66 +96,102 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			e.printStackTrace();
 		}
 		_listener = new PostOfficeOSCListener();
-		
+		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message,Subscription>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
 	/**
 	 * Constructor that defines location to send to on localhost
+	 * @param applet - Top Processing PApplet running the PostOffice
 	 * @param portIn - port to receive messages on
 	 * @param portOut - port to send messages on
 	 */
 	public PostOffice(PApplet applet, int portIn, int portOut) {
+		//Set PostOffice to listen for events
 		applet.addKeyListener(this);
 		applet.addMouseListener(this);
 		applet.addMouseMotionListener(this);
 		applet.addMouseWheelListener(this);
+		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port In on " + portIn + " could not start");
 			e.printStackTrace();
 		}
 		try {
 			_send = new OSCPortOut(InetAddress.getLocalHost(),portOut);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port Out on " + portOut + " could not start");
 			e.printStackTrace();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port Out on " + portOut + " could not start");
 			e.printStackTrace();
 		}
 		_listener = new PostOfficeOSCListener();
-		
+		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message,Subscription>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
 	/**
 	 * Constructor for PostOffice that sends messages to non-local address
+	 * @param applet - Top Processing PApplet running the PostOffice
 	 * @param portIn - port to receive messages on
 	 * @param portOut - port to send messages on
 	 * @param netAddress - url of location to send messages to
 	 */
-	public PostOffice(int portIn, int portOut, String netAddress) {
+	public PostOffice(PApplet applet, int portIn, int portOut, String netAddress) {
+		//Set PostOffice to listen for events
+		applet.addKeyListener(this);
+		applet.addMouseListener(this);
+		applet.addMouseMotionListener(this);
+		applet.addMouseWheelListener(this);
+		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port In on " + portIn + " could not start");
 			e.printStackTrace();
 		}
 		try {
 			_send = new OSCPortOut(InetAddress.getByName(netAddress), portOut);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port Out on " + portOut + " could not start");
 			e.printStackTrace();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
+			System.err.println("OSC Port Out on " + portOut + " could not start");
 			e.printStackTrace();
 		}
 		_listener = new PostOfficeOSCListener();
-		
+		//Initialize subscription list and message queue
+		_subscriptions = new HashMap<Message,Subscription>();
+		_messageQueue = new ConcurrentLinkedQueue<Message>();
+	}
+	
+	/**
+	 * Testing constructor - DO NOT USE
+	 */
+	public PostOffice() {
+		//Start OSC to listen on 8000 and output on 8080
+		try {
+			_receive = new OSCPortIn(8080);
+		} catch (SocketException e) {
+			System.err.println("OSC Port In on 8080 could not start");
+			e.printStackTrace();
+		}
+		try {
+			_send = new OSCPortOut(InetAddress.getLocalHost(), 8000);
+		} catch (UnknownHostException e) {
+			System.err.println("OSC Port Out on 8000 could not start");
+			e.printStackTrace();
+		} catch (SocketException e) {
+			System.err.println("OSC Port Out on 8000 could not start");
+			e.printStackTrace();
+		}
+		_listener = new PostOfficeOSCListener();
+		//Initialize subscription list and message queue
 		_subscriptions = new HashMap<Message,Subscription>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
