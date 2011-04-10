@@ -11,15 +11,15 @@ public class MouseMessage implements Message {
 	//Button clicked in message
 	//Get buttons from MouseEvent, 1 is button 1, etc.
 	//0 is no buttons
-	int _buttonClicked;
-	//locations
-	int _x, _y;
+	private int _buttonClicked;
+	//Locations
+	private int _x, _y;
 	
 	//Constants representing mouseclicks
-	int NOBUTTON = MouseEvent.NOBUTTON;
-	int BUTTON1 = MouseEvent.BUTTON1;
-	int BUTTON2 = MouseEvent.BUTTON2;
-	int BUTTON3 = MouseEvent.BUTTON3;
+	public static int NOBUTTON = MouseEvent.NOBUTTON;
+	public static int BUTTON1 = MouseEvent.BUTTON1;
+	public static int BUTTON2 = MouseEvent.BUTTON2;
+	public static int BUTTON3 = MouseEvent.BUTTON3;
 	
 	/**
 	 * Creates a new MouseMessage

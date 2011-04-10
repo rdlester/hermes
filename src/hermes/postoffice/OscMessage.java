@@ -11,9 +11,9 @@ import com.illposed.osc.*;
 public class OscMessage implements Message {
 	
 	//Address of OSCMessage
-	String _address;
+	private String _address;
 	//Contents of OSCMessage
-	Object[] _contents;
+	private Object[] _contents;
 	
 	/**
 	 * Basic constructor for unpacked OSCMessage

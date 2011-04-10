@@ -9,7 +9,7 @@ package src.hermes.postoffice;
 public class MouseWheelMessage implements Message {
 	
 	//Represents amount to scroll
-	int _wheelRotation;
+	private int _wheelRotation;
 	
 	/**
 	 * Creates a new MouseWheelMessage
