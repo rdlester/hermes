@@ -1,0 +1,139 @@
+package src.hermes;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+/**
+ * defines a generic "group" that wraps a collection of beings
+ * @author Sam
+ *
+ * @param <A>	the type of the beings in the group
+ * @param <B>	the type of underlying collection used
+ */
+public class GenericGroup<A extends Being, B extends Collection<A>> {
+
+	private B _beings;		// the underlying collection
+	private World _world;	// the world containing the groups
+	
+	/**
+	 * instantiates a group storing beings in a given collection
+	 * 	@param beings	the collection beings will be stored in
+	 */
+	public GenericGroup(B beings, World world) {
+		_beings = beings;
+		_world = world;
+	}
+	
+	/**
+	 * returns the underlying collection containing all beings in the group
+	 * WARNING -- DO NOT ADD TO OR REMOVE FROM THIS COLLECTION DIRECTLY DURING THE UPDATE LOOP
+	 * @return	the beings
+	 */
+	public B getBeings() {
+		return _beings;
+	}
+	
+	/**
+	 * an iterator over the underlying collection
+	 * WARNING -- DO NOT REMOVE BEINGS USING Iterator.remove()
+	 * @return	an iterator
+	 */
+	public Iterator<A> iterator() {
+		return getBeings().iterator();
+	}
+	
+	/**
+	 * calls the update method of all beings in the group
+	 */
+	protected void updateAll() {
+		for(Iterator<A> iter = _beings.iterator(); iter.hasNext(); ) {
+			Being being = iter.next();
+			synchronized(being) {
+				being.update();
+			}
+		}
+	}
+
+	/**
+	 * performs an update on the group
+	 */
+	public void update() {
+		updateAll();
+	}
+
+	/**
+	 * adds a being to a group at the end of the next update loop
+	 * @param being		the being to add
+	 * @return			the added being
+	 */
+	public A add(A being) {
+		_world.addBeing(being, this);
+		return being;
+	}
+	
+	/**
+	 * removes a being from the group at the end of the next update loop
+	 * @param being		the being to remove
+	 * @return			the removed being
+	 */
+	public A remove(A being) {
+		_world.removeBeing(being, this);
+		return being;
+	}
+	
+	/**
+	 * adds the contents of another group to this group
+	 * will always be O(n) regardless of the underlying collection
+	 * @param group		the beings to add
+	 */
+	public void addAll(GenericGroup<A,?> group) {
+		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
+			_world.addBeing(iter.next(), this);
+		}
+	}
+	
+	/**
+	 * removes the contents of a group from this group
+	 * @param group		the beings to remove
+	 */
+	public void removeAll(GenericGroup<A,?> group) {
+		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
+			_world.removeBeing(iter.next(), this);
+		}
+	}
+	
+	/**
+	 * clears everything from the group at the end of the update
+	 * this will always be O(n), regardless of the underlying collection
+	 */
+	public void clear() {
+		for(Iterator<A> iter = iterator(); iter.hasNext(); ){
+			_world.removeBeing(iter.next(), this);
+		}
+	}
+	
+	/**
+	 * @return	the number of beings contained
+	 */
+	public int size() {
+		return _beings.size();
+	}
+	
+	public void setWorld(World world) {
+		this._world = world;
+	}
+
+	public World getWorld() {
+		return _world;
+	}
+	
+}
+/*
+class BackedGroup<A extends Being> extends GenericGroup<A, Collection<A>>{
+
+	public BackedGroup(Collection<A> beings) {
+		super(beings);
+	}
+	
+}*/

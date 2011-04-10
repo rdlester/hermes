@@ -11,9 +11,9 @@ public class myTestWorld extends World {
 		ArrayList<myTestBeing> group = new ArrayList<myTestBeing>();
 		ArrayList<myTestBeing> group2 = new ArrayList<myTestBeing>();
 		group.add(new myTestBeing());
-		group2.add(new myTestBeing());
-		group2.add(new myTestBeing());
-		registerInteraction(group, group2, 
+		group.add(new myTestBeing());
+		group.add(new myTestBeing());
+		registerInteraction(group, group, 
 				new myTestInteractor(), true);
 	}
 

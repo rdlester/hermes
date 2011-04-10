@@ -1,6 +1,6 @@
 package src.hermes;
 
-import java.util.Collection;;
+import java.util.Collection;
 
  /**
  * used to update Beings
