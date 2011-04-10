@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
-
+import processing.core.*;
 
 
 /**
@@ -15,6 +15,8 @@ import java.util.Collection;
  * The other functions are implemented by us; we handle the running and drawing of the world
  */
 public abstract class World extends Thread {
+	
+	private PApplet _parentApplet; //active PApplet sketch
 
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _addQueue;
@@ -30,7 +32,15 @@ public abstract class World extends Thread {
 	
 	
 	@SuppressWarnings("rawtypes")
-	public World() {
+	public World(PApplet parentApplet) {
+		
+		//Ensure the user has provided a PApplet using 
+		if (Hermes.getPApplet() != null) {
+			_parentApplet = Hermes.getPApplet();
+		} else {
+			throw new NullPointerException("Null PApplet Error: \nOur library needs to have access to you Processing sketch \nPlease call 'Hermes.setPApplet(this);' before instantiating any worlds"); 
+		}
+		
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
 		_removeQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();

@@ -2,6 +2,7 @@ package src.hermes.postoffice;
 
 /**
  * Message representing a key stroke
+ * The type of the key message is determined by the key it corresponds to
  */
 public class KeyMessage implements Message {
 
@@ -35,11 +36,13 @@ public class KeyMessage implements Message {
 		return _isPressed;
 	}
 	
-	//Checks for equality of KeyMessage
+	/**
+	 * Checks for equality of KeyMessage
+	 */
 	public boolean equals(Object o) {
 		if(o instanceof KeyMessage) {
 			KeyMessage m = (KeyMessage) o;
-			if(this.getKey() == m.getKey()) return true;
+			if(this.getKey().equals(m.getKey())) return true;
 		}
 		return false;
 	}
