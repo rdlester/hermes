@@ -34,7 +34,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	OSCListener _listener;
 	
 	//Map that associates the subscriptions with the Message they want to receive
-	HashMap<Message, Subscription> _subscriptions;
+	HashMap<Message, ArrayList<Subscription>> _subscriptions;
 	
 	//Stores messages as they are received, which are then picked off by checkMail()
 	ConcurrentLinkedQueue<Message> _messageQueue;
@@ -97,7 +97,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		_listener = new PostOfficeOSCListener();
 		//Initialize subscription list and message queue
-		_subscriptions = new HashMap<Message,Subscription>();
+		_subscriptions = new HashMap<Message, ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
@@ -131,7 +131,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		_listener = new PostOfficeOSCListener();
 		//Initialize subscription list and message queue
-		_subscriptions = new HashMap<Message,Subscription>();
+		_subscriptions = new HashMap<Message,ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
@@ -166,7 +166,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		_listener = new PostOfficeOSCListener();
 		//Initialize subscription list and message queue
-		_subscriptions = new HashMap<Message,Subscription>();
+		_subscriptions = new HashMap<Message, ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
@@ -192,7 +192,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		_listener = new PostOfficeOSCListener();
 		//Initialize subscription list and message queue
-		_subscriptions = new HashMap<Message,Subscription>();
+		_subscriptions = new HashMap<Message, ArrayList<Subscription>>();
 		_messageQueue = new ConcurrentLinkedQueue<Message>();
 	}
 	
@@ -207,7 +207,15 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void registerSubscription(Collection<?> g, MessageHandler<?> handler, Message check) {
 		Subscription newSubscription = new Subscription(g,handler);
-		_subscriptions.put(check, newSubscription);
+		if(_subscriptions.containsKey(check)) {
+			ArrayList<Subscription> subscriptionList = _subscriptions.get(check);
+			subscriptionList.add(newSubscription);
+		}
+		else {
+			ArrayList<Subscription> subscriptionList = new ArrayList<Subscription>();
+			subscriptionList.add(newSubscription);
+			_subscriptions.put(check, subscriptionList);
+		}
 	}
 	
 	/**
@@ -219,11 +227,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		
 		while(received.size() != 0) {
 			Message m = received.remove();
-			Subscription subscriber = _subscriptions.get(m);
-			if(subscriber != null) {
-				Collection<?> g = subscriber._group;
-				MessageHandler h = subscriber._handler;
-				h.handleMessage(g, m);
+			ArrayList<Subscription> subscribers = _subscriptions.get(m);
+			if(subscribers != null) {
+				for(Subscription s : subscribers) {
+					Collection<?> g = s._group;
+					MessageHandler h = s._handler;
+					h.handleMessage(g, m);
+				}
 			}
 		}
 	}
@@ -319,6 +329,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 
 	///////////////////////////////
 	//Get changes in mouse location
+	
+	//TODO What is the difference between mouseDragged and mouseMoved?
 	/**
 	 * When the mouse is dragged, create a MouseMessage and add it to the group
 	 */
