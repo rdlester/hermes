@@ -331,7 +331,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is moved, create a MouseMessage and add it to the queue
 	 */
 	public void mouseMoved(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), MouseMessage.MOUSE_MOVED, e.getX(), e.getY(),);
+		MouseMessage m  = new MouseMessage(e.getButton(), MouseMessage.MOUSE_MOVED, e.getX(), e.getY());
 		_messageQueue.add(m);
 		
 	}

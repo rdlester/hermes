@@ -42,7 +42,7 @@ public class KeyMessage implements Message {
 	public boolean equals(Object o) {
 		if(o instanceof KeyMessage) {
 			KeyMessage m = (KeyMessage) o;
-			if(this.getKey() == m.getKey()) return true;
+			if(this.getKey().equals(m.getKey())) return true;
 		}
 		return false;
 	}

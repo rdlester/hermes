@@ -52,7 +52,6 @@ public class MouseMessage implements Message {
 	public int getButton() {
 		return _buttonClicked;
 	}
-	
 	/**
 	 * Gets the action designated by the event
 	 * Use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED
