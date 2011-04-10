@@ -30,10 +30,6 @@ public class Camera {
 	}
 	
 	
-
-	
-	
-	
 	// translates from world coordinates to screen coordinates
 	Pair<Integer,Integer> worldToScreenCoors(float x, float y) {
 		return null;
