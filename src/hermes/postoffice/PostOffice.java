@@ -58,10 +58,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Helper struct to hold subscriptions
 	 */
 	class Subscription {
-		Collection _group;
-		MessageHandler _handler;
+		Collection<?> _group;
+		MessageHandler<?> _handler;
 		
-		protected Subscription(Collection group, MessageHandler handler) {
+		protected Subscription(Collection<?> group, MessageHandler<?> handler) {
 			group = _group;
 			handler = _handler;
 		}
@@ -174,7 +174,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Testing constructor - DO NOT USE
 	 */
 	public PostOffice() {
-		//Start OSC to listen on 8000 and output on 8080
+		//Start OSC to listen on 8000 and output on 8080, same as monome
 		try {
 			_receive = new OSCPortIn(8080);
 		} catch (SocketException e) {
@@ -199,13 +199,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	/**
 	 * Registers a subscription with the PostOffice
 	 * Subscriptions to key messages subscribe to press and release events from a particular key
-	 * Subscriptions to mouse messages TODO
+	 * Subscriptions to mouse messages
 	 * Subscriptions to OSC messages subscribe to all messages sent on a specific address
 	 * @param g - Subscribing group
 	 * @param handler - the MessageHandler that contains the logic needed to react to a received message
 	 * @param check - the particular message type the group is subscribing to
 	 */
-	public void registerSubscription(Collection g, MessageHandler handler, Message check) {
+	public void registerSubscription(Collection<?> g, MessageHandler<?> handler, Message check) {
 		Subscription newSubscription = new Subscription(g,handler);
 		_subscriptions.put(check, newSubscription);
 	}
@@ -221,8 +221,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			Message m = received.remove();
 			Subscription subscriber = _subscriptions.get(m);
 			if(subscriber != null) {
-				Collection g = subscriber._group;
-				subscriber._handler.handleMessage(g, m);
+				Collection<?> g = subscriber._group;
+				MessageHandler h = subscriber._handler;
+				h.handleMessage(g, m);
 			}
 		}
 	}
@@ -240,6 +241,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 
+	/**
+	 * Picks message off queue - FOR TESTING ONLY, DO NOT USE
+	 */
+	public Message popQueue() {
+		return _messageQueue.poll();
+	}
+	
 	/////////////////////////////////////////////////////////////////////////////
 	//Methods defined by implemented interfaces for handling mouse+keyboard input
 	
@@ -286,14 +294,14 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * On a mouse press, make a new MouseMessage and add it to the queue
 	 */
 	public void mousePressed(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(e.getButton(), MouseMessage.MOUSE_PRESSED, e.getX(), e.getY());
 		_messageQueue.add(m);
 	}
 	/**
 	 * On a mouse button release, make a new MouseMessage and add it to the queue
 	 */
 	public void mouseReleased(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(e.getButton(), MouseMessage.MOUSE_RELEASED, e.getX(), e.getY());
 		_messageQueue.add(m);
 	}
 	/**
@@ -315,7 +323,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is dragged, create a MouseMessage and add it to the group
 	 */
 	public void mouseDragged(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(e.getButton(), MouseMessage.MOUSE_DRAGGED, e.getX(), e.getY());
 		_messageQueue.add(m);
 		
 	}
@@ -323,7 +331,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is moved, create a MouseMessage and add it to the queue
 	 */
 	public void mouseMoved(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(e.getButton(), MouseMessage.MOUSE_MOVED, e.getX(), e.getY(),);
 		_messageQueue.add(m);
 		
 	}

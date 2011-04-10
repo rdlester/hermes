@@ -29,7 +29,7 @@ public class MouseMessage implements Message {
 	public static int MOUSE_PRESSED = MouseEvent.MOUSE_PRESSED;
 	public static int MOUSE_RELEASED = MouseEvent.MOUSE_RELEASED;
 	public static int MOUSE_DRAGGED = MouseEvent.MOUSE_DRAGGED;
-	public static in MOUSE_MOVED = MouseEvent.MOUSE_CLICKED;
+	public static int MOUSE_MOVED = MouseEvent.MOUSE_CLICKED;
 	
 	/**
 	 * Creates a new MouseMessage
