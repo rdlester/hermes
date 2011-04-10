@@ -14,7 +14,7 @@ public abstract class Collider<A extends Being, B extends Being> implements Inte
 	}
 
 	// handles an interaction between A and B
-	abstract void handleCollision(A being1, B being2);
+	public abstract void handleCollision(A being1, B being2);
 
 }
 
