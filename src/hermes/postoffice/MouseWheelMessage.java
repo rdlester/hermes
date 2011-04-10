@@ -2,9 +2,7 @@ package src.hermes.postoffice;
 
 /**
  * Message representing a movement of the Mouse Wheel
- * There are two types of wheel messages:
- * Up messages (rotation amounts that are negative)
- * Down messages (rotation amounts that are positive)
+ * All MouseWheelMessages are of the same type
  */
 public class MouseWheelMessage implements Message {
 	
@@ -30,10 +28,7 @@ public class MouseWheelMessage implements Message {
 	 * Checks for the equality of MouseWheelMessage types
 	 */
 	public boolean equals(Object o) {
-		if(o instanceof MouseWheelMessage) {
-			MouseWheelMessage m = (MouseWheelMessage) o;
-			if(m.getWheelRotation() * this.getWheelRotation() > 0) return true;
-		}
+		if(o instanceof MouseWheelMessage) return true;
 		return false;
 	}
 }
