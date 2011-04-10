@@ -25,8 +25,6 @@ import processing.core.*;
  * Listens for and sends OSC, mouse, and keyboard messages
  * Tells subscribers of a specific type of message when one is received
  * and passes on information stored in message to subscriber
- * @author Ryan
- *
  */
 public class PostOffice implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
 	
@@ -38,7 +36,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	//Map that associates the subscriptions with the Message they want to receive
 	HashMap<Message, Subscription> _subscriptions;
 	
-
+	//Stores messages as they are received, which are then picked off by checkMail()
 	ConcurrentLinkedQueue<Message> _messageQueue;
 	
 	/**
@@ -51,9 +49,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		 * Adds it to queue
 		 */
 		public void acceptMessage(Date time, OSCMessage message) {
-			String address = message.getAddress();
-			Object[] contents = message.getArguments();
-			OscMessage m = new OscMessage(address,contents);
+			OscMessage m = new OscMessage(message);
 			_messageQueue.add(m);
 		}
 	}
@@ -192,11 +188,20 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends a provided message out into the world
 	 */
 	public void sendMail(OscMessage m) {
-		
+		OSCMessage mail = m.toIllposed();
+		try {
+			_send.send(mail);
+		}
+		catch(Exception e) {
+			System.err.println("Error sending message on " + m.getAddress() + "!");
+		}
 	}
 
 	/////////////////////////////////////////////////////////////////////////////
 	//Methods defined by implemented interfaces for handling mouse+keyboard input
+	
+	/////////////////////
+	//Get keyboard events
 	
 	/**
 	 * Ignore keyTyped events
@@ -204,7 +209,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public void keyTyped(KeyEvent e) {
 		//VOID
 	}
-
 	/**
 	 * On a key press, make a new KeyMessage and add it to the queue
 	 * Note: keyPressed events will repeat at rate set by OS if key is held down
@@ -216,7 +220,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		KeyMessage m = new KeyMessage(keyString, true);
 		_messageQueue.add(m);
 	}
-
 	/**
 	 * On a key release, make a new KeyMessage and add it to the queue
 	 */
@@ -227,13 +230,15 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_messageQueue.add(m);
 	}
 	
+	///////////////////////////////
+	//Get mouse clicks and releases
+	
 	/**
 	 * Ignore mouseClicked events
 	 */
 	public void mouseClicked(MouseEvent e) {
 		//VOID
 	}
-
 	/**
 	 * On a mouse press, make a new MouseMessage and add it to the queue
 	 */
@@ -241,7 +246,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
 		_messageQueue.add(m);
 	}
-
 	/**
 	 * On a mouse button release, make a new MouseMessage and add it to the queue
 	 */
@@ -249,14 +253,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
 		_messageQueue.add(m);
 	}
-
 	/**
 	 * Ignore mouseEntered events
 	 */
 	public void mouseEntered(MouseEvent e) {
 		//VOID
 	}
-
 	/**
 	 * Ignore mouseExited events
 	 */
@@ -264,15 +266,16 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		//VOID
 	}
 
+	///////////////////////////////
+	//Get changes in mouse location
 	/**
-	 * 
+	 * When the mouse is dragged, create a MouseMessage and add it to the group
 	 */
 	public void mouseDragged(MouseEvent e) {
 		MouseMessage m  = new MouseMessage(e.getButton(), e.getX(), e.getY());
 		_messageQueue.add(m);
 		
 	}
-
 	/**
 	 * When the mouse is moved, create a MouseMessage and add it to the queue
 	 */
@@ -282,8 +285,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		
 	}
 
+	//////////////////////////
+	//Get mouse wheel movement
 	/**
-	 * 
+	 * When the mouse wheel is moved, create a MouseWheelMessage and add it to the queue
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		MouseWheelMessage m = new MouseWheelMessage(e.getWheelRotation());
