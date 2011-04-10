@@ -7,13 +7,13 @@ import java.util.Collection;
  */
 public class Interaction<A extends Being, B extends Being> {
 
-	private Collection<A> a;
-	private Collection<B> b;
+	private GenericGroup<A,?> a;
+	private GenericGroup<B,?> b;
 	private Interactor<A,B> interactor;
 	private Optimizer<A,B> optimizer;
 	private boolean immediate;
 	
-	public Interaction(Collection<A> a, Collection<B> b, Interactor<A,B> interactor, 
+	public Interaction(GenericGroup<A,?> a, GenericGroup<B,?> b, Interactor<A,B> interactor, 
 			boolean immediate, Optimizer<A,B> optimizer) {
 		this.a = a;
 		this.b = b;
@@ -26,11 +26,11 @@ public class Interaction<A extends Being, B extends Being> {
 		return immediate;
 	}
 	
-	public Collection<A> getA() {
+	public GenericGroup<A,?> getA() {
 		return a;
 	}
 	
-	public Collection<B> getB() {
+	public GenericGroup<B,?> getB() {
 		return b;
 	}
 	

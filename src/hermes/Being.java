@@ -15,9 +15,12 @@ public abstract class Being {
 	public abstract float getX();
 	public abstract float getY();
 	public abstract float getZ();
-
+	
+	LinkedList<GenericGroup<?,?>> groups;
+	Shape shape; 
+	
 	public Being() {
-		groups = new LinkedList<Collection<Being>>();
+		groups = new LinkedList<GenericGroup<?,?>>();
 	}
 	
 	/**
@@ -28,17 +31,15 @@ public abstract class Being {
 	 */
 	public abstract void draw(int x, int y);
 	
-	List<Collection<Being>> groups;
-	Shape shape; 
-	
 	/**
 	 * adds the being to the group
 	 * @param group		the group to add to
 	 */
-	public void addToGroup(Collection<Being> group) {
+	@SuppressWarnings("unchecked")
+	public void addToGroup(GenericGroup<?,?> group) {
 		// need to lock on the group
 		synchronized(group) {
-			group.add(this);
+			((GenericGroup<Being,?>)group.getBeings()).add(this);
 			groups.add(group);
 		}
 	}
@@ -47,10 +48,10 @@ public abstract class Being {
 	 * removes the being from this group
 	 * @param group		the group to remove from
 	 */
-	public void removeFromGroup(Collection<Being> group) {
+	public void removeFromGroup(GenericGroup group) {
 		// need to lock on the group
 		synchronized(group) {
-			group.remove(this);
+			group.getBeings().remove(this);
 			groups.remove(group);
 		}
 	}
@@ -60,11 +61,11 @@ public abstract class Being {
 	 */
 	public void delete() {
 		// go through all the groups, deleting this being
-		for(Iterator<Collection<Being>> iter = groups.iterator(); iter.hasNext(); ) {
-			Collection<Being> group = iter.next();
+		for(Iterator<GenericGroup<?,?>> iter = groups.iterator(); iter.hasNext(); ) {
+			GenericGroup<?,?> group = iter.next();
 			// need to lock on the group
 			synchronized(group) {
-				group.remove(this);
+				group.getBeings().remove(this);
 				iter.remove();
 			}
 		}

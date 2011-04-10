@@ -17,8 +17,8 @@ import java.util.Collection;
 public abstract class World extends Thread {
 
 	// these hold add and delete operations until the end of the update
-	private LinkedList<Pair<Being,Collection<Being>>> _addQueue;
-	private LinkedList<Pair<Being,Collection<Being>>> _removeQueue;
+	private LinkedList<Pair<Being,GenericGroup<?,?>>> _addQueue;
+	private LinkedList<Pair<Being,GenericGroup<?,?>>> _removeQueue;
 	private LinkedList<Being> _deleteQueue;
 	
 	private Camera _camera; // the camera
@@ -26,16 +26,16 @@ public abstract class World extends Thread {
 	
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
-	private List<Collection<Being>> _groupsToUpdate; //used to hold all the being groups to be updated individually
+	private LinkedList<GenericGroup<?,?>> _groupsToUpdate; //used to hold all the being groups to be updated individually
 	
 	
 	@SuppressWarnings("rawtypes")
 	public World() {
 		_interactions = new LinkedList<Interaction>();
-		_addQueue = new LinkedList<Pair<Being,Collection<Being>>>();
-		_removeQueue = new LinkedList<Pair<Being,Collection<Being>>>();
+		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
+		_removeQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
 		_deleteQueue = new LinkedList<Being>();
-		_groupsToUpdate = new LinkedList<Collection<Being>>();
+		_groupsToUpdate = new LinkedList<GenericGroup<?,?>>();
 	}
 	
 	/**
@@ -60,8 +60,8 @@ public abstract class World extends Thread {
 	 * @param being		the being to add
 	 * @param group		the group to add the being to
 	 */
-	public void addBeing(Being being, Collection group) {
-		_addQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
+	public void addBeing(Being being, GenericGroup<?,?> group) {
+		_addQueue.addLast(new Pair<Being,GenericGroup<?,?>>(being, group));
 	}
 	
 	/**
@@ -69,8 +69,8 @@ public abstract class World extends Thread {
 	 * @param being		the being to remove
 	 * @param group		the group to add the being to
 	 */
-	public void removeBeing(Being being, Collection group) {
-		_removeQueue.addLast(new Pair<Being,Collection<Being>>(being, group));
+	public void removeBeing(Being being, GenericGroup<?,?> group) {
+		_removeQueue.addLast(new Pair<Being,GenericGroup<?,?>>(being, group));
 	}
 	
 	/**
@@ -86,14 +86,14 @@ public abstract class World extends Thread {
 	 */
 	private void resolveGroupQueues() {
 		// resolve the add queue first
-		for(Iterator<Pair<Being,Collection<Being>>> iter = _addQueue.iterator(); iter.hasNext(); ) {
-			Pair<Being,Collection<Being>> pair = iter.next();
+		for(Iterator<Pair<Being,GenericGroup<?,?>>> iter = _addQueue.iterator(); iter.hasNext(); ) {
+			Pair<Being,GenericGroup<?,?>> pair = iter.next();
 			pair.first.addToGroup(pair.second); // add being to the group
 			iter.remove(); // remove the add from the queue
 		}
 		// resolve the remove queue 
-		for(Iterator<Pair<Being,Collection<Being>>> iter = _removeQueue.iterator(); iter.hasNext(); ) {
-			Pair<Being,Collection<Being>> pair = iter.next();
+		for(Iterator<Pair<Being,GenericGroup<?,?>>> iter = _removeQueue.iterator(); iter.hasNext(); ) {
+			Pair<Being,GenericGroup<?,?>> pair = iter.next();
 			pair.first.removeFromGroup(pair.second); // add being to the group
 			iter.remove(); // remove from the queue
 		}
@@ -113,7 +113,7 @@ public abstract class World extends Thread {
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void registerInteraction(Collection A, Collection B, Interactor inter, 
+	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, 
 			boolean applyImmediate) {
 		_interactions.add(new Interaction(A, B, inter, applyImmediate, null));
 	}
@@ -125,7 +125,7 @@ public abstract class World extends Thread {
 	 * @param inter		the interaction handler
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(Collection A, Collection B, Interactor inter, 
+	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, 
 			boolean applyImmediate, Optimizer optimizer) {
 		_interactions.add(new Interaction(A, B, inter, applyImmediate, optimizer));
 	}
@@ -134,7 +134,8 @@ public abstract class World extends Thread {
 	 * register a group to have all its beings updated in the loop
 	 * @param grp		the group that contains the beings whose interactions
 	 */
-	public void registerUpdate(Collection grp) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void registerUpdate(GenericGroup grp) {
 		_groupsToUpdate.add(grp);
 	}
 
@@ -143,6 +144,7 @@ public abstract class World extends Thread {
 	 */
 	public void run() {
 		setup();
+		resolveGroupQueues();
 		_active = true;
 		while(_active) {
 			preUpdate();
@@ -185,8 +187,8 @@ public abstract class World extends Thread {
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
-			Collection A = interaction.getA();
-			Collection B = interaction.getB();
+			Collection A = interaction.getA().getBeings();
+			Collection B = interaction.getB().getBeings();
 			if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
 				// perform the O(n^2) calculation on all the groups
 				for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
@@ -231,14 +233,9 @@ public abstract class World extends Thread {
 		
 		
 		// 3. go through the registered groups to update beings individually
-		for(Iterator<Collection<Being>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
-			Collection<Being> grp = iter.next();
-			for(Iterator<Being> iterGrp = grp.iterator(); iterGrp.hasNext(); ) {
-				Being bng = iterGrp.next();
-				synchronized(bng) {
-					bng.update();
-				}
-			}
+		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
+			GenericGroup group = iter.next();
+			group.update();
 		}
 		
 		resolveGroupQueues();
