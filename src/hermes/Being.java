@@ -71,6 +71,13 @@ public abstract class Being {
 		}
 	}
 	
+	/**
+	 * returns a being's shape
+	 */
+	public Shape getShape() {
+		return shape;
+	}
+	
 	public void update() {}
 	
 
