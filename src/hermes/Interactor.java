@@ -9,6 +9,7 @@ package src.hermes;
 
 	// returns true if A and B should interact
 	public boolean detect(A being1, B being2);
+
 	// handles an interaction between A and B
 	public void handle(A being1, B being2);
 }
