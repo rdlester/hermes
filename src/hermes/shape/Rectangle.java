@@ -26,8 +26,8 @@ public class Rectangle extends Shape {
 	 */
 	public Rectangle(PVector position, float width, float height) {
 		super(position);
-		_min = new PVector(position.x - width / 2, position.y - height / 2);
-		_max = new PVector(position.x + width / 2, position.y + height / 2);
+		_min = new PVector(-width / 2, -height / 2);
+		_max = new PVector(width / 2, height / 2);
 	}
 
 	/**
