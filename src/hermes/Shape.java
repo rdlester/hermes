@@ -1,22 +1,19 @@
 package src.hermes;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import processing.core.*;
 
-public class Shape {
-	private LinkedList<Shape> _contained;
+public abstract class Shape {
 	
-	public boolean collide(Shape other) {
-		boolean result = false;
-		for(Iterator<Shape> iter = _contained.iterator(); iter.hasNext(); ) {
-			result = result && iter.next().collide(other);
-		}
-		return result;
+	PVector _position;
+	
+	public Shape(PVector position) {
+		_position = position;
 	}
-		
-	public static void collide(Object shape, Object shape2) {
-		// TODO Auto-generated method stub
-		
+	                        
+	public abstract boolean collide(Shape other);
+	
+	boolean between(float sample, float min, float max) {
+		return sample >= min && sample <= max;
 	}
 	
 }
