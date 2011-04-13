@@ -2,6 +2,7 @@ package src.hermes;
 
 import java.util.List;
 import processing.core.*;
+import src.hermes.shape.Rectangle;
 
 /**
  * used to determine what should be drawn
