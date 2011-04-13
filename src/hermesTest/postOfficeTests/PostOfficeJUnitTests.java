@@ -10,6 +10,9 @@ import org.junit.*;
 
 import src.hermes.postoffice.*;
 
+/**
+ * Simple tests for PostOffice message queuing and message equality checks
+ */
 public class PostOfficeJUnitTests {
 	
 	//Constants defining key 'triggering' key event

@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 public class Shape {
-
 	private LinkedList<Shape> _contained;
 	
 	public boolean collide(Shape other) {
@@ -14,13 +13,11 @@ public class Shape {
 		}
 		return result;
 	}
-	
-}
-
-public class Circle {
-	
-	public boolean collide(Circle other) {
+		
+	public static void collide(Object shape, Object shape2) {
+		// TODO Auto-generated method stub
 		
 	}
 	
 }
+
