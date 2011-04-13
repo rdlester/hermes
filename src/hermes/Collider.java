@@ -1,5 +1,7 @@
 package src.hermes;
 
+import src.hermes.shape.Shape;
+
 /**
  * Following  to interact two beings
  * detect method determines if two bodies should interact
