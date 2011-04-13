@@ -7,8 +7,8 @@ package src.hermes;
  */
 public abstract class Collider<A extends Being, B extends Being> implements Interactor{
 
-	// returns true if A and B collide
-	//@Override
+	// returns true if A and B collide	
+	@Override
 	public boolean detect(A body1, B body2) {
 		Shape.collide(body1.getShape(), body2.getShape());
 	}
