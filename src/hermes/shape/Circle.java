@@ -2,6 +2,11 @@ package src.hermes.shape;
 
 import processing.core.PVector;
 
+/**
+ * 
+ * @author Ryan
+ *
+ */
 public class Circle extends Shape {
 
 	PVector _center;
@@ -56,7 +61,7 @@ public class Circle extends Shape {
 		
 		float distance = PVector.dist(worldCenterThis, worldCenterOther);
 		float sumRadii = _radius + other._radius;
-		boolean collides = distance < sumRadii;
+		boolean collides = distance <= sumRadii;
 		
 		return collides; 
 	}
@@ -69,24 +74,22 @@ public class Circle extends Shape {
 		//Figure out what voronoi region of the rectangle the circle is in
 		PVector min = PVector.add(other._position, other._min);
 		PVector max = PVector.add(other._position, other._max);
-		if(min.x < worldCenter.x) {
-			if(worldCenter.x < max.x) {
+		if(min.x <= worldCenter.x) {
+			if(worldCenter.x <= max.x) {
 				//In regions above or below rectangle,
 				//compare y projections
 				float minProject = worldCenter.y - _radius;
 				float maxProject = worldCenter.y + _radius;
-				if(min.y < maxProject) {
-					if(minProject < max.y) {
-						collides = true;
-					}
+				if(min.y <= maxProject && minProject <= max.y) {
+					collides = true;
 				}
 			}
-			else if(min.y < worldCenter.y) {
-				if(worldCenter.y < max.y) {
+			else if(min.y <= worldCenter.y) {
+				if(worldCenter.y <= max.y) {
 					//In region directly to right of rectangle
 					//Compare x projections
 					float minProject = worldCenter.x - _radius;
-					if(minProject < max.x) {
+					if(minProject <= max.x) {
 						collides = true;
 					}
 				}
@@ -97,7 +100,7 @@ public class Circle extends Shape {
 					axis.normalize();
 					axis.mult(_radius);
 					PVector project = PVector.add(worldCenter, axis);
-					if(project.x < max.x && project.y < max.y) {
+					if(project.x <= max.x && project.y <= max.y) {
 						collides = true;
 					}
 					
@@ -111,17 +114,17 @@ public class Circle extends Shape {
 				axis.normalize();
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, axis);
-				if(project.x < trVertex.x && trVertex.y < project.y) {
+				if(project.x <= trVertex.x && trVertex.y <= project.y) {
 					collides = true;
 				}
 			}
 		}
-		else if(min.y < worldCenter.y) {
-			if(worldCenter.y < max.y) {
+		else if(min.y <= worldCenter.y) {
+			if(worldCenter.y <= max.y) {
 				//In region directly to the left of rectangle
 				//Compare x projections
 				float maxProject = worldCenter.x + _radius;
-				if(min.x < maxProject) {
+				if(min.x <= maxProject) {
 					collides = true;
 				}
 			}
@@ -133,7 +136,7 @@ public class Circle extends Shape {
 				axis.normalize();
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, blVertex);
-				if(blVertex.x < project.x && project.y < blVertex.y) {
+				if(blVertex.x <= project.x && project.y <= blVertex.y) {
 					collides = true;
 				}
 			}
@@ -145,7 +148,7 @@ public class Circle extends Shape {
 			axis.normalize();
 			axis.mult(_radius);
 			PVector project = PVector.add(worldCenter, axis);
-			if(min.x < project.x && min.y < project.y) {
+			if(min.x <= project.x && min.y <= project.y) {
 				collides = true;
 			}
 		}
