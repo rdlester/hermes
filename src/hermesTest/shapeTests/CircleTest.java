@@ -67,22 +67,22 @@ public class CircleTest {
 		Rectangle U = new Rectangle(posU, width, height);
 		assertTrue(c1.collide(U));
 		
-		//Top-left vr
+		//Bottom-left vr
 		PVector posUL = new PVector(-corner,-corner);
 		Rectangle UL = new Rectangle(posUL, width, height);
 		assertTrue(c1.collide(UL));
 		
-		//Top-Right vr
+		//Bottom-Right vr
 		PVector posUR = new PVector(corner,-corner);
 		Rectangle UR = new Rectangle(posUR, width, height);
 		assertTrue(c1.collide(UR));
 		
-		//Bottom-left vr
+		//Top-left vr
 		PVector posDL = new PVector(-corner,corner);
 		Rectangle DL = new Rectangle(posDL, width, height);
 		assertTrue(c1.collide(DL));
 		
-		//Bottom-right vr
+		//Top-right vr
 		PVector posDR = new PVector(corner,corner);
 		Rectangle DR = new Rectangle(posDR, width, height);
 		assertTrue(c1.collide(DR));

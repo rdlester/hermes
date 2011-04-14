@@ -96,7 +96,7 @@ public class Circle extends Shape {
 				else {
 					//In region to the right&down of rectangle
 					//Get projection of both along bottom-right vertex (max)
-					PVector axis = PVector.sub(worldCenter, max);
+					PVector axis = PVector.sub(max, worldCenter);
 					axis.normalize();
 					axis.mult(_radius);
 					PVector project = PVector.add(worldCenter, axis);
@@ -110,7 +110,7 @@ public class Circle extends Shape {
 				//In region to the right&up of rectangle
 				//Get projection of both along top-right vertex
 				PVector trVertex = new PVector(max.x, min.y);
-				PVector axis = PVector.sub(worldCenter, trVertex);
+				PVector axis = PVector.sub(trVertex, worldCenter);
 				axis.normalize();
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, axis);
@@ -132,7 +132,7 @@ public class Circle extends Shape {
 				//In region to the left&down of rectangle
 				//Get projection of both along bottom-left vertex
 				PVector blVertex = new PVector(min.x, max.y);
-				PVector axis = PVector.sub(worldCenter, blVertex);
+				PVector axis = PVector.sub(blVertex, worldCenter);
 				axis.normalize();
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, blVertex);
@@ -144,7 +144,7 @@ public class Circle extends Shape {
 		else {
 			//In region to the left&up of rectangle
 			//Get projection of both along top-left vertex (min)
-			PVector axis = PVector.sub(worldCenter, min);
+			PVector axis = PVector.sub(min, worldCenter);
 			axis.normalize();
 			axis.mult(_radius);
 			PVector project = PVector.add(worldCenter, axis);
