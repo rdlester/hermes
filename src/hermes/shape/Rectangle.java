@@ -44,15 +44,19 @@ public class Rectangle extends Shape {
 	 * @return			whether there was a collision
 	 */
 	public boolean collide(Rectangle other) {
+		// calculate the absolute corner positions
 		PVector min1 = PVector.add(_position, _min);
 		PVector max1 = PVector.add(_position, _max);
 		PVector min2 = PVector.add(other._position, other._min);
 		PVector max2 = PVector.add(other._position, other._max);
-		boolean xOverlap = between(min1.x,min2.x,max2.x) || between(max1.x,min2.x,max2.x) 
-		|| between(min2.x,min1.x,max1.x) || between(max2.x, min1.x, max2.x);
-		boolean yOverlap = between(min1.y,min2.y,max2.y) || between(max1.y,min2.y,max2.y)
-		|| between(min2.y,min1.y,max1.y) || between(max2.y, min1.y, max2.y);
+		// calculate the distance between farthest-out points
+		float xDist = Math.max(Math.abs(max1.x - min2.x), Math.abs(max2.x - min1.x)); 
+		float yDist = Math.max(Math.abs(max1.y - min2.y), Math.abs(max2.y - min1.y)); 
+		// they collide if they overlap on both axes
+		boolean xOverlap = xDist <= max1.x - min1.x + max2.x - min2.x;
+		boolean yOverlap = yDist <= max1.y - min1.y + max2.y - min2.y;
 		return xOverlap && yOverlap;
 	}
+	
 
 }
