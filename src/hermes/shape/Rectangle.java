@@ -2,24 +2,36 @@ package src.hermes.shape;
 
 import processing.core.PVector;
 
+/**
+ * represents an axis-aligned bounding rectangle
+ * @author Sam
+ *
+ */
 public class Rectangle extends Shape {
 
 	PVector _min, _max;
 	
 	/**
-	 * creates a new Rectangle defined by a position and two coordinates
+	 * creates a new Rectangle defined by a position and two point coordinates
+	 * note that position, min and max will be stored as references, so changing them later will change the rectangle
 	 * @param position	the position of the rectangle
 	 * @param min		the position of the corner with the lowest x,y values
 	 * @param max		the position of the corner with the highest x,y values
 	 */
 	public Rectangle(PVector position, PVector min, PVector max) {
 		super(position);
-		_min = min;
+		
+		assert min != null : "In Rectangle constructor: min must be a valid PVector";
+		assert max != null : "In Rectangle constructor: max must be a valid PVector";
+		assert min.x < max.x && min.y < max.y : "In Rectangle contructor: min must have a lower x,y position than max";
+			
+		_min = min; 
 		_max = max;
 	}
 	
 	/**
 	 * creates a Rectangle defined by a position, representing its center, and a width a height
+	 * note: position will be stored as a reference, so changing it will move the rectangle
 	 * @param position	the center position of the rectangle
 	 * @param width		the width of the rectangle
 	 * @param height	the height of the rectangle
@@ -30,6 +42,21 @@ public class Rectangle extends Shape {
 		_max = new PVector(width / 2, height / 2);
 	}
 
+	/**
+	 * scales the rectangle's width and height about its position
+	 * @param xScale	the x-axis scale factor
+	 * @param yScale	the y-axis scale factor
+	 */
+	public void scale(float xScale, float yScale) {
+		assert xScale > 0 : "scale: xScale must be greater than zero";
+		assert yScale > 0 : "scale: yScale must be greater than zero";
+		
+		_min.x *= xScale;
+		_max.x *= xScale;
+		_min.y *= yScale;
+		_min.y *= yScale;
+	}
+	
 	/**
 	 * general collision of a rectangle with another shape for double dispatch
 	 */

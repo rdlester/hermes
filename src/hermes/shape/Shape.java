@@ -12,17 +12,26 @@ import processing.core.*;
  */
 public abstract class Shape {
 	
-	protected PVector _position; 
+	protected PVector _position; // the shape's position
+		// all points in the shape are defined relative to the position
 	
-	public Shape(PVector position) {
+	/**
+	 * creates a new shape
+	 * @param position  the shape's position
+	 * when position is attached to a being, the shape's position should reference the being's position
+	 */
+	protected Shape(PVector position) {
+		assert position != null : "In Shape constructor: position must be a valid PVector";
+		
 		_position = position;
 	}
-	                        
-	public abstract boolean collide(Shape other);
 	
-	boolean between(float sample, float min, float max) {
-		return sample >= min && sample <= max;
-	}
+	/**
+	 * detects a collision with another shape
+	 * @param other		the shape to collide with
+	 * @return			whether the shapes have collided
+	 */
+	public abstract boolean collide(Shape other);
 
 	/**
 	 * @return the shape's position
