@@ -9,6 +9,7 @@ import src.hermes.shape.Shape;
  */
 public abstract class Collider<A extends Being, B extends Being> implements Interactor<A, B>{
 
+
 	// returns true if A and B collide
 	public boolean detect(A being1, B being2) {
 		Shape.collide(being1.getShape(), being2.getShape());
