@@ -36,6 +36,20 @@ public class Circle extends Shape {
 		_center = new PVector(0,0);
 		_radius = radius;
 	}
+	
+	/**
+	 * Getter for center
+	 */
+	public PVector getCenter() {
+		return _center;
+	}
+	
+	/**
+	 * Getter for radius
+	 */
+	public float getRadius() {
+		return _radius;
+	}
 
 	@Override
 	public boolean collide(Shape other) {

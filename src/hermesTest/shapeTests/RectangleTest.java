@@ -1,4 +1,4 @@
-package src.hermes.shapeTests;
+package src.hermesTest.shapeTests;
 
 import static org.junit.Assert.*;
 import org.junit.*;

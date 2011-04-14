@@ -46,21 +46,17 @@ public class Polygon extends Shape {
 				first = p;
 				pre = p;
 			}
-			else {
-				PVector axis = calcAxis(pre, p);
-				_axes.add(axis);
-			}
+			else addAxis(p, pre);
 		}
 		//Make the final line between the first and the last point
-		PVector axis = calcAxis(first, pre);
-		_axes.add(axis);
+		addAxis(first, pre);
 	}
 
-	private PVector calcAxis(PVector start, PVector end) {
+	private void addAxis(PVector start, PVector end) {
 		PVector axis = PVector.sub(start, end);
 		axis.normalize();
 		axis.dot(1,-1,0);
-		return axis;
+		_axes.addLast(axis);
 	}
 	
 	/**
@@ -79,15 +75,13 @@ public class Polygon extends Shape {
 	 */
 	public void addPoint(PVector point) {
 		//Remove the axis for the edge between the current first and last points
-		_axes.remove(_axes.size()-1);
+		_axes.removeLast();
 		
 		PVector first = _points.get(0);
 		PVector last = _points.get(_points.size()-1);
 		
-		PVector axis1 = calcAxis(first, point);
-		PVector axis2 = calcAxis(point, last);
-		_axes.add(axis1);
-		_axes.add(axis2);
+		addAxis(first, point);
+		addAxis(point, last);
 		_points.add(point);
 	}
 	
