@@ -66,6 +66,13 @@ public class Circle extends Shape {
 		return collides; 
 	}
 	
+	/**
+	 * Collides a circle with a rectangle
+	 * by determining the voronoi region the circle is in
+	 * and colliding the circle along the appropriate axis
+	 * @param other
+	 * @return
+	 */
 	public boolean collide(Rectangle other) {
 		boolean collides = false;
 		//Get the center of this circle
