@@ -33,11 +33,15 @@ public class Rectangle extends Shape {
 	 * creates a Rectangle defined by a position, representing its center, and a width a height
 	 * note: position will be stored as a reference, so changing it will move the rectangle
 	 * @param position	the center position of the rectangle
-	 * @param width		the width of the rectangle
-	 * @param height	the height of the rectangle
+	 * @param width		the width of the rectangle (must be positive)
+	 * @param height	the height of the rectangle (must be positive)
 	 */
 	public Rectangle(PVector position, float width, float height) {
 		super(position);
+		 
+		assert width > 0: "Rectangle constructor: width must be positive";
+		assert height > 0: "Rectangle constructor: height must be positive";
+		
 		_min = new PVector(-width / 2, -height / 2);
 		_max = new PVector(width / 2, height / 2);
 	}

@@ -34,6 +34,15 @@ public abstract class Shape {
 	public abstract boolean collide(Shape other);
 
 	/**
+	 * finds the projection vector for a collision with another shape
+	 * the projection vector is the vector by which one body could be displaced such that
+	 *  it no longer intersects the other body, by the shortest possible distance
+	 * @param other		the shape to collide with
+	 * @return			the projection vector from this body to other, or null if they aren't colliding
+	 */
+	public abstract PVector projectionVector(Shape other);
+	
+	/**
 	 * @return the shape's position
 	 */
 	public PVector getPosition() {

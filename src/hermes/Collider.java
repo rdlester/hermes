@@ -12,7 +12,7 @@ public abstract class Collider<A extends Being, B extends Being> implements Inte
 
 	// returns true if A and B collide
 	public boolean detect(A being1, B being2) {
-		Shape.collide(being1.getShape(), being2.getShape());
+		//Shape.collide(being1.getShape(), being2.getShape());
 		return true;
 	}
 
