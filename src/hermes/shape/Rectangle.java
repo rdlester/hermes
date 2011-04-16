@@ -9,7 +9,7 @@ import processing.core.PVector;
  */
 public class Rectangle extends Shape {
 
-	PVector _min, _max;
+	private PVector _min, _max;
 	
 	/**
 	 * creates a new Rectangle defined by a position and two point coordinates
@@ -45,7 +45,22 @@ public class Rectangle extends Shape {
 		_min = new PVector(-width / 2, -height / 2);
 		_max = new PVector(width / 2, height / 2);
 	}
-
+	
+	/**
+	 * Getter for position of corner with lowest x,y values
+	 * @return
+	 */
+	public PVector getMin() {
+		return _min;
+	}
+	
+	/**
+	 * Getter for position of corner with highest x,y values
+	 * @return
+	 */
+	public PVector getMax() {
+		return _max;
+	}
 	/**
 	 * scales the rectangle's width and height about its position
 	 * @param xScale	the x-axis scale factor
