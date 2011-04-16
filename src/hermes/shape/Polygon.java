@@ -1,5 +1,6 @@
 package src.hermes.shape;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -39,15 +40,16 @@ public class Polygon extends Shape {
 		_points = points;
 		
 		//Create the list of lines in the polygon
-		PVector first = null;
-		PVector pre = null;
-		for(PVector p : _points) {
-			if(pre == null) {
-				first = p;
-				pre = p;
-			}
-			else addAxis(p, pre);
+		_axes = new LinkedList<PVector>();
+		Iterator<PVector> pit = _points.iterator();
+		PVector first = pit.next();
+		PVector pre = first;
+		while(pit.hasNext()) {
+			PVector p = pit.next();
+			addAxis(p, pre);
+			pre = p;
 		}
+
 		//Make the final line between the first and the last point
 		addAxis(first, pre);
 	}
@@ -95,17 +97,50 @@ public class Polygon extends Shape {
 		return false;
 	}
 	
-	public boolean collide(Circle other) {
-		
-	}
-	
 	/**
 	 * 
 	 * @param other
 	 * @return
 	 */
-	public boolean collide(Rectangle other) {
+	public boolean collide(Circle other) {
+		Iterator<PVector> points = _points.iterator();
+		Iterator<PVector> axes = _axes.iterator();
 		
+		PVector first = points.next();
+		PVector pre2 = first;
+		PVector second = points.next();
+		PVector pre1 = second;
+		
+		while(points.hasNext()) {
+			PVector curr = points.next();
+			
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Collides a circle and a rectangle
+	 * by turning the rectangle into a polygon
+	 * and using the polygon collide method
+	 * @param other
+	 * @return
+	 */
+	public boolean collide(Rectangle other) {
+		//Turn Rectangle into a Polygon
+		PVector otherPos = other.getPosition();
+		PVector min = other.getMin();
+		PVector max = other.getMax();
+		PVector v2 = new PVector(min.x, max.y);
+		PVector v4 = new PVector(max.x, min.y);
+		LinkedList<PVector> points = new LinkedList<PVector>();
+		points.add(min);
+		points.add(v2);
+		points.add(max);
+		points.add(v4);	
+		Polygon rect = new Polygon(otherPos, points);
+		
+		return collide(rect);
 	}
 
 	/**
@@ -116,56 +151,68 @@ public class Polygon extends Shape {
 	 * @return
 	 */
 	public boolean collide(Polygon other) {
-		//Get total list of axes
-		LinkedList<PVector> axes = other.getAxes();
-		axes.addAll(_axes);
-		
 		//Get distance between polygons
 		PVector dist = PVector.sub(_position, other.getPosition());
 		
-		//Check that polygons collide along all axes
+		//Check for collision along all axes in this polygon
+		for(PVector axis : _axes) {
+			if(!checkSepAxis(axis, dist, other)) return false;
+		}
+		
+		//Check for collision along all axes in other polygon
+		LinkedList<PVector> axes = other.getAxes();
 		for(PVector axis : axes) {
-			//Project this polygon
-			float min1;
-			float max1;
-			PVector p1 = _points.get(0);
-			min1 = p1.dot(axis);
-			max1 = min1;
-			for(int i = 1; i < _points.size(); i++) {
-				PVector point = _points.get(i);
-				float project = point.dot(axis);
-				if(project < min1) min1 = project;
-				if(max1 < project) max1 = project;
-			}
-			
-			//Project other polygon
-			float min2;
-			float max2;
-			List<PVector> otherPoints = other.getPoints();
-			PVector p2 = otherPoints.get(0);
-			min2 = p2.dot(axis);
-			max2 = min2;
-			for(int i = 1; i < otherPoints.size(); i++) {
-				PVector point = otherPoints.get(i);
-				float project = point.dot(axis);
-				if(project < min2) min2 = project;
-				if(max2 < project) max2 = project;
-			}
-			
-			//Offset projection of this away from other
-			float offset = dist.dot(axis);
-			min1 += offset;
-			max1 += offset;
-			
-			//Check if they are separated along axis
-			if(min1 - max2 > 0 ||  min2 - max1 > 0) {
-				//Found a separating axis! Not colliding.
-				return false;
-			}
+			if(!checkSepAxis(axis, dist, other)) return false;
 		}
 		
 		return true;
 	}
 	
+	/**
+	 * Checks if this polygon and other polygon collide along given axis
+	 * @param axis - axis to check projections on
+	 * @param dist - distance between polygons
+	 * @param other - the other polygon
+	 * @return
+	 */
+	private boolean checkSepAxis(PVector axis, PVector dist, Polygon other) {
+		PVector project1 = getProjection(axis, this);
+		PVector project2 = getProjection(axis, other);
+		
+		//Offset projection of this away from other
+		float offset = dist.dot(axis);
+		project1.add(offset, offset, 0);
+		
+		//Check if they are separated along axis
+		if(project1.x - project2.y > 0 ||  project2.x - project1.y > 0) {
+			//Found a separating axis! Not colliding.
+			return false;
+		}
+		else return true;
+	}
 	
+	/**
+	 * Projects polygon onto given axis
+	 * @param axis
+	 * @param poly
+	 * @return PVector with min as x, max as y 
+	 */
+	private PVector getProjection(PVector axis, Polygon poly) {
+		float min;
+		float max;
+		
+		Iterator<PVector> points = poly.getPoints().iterator();
+		PVector pInit = points.next();
+		min = pInit.dot(axis);
+		max = min;
+		
+		while(points.hasNext()) {
+			PVector p = points.next();
+			float project = p.dot(axis);
+			if(project < min) min = project;
+			if(max < project) max = project;
+		}
+		
+		return new PVector(min,max);
+	}
 }

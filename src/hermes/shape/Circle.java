@@ -93,8 +93,8 @@ public class Circle extends Shape {
 		PVector worldCenter = new PVector(_position.x + _center.x,
 										_position.y + _center.y);
 		//Figure out what voronoi region of the rectangle the circle is in
-		PVector min = PVector.add(other._position, other._min);
-		PVector max = PVector.add(other._position, other._max);
+		PVector min = PVector.add(other._position, other.getMin());
+		PVector max = PVector.add(other._position, other.getMax());
 		if(min.x <= worldCenter.x) {
 			if(worldCenter.x <= max.x) {
 				//In regions above or below rectangle,
