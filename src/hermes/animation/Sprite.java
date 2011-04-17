@@ -52,9 +52,9 @@ class AnimatedSprite implements Animatable {
 	}
 
 	/**
-	 * creates a new animation from the files specified by the arguments and adds it to the Sprite's set of animations
+	 * Builds an animation from several image files on disk (where each is an individual frame in the animation), and adds it to the Sprite's collection of animations
 	 * 
-	 * The method loads files with numbers starting from 0 to (numberOfImagesToLoad-1) and assumes numberical contiguity
+	 * The method loads files with numbers starting from 0 to (numberOfImagesToLoad-1) and assumes numerical contiguity
 	 * ex. BigBaboon0.jpg, BigBaboon1.jpg, BigBaboon2.jpg would have method call:
 	 * addAnimationFromSequenceOfImages("BigBaboon", 3, ".jpg");
 	 * 
@@ -65,11 +65,11 @@ class AnimatedSprite implements Animatable {
 	 * @param fileType					file extension including the 'dot' . ex ".jpg".
 	 * @return							the index of the newly created animation
 	 */
-	public int addAnimationFromSequenceOfImages(String imageSequenceNamePrefix, int numberOfImagesToLoad, String fileType) {
-		//asserts
-		assert supportImageType(fileType): "addAnimationFromSequenceOfImages Error: Images of filetype: "+fileType+"not supported.\n" + _fileTypeErrorString;
+	public int addAnimation(String imageSequenceNamePrefix, int numberOfImagesToLoad, String fileType) {
+		//asserts to check for valid inputs
+		assert supportImageType(fileType): "addAnimation Error: Images of filetype: "+fileType+"not supported.\n" + _fileTypeErrorString;
 		
-		ArrayList<PImage> currentAnimation = new ArrayList<PImage>(); // make an arraylist to store animation being built
+		ArrayList<PImage> currentAnimation = new ArrayList<PImage>(); // make an ArrayList to store animation being built
 		
 		//populates current animation with the files named: <imageSequenceNamePrefix>i<fileType>
 		//ex. BigBaboon4.jpg
@@ -77,10 +77,51 @@ class AnimatedSprite implements Animatable {
 			PImage currentImage = Hermes.getPApplet().loadImage(imageSequenceNamePrefix + i + fileType);
 			currentAnimation.add(currentImage);
 		}
+		_animations.add(currentAnimation); //add the newly built animation to the sprite's list
 		
 		return _animations.size() - 1; //index of most recently added animation will always be the last element
+	}
+	
+	/**
+	 * Builds a new animation from an ArrayList of PImages and adds it to the Sprite's collection of animations
+
+	 * @param someArrayListOfPImages 		an ArrayList of PImages you'd like to use as an animation for a sprite
+	 * @return 								the index of the newly created animation
+	 */
+	public int addAnimation(ArrayList<PImage> someArrayListOfPImages) {	
+		
+		assert someArrayListOfPImages != null : "addAnimation Error: The ArrayList of PImages you entered was null";
+		//assert someArrayList.size() <= 0: "addAnimation Error: The ArrayList of PImages has no images in it";
+
+		_animations.add(someArrayListOfPImages); //add the provided animation to the sprite's list
+		
+		return _animations.size() - 1; //index of most recently added animation will always be the last element	
+	}
+	
+	/**
+	 * Builds a new animation from a PImage[] and adds it to the Sprite's collection of animations
+	 * @param someArrayOfPImages 			a PImage[] you'd like to use as an animation for a sprite
+	 * @return								the index of the newly created animation
+	 */
+	public int addAnimation(PImage[] someArrayOfPImages) {
+		
+		assert someArrayOfPImages != null : "addAnimation Error: The PImage[] you entered was null";
+
+		ArrayList<PImage> currentAnimation = new ArrayList<PImage>(someArrayOfPImages.length); // make an ArrayList to store animation being built
+
+		for (int i = 0; i < someArrayOfPImages.length; i++) { //add elements of the array to the animation's ArrayList
+			currentAnimation.add(someArrayOfPImages[i]);
+		}
+		
+		_animations.add(currentAnimation); //add the newly built animation to the sprite's list
+
+		return _animations.size() - 1; //index of most recently added animation will always be the last element	
 
 	}
+	
+	
+	
+	
 	
 	/**
 	 * Helper method for checking filetype and providing clear user messages
