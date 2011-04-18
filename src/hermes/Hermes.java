@@ -23,6 +23,5 @@ public class Hermes {
 		_parentApplet = parentApplet;		
 	}
 	
-	
 
 }
