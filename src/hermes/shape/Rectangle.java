@@ -33,11 +33,15 @@ public class Rectangle extends Shape {
 	 * creates a Rectangle defined by a position, representing its center, and a width a height
 	 * note: position will be stored as a reference, so changing it will move the rectangle
 	 * @param position	the center position of the rectangle
-	 * @param width		the width of the rectangle
-	 * @param height	the height of the rectangle
+	 * @param width		the width of the rectangle (must be positive)
+	 * @param height	the height of the rectangle (must be positive)
 	 */
 	public Rectangle(PVector position, float width, float height) {
 		super(position);
+		 
+		assert width > 0: "Rectangle constructor: width must be positive";
+		assert height > 0: "Rectangle constructor: height must be positive";
+		
 		_min = new PVector(-width / 2, -height / 2);
 		_max = new PVector(width / 2, height / 2);
 	}
@@ -57,6 +61,17 @@ public class Rectangle extends Shape {
 	public PVector getMax() {
 		return _max;
 	}
+	
+	/**
+	 * @return	the absolute position of the rectangle's geometric center 
+	 */
+	public PVector getCenter() {
+		PVector center = PVector.add(_max, _min); 
+		center.mult(0.5f);
+		center.add(_position);
+		return center;
+	}
+	
 	/**
 	 * scales the rectangle's width and height about its position
 	 * @param xScale	the x-axis scale factor
@@ -80,25 +95,51 @@ public class Rectangle extends Shape {
 		return other.collide(this);
 	}
 	
+	@Override
+	public PVector projectionVector(Shape other) {
+		return other.projectionVector(this);
+	}
+
+	
 	/**
 	 * rectangle-rectangle collision
 	 * @param other		the rectangle to be collided with
 	 * @return			whether there was a collision
 	 */
 	public boolean collide(Rectangle other) {
-		// calculate the absolute corner positions
-		PVector min1 = PVector.add(_position, _min);
-		PVector max1 = PVector.add(_position, _max);
-		PVector min2 = PVector.add(other._position, other._min);
-		PVector max2 = PVector.add(other._position, other._max);
-		// calculate the distance between farthest-out points
-		float xDist = Math.max(Math.abs(max1.x - min2.x), Math.abs(max2.x - min1.x)); 
-		float yDist = Math.max(Math.abs(max1.y - min2.y), Math.abs(max2.y - min1.y)); 
-		// they collide if they overlap on both axes
-		boolean xOverlap = xDist <= max1.x - min1.x + max2.x - min2.x;
-		boolean yOverlap = yDist <= max1.y - min1.y + max2.y - min2.y;
-		return xOverlap && yOverlap;
+		return projectionVector(other) != null;
 	}
 	
+	
+	public PVector projectionVector(Rectangle other) {
+		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
+		
+		if(other == this)	// no self-projection
+			return null;
+		// calculate the distance between rect centers
+		PVector center1 = getCenter();
+		PVector center2 = other.getCenter();
+		float xDist = center1.x - center2.x;
+		float yDist = center1.y - center2.y;
+		// the projection is distance minus combined side length
+		float xProject = Math.abs(xDist) - (_max.x - _min.x + other._max.x - other._min.x)/2;
+		float yProject = Math.abs(yDist) - (_max.y - _min.y + other._max.y - other._min.y)/2;
+		// they collide if they overlap on both axes
+		if( xProject > 0 || yProject > 0)
+			return null;
+		// the projection vector is the smallest projection, in direction opposite the distance vector
+		return (xProject > yProject ? 
+				new PVector(xProject * sign(xDist), 0.0f) : 
+				new PVector(0.0f, yProject * sign(yDist)));
+	}	
 
+	/**
+	 * returns the sign of a float
+	 * @param x		the float
+	 * @return		1 if x is positive or zero, -1 if x is negative
+	 */
+	float sign(float x) {
+		return (x < 0 ? -1.0f : 1.0f);
+	}
+	
 }

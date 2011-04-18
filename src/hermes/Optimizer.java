@@ -9,7 +9,7 @@ import java.util.Iterator;
  * Sample advanced optimizers include quadtree
  * detect checks body A against the structure formed from Group B
  */
-public interface Optimizer<A, B> {
+public interface Optimizer<A extends Being, B extends Being> {
 
 	/**
 	 * whether to use detect or detectAll

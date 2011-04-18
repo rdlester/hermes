@@ -19,7 +19,7 @@ public class RectangleTest {
 	public void test_RectangleCollide() {
 		// check one rectangle containing another
 		Rectangle r1 = new Rectangle(new PVector(0,0), 5, 5);
-		assertTrue(r1.collide(r1)); // self-collision
+		assertFalse(r1.collide(r1)); // self-collision
 		Rectangle r2 = new Rectangle(new PVector(0,0), 3, 3);
 		assertTrue(r1.collide(r2));
 		assertTrue(r2.collide(r1));
@@ -58,6 +58,51 @@ public class RectangleTest {
 		r2 = new Rectangle(new PVector(0,3),3,1);
 		assertFalse(r1.collide(r2));
 		assertFalse(r2.collide(r1));
+	}
+	
+	/**
+	 * tests Rectangle.projectionVector()
+	 */
+	@Test
+	public void test_projectionVector() {
+		// check one rectangle containing another
+		Rectangle r1 = new Rectangle(new PVector(0,0), 5, 5);
+		assertEquals(r1.projectionVector(r1), null); // self-collision
+		Rectangle r2 = new Rectangle(new PVector(0,0), 3, 3);
+		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, -4, 1e-8);
+		// corner overlap
+		r2 = new Rectangle(new PVector(-3,-3),1,1);
+		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, 0, 1e-8);
+		// one side overlap
+		r2 = new Rectangle(new PVector(3,0),3,1);
+		assertEquals(r1.projectionVector(r2).x, 1, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, 0, 1e-8);
+		assertEquals(r2.projectionVector(r1).x, -1, 1e-8);
+		assertEquals(r2.projectionVector(r1).y, 0, 1e-8);
+		r2 = new Rectangle(new PVector(-3,0),3,1);
+		assertEquals(r1.projectionVector(r2).x, -1, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, 0, 1e-8);
+		r2 = new Rectangle(new PVector(0,3),1,3);
+		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, 1, 1e-8);
+		r2 = new Rectangle(new PVector(0,-3),1,3);
+		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, -1, 1e-8);
+	}
+	
+	/**
+	 * tests Rectangle.getCenter()
+	 */
+	@Test
+	public void test_getCenter() {
+		Rectangle rect = new Rectangle(new PVector(3,3), 5.0f, 1.2f);
+		assertEquals(rect.getCenter().x, 3.0f, 1e-8);
+		assertEquals(rect.getCenter().y, 3.0f, 1e-8);
+		rect = new Rectangle(new PVector(0,0), new PVector(-1,-1), new PVector(3,4));
+		assertEquals(rect.getCenter().x, 1.0f, 1e-8);
+		assertEquals(rect.getCenter().y, 1.5f, 1e-8);
 	}
 	
 }

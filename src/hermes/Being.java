@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Collection;
 
 import src.hermes.shape.Shape;
-
+import processing.core.*;
 
 /**
  * Basic game object class
@@ -14,12 +14,12 @@ import src.hermes.shape.Shape;
  */
 public abstract class Being {
 
-	public abstract float getX();
-	public abstract float getY();
-	public abstract float getZ();
+	protected PVector _position; // the being's position
+	protected PVector _velocity; // the being's velocity
 	
-	LinkedList<GenericGroup<?,?>> groups;
-	Shape shape; 
+	protected Shape shape; 		 // the being's shape
+	
+	private LinkedList<GenericGroup<?,?>> groups;
 	
 	public Being() {
 		groups = new LinkedList<GenericGroup<?,?>>();
@@ -78,6 +78,14 @@ public abstract class Being {
 	 */
 	public Shape getShape() {
 		return shape;
+	}
+	
+	public PVector getPosition() {
+		return _position;
+	}
+	
+	public PVector getVelocity() {
+		return _velocity;
 	}
 	
 	public void update() {}
