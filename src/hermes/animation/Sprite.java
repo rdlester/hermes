@@ -11,20 +11,51 @@ import src.hermes.Hermes;
  *
  */
 class AnimatedSprite implements Animatable {
-	
-	private ArrayList<ArrayList<PImage>> _animations; // storage container for various animations of a Sprite
 
-	private ArrayList<PImage> _activeAnimation; //the current animation being drawn
+	private ArrayList<Animation> _animations; // storage container for various animations of a Sprite
 
-	//Error message used for loading methods
-	private String _fileTypeErrorString = "Suported types: .gif, .jgp, tga, .png";
-	
+	private Animation _activeAnimation; //the current animation being drawn
+
+	private int _currentMillisecondsPerFrame;
+
+	public int addAnimation(Animation animation) {
+		_animations.add(animation);
+		return _animations.size() - 1; //index of most recently added animation will always be the last element	
+	}
+
+
 	/**
-	 * 
+	 * Sets the active animation that the Sprite will use when drawn
+	 * Note: This advances frames at the rate originally specified on the construction of the Animation. 
+	 * If you want to play this Animation at a different rate, use the 'setActiveAnimation(int animationIndex, int millisecondsPerFrame)' version of this method
 	 * @param animationIndex numerical index used to select a specific animation of a sprite
 	 */
 	public void setActiveAnimation(int animationIndex) {
 		_activeAnimation = _animations.get(animationIndex);
+		_currentMillisecondsPerFrame = _activeAnimation.getMillisecondsPerFrame(); 
+
+	}
+
+	/**
+	 * Sets the active animation that the Sprite will use when drawn, and how many milliseconds each frame of the animation will be displayed for
+	 * Note: when you construct an Animation, it stores the millisecondsPerFrame rate internally. This call will NOT change that value, so you can still easily revert to the original rate you specified  
+	 * @param animationIndex 		numerical index used to select a specific animation of a sprite
+	 * @param millisecondsPerFrame 	optional argument to specify how many milliseconds each frame of the animation will be displayed for
+
+	 */
+	public void setActiveAnimation(int animationIndex, int millisecondsPerFrame) {
+		_currentMillisecondsPerFrame = millisecondsPerFrame;
+		_activeAnimation = _animations.get(animationIndex);
+	}
+
+
+	/**
+	 * Retrieves an Animation stored with this AnimatedSprite
+	 * @param index		The index of the animation being retrieved
+	 * @return
+	 */
+	public Animation getAnimation(int index) {
+		return _animations.get(index);
 	}
 
 
@@ -51,49 +82,10 @@ class AnimatedSprite implements Animatable {
 
 	}
 
-	/**
-	 * creates a new animation from the files specified by the arguments and adds it to the Sprite's set of animations
-	 * 
-	 * The method loads files with numbers starting from 0 to (numberOfImagesToLoad-1) and assumes numberical contiguity
-	 * ex. BigBaboon0.jpg, BigBaboon1.jpg, BigBaboon2.jpg would have method call:
-	 * addAnimationFromSequenceOfImages("BigBaboon", 3, ".jpg");
-	 * 
-	 * Works with all image filetypes supported by PImage.
-	 * 
-	 * @param imageSequenceNamePrefix 	file prefix of all of the images to be loaded into this animation ex. "BigBaboon"
-	 * @param numberOfImagesToLoad		total number of images to load
-	 * @param fileType					file extension including the 'dot' . ex ".jpg".
-	 * @return							the index of the newly created animation
-	 */
-	public int addAnimationFromSequenceOfImages(String imageSequenceNamePrefix, int numberOfImagesToLoad, String fileType) {
-		//asserts
-		assert supportImageType(fileType): "addAnimationFromSequenceOfImages Error: Images of filetype: "+fileType+"not supported.\n" + _fileTypeErrorString;
-		
-		ArrayList<PImage> currentAnimation = new ArrayList<PImage>(); // make an arraylist to store animation being built
-		
-		//populates current animation with the files named: <imageSequenceNamePrefix>i<fileType>
-		//ex. BigBaboon4.jpg
-		for (int i = 0; i < numberOfImagesToLoad; i++) { 
-			PImage currentImage = Hermes.getPApplet().loadImage(imageSequenceNamePrefix + i + fileType);
-			currentAnimation.add(currentImage);
-		}
-		
-		return _animations.size() - 1; //index of most recently added animation will always be the last element
 
-	}
-	
-	/**
-	 * Helper method for checking filetype and providing clear user messages
-	 * @param fileType
-	 * @return
-	 */
-	private boolean supportImageType(String fileType) {
-		//suported types: .gif, .jgp, .tga, .png
-		return (fileType.equals(".gif") || fileType.equals(".jpg") || fileType.equals(".tga") || fileType.equals(".png"));		
-	}
-	
-	
-	
+
+
+
 
 }
 
@@ -107,28 +99,8 @@ class AnimatedSprite implements Animatable {
 
   THIS WAS OLD - dont panic. - MIGHT NEED IT?
 
-package src.hermes;
-
-import processing.core.*;
-
-
 class Sprite {
 
-	//Used to store each frame of an animation
-	PImage[] frames;
-
-	// loads a Sprite by importing a single image and splitting it into a tiles with given rows and cols
-	Sprite(String filename, int rows, int cols) {
-
-		PImage uncutSheet = loadImage("filename");
-
-		for (int i = 0; i < rows; i ++) {
-		}
-
-	}
-
-	// loads a Sprite from an image sequence in format name.#.ext
-	Sprite(String name, String extension, int end, int start = 0);
 
 	// creates a playable animation between frames start_frame and end_frame 
 	void addAnimation(int key, int start_frame, int end_frame);
