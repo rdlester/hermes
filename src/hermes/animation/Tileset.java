@@ -37,7 +37,7 @@ public class Tileset {
 			}
 		}
 	}
-	
+
 	/**
 	 * Get a single tile from the Tilemap
 	 * @param row			row that the tile is in 
@@ -47,7 +47,7 @@ public class Tileset {
 	public PImage getTile (int row, int col) {
 		return _slicedTiles[row][col];
 	}
-	
+
 	/**
 	 * Get the width of each tile
 	 * @return				the width of each tile
@@ -55,7 +55,7 @@ public class Tileset {
 	public int getTileWidth() {
 		return _tileWidth;
 	}
-	
+
 	/**
 	 * Get the height of each tile
 	 * @return				the height of each tile
@@ -63,25 +63,25 @@ public class Tileset {
 	public int getTileHeight() {
 		return _tileHeight;
 	}
-	
+
 	public int getNumberOfCols() {
 		return _slicedTiles[0].length;
 	}
-	
+
 	public int getNumberOfRows() {
 		return _slicedTiles.length;
 	}
-	
+
 	/**
 	 * Get a row of PImages from the Tileset
-	 * note: could be handy for adding an animation to an AnimatedSprite
+	 * <br>Note: You might find this handy for building an Animation for an AnimatedSprite
 	 * @param row		the index of the row to be returned
 	 * @return			the row of PImages
 	 */
 	public PImage[] getRowOfTiles(int row) {
 		return _slicedTiles[row];
 	}
-	
-	
+
+
 
 }
