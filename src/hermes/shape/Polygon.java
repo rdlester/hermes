@@ -63,7 +63,7 @@ public class Polygon extends Shape {
 	private void addAxis(PVector start, PVector end) {
 		PVector axis = PVector.sub(start, end);
 		axis.normalize();
-		axis.dot(1,-1,0);
+		axis.mult(new PVector(1,-1,0));
 		_axes.addLast(axis);
 	}
 	
@@ -172,9 +172,9 @@ public class Polygon extends Shape {
 			}
 			
 			else {
-				if(top > bottom) axis.mult(bottom);
-				else axis.mult(top);
-				resolutionList.add(axis);
+				return (top > bottom ?
+						PVector.mult(axis, bottom):
+						PVector.mult(axis, -top));
 			}
 		}
 		
@@ -199,9 +199,9 @@ public class Polygon extends Shape {
 			}
 			
 			else {
-				if(top > bottom) axis.mult(bottom);
-				else axis.mult(top);
-				resolutionList.add(axis);
+				return (top > bottom ?
+						PVector.mult(axis, bottom):
+						PVector.mult(axis, -top));
 			}
 		}
 		
@@ -270,7 +270,7 @@ public class Polygon extends Shape {
 		PVector project2 = getProjection(axis, other);
 		
 		//Offset projection of this away from other
-		float offset = dist.dot(axis);
+		float offset = PVector.dot(dist,axis);
 		project1.add(offset, offset, 0);
 		
 		//Check if they are separated along axis
@@ -282,9 +282,9 @@ public class Polygon extends Shape {
 		}
 		
 		else {
-			if(top > bottom) axis.mult(bottom);
-			else axis.mult(top);
-			return axis;
+			return (top > bottom ?
+					PVector.mult(axis, bottom):
+					PVector.mult(axis, -top));
 		}
 	}
 	
