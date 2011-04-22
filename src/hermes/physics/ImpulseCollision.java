@@ -1,6 +1,7 @@
 package src.hermes.physics;
 
 import processing.core.*;
+import static src.hermes.HermesMath.*;
 
 /**
  * this class is used to store the data for an impulse-based collision between two beings
@@ -17,16 +18,34 @@ public class ImpulseCollision {
 	private PVector _impulse; // the impulse on _being2 from _being1
 	
 	/**
-	 * sets up a collision between
-	 * @param _being1
-	 * @param _being2
+	 * sets up a collision between beings
+	 * @param being1		the first being (impulses and projections are from being1 to being2)
+	 * @param being2		the second being
+	 * @param projection	the projection vector from being1 to being2
 	 */
-	public ImpulseCollision(MassedBeing being1, MassedBeing being2) {
+	public ImpulseCollision(MassedBeing being1, MassedBeing being2, PVector projection) {
 		assert being1 != null : "ImpulseCollision contructor: being1 must be a valid being";
 		assert being2 != null : "ImpulseCollision contructor: being2 must be a valid being";
 		
 		_being1 = being1;
 		_being2 = being2;
+		_projection = projection;
+	}
+	
+	/**
+	 * the projection vector from being1 to being2
+	 * @return	the projection vector
+	 */
+	public PVector getProjection() {
+		return _projection;
+	}
+	
+	/**
+	 * sets the projection vector for the collision
+	 * @param projection	the projection vector
+	 */
+	public void setProjection(PVector projection) {
+		_projection = projection;
 	}
 	
 	/**
@@ -43,6 +62,16 @@ public class ImpulseCollision {
 			_impulse.sub(impulse); 	// subtract it
 		else
 			assert false : "ImpulseCollision.addImpulse: origin of collision force must be being1 or being2";
+	}
+	
+	/**
+	 * applies the stored impulse to each being
+	 * clears the impulse vector
+	 */
+	public void applyImpulses() {
+		_being1.addImpulse(_impulse);
+		_being2.addImpulse(reverse(_impulse));
+		_impulse.set(0, 0, 0);
 	}
 	
 }

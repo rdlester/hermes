@@ -22,6 +22,5 @@ public class Hermes {
 	public static void setPApplet(PApplet parentApplet) {
 		_parentApplet = parentApplet;		
 	}
-	
 
 }
