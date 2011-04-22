@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import processing.core.PVector;
+import src.hermes.HermesMath;
 
 /**
  * Represents an arbitrary convex polygon
@@ -102,34 +103,20 @@ public class Polygon extends Shape {
 		return other.projectionVector(this) != null;
 	}
 	
-	@Override
-	public boolean projectionVector(Shape other) {
-		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
-		return other.projectionVector(this);
+	public boolean collide(Rectangle other) {
+		return projectionVector(other) != null;
+	}
+	public boolean collide(Circle other) {
+		return projectionVector(other) != null;
+	}
+	public boolean collide(Polygon other) {
+		return projectionVector(other) != null;
 	}
 	
-	/**
-	 * 
-	 * @param other
-	 * @return
-	 */
-	public boolean collide(Circle other) {
-		Iterator<PVector> points = _points.iterator();
-		Iterator<PVector> axes = _axes.iterator();
-		
-		PVector first = points.next();
-		PVector pre2 = first;
-		PVector second = points.next();
-		PVector pre1 = second;
-		
-		while(points.hasNext()) {
-			PVector curr = points.next();
-			
-			pre2 = pre1;
-			pre1 = curr;
-		}
-		
-		return true;
+	@Override
+	public PVector projectionVector(Shape other) {
+		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
+		return other.projectionVector(this);
 	}
 	
 	/**
@@ -139,7 +126,7 @@ public class Polygon extends Shape {
 	 * @param other
 	 * @return
 	 */
-	public boolean collide(Rectangle other) {
+	public PVector projectionVector(Rectangle other) {
 		//Turn Rectangle into a Polygon
 		PVector otherPos = other.getPosition();
 		PVector min = other.getMin();
@@ -153,7 +140,82 @@ public class Polygon extends Shape {
 		points.add(v4);	
 		Polygon rect = new Polygon(otherPos, points);
 		
-		return collide(rect);
+		return projectionVector(rect);
+	}
+	
+	/**
+	 * 
+	 * @param other
+	 * @return
+	 */
+	public PVector projectionVector(Circle other) {
+		ArrayList<PVector> resolutionList = new ArrayList<PVector>();
+		
+		PVector worldCenterOther = PVector.add(other.getCenter(), other.getPosition());
+		PVector dist = PVector.sub(_position, worldCenterOther);
+		
+		//Check for collisions along all axes in polygon
+		for(PVector axis : _axes) {
+			PVector project1 = getProjection(axis, this);
+			PVector project2 = getProjection(axis, worldCenterOther, other.getRadius());
+			
+			//Offset the projection of 1 away from 2
+			float offset = dist.dot(axis);
+			project1.add(offset, offset, 0);
+			
+			//Check if they are separated along axis
+			float top = project1.x - project2.y;
+			float bottom = project2.x - project1.y;
+			if(top > 0 ||  bottom > 0) {
+				//Found a separating axis! Not colliding.
+				return null;
+			}
+			
+			else {
+				if(top > bottom) axis.mult(bottom);
+				else axis.mult(top);
+				resolutionList.add(axis);
+			}
+		}
+		
+		//Now check for collisions along axes between points of poly and circle center
+		for(PVector p : _points) {
+			//Get axis and projections along it
+			PVector axis = PVector.sub(p, worldCenterOther);
+			axis.normalize();
+			PVector project1 = getProjection(axis, this);
+			PVector project2 = getProjection(axis, worldCenterOther, other.getRadius());
+			
+			//Offset the projection of 1 away from 2
+			float offset = dist.dot(axis);
+			project1.add(offset, offset, 0);
+			
+			//Check if they are separated along axis
+			float top = project1.x - project2.y;
+			float bottom = project2.x - project1.y;
+			if(top > 0 ||  bottom > 0) {
+				//Found a separating axis! Not colliding.
+				return null;
+			}
+			
+			else {
+				if(top > bottom) axis.mult(bottom);
+				else axis.mult(top);
+				resolutionList.add(axis);
+			}
+		}
+		
+		//Figure out which resolution vector is smallest
+		float min = Float.MAX_VALUE;
+		PVector use = null;
+		for(PVector resolution : resolutionList) {
+			float temp = HermesMath.mag2(resolution);
+			if(temp < min) {
+				min = temp;
+				use = resolution;
+			}
+		}
+		return use;
 	}
 
 	/**
@@ -183,7 +245,17 @@ public class Polygon extends Shape {
 			else resolutionList.add(result);
 		}
 		
-		return true;
+		//Figure out which resolution vector is smallest
+		float min = Float.MAX_VALUE;
+		PVector use = null;
+		for(PVector resolution : resolutionList) {
+			float temp = HermesMath.mag2(resolution);
+			if(temp < min) {
+				min = temp;
+				use = resolution;
+			}
+		}
+		return use;
 	}
 	
 	/**
@@ -210,7 +282,7 @@ public class Polygon extends Shape {
 		}
 		
 		else {
-			if(top > bottom) axis.mult(bottom):
+			if(top > bottom) axis.mult(bottom);
 			else axis.mult(top);
 			return axis;
 		}
@@ -239,5 +311,24 @@ public class Polygon extends Shape {
 		}
 		
 		return new PVector(min,max);
+	}
+	
+	/**
+	 * Projects circle onto given axis
+	 * @param axis
+	 * @param center
+	 * @param radius
+	 * @return PVector with min as x, max as y
+	 */
+	private PVector getProjection(PVector axis, PVector center, float radius) {
+		float project = center.dot(axis);
+		float min = project - radius;
+		float max = project + radius;
+		return new PVector(min,max);
+	}
+	
+	@Override
+	public String toString() {
+		return "Position:" + _position;
 	}
 }
