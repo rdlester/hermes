@@ -9,8 +9,8 @@ import processing.core.PVector;
  */
 public class Circle extends Shape {
 
-	PVector _center;
-	float _radius;
+	private PVector _center;
+	private float _radius;
 	
 	/**
 	 * Constructor defining center of circle
@@ -23,7 +23,7 @@ public class Circle extends Shape {
 		super(position);
 		
 		assert center != null : "In Circle constructor, center must be a valid PVector";
-		assert radius > 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
+		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
 		
 		_center = center;
 		_radius = radius;
@@ -38,7 +38,7 @@ public class Circle extends Shape {
 	public Circle(PVector position, float radius) {
 		super(position);
 		
-		assert radius > 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
+		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
 		
 		_center = new PVector(0,0);
 		_radius = radius;
@@ -60,8 +60,16 @@ public class Circle extends Shape {
 
 	@Override
 	public boolean collide(Shape other) {
-		assert other != null : "Rectangle.collide: other must be a valid Shape"
+		assert other != null : "Rectangle.collide: other must be a valid Shape";
 		return other.projectionVector(this) != null;
+	}
+	
+	public boolean collide(Circle other) {
+		return projectionVector(other) != null;
+	}
+	
+	public boolean collide(Rectangle other) {
+		return projectionVector(other) != null;
 	}
 	
 	@Override
@@ -79,13 +87,11 @@ public class Circle extends Shape {
 	 */
 	public PVector projectionVector(Circle other) {
 		//Get the center of this circle
-		PVector worldCenterThis = new PVector(_position.x + _center.x,
-											_position.y + _center.y);
+		PVector worldCenterThis = PVector.add(_position, _center);
 		//Get the center of the other circle
 		PVector positionOther = other._position;
 		PVector centerOther = other._center;
-		PVector worldCenterOther = new PVector(positionOther.x + centerOther.x,
-											positionOther.y + centerOther.y);
+		PVector worldCenterOther = PVector.add(positionOther, centerOther);
 		
 		//Circles are colliding if distance between them is less than sum of radii
 		PVector dir = PVector.sub(worldCenterThis, worldCenterOther);
@@ -111,7 +117,6 @@ public class Circle extends Shape {
 	 * @return
 	 */
 	public PVector projectionVector(Rectangle other) {
-		boolean collides = false;
 		//Get the center of this circle
 		PVector worldCenter = new PVector(_position.x + _center.x,
 										_position.y + _center.y);
@@ -219,5 +224,10 @@ public class Circle extends Shape {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	public String toString() {
+		return "Position:" + _position + "\nCenter:" + _center + "\nRadius:" + _radius;
 	}
 }

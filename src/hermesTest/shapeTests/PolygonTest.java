@@ -93,7 +93,7 @@ public class PolygonTest {
 		
 		//Does not collide
 		PVector pos4 = new PVector(10,10);
-		PVector min3 = new PVector(-1,-1);
+		PVector min3 = new PVector(0,0);
 		PVector max3 = new PVector(20,20);
 		Rectangle r3 = new Rectangle(pos4,min3,max3);
 		
