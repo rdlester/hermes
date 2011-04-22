@@ -92,11 +92,13 @@ public class Rectangle extends Shape {
 	 */
 	@Override
 	public boolean collide(Shape other) {
-		return other.collide(this);
+		assert other != null : "Rectangle.collide: other must be a valid shape";
+		return other.projectionVector(this) != null;
 	}
 	
 	@Override
 	public PVector projectionVector(Shape other) {
+		assert other != null : "Rectangle.projectionVector: other must be a valid shape";
 		return other.projectionVector(this);
 	}
 
@@ -104,16 +106,9 @@ public class Rectangle extends Shape {
 	/**
 	 * rectangle-rectangle collision
 	 * @param other		the rectangle to be collided with
-	 * @return			whether there was a collision
+	 * @return			projection vector of collision
 	 */
-	public boolean collide(Rectangle other) {
-		return projectionVector(other) != null;
-	}
-	
-	
 	public PVector projectionVector(Rectangle other) {
-		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
-		
 		if(other == this)	// no self-projection
 			return null;
 		// calculate the distance between rect centers
