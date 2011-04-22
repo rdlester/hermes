@@ -1,6 +1,7 @@
 package src.hermes;
 
 import processing.core.PApplet;
+import java.math.*;
 
 /**
  * Library class for broad scale static helpers, storage of PApplet
@@ -23,5 +24,8 @@ public class Hermes {
 		_parentApplet = parentApplet;		
 	}
 	
-
+		
+	public static final float INFINITY = Float.POSITIVE_INFINITY;
+		
+	
 }

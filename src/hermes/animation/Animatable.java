@@ -7,18 +7,20 @@ package src.hermes.animation;
  */
 public interface Animatable {
 	
-	/**
-	 * Specifies that the current animation should advance frames
-	 */
-	public void play();
+	public static final int INFINITE_LOOPS = -1;
 	
 	/**
-	 * Specifies that the current animation should NOT advance frames 
+	 * Specifies that the current animation should advance frames TODO: change
 	 */
-	public void stop();
+	public void pause();
 	
 	/**
-	 * Determines which animation should play
+	 * Specifies that the current animation should NOT advance frames TODO: cahnge
+	 */
+	public void resume();
+	
+	/**
+	 * Determines which animation should play TODO: changet o setActiveAnimation
 	 * @param animationIndex a numerical index for determining which animation a sprite should play. User might want to associate these index values with variables constants for the sake of naming
 	 */
 	public void specifyAnimation(int animationIndex);
