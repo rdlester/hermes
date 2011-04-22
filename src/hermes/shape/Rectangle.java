@@ -124,17 +124,8 @@ public class Rectangle extends Shape {
 			return null;
 		// the projection vector is the smallest projection, in direction opposite the distance vector
 		return (xProject > yProject ? 
-				new PVector(xProject * -sign(xDist), 0.0f) : 
-				new PVector(0.0f, yProject * -sign(yDist)));
+				new PVector(xProject * - sign(xDist), 0.0f) : 
+				new PVector(0.0f, yProject * - sign(yDist))); 
 	}	
-
-	/**
-	 * returns the sign of a float
-	 * @param x		the float
-	 * @return		1 if x is positive or zero, -1 if x is negative
-	 */
-	float sign(float x) {
-		return (x < 0 ? -1.0f : 1.0f);
-	}
 	
 }

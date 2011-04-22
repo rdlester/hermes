@@ -116,7 +116,7 @@ public class Polygon extends Shape {
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
-		return other.projectionVector(this);
+		return HermesMath.reverse(other.projectionVector(this));
 	}
 	
 	/**

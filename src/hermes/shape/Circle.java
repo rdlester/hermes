@@ -1,6 +1,7 @@
 package src.hermes.shape;
 
 import processing.core.PVector;
+import static src.hermes.HermesMath.*;
 
 /**
  * 
@@ -74,10 +75,16 @@ public class Circle extends Shape {
 	
 	@Override
 	public PVector projectionVector(Shape other) {
-		assert other != null : "Rectangle.projectionVector: other must be a valid Shape";
-		return other.projectionVector(this);
+		assert other != null : "Circle.projectionVector: other must be a valid Shape";
+		return reverse(other.projectionVector(this));
 	}
 
+	@Override
+	public PVector projectionVector(Polygon other) {
+		assert other != null : "Circle.projectionVector: other must be a valid Polygon";
+		return reverse(other.projectionVector(this));
+	}
+	
 	/**
 	 * Collides one circle with another
 	 * by finding distance between circles
@@ -230,4 +237,5 @@ public class Circle extends Shape {
 	public String toString() {
 		return "Position:" + _position + "\nCenter:" + _center + "\nRadius:" + _radius;
 	}
+
 }
