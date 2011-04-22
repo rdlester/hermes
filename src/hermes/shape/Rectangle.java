@@ -1,6 +1,7 @@
 package src.hermes.shape;
 
 import processing.core.PVector;
+import static src.hermes.HermesMath.*;
 
 /**
  * represents an axis-aligned bounding rectangle
@@ -87,29 +88,23 @@ public class Rectangle extends Shape {
 		_min.y *= yScale;
 	}
 	
-	/**
-	 * general collision of a rectangle with another shape for double dispatch
-	 */
-	@Override
-	public boolean collide(Shape other) {
-		return other.collide(this);
-	}
-	
 	@Override
 	public PVector projectionVector(Shape other) {
-		return other.projectionVector(this);
+		PVector opposite = other.projectionVector(this);
+		return opposite == null ? null : reverse(opposite);
+	}
+	
+	@Override
+	public PVector projectionVector(Circle other) {
+		PVector opposite = other.projectionVector(this);
+		return opposite == null ? null : reverse(opposite);
 	}
 
-	
-	/**
-	 * rectangle-rectangle collision
-	 * @param other		the rectangle to be collided with
-	 * @return			whether there was a collision
-	 */
-	public boolean collide(Rectangle other) {
-		return projectionVector(other) != null;
+	@Override
+	public PVector projectionVector(Polygon other) {
+		PVector opposite = other.projectionVector(this);
+		return opposite == null ? null : reverse(opposite);
 	}
-	
 	
 	public PVector projectionVector(Rectangle other) {
 		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
@@ -129,17 +124,8 @@ public class Rectangle extends Shape {
 			return null;
 		// the projection vector is the smallest projection, in direction opposite the distance vector
 		return (xProject > yProject ? 
-				new PVector(xProject * sign(xDist), 0.0f) : 
-				new PVector(0.0f, yProject * sign(yDist)));
+				new PVector(xProject * - sign(xDist), 0.0f) : 
+				new PVector(0.0f, yProject * - sign(yDist))); 
 	}	
-
-	/**
-	 * returns the sign of a float
-	 * @param x		the float
-	 * @return		1 if x is positive or zero, -1 if x is negative
-	 */
-	float sign(float x) {
-		return (x < 0 ? -1.0f : 1.0f);
-	}
 	
 }

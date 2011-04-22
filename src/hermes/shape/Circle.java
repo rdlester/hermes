@@ -1,6 +1,7 @@
 package src.hermes.shape;
 
 import processing.core.PVector;
+import static src.hermes.HermesMath.*;
 
 /**
  * 
@@ -9,8 +10,8 @@ import processing.core.PVector;
  */
 public class Circle extends Shape {
 
-	PVector _center;
-	float _radius;
+	private PVector _center;
+	private float _radius;
 	
 	/**
 	 * Constructor defining center of circle
@@ -21,6 +22,10 @@ public class Circle extends Shape {
 	 */
 	public Circle(PVector position, PVector center, float radius) {
 		super(position);
+		
+		assert center != null : "In Circle constructor, center must be a valid PVector";
+		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
+		
 		_center = center;
 		_radius = radius;
 	}
@@ -33,6 +38,9 @@ public class Circle extends Shape {
 	 */
 	public Circle(PVector position, float radius) {
 		super(position);
+		
+		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
+		
 		_center = new PVector(0,0);
 		_radius = radius;
 	}
@@ -53,9 +61,30 @@ public class Circle extends Shape {
 
 	@Override
 	public boolean collide(Shape other) {
-		return other.collide(this);
+		assert other != null : "Rectangle.collide: other must be a valid Shape";
+		return other.projectionVector(this) != null;
+	}
+	
+	public boolean collide(Circle other) {
+		return projectionVector(other) != null;
+	}
+	
+	public boolean collide(Rectangle other) {
+		return projectionVector(other) != null;
+	}
+	
+	@Override
+	public PVector projectionVector(Shape other) {
+		assert other != null : "Circle.projectionVector: other must be a valid Shape";
+		return reverse(other.projectionVector(this));
 	}
 
+	@Override
+	public PVector projectionVector(Polygon other) {
+		assert other != null : "Circle.projectionVector: other must be a valid Polygon";
+		return reverse(other.projectionVector(this));
+	}
+	
 	/**
 	 * Collides one circle with another
 	 * by finding distance between circles
@@ -63,21 +92,28 @@ public class Circle extends Shape {
 	 * @param other
 	 * @return
 	 */
-	public boolean collide(Circle other) {
+	public PVector projectionVector(Circle other) {
 		//Get the center of this circle
-		PVector worldCenterThis = new PVector(_position.x + _center.x,
-											_position.y + _center.y);
+		PVector worldCenterThis = PVector.add(_position, _center);
 		//Get the center of the other circle
 		PVector positionOther = other._position;
 		PVector centerOther = other._center;
-		PVector worldCenterOther = new PVector(positionOther.x + centerOther.x,
-											positionOther.y + centerOther.y);
+		PVector worldCenterOther = PVector.add(positionOther, centerOther);
 		
-		float distance = PVector.dist(worldCenterThis, worldCenterOther);
+		//Circles are colliding if distance between them is less than sum of radii
+		PVector dir = PVector.sub(worldCenterThis, worldCenterOther);
+		float distance = dir.mag();
 		float sumRadii = _radius + other._radius;
 		boolean collides = distance <= sumRadii;
 		
-		return collides; 
+		//Projection vector is the unit vector pointing from this circle to other scaled by overlap
+		if(collides) {
+			float magnitude = sumRadii - distance;
+			dir.normalize();
+			dir.mult(magnitude);
+			return dir;
+		}
+		else return null;
 	}
 	
 	/**
@@ -87,8 +123,7 @@ public class Circle extends Shape {
 	 * @param other
 	 * @return
 	 */
-	public boolean collide(Rectangle other) {
-		boolean collides = false;
+	public PVector projectionVector(Rectangle other) {
 		//Get the center of this circle
 		PVector worldCenter = new PVector(_position.x + _center.x,
 										_position.y + _center.y);
@@ -102,7 +137,12 @@ public class Circle extends Shape {
 				float minProject = worldCenter.y - _radius;
 				float maxProject = worldCenter.y + _radius;
 				if(min.y <= maxProject && minProject <= max.y) {
-					collides = true;
+					float topCollide = max.y - minProject;
+					float bottomCollide = maxProject - min.y;
+					return (topCollide > bottomCollide ?
+							new PVector(0,topCollide):
+							new PVector(0,-bottomCollide));
+					
 				}
 			}
 			else if(min.y <= worldCenter.y) {
@@ -111,7 +151,7 @@ public class Circle extends Shape {
 					//Compare x projections
 					float minProject = worldCenter.x - _radius;
 					if(minProject <= max.x) {
-						collides = true;
+						return new PVector(minProject - max.x,0);
 					}
 				}
 				else {
@@ -122,7 +162,11 @@ public class Circle extends Shape {
 					axis.mult(_radius);
 					PVector project = PVector.add(worldCenter, axis);
 					if(project.x <= max.x && project.y <= max.y) {
-						collides = true;
+						float rightPath = max.x - project.x;
+						float downPath = max.y - project.y;
+						return (rightPath > downPath ?
+								new PVector(0,downPath):
+								new PVector(rightPath,0));
 					}
 					
 				}
@@ -136,7 +180,11 @@ public class Circle extends Shape {
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, axis);
 				if(project.x <= trVertex.x && trVertex.y <= project.y) {
-					collides = true;
+					float rightPath = trVertex.x - project.x;
+					float topPath = trVertex.y - project.y;
+					return (rightPath > topPath ?
+							new PVector(0,topPath):
+							new PVector(rightPath,0));
 				}
 			}
 		}
@@ -146,7 +194,7 @@ public class Circle extends Shape {
 				//Compare x projections
 				float maxProject = worldCenter.x + _radius;
 				if(min.x <= maxProject) {
-					collides = true;
+					return new PVector(min.x - maxProject,0);
 				}
 			}
 			else {
@@ -158,7 +206,11 @@ public class Circle extends Shape {
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, blVertex);
 				if(blVertex.x <= project.x && project.y <= blVertex.y) {
-					collides = true;
+					float leftPath = blVertex.x - project.x;
+					float downPath = blVertex.y - project.y;
+					return (leftPath > downPath ?
+							new PVector(0,downPath):
+							new PVector(leftPath,0));
 				}
 			}
 		}
@@ -170,10 +222,20 @@ public class Circle extends Shape {
 			axis.mult(_radius);
 			PVector project = PVector.add(worldCenter, axis);
 			if(min.x <= project.x && min.y <= project.y) {
-				collides = true;
+				float leftPath = min.x - project.x;
+				float upPath = min.y - project.y;
+				return (leftPath > upPath ?
+						new PVector(0,upPath):
+						new PVector(leftPath,0));
 			}
 		}
 		
-		return collides;
+		return null;
 	}
+	
+	@Override
+	public String toString() {
+		return "Position:" + _position + "\nCenter:" + _center + "\nRadius:" + _radius;
+	}
+
 }
