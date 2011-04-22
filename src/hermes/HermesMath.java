@@ -27,4 +27,14 @@ public class HermesMath {
 		return new PVector(0,0,0);
 	}
 	
+	/**
+	 * Gets the square of the magnitude of a PVector
+	 * Useful when taking the square root to find the true magnitude is not important
+	 * (saves time)
+	 * @param vector
+	 * @return
+	 */
+	public static float mag2(PVector vector) {
+		return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z; 
+	}
 }

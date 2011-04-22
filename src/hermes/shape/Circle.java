@@ -23,7 +23,7 @@ public class Circle extends Shape {
 		super(position);
 		
 		assert center != null : "In Circle constructor, center must be a valid PVector";
-		assert radius > 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
+		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
 		
 		_center = center;
 		_radius = radius;
@@ -38,7 +38,7 @@ public class Circle extends Shape {
 	public Circle(PVector position, float radius) {
 		super(position);
 		
-		assert radius > 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
+		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
 		
 		_center = new PVector(0,0);
 		_radius = radius;
@@ -60,7 +60,7 @@ public class Circle extends Shape {
 
 	@Override
 	public boolean collide(Shape other) {
-		assert other != null : "Rectangle.collide: other must be a valid Shape"
+		assert other != null : "Rectangle.collide: other must be a valid Shape";
 		return other.projectionVector(this) != null;
 	}
 	
@@ -111,7 +111,6 @@ public class Circle extends Shape {
 	 * @return
 	 */
 	public PVector projectionVector(Rectangle other) {
-		boolean collides = false;
 		//Get the center of this circle
 		PVector worldCenter = new PVector(_position.x + _center.x,
 										_position.y + _center.y);

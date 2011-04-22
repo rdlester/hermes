@@ -1,5 +1,6 @@
 package src.hermes.shape;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -97,8 +98,14 @@ public class Polygon extends Shape {
 	
 	@Override
 	public boolean collide(Shape other) {
-		other.collide(this);
-		return false;
+		assert other != null : "Polygon.collide: other must be a valid Shape";
+		return other.projectionVector(this) != null;
+	}
+	
+	@Override
+	public boolean projectionVector(Shape other) {
+		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
+		return other.projectionVector(this);
 	}
 	
 	/**
@@ -156,19 +163,24 @@ public class Polygon extends Shape {
 	 * @param other
 	 * @return
 	 */
-	public boolean collide(Polygon other) {
+	public PVector projectionVector(Polygon other) {
 		//Get distance between polygons
 		PVector dist = PVector.sub(_position, other.getPosition());
+		ArrayList<PVector> resolutionList = new ArrayList<PVector>();
 		
 		//Check for collision along all axes in this polygon
 		for(PVector axis : _axes) {
-			if(!checkSepAxis(axis, dist, other)) return false;
+			PVector result = checkSepAxis(axis, dist, other);
+			if(result == null) return null;
+			else resolutionList.add(result);
 		}
 		
 		//Check for collision along all axes in other polygon
 		LinkedList<PVector> axes = other.getAxes();
 		for(PVector axis : axes) {
-			if(!checkSepAxis(axis, dist, other)) return false;
+			PVector result = checkSepAxis(axis, dist, other);
+			if(result == null) return null;
+			else resolutionList.add(result);
 		}
 		
 		return true;
@@ -181,7 +193,7 @@ public class Polygon extends Shape {
 	 * @param other - the other polygon
 	 * @return
 	 */
-	private boolean checkSepAxis(PVector axis, PVector dist, Polygon other) {
+	private PVector checkSepAxis(PVector axis, PVector dist, Polygon other) {
 		PVector project1 = getProjection(axis, this);
 		PVector project2 = getProjection(axis, other);
 		
@@ -190,11 +202,18 @@ public class Polygon extends Shape {
 		project1.add(offset, offset, 0);
 		
 		//Check if they are separated along axis
-		if(project1.x - project2.y > 0 ||  project2.x - project1.y > 0) {
+		float top = project1.x - project2.y;
+		float bottom = project2.x - project1.y;
+		if(top > 0 ||  bottom > 0) {
 			//Found a separating axis! Not colliding.
-			return false;
+			return null;
 		}
-		else return true;
+		
+		else {
+			if(top > bottom) axis.mult(bottom):
+			else axis.mult(top);
+			return axis;
+		}
 	}
 	
 	/**
@@ -220,11 +239,5 @@ public class Polygon extends Shape {
 		}
 		
 		return new PVector(min,max);
-	}
-
-	@Override
-	public PVector projectionVector(Shape other) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 }
