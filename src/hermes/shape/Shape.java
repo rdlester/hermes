@@ -31,7 +31,9 @@ public abstract class Shape {
 	 * @param other		the shape to collide with
 	 * @return			whether the shapes have collided
 	 */
-	public abstract boolean collide(Shape other);
+	public boolean collide(Shape other) {
+		return projectionVector(other) != null;
+	}
 
 	/**
 	 * finds the projection vector for a collision with another shape

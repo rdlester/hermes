@@ -1,6 +1,9 @@
-package src.hermes;
+package src.hermes.physics;
+
+import java.util.LinkedList;
 
 import processing.core.*;
+import src.hermes.Being;
 
 /**
  * an extension of being representing a body with mass
@@ -14,6 +17,8 @@ public abstract class MassedBeing extends Being {
 	private PVector _force; // used to calculate the force being applied to this being
 	private PVector _impulse; // used to calculate the impulse being applied to this being
 	private PVector _displacement; // used to accumulate an instantaneous displacement on this being
+	
+	LinkedList<ImpulseCollision> _collsions;
 	
 	/**
 	 * gets the being's mass
