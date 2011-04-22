@@ -20,6 +20,8 @@ public abstract class MassedBeing extends Being {
 	
 	LinkedList<ImpulseCollision> _collsions;
 	
+	
+	
 	/**
 	 * gets the being's mass
 	 * @return	the being's mass

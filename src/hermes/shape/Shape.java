@@ -43,6 +43,9 @@ public abstract class Shape {
 	 * @return			the projection vector from this body to other, or null if they aren't colliding
 	 */
 	public abstract PVector projectionVector(Shape other);
+	public abstract PVector projectionVector(Rectangle other);
+	public abstract PVector projectionVector(Circle other);
+	public abstract PVector projectionVector(Polygon other);
 	
 	/**
 	 * @return the shape's position
