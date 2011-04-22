@@ -37,6 +37,10 @@ public class Polygon extends Shape {
 	 */
 	public Polygon(PVector position, List<PVector> points) {
 		super(position);
+		
+		assert points != null : "In Polygon constructor, points must be valid List";
+		assert points.size() > 0 : "In Polygon constructor, points must contain at least one point";
+		
 		_points = points;
 		
 		//Create the list of lines in the polygon
@@ -114,6 +118,8 @@ public class Polygon extends Shape {
 		while(points.hasNext()) {
 			PVector curr = points.next();
 			
+			pre2 = pre1;
+			pre1 = curr;
 		}
 		
 		return true;
@@ -214,5 +220,11 @@ public class Polygon extends Shape {
 		}
 		
 		return new PVector(min,max);
+	}
+
+	@Override
+	public PVector projectionVector(Shape other) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
