@@ -96,12 +96,10 @@ public class Circle extends Shape {
 		//Get the center of this circle
 		PVector worldCenterThis = PVector.add(_position, _center);
 		//Get the center of the other circle
-		PVector positionOther = other._position;
-		PVector centerOther = other._center;
-		PVector worldCenterOther = PVector.add(positionOther, centerOther);
+		PVector worldCenterOther = PVector.add(other.getPosition(), other.getCenter());
 		
 		//Circles are colliding if distance between them is less than sum of radii
-		PVector dir = PVector.sub(worldCenterThis, worldCenterOther);
+		PVector dir = PVector.sub(worldCenterOther, worldCenterThis);
 		float distance = dir.mag();
 		float sumRadii = _radius + other._radius;
 		boolean collides = distance <= sumRadii;
@@ -109,9 +107,14 @@ public class Circle extends Shape {
 		//Projection vector is the unit vector pointing from this circle to other scaled by overlap
 		if(collides) {
 			float magnitude = sumRadii - distance;
-			dir.normalize();
-			dir.mult(magnitude);
-			return dir;
+			if(dir.x == 0 && dir.y == 0) {
+				return new PVector(0,magnitude);
+			}
+			else {
+				dir.normalize();
+				dir.mult(magnitude);
+				return dir;
+			}
 		}
 		else return null;
 	}
@@ -125,8 +128,7 @@ public class Circle extends Shape {
 	 */
 	public PVector projectionVector(Rectangle other) {
 		//Get the center of this circle
-		PVector worldCenter = new PVector(_position.x + _center.x,
-										_position.y + _center.y);
+		PVector worldCenter = PVector.add(_center, _position);
 		//Figure out what voronoi region of the rectangle the circle is in
 		PVector min = PVector.add(other._position, other.getMin());
 		PVector max = PVector.add(other._position, other.getMax());
@@ -139,9 +141,9 @@ public class Circle extends Shape {
 				if(min.y <= maxProject && minProject <= max.y) {
 					float topCollide = max.y - minProject;
 					float bottomCollide = maxProject - min.y;
-					return (topCollide > bottomCollide ?
-							new PVector(0,topCollide):
-							new PVector(0,-bottomCollide));
+					return (topCollide >= bottomCollide ?
+							new PVector(0,bottomCollide):
+							new PVector(0,-topCollide));
 					
 				}
 			}
@@ -155,36 +157,36 @@ public class Circle extends Shape {
 					}
 				}
 				else {
-					//In region to the right&down of rectangle
-					//Get projection of both along bottom-right vertex (max)
+					//In region to the right&up of rectangle
+					//Get projection of both along up-right vertex (max)
 					PVector axis = PVector.sub(max, worldCenter);
 					axis.normalize();
 					axis.mult(_radius);
 					PVector project = PVector.add(worldCenter, axis);
 					if(project.x <= max.x && project.y <= max.y) {
-						float rightPath = max.x - project.x;
+						float leftPath = max.x - project.x;
 						float downPath = max.y - project.y;
-						return (rightPath > downPath ?
-								new PVector(0,downPath):
-								new PVector(rightPath,0));
+						return (leftPath >= downPath ?
+								new PVector(0,-downPath):
+								new PVector(-leftPath,0));
 					}
 					
 				}
 			}
 			else {
-				//In region to the right&up of rectangle
-				//Get projection of both along top-right vertex
-				PVector trVertex = new PVector(max.x, min.y);
-				PVector axis = PVector.sub(trVertex, worldCenter);
+				//In region to the right&down of rectangle
+				//Get projection of both along bottom-right vertex
+				PVector brVertex = new PVector(max.x, min.y);
+				PVector axis = PVector.sub(brVertex, worldCenter);
 				axis.normalize();
 				axis.mult(_radius);
 				PVector project = PVector.add(worldCenter, axis);
-				if(project.x <= trVertex.x && trVertex.y <= project.y) {
-					float rightPath = trVertex.x - project.x;
-					float topPath = trVertex.y - project.y;
-					return (rightPath > topPath ?
+				if(project.x <= brVertex.x && brVertex.y <= project.y) {
+					float leftPath = brVertex.x - project.x;
+					float topPath = project.y - brVertex.y;
+					return (leftPath >= topPath ?
 							new PVector(0,topPath):
-							new PVector(rightPath,0));
+							new PVector(-leftPath,0));
 				}
 			}
 		}
@@ -194,39 +196,39 @@ public class Circle extends Shape {
 				//Compare x projections
 				float maxProject = worldCenter.x + _radius;
 				if(min.x <= maxProject) {
-					return new PVector(min.x - maxProject,0);
+					return new PVector(maxProject - min.x,0);
 				}
 			}
 			else {
-				//In region to the left&down of rectangle
-				//Get projection of both along bottom-left vertex
-				PVector blVertex = new PVector(min.x, max.y);
-				PVector axis = PVector.sub(blVertex, worldCenter);
+				//In region to the left&up of rectangle
+				//Get projection of both along top-left vertex
+				PVector tlVertex = new PVector(min.x, max.y);
+				PVector axis = PVector.sub(tlVertex, worldCenter);
 				axis.normalize();
 				axis.mult(_radius);
-				PVector project = PVector.add(worldCenter, blVertex);
-				if(blVertex.x <= project.x && project.y <= blVertex.y) {
-					float leftPath = blVertex.x - project.x;
-					float downPath = blVertex.y - project.y;
-					return (leftPath > downPath ?
-							new PVector(0,downPath):
-							new PVector(leftPath,0));
+				PVector project = PVector.add(worldCenter, axis);
+				if(tlVertex.x <= project.x && project.y <= tlVertex.y) {
+					float rightPath = project.x - tlVertex.x;
+					float downPath = tlVertex.y - project.y;
+					return (rightPath >= downPath ?
+							new PVector(0,-downPath):
+							new PVector(rightPath,0));
 				}
 			}
 		}
 		else {
-			//In region to the left&up of rectangle
-			//Get projection of both along top-left vertex (min)
+			//In region to the left&down of rectangle
+			//Get projection of both along bottom-left vertex (min)
 			PVector axis = PVector.sub(min, worldCenter);
 			axis.normalize();
 			axis.mult(_radius);
 			PVector project = PVector.add(worldCenter, axis);
 			if(min.x <= project.x && min.y <= project.y) {
-				float leftPath = min.x - project.x;
-				float upPath = min.y - project.y;
-				return (leftPath > upPath ?
+				float rightPath = project.x - min.x;
+				float upPath = project.y - min.y;
+				return (rightPath >= upPath ?
 						new PVector(0,upPath):
-						new PVector(leftPath,0));
+						new PVector(rightPath,0));
 			}
 		}
 		

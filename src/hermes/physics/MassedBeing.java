@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import processing.core.*;
 import src.hermes.*;
 import src.hermes.physics.*;
+import static src.hermes.HermesMath.zeroVector;
 
 /**
  * an extension of being representing a body with mass
@@ -22,7 +23,15 @@ public abstract class MassedBeing extends Being {
 	
 	private LinkedList<ImpulseCollision> _collisions; // keeps track of all collisions in this step 
 	
-	
+	/**
+	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
+	 * 	bounciness of collisions, a collision between beings of elasticity 1 will be perfectly
+	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
+	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
+	 *  they will gain speed from collisions, which may produce unrealistic results 
+	 * @param mass
+	 * @param elasticity
+	 */
 	public MassedBeing(float mass, float elasticity) {
 		super();
 		
@@ -31,6 +40,10 @@ public abstract class MassedBeing extends Being {
 		
 		_mass = mass;
 		_elasticity = elasticity;
+		
+		_force = zeroVector();
+		_impulse = zeroVector();
+		_displacement = zeroVector();
 	}
 	
 	/**
@@ -110,7 +123,7 @@ public abstract class MassedBeing extends Being {
 	
 	/**
 	 * updates the being's position and velocity based on the forces applied
-	 * 	since the last step, using Euler's method integration
+	 * 	since the last step, using Euler-Cromer integration
 	 * @param dt	the time elapsed since the last step
 	 */
 	public void step(float dt) {
@@ -170,6 +183,5 @@ public abstract class MassedBeing extends Being {
 		
 		_collisions.add(collision);
 	}
-	
 	
 }

@@ -37,8 +37,6 @@ public class Camera extends Environment {
 	}
 	
 	
-	
-	
 	public float getX() {
 		return _x;
 	}

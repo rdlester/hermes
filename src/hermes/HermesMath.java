@@ -50,6 +50,22 @@ public class HermesMath {
 		return vector;
 	}
 	
+	public static PVector makeVector(float x, float y, float z) {
+		return new PVector(x,y,z);
+	}
+	
+	public static PVector makeVector(float x, float y) {
+		return new PVector(x,y,0.0f);
+	}
+	
+	public static PVector makeVector(double x, double y, double z) {
+		return new PVector((float)x,(float)y,(float)z);
+	}
+	
+	public static PVector makeVector(double x, double y) {
+		return new PVector((float)x,(float)y,0.0f);
+	}
+	
 	/**
 	 * Gets the square of the magnitude of a PVector
 	 * Useful when taking the square root to find the true magnitude is not important
