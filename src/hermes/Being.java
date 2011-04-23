@@ -27,11 +27,8 @@ public abstract class Being {
 	
 	/**
 	 * draws the object to the screen
-	 * takes a screen x and y coor
-	 * the reason for this is that the being's internal x and y will be screen coordinates, not world coordinates
-	 * there may be a better way to do this, with framebuffers, need to look in to this
 	 */
-	public abstract void draw(int x, int y);
+	public abstract void draw();
 	
 	/**
 	 * adds the being to the group
