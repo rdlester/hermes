@@ -96,12 +96,10 @@ public class Circle extends Shape {
 		//Get the center of this circle
 		PVector worldCenterThis = PVector.add(_position, _center);
 		//Get the center of the other circle
-		PVector positionOther = other._position;
-		PVector centerOther = other._center;
-		PVector worldCenterOther = PVector.add(positionOther, centerOther);
+		PVector worldCenterOther = PVector.add(other.getPosition(), other.getCenter());
 		
 		//Circles are colliding if distance between them is less than sum of radii
-		PVector dir = PVector.sub(worldCenterThis, worldCenterOther);
+		PVector dir = PVector.sub(worldCenterOther, worldCenterThis);
 		float distance = dir.mag();
 		float sumRadii = _radius + other._radius;
 		boolean collides = distance <= sumRadii;
@@ -109,9 +107,14 @@ public class Circle extends Shape {
 		//Projection vector is the unit vector pointing from this circle to other scaled by overlap
 		if(collides) {
 			float magnitude = sumRadii - distance;
-			dir.normalize();
-			dir.mult(magnitude);
-			return dir;
+			if(dir.x == 0 && dir.y == 0) {
+				return new PVector(0,magnitude);
+			}
+			else {
+				dir.normalize();
+				dir.mult(magnitude);
+				return dir;
+			}
 		}
 		else return null;
 	}

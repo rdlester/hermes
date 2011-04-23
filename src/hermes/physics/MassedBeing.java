@@ -22,7 +22,15 @@ public abstract class MassedBeing extends Being {
 	
 	private LinkedList<ImpulseCollision> _collisions; // keeps track of all collisions in this step 
 	
-	
+	/**
+	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
+	 * 	bounciness of collisions, a collision between beings of elasticity 1 will be perfectly
+	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
+	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
+	 *  they will gain speed from collisions, which may produce unrealistic results 
+	 * @param mass
+	 * @param elasticity
+	 */
 	public MassedBeing(float mass, float elasticity) {
 		super();
 		
@@ -170,6 +178,5 @@ public abstract class MassedBeing extends Being {
 		
 		_collisions.add(collision);
 	}
-	
 	
 }
