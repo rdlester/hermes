@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import processing.core.*;
 import src.hermes.*;
 import src.hermes.physics.*;
+import static src.hermes.HermesMath.zeroVector;
 
 /**
  * an extension of being representing a body with mass
@@ -39,6 +40,10 @@ public abstract class MassedBeing extends Being {
 		
 		_mass = mass;
 		_elasticity = elasticity;
+		
+		_force = zeroVector();
+		_impulse = zeroVector();
+		_displacement = zeroVector();
 	}
 	
 	/**
@@ -118,7 +123,7 @@ public abstract class MassedBeing extends Being {
 	
 	/**
 	 * updates the being's position and velocity based on the forces applied
-	 * 	since the last step, using Euler's method integration
+	 * 	since the last step, using Euler-Cromer integration
 	 * @param dt	the time elapsed since the last step
 	 */
 	public void step(float dt) {

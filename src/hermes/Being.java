@@ -84,8 +84,16 @@ public abstract class Being {
 		return _position;
 	}
 	
+	public void setPosition(PVector position) {
+		_position = position;
+	}
+	
 	public PVector getVelocity() {
 		return _velocity;
+	}
+	
+	public void setVelocity(PVector velocity) {
+		_velocity = velocity;
 	}
 	
 	public void update() {}
