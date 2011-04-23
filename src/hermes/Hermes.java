@@ -23,13 +23,4 @@ public class Hermes {
 	public static void setPApplet(PApplet parentApplet) {
 		_parentApplet = parentApplet;		
 	}
-<<<<<<< HEAD
-	
-		
-	public static final float INFINITY = Float.POSITIVE_INFINITY;
-		
-	
-=======
-
->>>>>>> 6c71a88477993c61ee0227e46ea4720b08159a44
 }

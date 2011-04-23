@@ -13,9 +13,10 @@ import static src.hermes.HermesMath.*;
  */
 public class ImpulseCollision {
 
-	private MassedBeing _being1, _being2; // the two beings colliding
-	private PVector _projection; // the projection vector from being1 to being2
-	private PVector _impulse; // the impulse on _being2 from _being1
+	private MassedBeing _being1, _being2; 	// the two beings colliding
+	private PVector _projection; 			// the projection vector from being1 to being2
+	private PVector _impulse; 				// the impulse on _being2 from _being1
+	private float _elasticity; 				// the elasticity of the collision
 	
 	/**
 	 * sets up a collision between beings
@@ -23,13 +24,15 @@ public class ImpulseCollision {
 	 * @param being2		the second being
 	 * @param projection	the projection vector from being1 to being2
 	 */
-	public ImpulseCollision(MassedBeing being1, MassedBeing being2, PVector projection) {
+	public ImpulseCollision(MassedBeing being1, MassedBeing being2, 
+			PVector projection, float elasticity) {
 		assert being1 != null : "ImpulseCollision contructor: being1 must be a valid being";
 		assert being2 != null : "ImpulseCollision contructor: being2 must be a valid being";
 		
 		_being1 = being1;
 		_being2 = being2;
 		_projection = projection;
+		_elasticity = elasticity;
 	}
 	
 	/**
@@ -66,10 +69,9 @@ public class ImpulseCollision {
 	
 	/**
 	 * add an impulse to the beings, calculated between them, based on their current mass and velocity, to the beings
-	 * @param elasticity	the elasticity of the collision
 	 */
-	public void addImpulse(float elasticity) {
-		addImpulse(Physics.calculateImpulse(_being1, _being2, elasticity, _projection), _being1);
+	public void addImpulse() {
+		addImpulse(Physics.calculateImpulse(_being1, _being2, _elasticity, _projection), _being1);
 	}
 	
 	/**

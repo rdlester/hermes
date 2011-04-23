@@ -70,4 +70,26 @@ public class HermesMath {
 		return (x < 0 ? -1.0f : 1.0f);
 	}
 	
+	/**
+	 * averages two float values
+	 * @param v1	the first value
+	 * @param v2	the second value
+	 * @return		the average
+	 */
+	public static float average(float v1, float v2) {
+		return (v1 + v2) / 2.0f;
+	}
+	
+	/**
+	 * averages an array of floats
+	 * @param values	the values to average
+	 * @return			the average
+	 */
+	public static float average(float[] values) {		
+		float acc = 0;
+		for(int i = 0; i < values.length; i++) 
+			acc += values[i];
+		return acc / values.length;
+	}
+	
 }
