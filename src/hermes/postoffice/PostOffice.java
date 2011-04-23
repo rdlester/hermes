@@ -20,6 +20,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import com.illposed.osc.*;
 
 import processing.core.*;
+import src.hermes.GenericGroup;
+import src.hermes.Hermes;
 
 /**
  * Listens for and sends OSC, mouse, and keyboard messages
@@ -27,6 +29,8 @@ import processing.core.*;
  * and passes on information stored in message to subscriber
  */
 public class PostOffice implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+	
+	private static final boolean DEBUG = true;
 	
 	//OSCPorts for listening and receiving
 	private OSCPortIn _receive;
@@ -69,10 +73,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Helper struct to hold subscriptions
 	 */
 	class Subscription {
-		Collection<?> _group;
+		GenericGroup<?,?> _group;
 		MessageHandler<?> _handler;
 		
-		protected Subscription(Collection<?> group, MessageHandler<?> handler) {
+		protected Subscription(GenericGroup<?,?> group, MessageHandler<?> handler) {
 			group = _group;
 			handler = _handler;
 		}
@@ -84,12 +88,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param applet - Top Processing PApplet running the PostOffice 
 	 * @param portIn - port to receive messages on
 	 */
-	public PostOffice(PApplet applet, int portIn) {
+	public PostOffice(int portIn) {
 		//Set PostOffice to listen for events
-		applet.addKeyListener(this);
-		applet.addMouseListener(this);
-		applet.addMouseMotionListener(this);
-		applet.addMouseWheelListener(this);
+		Hermes.getPApplet().addKeyListener(this);
+		Hermes.getPApplet().addMouseListener(this);
+		Hermes.getPApplet().addMouseMotionListener(this);
+		Hermes.getPApplet().addMouseWheelListener(this);
 		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
@@ -119,12 +123,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portIn - port to receive messages on
 	 * @param portOut - port to send messages on
 	 */
-	public PostOffice(PApplet applet, int portIn, int portOut) {
+	public PostOffice(int portIn, int portOut) {
 		//Set PostOffice to listen for events
-		applet.addKeyListener(this);
-		applet.addMouseListener(this);
-		applet.addMouseMotionListener(this);
-		applet.addMouseWheelListener(this);
+		Hermes.getPApplet().addKeyListener(this);
+		Hermes.getPApplet().addMouseListener(this);
+		Hermes.getPApplet().addMouseMotionListener(this);
+		Hermes.getPApplet().addMouseWheelListener(this);
 		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
@@ -155,12 +159,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portOut - port to send messages on
 	 * @param netAddress - url of location to send messages to
 	 */
-	public PostOffice(PApplet applet, int portIn, int portOut, String netAddress) {
+	public PostOffice(int portIn, int portOut, String netAddress) {
 		//Set PostOffice to listen for events
-		applet.addKeyListener(this);
-		applet.addMouseListener(this);
-		applet.addMouseMotionListener(this);
-		applet.addMouseWheelListener(this);
+		Hermes.getPApplet().addKeyListener(this);
+		Hermes.getPApplet().addMouseListener(this);
+		Hermes.getPApplet().addMouseMotionListener(this);
+		Hermes.getPApplet().addMouseWheelListener(this);
 		//Start OSC and set listener
 		try {
 			_receive = new OSCPortIn(portIn);
@@ -223,7 +227,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param handler - the MessageHandler that contains the logic needed to react to a received message
 	 * @param check - the particular message type the group is subscribing to
 	 */
-	public void registerSubscription(Collection<?> g, MessageHandler<?> handler, Message check) {
+	public void registerSubscription(GenericGroup<?,?> g, MessageHandler<?> handler, Message check) {
 		Subscription newSubscription = new Subscription(g,handler);
 		if(_subscriptions.containsKey(check)) {
 			ArrayList<Subscription> subscriptionList = _subscriptions.get(check);
@@ -252,7 +256,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			ArrayList<Subscription> subscribers = _subscriptions.get(m);
 			if(subscribers != null) {
 				for(Subscription s : subscribers) {
-					Collection<?> g = s._group;
+					GenericGroup<?,?> g = s._group;
 					MessageHandler h = s._handler;
 					h.handleMessage(g, m);
 				}
@@ -271,13 +275,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		catch(Exception e) {
 			System.err.println("Error sending message on " + m.getAddress() + "!");
 		}
-	}
-
-	/**
-	 * Picks message off queue - FOR TESTING ONLY, DO NOT USE
-	 */
-	public Message popQueue() {
-		return _messageQueue.poll();
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////
@@ -351,8 +348,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 
 	///////////////////////////////
 	//Get changes in mouse location
-	
-	//TODO What is the difference between mouseDragged and mouseMoved?
 	/**
 	 * When the mouse is dragged, create a MouseMessage and add it to the group
 	 */
