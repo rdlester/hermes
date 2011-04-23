@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
 import processing.core.*;
+import src.hermes.postoffice.PostOffice;
 
 
 /**
@@ -17,6 +18,7 @@ import processing.core.*;
 public abstract class World extends Thread {
 	
 	private PApplet _parentApplet; //active PApplet sketch
+	private PostOffice _postOffice; //post office
 
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _addQueue;
@@ -32,14 +34,12 @@ public abstract class World extends Thread {
 	
 	
 	@SuppressWarnings("rawtypes")
-	public World(PApplet parentApplet) {
+	public World(PostOffice postOffice, Camera camera) {
 		
-		//Ensure the user has provided a PApplet using 
-		if (Hermes.getPApplet() != null) {
-			_parentApplet = Hermes.getPApplet();
-		} else {
-			throw new NullPointerException("Null PApplet Error: \nOur library needs to have access to you Processing sketch \nPlease call 'Hermes.setPApplet(this);' before instantiating any worlds"); 
-		}
+		//set the World's PApplet to the one set in Hermes
+		_parentApplet = Hermes.getPApplet();
+		_postOffice = postOffice;
+		_camera = camera;
 		
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
@@ -192,8 +192,15 @@ public abstract class World extends Thread {
 		// the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
+		//TODO: integrate this
 		
-		// 2. go through the registered interaction in order
+		// 2. go through the registered groups to update beings individually
+		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
+			GenericGroup group = iter.next();
+			group.update();
+		}
+		
+		// 3. go through the registered interaction in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
@@ -242,11 +249,7 @@ public abstract class World extends Thread {
 		}
 		
 		
-		// 3. go through the registered groups to update beings individually
-		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
-			GenericGroup group = iter.next();
-			group.update();
-		}
+
 		
 		resolveGroupQueues();
 	}
