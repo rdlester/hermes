@@ -65,12 +65,20 @@ public class ImpulseCollision {
 	}
 	
 	/**
+	 * add an impulse to the beings, calculated between them, based on their current mass and velocity, to the beings
+	 * @param elasticity	the elasticity of the collision
+	 */
+	public void addImpulse(float elasticity) {
+		addImpulse(Physics.calculateImpulse(_being1, _being2, elasticity, _projection), _being1);
+	}
+	
+	/**
 	 * applies the stored impulse to each being
 	 * clears the impulse vector
 	 */
 	public void applyImpulses() {
-		_being1.addImpulse(_impulse);
-		_being2.addImpulse(reverse(_impulse));
+		_being1.addImpulse(reverse(_impulse));
+		_being2.addImpulse(_impulse);
 		_impulse.set(0, 0, 0);
 	}
 	

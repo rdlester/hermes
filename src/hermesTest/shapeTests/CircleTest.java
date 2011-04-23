@@ -14,6 +14,7 @@ public class CircleTest {
 	 */
 	@Test
 	public void test_collideCircle() {
+		
 		PVector pos1 = new PVector(0,0);
 		Circle c1 = new Circle(pos1, 10);
 		PVector pos2 = new PVector(1,1);

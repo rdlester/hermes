@@ -3,7 +3,8 @@ package src.hermes.physics;
 import java.util.LinkedList;
 
 import processing.core.*;
-import src.hermes.Being;
+import src.hermes.*;
+import src.hermes.physics.*;
 
 /**
  * an extension of being representing a body with mass
@@ -18,9 +19,7 @@ public abstract class MassedBeing extends Being {
 	private PVector _impulse; // used to calculate the impulse being applied to this being
 	private PVector _displacement; // used to accumulate an instantaneous displacement on this being
 	
-	LinkedList<ImpulseCollision> _collsions;
-	
-	
+	private LinkedList<ImpulseCollision> _collisions; // keeps track of all collisions in this step 
 	
 	/**
 	 * gets the being's mass
@@ -72,5 +71,29 @@ public abstract class MassedBeing extends Being {
 		_impulse.set(0,0,0);
 		_displacement.set(0,0,0);
 	}
+	
+	/**
+	 * sets up a collision between two beings
+	 * @param being1		the first being
+	 * @param being2		the second being
+	 * @param projection	the projection vector from being1 to being2
+	 */
+	public static ImpulseCollision addCollision(MassedBeing being1, MassedBeing being2, PVector projection) {
+		ImpulseCollision collision = new ImpulseCollision(being1, being2, projection);
+		being1.addCollision(collision);
+		being2.addCollision(collision);
+		return collision;
+	}
+	
+	/**
+	 * adds a collision to the being's collision list
+	 * @param collision		the collision
+	 */
+	protected void addCollision(ImpulseCollision collision) {
+		assert collision != null : "MassedBeing.addCollision: collision must be valid";
+		
+		_collisions.add(collision);
+	}
+	
 	
 }
