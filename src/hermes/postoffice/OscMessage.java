@@ -52,7 +52,7 @@ public class OSCMessage implements Message {
 	/**
 	 * Get an illposed version of this message
 	 */
-	public com.illposed.osc.OSCMessage toIllposed() {
+	protected com.illposed.osc.OSCMessage toIllposed() {
 		com.illposed.osc.OSCMessage m = new com.illposed.osc.OSCMessage(_address,_contents);
 		return m;
 	}
