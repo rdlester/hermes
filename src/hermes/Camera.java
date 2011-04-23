@@ -32,7 +32,7 @@ public class Camera {
 	
 	
 	// translates from world coordinates to screen coordinates
-	Pair<Integer,Integer> worldToScreenCoors(float x, float y) {
+	Pair<Integer,Integer> worldToScreenCoordinates(float x, float y) {
 		return null;
 	}
 	

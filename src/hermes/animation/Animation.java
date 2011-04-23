@@ -43,9 +43,6 @@ public class Animation {
 
 	ArrayList<PImage> _frames; //Collection of each frame used in the Animation
 
-	//Error message used for loading methods
-	private String _fileTypeErrorString = "Suported types: .gif, .jgp, tga, .png";
-
 
 	/**
 	 * Builds an Animation from several image files on disk (where each is an individual frame in the Animation), and adds it to the Sprite's collection of Animations
@@ -65,7 +62,7 @@ public class Animation {
 	 */
 	public Animation(String imageSequenceNamePrefix, int numberOfImagesToLoad, String fileType, int millisecondsPerFrame) {
 		//asserts to check for valid inputs
-		assert supportImageType(fileType): "addAnimation Error: Images of filetype: "+fileType+"not supported.\n" + _fileTypeErrorString;
+		assert supportImageType(fileType): "addAnimation Error: Images of filetype: "+fileType+"not supported.\n Suported types: .gif, .jgp, tga, .png";
 
 		_millisecondsPerFrame = millisecondsPerFrame;
 		
@@ -220,10 +217,7 @@ public class Animation {
 		_defaultFrame = defaultFrame;
 	}
 	
-	
 
-
-	
 	/**
 	 * Helper method for checking filetype and providing clear error messages
 	 * @param fileType
