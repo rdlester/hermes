@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
 
+import src.hermes.shape.Rectangle;
 import src.hermes.shape.Shape;
 import processing.core.*;
 
@@ -17,7 +18,7 @@ public abstract class Being {
 	protected PVector _position; // the being's position
 	protected PVector _velocity; // the being's velocity
 	
-	protected Shape shape; 		 // the being's shape
+	protected Shape _shape; 		 // the being's shape
 	
 	private LinkedList<GenericGroup<?,?>> groups;
 	
@@ -74,7 +75,7 @@ public abstract class Being {
 	 * returns a being's shape
 	 */
 	public Shape getShape() {
-		return shape;
+		return _shape;
 	}
 	
 	public PVector getPosition() {
@@ -91,6 +92,11 @@ public abstract class Being {
 	
 	public void setVelocity(PVector velocity) {
 		_velocity = velocity;
+	}
+
+	
+	public Rectangle getBoundingBox() {
+		return _shape.getBoundingBox();
 	}
 	
 	public void update() {}

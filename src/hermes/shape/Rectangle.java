@@ -128,6 +128,10 @@ public class Rectangle extends Shape {
 				new PVector(0.0f, yProject * - sign(yDist))); 
 	}	
 	
+	public Rectangle getBoundingBox() {
+		return this;
+	}
+	
 	@Override
 	public String toString() {
 		return "Position:" + _position + "\nMin:" + _min + "\nMax:" + _max;

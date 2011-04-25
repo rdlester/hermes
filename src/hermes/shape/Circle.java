@@ -240,4 +240,9 @@ public class Circle extends Shape {
 		return "Position:" + _position + "\nCenter:" + _center + "\nRadius:" + _radius;
 	}
 
+	@Override
+	public Rectangle getBoundingBox() {
+		return new Rectangle(PVector.add(_position, _center), 2*_radius, 2*_radius);
+	}
+
 }

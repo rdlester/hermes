@@ -23,13 +23,15 @@ public abstract class World extends Thread {
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _removeQueue;
 	private LinkedList<Being> _deleteQueue;
 	
+	private Group<Being> _masterGroup;
+	private Group<Being> _updateGroup;
+	
 	private Camera _camera; // the camera
 	private boolean _active = false; // whether the world is currently runing
 	
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
 	private LinkedList<GenericGroup<?,?>> _groupsToUpdate; //used to hold all the being groups to be updated individually
-	
 	
 	@SuppressWarnings("rawtypes")
 	public World(PApplet parentApplet) {
@@ -64,6 +66,17 @@ public abstract class World extends Thread {
 		_active = false;
 	}
 
+	/**
+	 * registers a being with the world, making it be drawn when it is on camera,
+	 *   its update() method will be called by the loop if update is true
+	 * @param being		the being to register
+	 * @param update	whether or not to update the being during the update loop
+	 */
+	public void registerBeing(Being being, boolean update) {
+		addBeing(being, _masterGroup);
+		if(update)
+			addBeing(being, _updateGroup);
+	}
 	
 	/**
 	 * queues a being to be added to a group at the end of an update
@@ -189,6 +202,14 @@ public abstract class World extends Thread {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
+		
+		
+		// 1. handle messages
+		// 2. apply updates, keeping a list of updates that returned false
+		// 3. perform detection, keeping a list of handlers to resolve
+		// 4. perform handling, keeping a list of unresolved handlers
+		// 5. if unresolved handlers remain, go to step 2
+		
 		// the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
@@ -291,7 +312,7 @@ public abstract class World extends Thread {
 		DetectedInteraction(A b1, B b2, Interactor<A,B> i) {
 			_being1 =b1;
 			_being2 =b2;
-			_interactor =i;
+			_interactor = i;
 		}
 		public A get_being1() {
 			return _being1;

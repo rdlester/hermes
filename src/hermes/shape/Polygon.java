@@ -113,6 +113,16 @@ public class Polygon extends Shape {
 		return projectionVector(other) != null;
 	}
 	
+	public Rectangle getBoundingBox() {
+		float xMax = Float.NEGATIVE_INFINITY;
+		float xMin = Float.POSITIVE_INFINITY;
+		float yMax = Float.NEGATIVE_INFINITY;
+		float yMin = Float.POSITIVE_INFINITY;
+		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
+			
+		}
+	}
+	
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
