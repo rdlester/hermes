@@ -32,6 +32,7 @@ public abstract class Shape {
 	 * @return			whether the shapes have collided
 	 */
 	public boolean collide(Shape other) {
+		assert other != null : "Shape.collide: other must be a valid shape";
 		return projectionVector(other) != null;
 	}
 

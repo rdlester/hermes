@@ -58,31 +58,18 @@ public class Circle extends Shape {
 	public float getRadius() {
 		return _radius;
 	}
-
-	@Override
-	public boolean collide(Shape other) {
-		assert other != null : "Rectangle.collide: other must be a valid Shape";
-		return other.projectionVector(this) != null;
-	}
-	
-	public boolean collide(Circle other) {
-		return projectionVector(other) != null;
-	}
-	
-	public boolean collide(Rectangle other) {
-		return projectionVector(other) != null;
-	}
 	
 	@Override
 	public PVector projectionVector(Shape other) {
-		assert other != null : "Circle.projectionVector: other must be a valid Shape";
-		return reverse(other.projectionVector(this));
+		assert other != null : "Circle.collide: other must be a valid Shape";
+		PVector opposite = other.projectionVector(this);
+		return opposite == null ? null : reverse(opposite);
 	}
 
 	@Override
 	public PVector projectionVector(Polygon other) {
-		assert other != null : "Circle.projectionVector: other must be a valid Polygon";
-		return reverse(other.projectionVector(this));
+		PVector opposite = other.projectionVector(this);
+		return opposite == null ? null : reverse(opposite);
 	}
 	
 	/**
