@@ -29,6 +29,7 @@ public abstract class World extends Thread {
 	private Group<Being> _updateGroup;
 	
 	private Camera _camera; // the camera
+	private Group<Camera> _cameraGroup; // a Group with only one member: _camera (required to register an Interaction)
 	private boolean _active = false; // whether the world is currently runing
 	
 	@SuppressWarnings("rawtypes")
@@ -48,6 +49,13 @@ public abstract class World extends Thread {
 		_removeQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
 		_deleteQueue = new LinkedList<Being>();
 		_groupsToUpdate = new LinkedList<GenericGroup<?,?>>();
+		
+		//initialize the Camera
+		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
+		_cameraGroup.add(_camera);//add _camera to _cameraGroup
+		//register an Interaction between _cameraGroup and _masterGroup
+		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor(), true);
+
 	}
 	
 	/**
