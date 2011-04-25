@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import processing.core.PVector;
-import src.hermes.HermesMath;
+import static src.hermes.HermesMath.*;
 
 /**
  * Represents an arbitrary convex polygon
@@ -49,21 +49,38 @@ public class Polygon extends Shape {
 		_axes = new LinkedList<PVector>();
 		Iterator<PVector> pit = _points.iterator();
 		PVector first = pit.next();
-		PVector pre = first;
+		PVector pre2 = first;
+		PVector second = pit.next();
+		PVector pre = second;
 		while(pit.hasNext()) {
 			PVector p = pit.next();
-			addAxis(p, pre);
+			addAxis(p, pre, pre2);
+			pre2 = pre;
 			pre = p;
 		}
 
-		//Make the final line between the first and the last point
-		addAxis(first, pre);
+		//Make the final lines between the first and the last point and first and second points
+		addAxis(first, pre, second);
+		addAxis(second,first,pre);
 	}
-
-	private void addAxis(PVector start, PVector end) {
+	
+	/**
+	 * Given two points, finds the 'axis' normal to the line between them
+	 * and adds it to an internal list
+	 * @param start
+	 * @param end
+	 * @param preStart - the extra point used to correctly orient axis
+	 */
+	private void addAxis(PVector start, PVector end, PVector preStart) {
 		PVector axis = PVector.sub(start, end);
 		axis.normalize();
 		axis.mult(new PVector(1,-1,0));
+		float project1 = axis.dot(start);
+		float projectpre = axis.dot(preStart);
+		assert project1 != projectpre : "Polygon must be convex!";
+		if(project1 < projectpre) {
+			reverse(axis);
+		}
 		_axes.addLast(axis);
 	}
 	
@@ -88,8 +105,8 @@ public class Polygon extends Shape {
 		PVector first = _points.get(0);
 		PVector last = _points.get(_points.size()-1);
 		
-		addAxis(first, point);
-		addAxis(point, last);
+		addAxis(first, point, last);
+		addAxis(point, last, first);
 		_points.add(point);
 	}
 	
@@ -126,7 +143,7 @@ public class Polygon extends Shape {
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
-		return HermesMath.reverse(other.projectionVector(this));
+		return reverse(other.projectionVector(this));
 	}
 	
 	/**
@@ -167,7 +184,7 @@ public class Polygon extends Shape {
 		//Check for collisions along all axes in polygon
 		for(PVector axis : _axes) {
 			PVector project1 = getProjection(axis, this);
-			PVector project2 = getProjection(axis, worldCenterOther, other.getRadius());
+			PVector project2 = getProjection(axis, other.getCenter(), other.getRadius());
 			
 			//Offset the projection of 1 away from 2
 			float offset = dist.dot(axis);
@@ -219,7 +236,7 @@ public class Polygon extends Shape {
 		float min = Float.MAX_VALUE;
 		PVector use = null;
 		for(PVector resolution : resolutionList) {
-			float temp = HermesMath.mag2(resolution);
+			float temp = mag2(resolution);
 			if(temp < min) {
 				min = temp;
 				use = resolution;
@@ -259,7 +276,7 @@ public class Polygon extends Shape {
 		float min = Float.MAX_VALUE;
 		PVector use = null;
 		for(PVector resolution : resolutionList) {
-			float temp = HermesMath.mag2(resolution);
+			float temp = mag2(resolution);
 			if(temp < min) {
 				min = temp;
 				use = resolution;
@@ -339,6 +356,10 @@ public class Polygon extends Shape {
 	
 	@Override
 	public String toString() {
-		return "Position:" + _position;
+		String output = "Position:" + _position;
+		for(PVector p : _points) {
+			output += "\nPoint:" + p;
+		}
+		return output;
 	}
 }

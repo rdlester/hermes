@@ -20,10 +20,10 @@ public abstract class Being {
 	
 	protected Shape _shape; 		 // the being's shape
 	
-	private LinkedList<GenericGroup<?,?>> groups;
+	private LinkedList<GenericGroup<?,?>> _groups;
 	
 	public Being() {
-		groups = new LinkedList<GenericGroup<?,?>>();
+		_groups = new LinkedList<GenericGroup<?,?>>();
 	}
 	
 	/**
@@ -40,7 +40,7 @@ public abstract class Being {
 		// need to lock on the group
 		synchronized(group) {
 			((GenericGroup<Being,?>)group.getBeings()).add(this);
-			groups.add(group);
+			_groups.add(group);
 		}
 	}
 	
@@ -52,7 +52,7 @@ public abstract class Being {
 		// need to lock on the group
 		synchronized(group) {
 			group.getBeings().remove(this);
-			groups.remove(group);
+			_groups.remove(group);
 		}
 	}
 	
@@ -61,7 +61,7 @@ public abstract class Being {
 	 */
 	public void delete() {
 		// go through all the groups, deleting this being
-		for(Iterator<GenericGroup<?,?>> iter = groups.iterator(); iter.hasNext(); ) {
+		for(Iterator<GenericGroup<?,?>> iter = _groups.iterator(); iter.hasNext(); ) {
 			GenericGroup<?,?> group = iter.next();
 			// need to lock on the group
 			synchronized(group) {
