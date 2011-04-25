@@ -98,7 +98,6 @@ public class Polygon extends Shape {
 	 * and the first point added
 	 * @param point - point to be added
 	 */
-	//TODO BROKEN!!!
 	public void addPoint(PVector point) {
 		//Remove the axis for the edge between the current first and last points
 		_axes.removeLast();
@@ -175,7 +174,7 @@ public class Polygon extends Shape {
 		//Check for collisions along all axes in polygon
 		for(PVector axis : _axes) {
 			PVector project1 = getProjection(axis, this);
-			PVector project2 = getProjection(axis, worldCenterOther, other.getRadius());
+			PVector project2 = getProjection(axis, other.getCenter(), other.getRadius());
 			
 			//Offset the projection of 1 away from 2
 			float offset = dist.dot(axis);
