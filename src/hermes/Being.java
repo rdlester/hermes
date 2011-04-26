@@ -99,7 +99,6 @@ public abstract class Being {
 		return _shape.getBoundingBox();
 	}
 	
-	public void update() {}
-	
+	public boolean update() { return true; }
 
 }

@@ -50,6 +50,9 @@ public abstract class World extends Thread {
 		_removeFromAllGroupsQueue = new LinkedList<Being>();
 		_groupsToUpdate = new LinkedList<GenericGroup<?,?>>();
 		
+		_masterGroup = new Group<Being>(this);
+		_updateGroup = new Group<Being>(this);
+		
 		//initialize the Camera
 		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
@@ -228,7 +231,14 @@ public abstract class World extends Thread {
 			group.update();
 		}
 		
-		// 3. go through the registered interaction in order
+		LinkedList<DetectedInteraction> unresolvedInteractions = new LinkedList<DetectedInteraction>();
+		
+		unresolvedInteractions = new LinkedList<DetectedInteraction>();
+		
+		// 3. apply being updates
+		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getBeings());
+		
+		// 3. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
@@ -276,9 +286,6 @@ public abstract class World extends Thread {
 			}
 		}
 		
-		
-
-		
 		resolveGroupQueues();
 	}
 	/**
@@ -303,11 +310,27 @@ public abstract class World extends Thread {
 					}
 				}
 			} else {//if not immediate, queue detection to handle later
-				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction.getInteractor()));
+				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction));
 			}
 		}
 	}
 
+	private List<Being> updateHelper(List<Being> beings) {
+		LinkedList<Being> unresolvedUpdates = new LinkedList<Being>();
+		for(Iterator<Being> iter = beings.iterator(); iter.hasNext(); ) {
+			// iterate through the beings
+			Being being = iter.next();
+			// apply the update
+			synchronized(being) {
+				if(!being.update()) {
+					// if the update is unresolved, add it to the unresolved queue
+					unresolvedUpdates.add(being);
+				}
+			}
+		}
+		return unresolvedUpdates;
+	}
+	
 	//Called by God's draw method to
 	public void draw() {}
 	
@@ -318,12 +341,14 @@ public abstract class World extends Thread {
 	private class DetectedInteraction<A extends Being, B extends Being> {
 		A _being1;
 		B _being2;
-		Interactor<A, B> _interactor;
-		DetectedInteraction(A b1, B b2, Interactor<A,B> i) {
+		Interaction<A, B> _interaction;
+		
+		DetectedInteraction(A b1, B b2, Interaction<A,B> interaction) {
 			_being1 =b1;
 			_being2 =b2;
-			_interactor = i;
+			_interaction = interaction;
 		}
+		
 		public A get_being1() {
 			return _being1;
 		}
@@ -331,7 +356,11 @@ public abstract class World extends Thread {
 			return _being2;
 		}
 		public Interactor<A, B> get_interactor() {
-			return _interactor;
+			return _interaction.getInteractor();
+		}
+		
+		public Interaction<A,B> getInteraction() {
+			return _interaction;
 		}
 	}
 	
