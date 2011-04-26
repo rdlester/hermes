@@ -203,12 +203,11 @@ public abstract class World extends Thread {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
 		
-		
 		// 1. handle messages
 		// 2. apply updates, keeping a list of updates that returned false
 		// 3. perform detection, keeping a list of handlers to resolve
 		// 4. perform handling, keeping a list of unresolved handlers
-		// 5. if unresolved handlers remain, go to step 2
+		// 5. if anything remains unresolved, go to step 2
 		
 		// the update loop proceeds in 3 steps:
 		

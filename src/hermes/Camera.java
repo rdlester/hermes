@@ -70,7 +70,7 @@ public class Camera extends Environment {
 	}
 
 	@Override
-	public void draw(int x, int y) {
+	public void draw() {
 		// TODO Auto-generated method stub
 		
 	}

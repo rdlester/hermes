@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import processing.core.PVector;
+import src.hermes.HermesMath;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -136,8 +137,19 @@ public class Polygon extends Shape {
 		float yMax = Float.NEGATIVE_INFINITY;
 		float yMin = Float.POSITIVE_INFINITY;
 		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
-			
+			PVector point = iter.next();
+			if(point.x < xMin)
+				xMin = point.x;
+			if(point.x > xMax)
+				xMin = point.x;
+			if(point.y < yMin)
+				yMin = point.y;
+			if(point.y > yMax)
+				yMin = point.y;
 		}
+		PVector min = makeVector(xMin, yMin);
+		PVector max = makeVector(xMax, yMax);
+		return new Rectangle(_position, min, max);
 	}
 	
 	@Override
