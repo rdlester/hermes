@@ -23,14 +23,14 @@ public abstract class World extends Thread {
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _addQueue;
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _removeQueue;
-	private LinkedList<Being> _deleteQueue;
+	private LinkedList<Being> _removeFromAllGroupsQueue;
 	
-	private Group<Being> _masterGroup;
+	private Group<Being> _masterGroup; //this is the group used by the camera
 	private Group<Being> _updateGroup;
 	
 	private Camera _camera; // the camera
 	private Group<Camera> _cameraGroup; // a Group with only one member: _camera (required to register an Interaction)
-	private boolean _active = false; // whether the world is currently runing
+	private boolean _active = false; // whether the world is currently running - 
 	
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
@@ -47,7 +47,7 @@ public abstract class World extends Thread {
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
 		_removeQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
-		_deleteQueue = new LinkedList<Being>();
+		_removeFromAllGroupsQueue = new LinkedList<Being>();
 		_groupsToUpdate = new LinkedList<GenericGroup<?,?>>();
 		
 		//initialize the Camera
@@ -105,11 +105,11 @@ public abstract class World extends Thread {
 	}
 	
 	/**
-	 * queues a being to be deleted (removed from all groups) at the end of an update
+	 * queues a being to be removed from all of the groups it is in at the end of an update
 	 * @param being
 	 */
-	public void deleteBeing(Being being) {
-		_deleteQueue.addLast(being);
+	public void removeBeingFromAllGroups(Being being) {
+		_removeFromAllGroupsQueue.addLast(being);
 	}
 	
 	/**
@@ -128,8 +128,8 @@ public abstract class World extends Thread {
 			pair.first.removeFromGroup(pair.second); // add being to the group
 			iter.remove(); // remove from the queue
 		}
-		// resolve the delete queue
-		for(Iterator<Being> iter = _deleteQueue.iterator(); iter.hasNext(); ) {
+		// resolve the removeFromAllGroups queue
+		for(Iterator<Being> iter = _removeFromAllGroupsQueue.iterator(); iter.hasNext(); ) {
 			iter.next().delete(); // delete the being
 			iter.remove(); // remove from the queue
 		}
@@ -166,7 +166,7 @@ public abstract class World extends Thread {
 	 * @param grp		the group that contains the beings whose interactions
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerUpdate(GenericGroup grp) {
+	public void registerGroupUpdate(GenericGroup grp) {
 		_groupsToUpdate.add(grp);
 	}
 
@@ -182,7 +182,7 @@ public abstract class World extends Thread {
 			update();
 			postUpdate();
 		}
-		cleanup();
+		shutdown();
 	}
 	
 	/**
@@ -193,7 +193,7 @@ public abstract class World extends Thread {
 	/**
 	 * will be called once the world has finished running
 	 */
-	public abstract void cleanup();
+	public abstract void shutdown();
 	
 	/**
 	 * will be executed on each loop before update is called
