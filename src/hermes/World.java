@@ -281,7 +281,39 @@ public abstract class World extends Thread {
 			Being being2 = di.get_being2();
 			synchronized(being1) {
 				synchronized(being2) {
-					interactor.handle(being1, being2);
+					if(!interactor.handle(being1, being2))
+							unresolvedInteractions.add(di);
+				}
+			}
+		}
+		
+		// deal with anything unresolved
+		while(!unresolvedInteractions.isEmpty() && !unresolvedUpdates.isEmpty()) {
+			// perform updates
+			unresolvedUpdates = updateHelper(unresolvedUpdates);
+			// handle interactions
+			for(Iterator<DetectedInteraction> iter = unresolvedInteractions.iterator(); iter.hasNext(); ) {
+				// go through all unresolved interactions
+				DetectedInteraction inter = iter.next();
+				GenericGroup groupA = inter.getInteraction().getA();
+				GenericGroup groupB = inter.getInteraction().getB();
+				Being A = inter.get_being1();
+				Being B = inter.get_being2();
+				// check A against all members of groupB for new interactions
+				for(Iterator<Being> iterB = groupB.iterator(); iterB.hasNext(); ) {
+					Being beingB = iterB.next();
+					if(!inter.get_interactor().handle(A, beingB)) // if we find a new one, add it
+						unresolvedInteractions.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
+					else if(beingB == B) // if this interaction has been resolved, remove it
+						iter.remove();
+				}
+				// check B against all members of groupA for new interactions
+				for(Iterator<Being> iterA = groupA.iterator(); iterA.hasNext(); ) {
+					Being beingA = iterA.next(); 
+					if(!inter.get_interactor().handle(B, beingA))
+						unresolvedInteractions.add(new DetectedInteraction(B, beingA, inter.getInteraction()));
+					else if(beingA == A)
+						iter.remove();
 				}
 			}
 		}
