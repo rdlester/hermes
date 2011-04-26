@@ -167,8 +167,8 @@ public class PolygonTest {
 		
 		//Just curious
 		PVector projectV4 = p1.projectionVector(p1);
-		assertEquals(projectV4.x,0,1e-8);
-		assertEquals(projectV4.y,0,1e-8);
+		assertEquals(projectV4.x,5,1e-8);
+		assertEquals(projectV4.y,5,1e-8);
 	}
 	
 	@Test

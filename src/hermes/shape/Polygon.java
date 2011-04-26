@@ -299,7 +299,7 @@ public class Polygon extends Shape {
 		}
 		
 		else {
-			return (top > bottom ?
+			return (Math.abs(top) > Math.abs(bottom) ?
 					PVector.mult(axis, bottom):
 					PVector.mult(axis, -top));
 		}
