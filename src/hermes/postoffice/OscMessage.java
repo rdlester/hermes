@@ -1,6 +1,16 @@
 package src.hermes.postoffice;
 
 
+//
+//public class OSCMessage extends com.illposed.osc.OSCMessage implements Message{
+//	
+// 
+//}
+
+
+
+
+
 /**
  * Message representing an OSC message
  * Very similar to illposed's OSCMessage, but implementing Message so it can be used in PostOffice
@@ -49,6 +59,7 @@ public class OSCMessage implements Message {
 		return _contents;
 	}
 	
+	
 	/**
 	 * Get an illposed version of this message
 	 */
@@ -64,4 +75,8 @@ public class OSCMessage implements Message {
 		}
 		return false;
 	}
+	
+	
+
+	
 }
