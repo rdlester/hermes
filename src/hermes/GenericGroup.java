@@ -44,23 +44,9 @@ public class GenericGroup<A extends Being, B extends Collection<A>> {
 	}
 	
 	/**
-	 * calls the update method of all beings in the group
-	 */
-	protected void updateAll() {
-		for(Iterator<A> iter = _beings.iterator(); iter.hasNext(); ) {
-			Being being = iter.next();
-			synchronized(being) {
-				being.update();
-			}
-		}
-	}
-
-	/**
 	 * performs an update on the group
 	 */
-	public void update() {
-		updateAll();
-	}
+	public void update() {}
 
 	/**
 	 * adds a being to a group at the end of the next update loop

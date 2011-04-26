@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
 
+import src.hermes.shape.Rectangle;
 import src.hermes.shape.Shape;
 import processing.core.*;
 
@@ -92,8 +93,12 @@ public abstract class Being {
 	public void setVelocity(PVector velocity) {
 		_velocity = velocity;
 	}
+
 	
-	public void update() {}
+	public Rectangle getBoundingBox() {
+		return _shape.getBoundingBox();
+	}
 	
+	public boolean update() { return true; }
 
 }

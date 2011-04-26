@@ -49,6 +49,12 @@ public abstract class Shape {
 	public abstract PVector projectionVector(Polygon other);
 	
 	/**
+	 * finds the smallest Rectangle that encloses the shape
+	 * @return	the bounding box
+	 */
+	public abstract Rectangle getBoundingBox();
+	
+	/**
 	 * @return the shape's position
 	 */
 	public PVector getPosition() {

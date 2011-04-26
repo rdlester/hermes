@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
+import java.util.ListIterator;
+
 import processing.core.*;
 import src.hermes.postoffice.PostOffice;
 
@@ -23,15 +25,18 @@ public abstract class World extends Thread {
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _addQueue;
 	private LinkedList<Pair<Being,GenericGroup<?,?>>> _removeQueue;
-	private LinkedList<Being> _deleteQueue;
+	private LinkedList<Being> _removeFromAllGroupsQueue;
+	
+	private Group<Being> _masterGroup; //this is the group used by the camera
+	private Group<Being> _updateGroup;
 	
 	private Camera _camera; // the camera
-	private boolean _active = false; // whether the world is currently runing
+	private Group<Camera> _cameraGroup; // a Group with only one member: _camera (required to register an Interaction)
+	private boolean _active = false; // whether the world is currently running - 
 	
 	@SuppressWarnings("rawtypes")
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
 	private LinkedList<GenericGroup<?,?>> _groupsToUpdate; //used to hold all the being groups to be updated individually
-	
 	
 	@SuppressWarnings("rawtypes")
 	public World(PostOffice postOffice, Camera camera) {
@@ -44,8 +49,18 @@ public abstract class World extends Thread {
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
 		_removeQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
-		_deleteQueue = new LinkedList<Being>();
+		_removeFromAllGroupsQueue = new LinkedList<Being>();
 		_groupsToUpdate = new LinkedList<GenericGroup<?,?>>();
+		
+		_masterGroup = new Group<Being>(this);
+		_updateGroup = new Group<Being>(this);
+		
+		//initialize the Camera
+		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
+		_cameraGroup.add(_camera);//add _camera to _cameraGroup
+		//register an Interaction between _cameraGroup and _masterGroup
+		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor(), true);
+
 	}
 	
 	/**
@@ -64,6 +79,17 @@ public abstract class World extends Thread {
 		_active = false;
 	}
 
+	/**
+	 * registers a being with the world, making it be drawn when it is on camera,
+	 *   its update() method will be called by the loop if update is true
+	 * @param being		the being to register
+	 * @param update	whether or not to update the being during the update loop
+	 */
+	public void registerBeing(Being being, boolean update) {
+		addBeing(being, _masterGroup);
+		if(update)
+			addBeing(being, _updateGroup);
+	}
 	
 	/**
 	 * queues a being to be added to a group at the end of an update
@@ -84,11 +110,11 @@ public abstract class World extends Thread {
 	}
 	
 	/**
-	 * queues a being to be deleted (removed from all groups) at the end of an update
+	 * queues a being to be removed from all of the groups it is in at the end of an update
 	 * @param being
 	 */
-	public void deleteBeing(Being being) {
-		_deleteQueue.addLast(being);
+	public void removeBeingFromAllGroups(Being being) {
+		_removeFromAllGroupsQueue.addLast(being);
 	}
 	
 	/**
@@ -107,8 +133,8 @@ public abstract class World extends Thread {
 			pair.first.removeFromGroup(pair.second); // add being to the group
 			iter.remove(); // remove from the queue
 		}
-		// resolve the delete queue
-		for(Iterator<Being> iter = _deleteQueue.iterator(); iter.hasNext(); ) {
+		// resolve the removeFromAllGroups queue
+		for(Iterator<Being> iter = _removeFromAllGroupsQueue.iterator(); iter.hasNext(); ) {
 			iter.next().delete(); // delete the being
 			iter.remove(); // remove from the queue
 		}
@@ -145,7 +171,7 @@ public abstract class World extends Thread {
 	 * @param grp		the group that contains the beings whose interactions
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerUpdate(GenericGroup grp) {
+	public void registerGroupUpdate(GenericGroup grp) {
 		_groupsToUpdate.add(grp);
 	}
 
@@ -161,7 +187,7 @@ public abstract class World extends Thread {
 			update();
 			postUpdate();
 		}
-		cleanup();
+		shutdown();
 	}
 	
 	/**
@@ -172,7 +198,7 @@ public abstract class World extends Thread {
 	/**
 	 * will be called once the world has finished running
 	 */
-	public abstract void cleanup();
+	public abstract void shutdown();
 	
 	/**
 	 * will be executed on each loop before update is called
@@ -189,6 +215,7 @@ public abstract class World extends Thread {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
+		
 		// the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
@@ -200,7 +227,14 @@ public abstract class World extends Thread {
 			group.update();
 		}
 		
-		// 3. go through the registered interaction in order
+		LinkedList<DetectedInteraction> unresolvedInteractions = new LinkedList<DetectedInteraction>();
+		
+		unresolvedInteractions = new LinkedList<DetectedInteraction>();
+		
+		// 3. apply being updates
+		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getBeings());
+		
+		// 3. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
@@ -243,13 +277,51 @@ public abstract class World extends Thread {
 			Being being2 = di.get_being2();
 			synchronized(being1) {
 				synchronized(being2) {
-					interactor.handle(being1, being2);
+					if(!interactor.handle(being1, being2))
+							unresolvedInteractions.add(di);
 				}
 			}
 		}
 		
-		
-
+		// deal with anything unresolved
+		while(!unresolvedInteractions.isEmpty() && !unresolvedUpdates.isEmpty()) {
+			// TODO: deal with optimization
+			// perform updates
+			unresolvedUpdates = updateHelper(unresolvedUpdates);
+			// check for new interactions
+			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
+				// go through all unresolved interactions
+				DetectedInteraction inter = iter.next();
+				GenericGroup groupA = inter.getInteraction().getA();
+				GenericGroup groupB = inter.getInteraction().getB();
+				Being A = inter.get_being1();
+				Being B = inter.get_being2();
+				// check A against all members of groupB for new interactions
+				for(Iterator<Being> iterB = groupB.iterator(); iterB.hasNext(); ) {
+					Being beingB = iterB.next();
+					if(inter.get_interactor().detect(A, beingB)) // if we find a new one, add it
+						iter.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
+				}
+				// check B against all members of groupA for new interactions
+				for(Iterator<Being> iterA = groupA.iterator(); iterA.hasNext(); ) {
+					Being beingA = iterA.next(); 
+					if(inter.get_interactor().detect(B, beingA))
+						iter.add(new DetectedInteraction(B, beingA, inter.getInteraction()));
+				}
+			}
+			// try to resolve everything
+			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
+				// go through all unresolved interactions
+				DetectedInteraction inter = iter.next();
+				GenericGroup groupA = inter.getInteraction().getA();
+				GenericGroup groupB = inter.getInteraction().getB();
+				Being A = inter.get_being1();
+				Being B = inter.get_being2();
+				// try to resolve the interaction
+				if(inter.get_interactor().handle(A, B))
+					iter.remove(); // if it is resolved, get rid of it
+			}
+		}
 		
 		resolveGroupQueues();
 	}
@@ -275,11 +347,27 @@ public abstract class World extends Thread {
 					}
 				}
 			} else {//if not immediate, queue detection to handle later
-				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction.getInteractor()));
+				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction));
 			}
 		}
 	}
 
+	private List<Being> updateHelper(List<Being> beings) {
+		LinkedList<Being> unresolvedUpdates = new LinkedList<Being>();
+		for(Iterator<Being> iter = beings.iterator(); iter.hasNext(); ) {
+			// iterate through the beings
+			Being being = iter.next();
+			// apply the update
+			synchronized(being) {
+				if(!being.update()) {
+					// if the update is unresolved, add it to the unresolved queue
+					unresolvedUpdates.add(being);
+				}
+			}
+		}
+		return unresolvedUpdates;
+	}
+	
 	//Called by God's draw method to
 	public void draw() {}
 	
@@ -290,12 +378,14 @@ public abstract class World extends Thread {
 	private class DetectedInteraction<A extends Being, B extends Being> {
 		A _being1;
 		B _being2;
-		Interactor<A, B> _interactor;
-		DetectedInteraction(A b1, B b2, Interactor<A,B> i) {
+		Interaction<A, B> _interaction;
+		
+		DetectedInteraction(A b1, B b2, Interaction<A,B> interaction) {
 			_being1 =b1;
 			_being2 =b2;
-			_interactor =i;
+			_interaction = interaction;
 		}
+		
 		public A get_being1() {
 			return _being1;
 		}
@@ -303,7 +393,11 @@ public abstract class World extends Thread {
 			return _being2;
 		}
 		public Interactor<A, B> get_interactor() {
-			return _interactor;
+			return _interaction.getInteractor();
+		}
+		
+		public Interaction<A,B> getInteraction() {
+			return _interaction;
 		}
 	}
 	

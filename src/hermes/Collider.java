@@ -12,8 +12,5 @@ public abstract class Collider<A extends Being, B extends Being> implements Inte
 		return being1.getShape().collide(being2.getShape());
 	}
 
-	// handles an interaction between A and B
-	public abstract void handleCollision(A being1, B being2);
-
 }
 

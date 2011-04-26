@@ -17,8 +17,9 @@ public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 	}
 
 	@Override
-	public void handle(MassedBeing being1, MassedBeing being2) {
-		
+	public boolean handle(MassedBeing being1, MassedBeing being2) {
+		// todo
+		return true;
 	}
 
 }

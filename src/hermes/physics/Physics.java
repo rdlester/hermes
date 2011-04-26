@@ -29,7 +29,6 @@ public class Physics {
 	 */
 	public static PVector calculateImpulse(PVector v1, PVector v2, 
 			float m1, float m2, float elasticity, PVector normal) {
-		
 		PVector numerator = PVector.sub(v2, v1); // calculate relative velocity
 		numerator.mult(-1 - elasticity); 		 // factor by elasticity
 		float result = numerator.dot(normal); 	 // find normal component
