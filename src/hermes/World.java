@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
+import java.util.ListIterator;
+
 import processing.core.*;
 import src.hermes.postoffice.PostOffice;
 
@@ -214,12 +216,6 @@ public abstract class World extends Thread {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
 		
-		// 1. handle messages
-		// 2. apply updates, keeping a list of updates that returned false
-		// 3. perform detection, keeping a list of handlers to resolve
-		// 4. perform handling, keeping a list of unresolved handlers
-		// 5. if anything remains unresolved, go to step 2
-		
 		// the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
@@ -289,10 +285,11 @@ public abstract class World extends Thread {
 		
 		// deal with anything unresolved
 		while(!unresolvedInteractions.isEmpty() && !unresolvedUpdates.isEmpty()) {
+			// TODO: deal with optimization
 			// perform updates
 			unresolvedUpdates = updateHelper(unresolvedUpdates);
-			// handle interactions
-			for(Iterator<DetectedInteraction> iter = unresolvedInteractions.iterator(); iter.hasNext(); ) {
+			// check for new interactions
+			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
 				// go through all unresolved interactions
 				DetectedInteraction inter = iter.next();
 				GenericGroup groupA = inter.getInteraction().getA();
@@ -302,19 +299,27 @@ public abstract class World extends Thread {
 				// check A against all members of groupB for new interactions
 				for(Iterator<Being> iterB = groupB.iterator(); iterB.hasNext(); ) {
 					Being beingB = iterB.next();
-					if(!inter.get_interactor().handle(A, beingB)) // if we find a new one, add it
-						unresolvedInteractions.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
-					else if(beingB == B) // if this interaction has been resolved, remove it
-						iter.remove();
+					if(inter.get_interactor().detect(A, beingB)) // if we find a new one, add it
+						iter.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
 				}
 				// check B against all members of groupA for new interactions
 				for(Iterator<Being> iterA = groupA.iterator(); iterA.hasNext(); ) {
 					Being beingA = iterA.next(); 
-					if(!inter.get_interactor().handle(B, beingA))
-						unresolvedInteractions.add(new DetectedInteraction(B, beingA, inter.getInteraction()));
-					else if(beingA == A)
-						iter.remove();
+					if(inter.get_interactor().detect(B, beingA))
+						iter.add(new DetectedInteraction(B, beingA, inter.getInteraction()));
 				}
+			}
+			// try to resolve everything
+			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
+				// go through all unresolved interactions
+				DetectedInteraction inter = iter.next();
+				GenericGroup groupA = inter.getInteraction().getA();
+				GenericGroup groupB = inter.getInteraction().getB();
+				Being A = inter.get_being1();
+				Being B = inter.get_being2();
+				// try to resolve the interaction
+				if(inter.get_interactor().handle(A, B))
+					iter.remove(); // if it is resolved, get rid of it
 			}
 		}
 		
