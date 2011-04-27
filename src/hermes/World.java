@@ -41,6 +41,9 @@ public abstract class World extends Thread {
 	@SuppressWarnings("rawtypes")
 	public World(PostOffice postOffice, Camera camera) {
 		
+		assert postOffice != null : "World constructor: postOffice must be a valid PostOffice";
+		assert camera != null : "World constructor: camera must be a valid Camera";
+		
 		//set the World's PApplet to the one set in Hermes
 		_parentApplet = Hermes.getPApplet();
 		_postOffice = postOffice;
@@ -193,22 +196,22 @@ public abstract class World extends Thread {
 	/**
 	 * will be called once when the world is run, before the update loop
 	 */
-	public abstract void setup();
+	public void setup() {}
 	
 	/**
 	 * will be called once the world has finished running
 	 */
-	public abstract void shutdown();
+	public void shutdown() {}
 	
 	/**
 	 * will be executed on each loop before update is called
 	 */
-	public abstract void preUpdate();
+	public void preUpdate() {}
 	
 	/**
 	 * will be executed on each loop after update is called
 	 */
-	public abstract void postUpdate();
+	public void postUpdate() {}
 	
 	/**
 	 * executes the update loop
