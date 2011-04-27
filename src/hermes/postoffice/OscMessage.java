@@ -24,8 +24,7 @@ public class OscMessage implements Message {
 	
 	//Address of OSCMessage
 	private String _address;
-	//Contents of OSCMessage
-	private ArrayList<Object> _contents;
+
 	
 	/**
 	 * Basic constructor for unpacked OSCMessage
@@ -34,7 +33,7 @@ public class OscMessage implements Message {
 	 */
 	public OscMessage(String address) {
 		_address = address;
-		_contents = new ArrayList<Object>();
+
 	}
 	
 	/**
@@ -43,48 +42,16 @@ public class OscMessage implements Message {
 	 */
 	public OscMessage(com.illposed.osc.OSCMessage message) {
 		_address = message.getAddress();
-		_contents = (ArrayList<Object>) Arrays.asList(message.getArguments());
 	}
 	
-	/**
-	 * Getter for address
-	 * @return address
-	 */
-	public String getAddress() {
-		return _address;
+	
+	public getInt() {
+		assert : "addAnimation Error: Images of filetype: "+fileType+"not supported.\n Suported types: .gif, .jgp, tga, .png";
+
+		
 	}
 	
-	/**
-	 * Getter for contents
-	 * @return contents
-	 */
-	public ArrayList<Object> getContents() {
-		return _contents;
-	}
 	
-	/**
-	 * Adds a string to the contents of the message
-	 * @param add
-	 */
-	public void addString(String add) {
-		_contents.add(add);
-	}
-	
-	/**
-	 * Adds a float to the contents of the message
-	 * @param add
-	 */
-	public void addFloat(float add) {
-		_contents.add(add);
-	}
-	
-	/**
-	 * Adds an int to the contents of the message
-	 * @param add
-	 */
-	public void addInt(int add) {
-		_contents.add(add);
-	}
 	
 	/**
 	 * Get an illposed version of this message
