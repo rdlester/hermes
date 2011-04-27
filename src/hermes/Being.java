@@ -24,8 +24,18 @@ public abstract class Being {
 	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
+	long _time;
+	
 	public Being() {
 		_groups = new LinkedList<GenericGroup<?,?>>();
+		
+	}
+	
+	private long updateTime() {
+		long time = System.currentTimeMillis();
+		long elapsed = time - _time;
+		_time = time;
+		return elapsed;
 	}
 	
 	/**
@@ -116,7 +126,12 @@ public abstract class Being {
 	public void update() {}
 	
 	protected void step() {
-		
+		long elapsed = updateTime();
+		EulerIntegratePosition(elapsed);
+	}
+	
+	protected void EulerIntegratePosition(long dt) {
+		_position.add(PVector.mult(_velocity, (float)dt));
 	}
 	
 }
