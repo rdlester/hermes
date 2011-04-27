@@ -1,22 +1,10 @@
 package src.hermes.postoffice;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-
-//
-//public class OSCMessage extends com.illposed.osc.OSCMessage implements Message{
-//	
-// 
-//}
-
-
-
-
 
 /**
+ * First In, Last Out, meaning.
  * Message representing an OSC message
- * Very similar to illposed's OSCMessage, but implementing Message so it can be used in PostOffice
+ * Very similar to illposed's OSCsMessage, but implementing Message so it can be used in PostOffice
  * The type of an OSCMessage is determined by the address it is sent on
  */
 
@@ -27,6 +15,10 @@ public class OscMessage implements Message {
 
 	//Contents of OSCMessage
 	private Object[] _contents;
+	
+	//used to internally keep track of how many "getAndRemove" calls the user has made
+	private int _indexToRetrieveFrom = 0;  
+	//
 	
 	/**
 	 * Basic constructor for unpacked OSCMessage
@@ -48,51 +40,109 @@ public class OscMessage implements Message {
 	
 	
 	/**
-	 * Use this when the OSC message being received has only one argument: an int
-	 * <br>Take great care!!!! It is your responsibility to be sure that the message data is actually an int. If it isn't, the value you get from this method will be nonsense
-	 * <br>If this message contains more than one argument, you will get an error.
+	 * Retrieves an int argument contained in the OSCMessage you've received
+	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
+	 *</p>
+	 *<p>The "getAndRemove" methods are "First In, Last Out" 
+	 *<br>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
+	 *<br>First, you would call "getAndRemoveInt()" which would return the int value of A 
+	 *<br>Next, you would call "getAndRemoveString()" which would return string B
+	 *<br>Lastly, you would call getAndRemoveFloat()" which would return string C
+	 *<br>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
+	 *</p>
 	 * 
-	 * @return		 the int value of the message
+	 * @return		 the int argument in the OSCMessage
 	 */
-	public int getInt() {
+	public int getAndRemoveInt() {
 		
-		assert _contents.length==1 : "OSC message error: You tried to call getInt() (which implies the message should have a single int argument) \n " +
-				"This message has: "+_contents.length + "arguments, so call getMultipleArguments(). Be careful with these untyped OSC messages!";
+		//make sure the user has remaining arguments
+		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getAndRemoveInt(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+	
+		//make sure the type is correct
+		assert _contents[_indexToRetrieveFrom] instanceof Integer : "OSCmessage error: You tried to call getAndRemoveInt(), but the current argument is not of type int!! \n" +
+				"it is of type: " + _contents[_indexToRetrieveFrom].getClass().getName();
 		
-		return (Integer)_contents[0]; //blindly cast - no easy checks here - nature of the OSC beast. 
+		//cast it
+		int intToReturn = (Integer)_contents[_indexToRetrieveFrom];
+		
+		_indexToRetrieveFrom++;
+		
+		return intToReturn; 
 	}
 	
 	
 	
 	/**
-	 * Use this when the OSC message being received has only one argument: a String
-	 * <br>Take great care!!!! It is your responsibility to be sure that the message data is actually a String. If it isn't, the value you get from this method will be nonsense
-	 * <br>If this message contains more than one argument, you will get an error.
+	 * Retrieves a String argument contained in the OSCMessage you've received
+	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
+	 *</p>
+	 *<p>The "getAndRemove" methods are "First In, Last Out" 
+	 *<br>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
+	 *<br>First, you would call "getAndRemoveInt()" which would return the int value of A 
+	 *<br>Next, you would call "getAndRemoveString()" which would return string B
+	 *<br>Lastly, you would call getAndRemoveFloat()" which would return string C
+	 *<br>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
+	 *</p>
 	 * 
-	 * @return		 the String value of the message
+	 * @return		 the String argument in the OSCMessage
 	 */
-	public String getString() {
+	public String getAndRemoveString() {
 		
-		assert _contents.length==1 : "OSC message error: You tried to call getString() (which implies the message should have a single string argument) \n " +
-				"This message has: "+_contents.length + "arguments, so call getMultipleArguments(). Be careful with these untyped OSC messages!";
+		//make sure the user has remaining arguments
+		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getAndRemoveString(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+	
+		//make sure the type is correct
+		assert _contents[_indexToRetrieveFrom] instanceof String : "OSCmessage error: You tried to call getAndRemoveString(), but the current argument is not of type String!! \n" +
+				"it is of type: " + _contents[_indexToRetrieveFrom].getClass().getName();
 		
-		return (String)_contents[0]; //blindly cast - no easy checks here - nature of the OSC beast. 
+		//cast it
+		String stringToReturn = (String)_contents[_indexToRetrieveFrom];
+		
+		_indexToRetrieveFrom++;
+		
+		return stringToReturn; 
+	}
+	
+
+	/**
+	 * Retrieves a float argument contained in the OSCMessage you've received
+	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
+	 *</p>
+	 *<p>The "getAndRemove" methods are "First In, Last Out" 
+	 *<br>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
+	 *<br>First, you would call "getAndRemoveInt()" which would return the int value of A 
+	 *<br>Next, you would call "getAndRemoveString()" which would return string B
+	 *<br>Lastly, you would call getAndRemoveFloat()" which would return string C
+	 *<br>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
+	 *</p>
+	 * 
+	 * @return		 the float argument in the OSCMessage
+	 */
+	public float getAndRemoveFloat() {
+		
+		//make sure the user has remaining arguments
+		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getAndRemoveFloat(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+	
+		//make sure the type is correct
+		assert _contents[_indexToRetrieveFrom] instanceof String : "OSCmessage error: You tried to call getAndRemoveFloat(), but the current argument is not of type Float!! \n" +
+				"it is of type: " + _contents[_indexToRetrieveFrom].getClass().getName();
+		
+		//cast it
+		float floatToReturn = (Float)_contents[_indexToRetrieveFrom];
+		
+		_indexToRetrieveFrom++;
+		
+		return floatToReturn; 
 	}
 	
 	
+	
 	/**
-	 * Use this when the OSC message being received has only one argument: an float
-	 * <br>Take great care!!!! It is your responsibility to be sure that the message data is actually a float. If it isn't, the value you get from this method will be nonsense
-	 * <br>If this message contains more than one argument, you will get an error.
-	 * 
-	 * @return		 the float value of the message
+	 * returns the number of arguments available for extraction from this OSCMessage.
+	 * @return		the number of arguments left to extract from this OSCMessage
 	 */
-	public float getFloat() {
-		
-		assert _contents.length==1 : "OSC message error: You tried to call getFloat() (which implies the message should have a single string argument) \n " +
-				"This message has: "+_contents.length + "arguments, so call getMultipleArguments(). Be careful with these untyped OSC messages!";
-		
-		return (Float)_contents[0]; //blindly cast - no easy checks here - nature of the OSC beast. 
+	public int getNumberOfRemainingArguments() {
+		return _contents.length - _indexToRetrieveFrom;
 	}
 	
 	
