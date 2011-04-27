@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.PriorityQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -249,12 +250,11 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	/**
 	 * Returns a template KeyMessage to be used for registering subscriptions
 	 * @param key - the name of the key to be subscribed to
-	 * @return Template KeyMessage to be used in subscribing
+	 * @return Template KeyMessage
 	 */
 	public KeyMessage getKeyTemplate(String key) {
 		return new KeyMessage(key,false);
 	}
-	
 	/**
 	 * Returns a template MouseMessage to be used for registering subscriptions
 	 * @param button
@@ -263,15 +263,82 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public MouseMessage getMouseTemplate(int button) {
 		return new MouseMessage(button, MouseMessage.MOUSE_DRAGGED, 0, 0);
 	}
-	
+	/**
+	 * Returns a template MouseWheelMessage to be used for registering subscriptions
+	 * @return Template MouseWheelMessage
+	 */
 	public MouseWheelMessage getWheelTemplate() {
 		return new MouseWheelMessage(10);
 	}
-	
+	/**
+	 * Returns a template OscMessage to be used for registering subscriptions
+	 * @param address - the address to be subscribed to
+	 * @return Template OscMessage
+	 */
 	public OscMessage getOscTemplate(String address) {
-		return new OscMessage(address);
+		return new OscMessage(address, new Object[1]);
 	}
 	
+	/////////////////////////////////
+	//Methods for sending OscMessages
+	
+	/**
+	 * Sends an OscMessage on the given address containing only the given int
+	 * @param address - address message is to be sent on
+	 * @param send - integer to be sent
+	 */
+	public void sendInt(String address, int send) {
+		Object[] array = new Object[1];
+		array[0] = (Integer) send;
+		sendMessage(address, array);
+	}
+	
+	/**
+	 * Sends an OscMessage on the given address containing only the given float
+	 * @param address
+	 * @param send
+	 */
+	public void sendFloat(String address, float send) {
+		Object[] array = new Object[1];
+		array[0] = (Float) send;
+		sendMessage(address, array);
+	}
+	
+	/**
+	 * Sends an OscMessage on the given address containing only the given boolean
+	 * @param address
+	 * @param send
+	 */
+	public void sendBoolean(String address, boolean send) {
+		Object[] array = new Object[1];
+		array[0] = (Boolean) send;
+		sendMessage(address, array);
+	}
+	
+	/**
+	 * Sends an OscMessage on the given address containing the contents of the given list
+	 * @param address
+	 * @param send
+	 */
+	public void sendList(String address, ArrayList<Object> send) {
+		int size = send.size();
+		Object[] array = new Object[size];
+		for(int i = 0; i < size; i++) {
+			array[i] = send.get(i);
+		}
+	}
+	
+	private void sendMessage(String address, Object[] array) {
+		com.illposed.osc.OSCMessage mail = new com.illposed.osc.OSCMessage(address, array);
+		try {
+			_send.send(mail);
+		}
+		catch(Exception e) {
+			System.err.println("Error sending message on " + address + "!");
+		}
+	}
+	
+	//////////////////////////////////////////////////////////////////////////
 	/**
 	 * Command that sends all messages queued by the PostOffice to subscribers
 	 */
@@ -292,23 +359,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 	
-	/**
-	 * Sends a provided message out into the world
-	 */
-	public void sendMail(OscMessage m) {
-		com.illposed.osc.OSCMessage mail = m.toIllposed();
-		try {
-			_send.send(mail);
-		}
-		catch(Exception e) {
-			System.err.println("Error sending message on " + m.getAddress() + "!");
-		}
-	}
-	
 	/////////////////////////////////////////////////////////////////////////////
 	//Methods defined by implemented interfaces for handling mouse+keyboard input
-	
-	/////////////////////
+	/////////////////////////////////////////////////////////////////////////////
 	//Get keyboard events
 	
 	/**
