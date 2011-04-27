@@ -25,16 +25,16 @@ public class OscMessage implements Message {
 	//Address of OSCMessage
 	private String _address;
 	//Contents of OSCMessage
-	private ArrayList<Object> _contents;
+	private Object[] _contents;
 	
 	/**
 	 * Basic constructor for unpacked OSCMessage
 	 * @param address - Address of OSCMessage
 	 * @param contents - Contents of OSCMessage
 	 */
-	public OscMessage(String address) {
+	public OscMessage(String address, Object[] contents) {
 		_address = address;
-		_contents = new ArrayList<Object>();
+		_contents = contents;
 	}
 	
 	/**
@@ -43,7 +43,7 @@ public class OscMessage implements Message {
 	 */
 	public OscMessage(com.illposed.osc.OSCMessage message) {
 		_address = message.getAddress();
-		_contents = (ArrayList<Object>) Arrays.asList(message.getArguments());
+		_contents = message.getArguments();
 	}
 	
 	/**
@@ -58,39 +58,15 @@ public class OscMessage implements Message {
 	 * Getter for contents
 	 * @return contents
 	 */
-	public ArrayList<Object> getContents() {
+	public Object[] getContents() {
 		return _contents;
-	}
-	
-	/**
-	 * Adds a string to the contents of the message
-	 * @param add
-	 */
-	public void addString(String add) {
-		_contents.add(add);
-	}
-	
-	/**
-	 * Adds a float to the contents of the message
-	 * @param add
-	 */
-	public void addFloat(float add) {
-		_contents.add(add);
-	}
-	
-	/**
-	 * Adds an int to the contents of the message
-	 * @param add
-	 */
-	public void addInt(int add) {
-		_contents.add(add);
 	}
 	
 	/**
 	 * Get an illposed version of this message
 	 */
 	protected com.illposed.osc.OSCMessage toIllposed() {
-		com.illposed.osc.OSCMessage m = new com.illposed.osc.OSCMessage(_address,_contents.toArray());
+		com.illposed.osc.OSCMessage m = new com.illposed.osc.OSCMessage(_address,_contents);
 		return m;
 	}
 	

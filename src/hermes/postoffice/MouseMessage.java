@@ -19,7 +19,7 @@ public class MouseMessage implements Message {
 	//Locations
 	private int _x, _y;
 	
-	//Constants representing mouseclicks
+	//Constants representing buttons
 	public static int NOBUTTON = MouseEvent.NOBUTTON;
 	public static int BUTTON1 = MouseEvent.BUTTON1;
 	public static int BUTTON2 = MouseEvent.BUTTON2;
@@ -29,7 +29,7 @@ public class MouseMessage implements Message {
 	public static int MOUSE_PRESSED = MouseEvent.MOUSE_PRESSED;
 	public static int MOUSE_RELEASED = MouseEvent.MOUSE_RELEASED;
 	public static int MOUSE_DRAGGED = MouseEvent.MOUSE_DRAGGED;
-	public static int MOUSE_MOVED = MouseEvent.MOUSE_CLICKED;
+	public static int MOUSE_MOVED = MouseEvent.MOUSE_MOVED;
 	
 	/**
 	 * Creates a new MouseMessage

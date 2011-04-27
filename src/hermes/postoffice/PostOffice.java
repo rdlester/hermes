@@ -63,7 +63,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		 * Adds it to queue
 		 */
 		public void acceptMessage(Date time, com.illposed.osc.OSCMessage message) {
-			OSCMessage m = new OSCMessage(message);
+			OscMessage m = new OscMessage(message);
 			_p._messageQueue.add(m);
 		}
 	}
@@ -237,10 +237,39 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			subscriptionList.add(newSubscription);
 			_subscriptions.put(check, subscriptionList);
 		}
-		if(check instanceof OSCMessage) {
-			OSCMessage osc = (OSCMessage) check;
+		if(check instanceof OscMessage) {
+			OscMessage osc = (OscMessage) check;
 			_receive.addListener(osc.getAddress(), _listener);
 		}
+	}
+	
+	///////////////////////////////////////////////////////////////////////////////
+	//Methods generating template messages to be used for registering subscriptions
+	
+	/**
+	 * Returns a template KeyMessage to be used for registering subscriptions
+	 * @param key - the name of the key to be subscribed to
+	 * @return Template KeyMessage to be used in subscribing
+	 */
+	public KeyMessage getKeyTemplate(String key) {
+		return new KeyMessage(key,false);
+	}
+	
+	/**
+	 * Returns a template MouseMessage to be used for registering subscriptions
+	 * @param button
+	 * @return Template MouseMessage
+	 */
+	public MouseMessage getMouseTemplate(int button) {
+		return new MouseMessage(button, MouseMessage.MOUSE_DRAGGED, 0, 0);
+	}
+	
+	public MouseWheelMessage getWheelTemplate() {
+		return new MouseWheelMessage(10);
+	}
+	
+	public OscMessage getOscTemplate(String address) {
+		return new OscMessage(address);
 	}
 	
 	/**
@@ -266,7 +295,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	/**
 	 * Sends a provided message out into the world
 	 */
-	public void sendMail(OSCMessage m) {
+	public void sendMail(OscMessage m) {
 		com.illposed.osc.OSCMessage mail = m.toIllposed();
 		try {
 			_send.send(mail);
