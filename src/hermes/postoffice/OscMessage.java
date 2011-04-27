@@ -1,5 +1,8 @@
 package src.hermes.postoffice;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 
 //
 //public class OSCMessage extends com.illposed.osc.OSCMessage implements Message{
@@ -17,7 +20,7 @@ package src.hermes.postoffice;
  * The type of an OSCMessage is determined by the address it is sent on
  */
 
-public class OSCMessage implements Message {
+public class OscMessage implements Message {
 	
 	//Address of OSCMessage
 	private String _address;
@@ -29,7 +32,7 @@ public class OSCMessage implements Message {
 	 * @param address - Address of OSCMessage
 	 * @param contents - Contents of OSCMessage
 	 */
-	public OSCMessage(String address, Object[] contents) {
+	public OscMessage(String address, Object[] contents) {
 		_address = address;
 		_contents = contents;
 	}
@@ -38,7 +41,7 @@ public class OSCMessage implements Message {
 	 * Constructor taking an illposed OSCMessage
 	 * @param message - a packed OSCMessage in illposed's format
 	 */
-	public OSCMessage(com.illposed.osc.OSCMessage message) {
+	public OscMessage(com.illposed.osc.OSCMessage message) {
 		_address = message.getAddress();
 		_contents = message.getArguments();
 	}
@@ -59,7 +62,6 @@ public class OSCMessage implements Message {
 		return _contents;
 	}
 	
-	
 	/**
 	 * Get an illposed version of this message
 	 */
@@ -69,8 +71,8 @@ public class OSCMessage implements Message {
 	}
 	
 	public boolean equals(Object o) {
-		if(o instanceof OSCMessage) {
-			OSCMessage m = (OSCMessage) o;
+		if(o instanceof OscMessage) {
+			OscMessage m = (OscMessage) o;
 			if(this.getAddress() == m.getAddress()) return true;
 		}
 		return false;

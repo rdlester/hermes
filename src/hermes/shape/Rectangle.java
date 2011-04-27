@@ -90,6 +90,7 @@ public class Rectangle extends Shape {
 	
 	@Override
 	public PVector projectionVector(Shape other) {
+		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
@@ -107,8 +108,6 @@ public class Rectangle extends Shape {
 	}
 	
 	public PVector projectionVector(Rectangle other) {
-		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
-		
 		if(other == this)	// no self-projection
 			return null;
 		// calculate the distance between rect centers
