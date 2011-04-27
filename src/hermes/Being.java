@@ -20,10 +20,22 @@ public abstract class Being {
 	
 	protected Shape _shape; 		 // the being's shape
 	
+	private boolean _done;
+	
 	private LinkedList<GenericGroup<?,?>> _groups;
+	
+	long _time;
 	
 	public Being() {
 		_groups = new LinkedList<GenericGroup<?,?>>();
+		
+	}
+	
+	private long updateTime() {
+		long time = System.currentTimeMillis();
+		long elapsed = time - _time;
+		_time = time;
+		return elapsed;
 	}
 	
 	/**
@@ -99,6 +111,27 @@ public abstract class Being {
 		return _shape.getBoundingBox();
 	}
 	
-	public boolean update() { return true; }
-
+	protected void setDone(boolean done) {
+		_done = done;
+	}
+	
+	public boolean processUpdate() {
+		if(_done)
+			update();
+		setDone(true);
+		step();
+		return _done;
+	}
+	
+	public void update() {}
+	
+	protected void step() {
+		long elapsed = updateTime();
+		EulerIntegratePosition(elapsed);
+	}
+	
+	protected void EulerIntegratePosition(long dt) {
+		_position.add(PVector.mult(_velocity, (float)dt));
+	}
+	
 }
