@@ -359,7 +359,7 @@ public abstract class World extends Thread {
 			Being being = iter.next();
 			// apply the update
 			synchronized(being) {
-				if(!being.update()) {
+				if(!being.processUpdate()) {
 					// if the update is unresolved, add it to the unresolved queue
 					unresolvedUpdates.add(being);
 				}

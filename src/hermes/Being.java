@@ -20,6 +20,8 @@ public abstract class Being {
 	
 	protected Shape _shape; 		 // the being's shape
 	
+	private boolean _done;
+	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
 	public Being() {
@@ -99,6 +101,22 @@ public abstract class Being {
 		return _shape.getBoundingBox();
 	}
 	
-	public boolean update() { return true; }
-
+	protected void setDone(boolean done) {
+		_done = done;
+	}
+	
+	public boolean processUpdate() {
+		if(_done)
+			update();
+		setDone(true);
+		step();
+		return _done;
+	}
+	
+	public void update() {}
+	
+	protected void step() {
+		
+	}
+	
 }
