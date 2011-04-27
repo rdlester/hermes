@@ -1,4 +1,4 @@
-package src.hermesTest.postOfficeTests;
+/*package src.hermesTest.postOfficeTests;
 
 import static org.junit.Assert.*;
 
@@ -10,9 +10,9 @@ import org.junit.*;
 
 import src.hermes.postoffice.*;
 
-/**
+*//**
  * Simple tests for PostOffice message queuing and message equality checks
- */
+ *//*
 public class PostOfficeJUnitTests {
 	
 	//Constants defining key 'triggering' key event
@@ -46,9 +46,9 @@ public class PostOfficeJUnitTests {
 		_p = null;
 	}
 	
-	/**
+	*//**
 	 * General test for all the message handling functions
-	 */
+	 *//*
 	@Test
 	public void test_message() {
 		//Test keyPressed
@@ -122,4 +122,4 @@ public class PostOfficeJUnitTests {
 		MouseWheelMessage wheel = (MouseWheelMessage) m7;
 		assertEquals(wheel.getWheelRotation(), ROTATION);
 	}
-}
+}*/

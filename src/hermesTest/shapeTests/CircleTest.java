@@ -16,10 +16,10 @@ public class CircleTest {
 	@Test
 	public void test_collideCircle() {
 		
-		PVector pos1 = new PVector(0,0);
-		Circle c1 = new Circle(pos1, 10);
+		PVector pos1 = new PVector(0,0); 
+		Circle c1 = new Circle(pos1, 10.0f);
 		PVector pos2 = new PVector(1,1);
-		Circle c2 = new Circle(pos2, 10);
+		Circle c2 = new Circle(pos2, 10.0f);
 		assertTrue(c1.collide(c2));
 		assertTrue(c2.collide(c1));
 		
