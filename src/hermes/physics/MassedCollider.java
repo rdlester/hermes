@@ -18,7 +18,8 @@ public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 
 	@Override
 	public boolean handle(MassedBeing being1, MassedBeing being2) {
-		// todo
+		ImpulseCollision collision = being1.getCollisionWith(being2);
+		collision.applyImpulses();
 		return true;
 	}
 

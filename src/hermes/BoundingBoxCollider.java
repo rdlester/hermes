@@ -8,6 +8,6 @@ public abstract class BoundingBoxCollider<A extends Being, B extends Being> impl
 	}
 
 	// handles an interaction between A and B
-	public abstract void handle(A being1, B being2);
+	public abstract boolean handle(A being1, B being2);
 	
 }

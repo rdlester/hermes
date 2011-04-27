@@ -31,7 +31,7 @@ public abstract class Being {
 		
 	}
 	
-	private long updateTime() {
+	protected long updateTime() {
 		long time = System.currentTimeMillis();
 		long elapsed = time - _time;
 		_time = time;

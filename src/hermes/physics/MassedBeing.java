@@ -126,7 +126,8 @@ public abstract class MassedBeing extends Being {
 	 * 	since the last step, using Euler-Cromer integration
 	 * @param dt	the time elapsed since the last step
 	 */
-	public void step(float dt) {
+	public void step() {
+		long dt = updateTime();
 		_force.div(_mass); 	// calculate the acceleration from the force
 		_force.mult(dt); 	// multiply by the time step
 		_velocity.add(_force);	// v = v0 + a*dt
@@ -172,6 +173,14 @@ public abstract class MassedBeing extends Being {
 		being1.addCollision(collision);
 		being2.addCollision(collision);
 		return collision;
+	}
+	
+	public ImpulseCollision getCollisionWith(MassedBeing other) {
+		for(ImpulseCollision collision : _collisions) {
+			if(collision.hasBeing(other))
+				return collision;
+		}
+		return null;
 	}
 	
 	/**
