@@ -146,6 +146,33 @@ public class OscMessage implements Message {
 	}
 	
 	
+/**
+ * Get the typetag of the next argument in this OSC message. This means: "i" for int, "f" for float, and "s" for string
+ * <br>NOTE: if you have extracted all the arguments from this OSCMessage, calling this method will give an error
+ * @return		the typetag of the next argument in this OSCmessage
+ */
+	public String getTypeTagOfNextArgument() {
+		
+		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getTypeTagOfNextArgument(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+		
+		String typeTag;
+		
+		if(_contents[_indexToRetrieveFrom] instanceof Integer) {
+			typeTag = "i";
+		} else if (_contents[_indexToRetrieveFrom] instanceof Float){
+			typeTag =  "f";
+		} else if(_contents[_indexToRetrieveFrom] instanceof String) {
+			typeTag = "s";
+		} else {
+			typeTag = null;
+		}
+		
+		//Shouldn't happen... but just in case!
+		assert typeTag != null : "getTypeTagOfNextArgument() Error: Unsupported type of data";
+		
+		return typeTag;
+	}
+	
 	
 	
 	/**
@@ -160,7 +187,7 @@ public class OscMessage implements Message {
 	 * Getter for contents
 	 * @return contents
 	 */
-	public Object[] getContents() {
+	protected Object[] getContents() {
 		return _contents;
 	}
 	
