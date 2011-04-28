@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import processing.core.*;
 import src.hermes.*;
 import src.hermes.physics.*;
+import src.hermes.shape.Shape;
 import static src.hermes.HermesMath.zeroVector;
 
 /**
@@ -32,8 +33,9 @@ public abstract class MassedBeing extends Being {
 	 * @param mass
 	 * @param elasticity
 	 */
-	public MassedBeing(float mass, float elasticity) {
-		super();
+	public MassedBeing(Shape shape, PVector position, PVector velocity,
+			float mass, float elasticity) {
+		super(shape, position, velocity);
 		
 		assert mass > 0 : "MassedBeing constructor: must have positive mass";
 		assert elasticity >= 0 : "MassedBeing constructor: elasticity cannot be negative";
