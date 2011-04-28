@@ -59,6 +59,7 @@ public abstract class World extends Thread {
 		_updateGroup = new Group<Being>(this);
 		
 		//initialize the Camera
+		registerBeing(camera, true);
 		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
@@ -87,11 +88,13 @@ public abstract class World extends Thread {
 	 *   its update() method will be called by the loop if update is true
 	 * @param being		the being to register
 	 * @param update	whether or not to update the being during the update loop
+	 * @return 			the registered being
 	 */
-	public void registerBeing(Being being, boolean update) {
+	public Being registerBeing(Being being, boolean update) {
 		addBeing(being, _masterGroup);
 		if(update)
 			addBeing(being, _updateGroup);
+		return being;
 	}
 	
 	/**

@@ -20,15 +20,21 @@ public abstract class Being {
 	
 	protected Shape _shape; 		 // the being's shape
 	
-	private boolean _done;
+	private boolean _done = true;
 	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
 	long _time;
 	
-	public Being() {
-		_groups = new LinkedList<GenericGroup<?,?>>();
+	public Being(Shape shape, PVector position, PVector velocity) {
+		assert shape != null : "Being constructor: shape must be a valid Shape";
+		assert position != null : "Being constructor: position must be a valid PVector";
+		assert velocity != null : "Being constructor: velocity must be a valid PVector";
 		
+		_groups = new LinkedList<GenericGroup<?,?>>();
+		_shape = shape;
+		_position = position;
+		_velocity = velocity;
 	}
 	
 	protected long updateTime() {
@@ -51,7 +57,7 @@ public abstract class Being {
 	public void addToGroup(GenericGroup<?,?> group) {
 		// need to lock on the group
 		synchronized(group) {
-			((GenericGroup<Being,?>)group.getBeings()).add(this);
+			((GenericGroup<Being,?>)group).getBeings().add(this);
 			_groups.add(group);
 		}
 	}

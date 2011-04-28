@@ -24,20 +24,17 @@ public class Camera extends Environment {
 
 	//Camera's default constructor which uses 1 to 1 world pixel ratio
 	public Camera() {
-		_worldCoordinateWidth = 1;
-		_worldCoordinateHeight = 1;
-		_x=0;
-		_y=0;
-		_shape = new Rectangle(new PVector(_x,_y), new PVector(0,0), new PVector(_worldCoordinateWidth, _worldCoordinateHeight));
+		this(0,0,1,1);
 	}
 	
 	//Camera's constructor with world coordinates for translation
 	public Camera(float x, float y, float worldCoordinateWidth, float worldCoordinateHeight) {
+		super(new Rectangle(new PVector(x,y,0.0f), new PVector(0,0), new PVector(worldCoordinateWidth, worldCoordinateHeight)),
+				new PVector(x,y,0.0f),HermesMath.zeroVector());
 		_x = x;
 		_y = y;
 		_worldCoordinateWidth = worldCoordinateWidth;
 		_worldCoordinateHeight = worldCoordinateHeight;
-		_shape = new Rectangle(new PVector(_x,_y), new PVector(0,0), new PVector(_worldCoordinateWidth, _worldCoordinateHeight));
 	}
 	
 	//getters and setters
