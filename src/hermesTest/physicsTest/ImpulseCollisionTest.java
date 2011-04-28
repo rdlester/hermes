@@ -1,4 +1,4 @@
-package src.hermes.physicsTest;
+package src.hermesTest.physicsTest;
 
 public class ImpulseCollisionTest {
 	

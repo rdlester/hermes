@@ -1,7 +1,5 @@
 package src.hermes.postoffice;
 
-import java.awt.event.MouseEvent;
-
 /**
  * Message representing mouse actions
  * Type of MouseMessage determined by the button pressed
