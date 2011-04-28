@@ -10,20 +10,12 @@ import java.awt.event.MouseWheelListener;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.common.collect.HashMultimap;
-
-
-import processing.core.*;
-import src.hermes.GenericGroup;
 import src.hermes.Hermes;
 
 /**
@@ -52,6 +44,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	//OSCPorts for listening and receiving
 	private com.illposed.osc.OSCPortIn _receive;
 	private com.illposed.osc.OSCPortOut _send;
+	@SuppressWarnings("unused")
 	private com.illposed.osc.OSCListener _listener;
 	
 	//Map that associates the subscriptions with the Message they want to receive
