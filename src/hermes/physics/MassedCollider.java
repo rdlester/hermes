@@ -5,7 +5,6 @@ import processing.core.PVector;
 
 public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 	
-	@Override
 	public boolean detect(MassedBeing being1, MassedBeing being2) {
 		// find the projection vector between the beings
 		PVector projection = being1.getShape().projectionVector(being2.getShape());
@@ -16,7 +15,6 @@ public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 		return true;
 	}
 
-	@Override
 	public boolean handle(MassedBeing being1, MassedBeing being2) {
 		ImpulseCollision collision = being1.getCollisionWith(being2);
 		collision.applyImpulses();
