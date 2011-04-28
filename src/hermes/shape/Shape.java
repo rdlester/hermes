@@ -55,6 +55,8 @@ public abstract class Shape {
 	public abstract Rectangle getBoundingBox();
 	
 	/**
+	 * Returns the shape's position. 
+	 * Note, if you move this vector it will move the shape.
 	 * @return the shape's position
 	 */
 	public PVector getPosition() {

@@ -38,6 +38,8 @@ public class World extends Thread {
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
 	private LinkedList<GenericGroup<?,?>> _groupsToUpdate; //used to hold all the being groups to be updated individually
 	
+	private long updateLength = 0;
+	
 	@SuppressWarnings("rawtypes")
 	public World(PostOffice postOffice, Camera camera) {
 		
@@ -222,6 +224,8 @@ public class World extends Thread {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
 		
+		long time = System.currentTimeMillis();
+		
 		// the update loop proceeds in 3 steps:
 		
 		// 1. handle the message queue from the post office
@@ -330,6 +334,13 @@ public class World extends Thread {
 		}
 		
 		resolveGroupQueues();
+		
+		long elapsed = System.currentTimeMillis() - time;
+		if(elapsed < updateLength) {
+			try {
+				wait(elapsed - updateLength);
+			} catch (InterruptedException e) {}
+		}
 	}
 	/**
 	 * checks if an interaction is detected between being1 and being2; if the interaciton
@@ -377,8 +388,10 @@ public class World extends Thread {
 	//Called by God's draw method to
 	public void draw() {}
 	
-	// locks the update rate to happen no more than once per interval (in seconds)
-	public void lockUpdateRate(double interval) {}
+	// locks the update rate to happen no more than rate times per second
+	public void lockUpdateRate(int rate) {
+		updateLength = 1 / rate * 1000;
+	}
 
 	//to be used in the _detectedInteractions queue
 	private class DetectedInteraction<A extends Being, B extends Being> {

@@ -73,5 +73,4 @@ public class worldTest {
 		assertTrue(updated1.contains(b4));
 	}
 	
-	
 }

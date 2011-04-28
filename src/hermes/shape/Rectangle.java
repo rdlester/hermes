@@ -1,6 +1,8 @@
 package src.hermes.shape;
 
+import processing.core.PApplet;
 import processing.core.PVector;
+import src.hermes.Hermes;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -11,6 +13,9 @@ import static src.hermes.HermesMath.*;
 public class Rectangle extends Shape {
 
 	private PVector _min, _max;
+	
+	public static final int TOP_LEFT = 0;
+	public static final int CENTER = 1;
 	
 	/**
 	 * creates a new Rectangle defined by a position and two point coordinates
@@ -40,11 +45,33 @@ public class Rectangle extends Shape {
 	public Rectangle(PVector position, float width, float height) {
 		super(position);
 		 
+		
+	}
+	
+	/**
+	 * 
+	 * @param position
+	 * @param width
+	 * @param height
+	 * @param origin
+	 */
+	public Rectangle(PVector position, PVector dimensions, int mode) {
+		super(position);
+		
+		float width = dimensions.x;
+		float height = dimensions.y;
+		
 		assert width > 0: "Rectangle constructor: width must be positive";
 		assert height > 0: "Rectangle constructor: height must be positive";
 		
-		_min = new PVector(-width / 2, -height / 2);
-		_max = new PVector(width / 2, height / 2);
+		
+		if(mode == PApplet.CENTER) {
+			_min = new PVector(-width / 2, -height / 2);
+			_max = new PVector(width / 2, height / 2);
+		} else if(mode == PApplet.CORNER) {
+			_min = zeroVector();
+			_max = new PVector(width, height);
+		}
 	}
 	
 	/**

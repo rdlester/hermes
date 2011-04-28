@@ -21,23 +21,22 @@ public abstract class Being {
 	protected Shape _shape; 		 // the being's shape
 	
 	private boolean _done = true;
+	protected long _time;
 	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
-	long _time;
-	
-	public Being(Shape shape, PVector position, PVector velocity) {
+	public Being(Shape shape, PVector velocity) {
 		assert shape != null : "Being constructor: shape must be a valid Shape";
-		assert position != null : "Being constructor: position must be a valid PVector";
 		assert velocity != null : "Being constructor: velocity must be a valid PVector";
 		
 		_groups = new LinkedList<GenericGroup<?,?>>();
 		_shape = shape;
-		_position = position;
+		_position = shape.getPosition();
 		_velocity = velocity;
+		_time = System.currentTimeMillis();
 	}
 	
-	protected long updateTime() {
+	protected long updateTime() { 
 		long time = System.currentTimeMillis();
 		long elapsed = time - _time;
 		_time = time;
@@ -54,7 +53,7 @@ public abstract class Being {
 	 * @param group		the group to add to
 	 */
 	@SuppressWarnings("unchecked")
-	public void addToGroup(GenericGroup group) {
+	protected void addToGroup(GenericGroup group) {
 		// need to lock on the group
 		synchronized(group) {
 			group.getBeings().add(this);
@@ -66,7 +65,7 @@ public abstract class Being {
 	 * removes the being from this group
 	 * @param group		the group to remove from
 	 */
-	public void removeFromGroup(GenericGroup group) {
+	protected void removeFromGroup(GenericGroup group) {
 		// need to lock on the group
 		synchronized(group) {
 			group.getBeings().remove(this);
@@ -77,7 +76,7 @@ public abstract class Being {
 	/**
 	 * removes the being from all containing groups
 	 */
-	public void delete() {
+	protected void delete() {
 		// go through all the groups, deleting this being
 		for(Iterator<GenericGroup<?,?>> iter = _groups.iterator(); iter.hasNext(); ) {
 			GenericGroup<?,?> group = iter.next();
