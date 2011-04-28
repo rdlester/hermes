@@ -33,11 +33,11 @@ public abstract class Being {
 		_shape = shape;
 		_position = shape.getPosition();
 		_velocity = velocity;
-		_time = System.currentTimeMillis();
+		_time = System.nanoTime();
 	}
 	
 	protected long updateTime() { 
-		long time = System.currentTimeMillis();
+		long time = System.nanoTime();
 		long elapsed = time - _time;
 		_time = time;
 		return elapsed;
@@ -131,11 +131,11 @@ public abstract class Being {
 	public void update() {}
 	
 	protected void step() {
-		long elapsed = updateTime();
-		EulerIntegratePosition(elapsed/1000);
+		double elapsed = (double)updateTime();
+		EulerIntegratePosition(elapsed/1e9);
 	}
 	
-	protected void EulerIntegratePosition(long dt) {
+	protected void EulerIntegratePosition(double dt) {
 		_position.add(PVector.mult(_velocity, (float)dt));
 	}
 	
