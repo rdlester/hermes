@@ -17,7 +17,7 @@ import src.hermes.postoffice.PostOffice;
  * User creates the necessary Beings, Interactors, and Optimizers in setup
  * The other functions are implemented by us; we handle the running and drawing of the world
  */
-public abstract class World extends Thread {
+public class World extends Thread {
 	
 	private PApplet _parentApplet; //active PApplet sketch
 	private PostOffice _postOffice; //post office
