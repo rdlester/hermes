@@ -43,9 +43,9 @@ public class Rectangle extends Shape {
 	 * @param height	the height of the rectangle (must be positive)
 	 */
 	public Rectangle(PVector position, float width, float height) {
-		super(position);
+
+		this(position,width,heigh,PApplet.CENTER);
 		 
-		
 	}
 	
 	/**
