@@ -54,10 +54,10 @@ public abstract class Being {
 	 * @param group		the group to add to
 	 */
 	@SuppressWarnings("unchecked")
-	public void addToGroup(GenericGroup<?,?> group) {
+	public void addToGroup(GenericGroup group) {
 		// need to lock on the group
 		synchronized(group) {
-			((GenericGroup<Being,?>)group).getBeings().add(this);
+			group.getBeings().add(this);
 			_groups.add(group);
 		}
 	}
