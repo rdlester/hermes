@@ -10,7 +10,7 @@ import src.hermes.shape.Shape;
  */ 
 public abstract class Environment extends Being {
 
-	public Environment(Shape shape, PVector position, PVector velocity) {
-		super(shape, position, velocity);
+	public Environment(Shape shape, PVector velocity) {
+		super(shape, velocity);
 		// TODO Auto-generated constructor stub
 	}}

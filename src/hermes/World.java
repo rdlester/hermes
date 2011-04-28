@@ -342,6 +342,7 @@ public class World extends Thread {
 			} catch (InterruptedException e) {}
 		}
 	}
+	
 	/**
 	 * checks if an interaction is detected between being1 and being2; if the interaciton
 	 * is immediate, synchronizes on the beings and handles the interaction, otherwise

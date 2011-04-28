@@ -33,9 +33,9 @@ public abstract class MassedBeing extends Being {
 	 * @param mass
 	 * @param elasticity
 	 */
-	public MassedBeing(Shape shape, PVector position, PVector velocity,
+	public MassedBeing(Shape shape, PVector velocity,
 			float mass, float elasticity) {
-		super(shape, position, velocity);
+		super(shape, velocity);
 		
 		assert mass > 0 : "MassedBeing constructor: must have positive mass";
 		assert elasticity >= 0 : "MassedBeing constructor: elasticity cannot be negative";

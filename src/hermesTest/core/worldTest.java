@@ -20,7 +20,7 @@ public class worldTest {
 	class TestBeing1 extends Being {
 
 		public TestBeing1() {
-			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector(), zeroVector());
+			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
 		}
 
 		@Override

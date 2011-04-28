@@ -13,7 +13,7 @@ public class PhysicsTest {
 
 		public MyBeing(float mass, float elasticity) {
 			super(new Rectangle(zeroVector(),1.0f,1.0f),
-					zeroVector(), zeroVector(), mass, elasticity);
+					zeroVector(), mass, elasticity);
 		}
 
 		public void draw() {}	

@@ -30,7 +30,7 @@ public class Camera extends Environment {
 	//Camera's constructor with world coordinates for translation
 	public Camera(float x, float y, float worldCoordinateWidth, float worldCoordinateHeight) {
 		super(new Rectangle(new PVector(x,y,0.0f), new PVector(0,0), new PVector(worldCoordinateWidth, worldCoordinateHeight)),
-				new PVector(x,y,0.0f),HermesMath.zeroVector());
+				HermesMath.zeroVector());
 		_x = x;
 		_y = y;
 		_worldCoordinateWidth = worldCoordinateWidth;
