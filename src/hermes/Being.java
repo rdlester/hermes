@@ -132,7 +132,7 @@ public abstract class Being {
 	
 	protected void step() {
 		long elapsed = updateTime();
-		EulerIntegratePosition(elapsed);
+		EulerIntegratePosition(elapsed/1000);
 	}
 	
 	protected void EulerIntegratePosition(long dt) {
