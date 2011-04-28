@@ -34,8 +34,25 @@ public class OscMessage implements Message {
 	 * Constructor taking an illposed OSCMessage
 	 * @param message - a packed OSCMessage in illposed's format
 	 */
-	public OscMessage(com.illposed.osc.OSCMessage message) {
+	protected OscMessage(com.illposed.osc.OSCMessage message) {
 		_address = message.getAddress();
+	}
+	
+	
+	/**
+	 * returns the number of arguments available for extraction from this OSCMessage.
+	 * @return		the number of arguments left to extract from this OSCMessage
+	 */
+	public int getNumberOfRemainingArguments() {
+		return _contents.length - _indexToRetrieveFrom;
+	}
+	
+	/**
+	 * Helper to find out if the user has any remaining arguments in the OSCMessage
+	 * @return
+	 */
+	private boolean hasRemainingArguments() {
+		return (_indexToRetrieveFrom <= _contents.length - 1);
 	}
 	
 	
@@ -56,7 +73,7 @@ public class OscMessage implements Message {
 	public int getAndRemoveInt() {
 		
 		//make sure the user has remaining arguments
-		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getAndRemoveInt(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+		assert hasRemainingArguments() : "OSCmessage error: You tried to call getAndRemoveInt(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
 	
 		//make sure the type is correct
 		assert _contents[_indexToRetrieveFrom] instanceof Integer : "OSCmessage error: You tried to call getAndRemoveInt(), but the current argument is not of type int!! \n" +
@@ -89,7 +106,7 @@ public class OscMessage implements Message {
 	public String getAndRemoveString() {
 		
 		//make sure the user has remaining arguments
-		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getAndRemoveString(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+		assert hasRemainingArguments() : "OSCmessage error: You tried to call getAndRemoveString(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
 	
 		//make sure the type is correct
 		assert _contents[_indexToRetrieveFrom] instanceof String : "OSCmessage error: You tried to call getAndRemoveString(), but the current argument is not of type String!! \n" +
@@ -121,10 +138,10 @@ public class OscMessage implements Message {
 	public float getAndRemoveFloat() {
 		
 		//make sure the user has remaining arguments
-		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getAndRemoveFloat(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+		assert hasRemainingArguments() : "OSCmessage error: You tried to call getAndRemoveFloat(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
 	
 		//make sure the type is correct
-		assert _contents[_indexToRetrieveFrom] instanceof String : "OSCmessage error: You tried to call getAndRemoveFloat(), but the current argument is not of type Float!! \n" +
+		assert _contents[_indexToRetrieveFrom] instanceof Float : "OSCmessage error: You tried to call getAndRemoveFloat(), but the current argument is not of type Float!! \n" +
 				"it is of type: " + _contents[_indexToRetrieveFrom].getClass().getName();
 		
 		//cast it
@@ -136,24 +153,15 @@ public class OscMessage implements Message {
 	}
 	
 	
-	
-	/**
-	 * returns the number of arguments available for extraction from this OSCMessage.
-	 * @return		the number of arguments left to extract from this OSCMessage
-	 */
-	public int getNumberOfRemainingArguments() {
-		return _contents.length - _indexToRetrieveFrom;
-	}
-	
-	
+
 /**
- * Get the typetag of the next argument in this OSC message. This means: "i" for int, "f" for float, and "s" for string
+ * Get the typetag of the next argument in this OSCMessage. This means: "i" for int, "f" for float, and "s" for string
  * <br>NOTE: if you have extracted all the arguments from this OSCMessage, calling this method will give an error
  * @return		the typetag of the next argument in this OSCmessage
  */
 	public String getTypeTagOfNextArgument() {
 		
-		assert _indexToRetrieveFrom >= _contents.length - 1 : "OSCmessage error: You tried to call getTypeTagOfNextArgument(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
+		assert hasRemainingArguments() : "OSCmessage error: You tried to call getTypeTagOfNextArgument(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
 		
 		String typeTag;
 		
@@ -176,7 +184,7 @@ public class OscMessage implements Message {
 	
 	
 	/**
-	 * Getter for address
+	 * Gets the OSCAddress that this message pertains to
 	 * @return address
 	 */
 	public String getAddress() {
@@ -184,7 +192,7 @@ public class OscMessage implements Message {
 	}
 	
 	/**
-	 * Getter for contents
+	 * Gets an object[] of the inner contents of an OSCMessage 
 	 * @return contents
 	 */
 	protected Object[] getContents() {
