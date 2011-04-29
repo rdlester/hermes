@@ -47,9 +47,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	@SuppressWarnings("unused")
 	private com.illposed.osc.OSCListener _listener;
 	
-	//Map that associates the subscriptions with the Message they want to receive
-//	private HashMap<Message, ArrayList<Subscription>> _subscriptions;
-	
 	//Maps that associate subscribers with messages they want to receive
 	private HashMultimap<String, KeySubscriber> _keySubs;
 	private HashMultimap<Integer, MouseSubscriber> _mouseSubs;
@@ -57,16 +54,19 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	private HashMultimap<String, OscSubscriber> _oscSubs;
 	
 	//Stores messages as they are received, which are then picked off by checkMail()
-//	private ConcurrentLinkedQueue<Message> _messageQueue;
 	private ConcurrentLinkedQueue<KeyMessage> _keyQueue;
 	private ConcurrentLinkedQueue<MouseMessage> _mouseQueue;
 	private ConcurrentLinkedQueue<MouseWheelMessage> _mouseWheelQueue;
 	private ConcurrentLinkedQueue<OscMessage> _oscQueue;
 	
+	//Boolean stating whether osc is on or off
+	private boolean _onOSC;
+	
 	/**
 	 * Constructor with no OSC
 	 */
 	public PostOffice() {
+		_onOSC = false;
 		POInit();
 	}
 	
@@ -80,6 +80,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		
+		_onOSC = true;
 		POInit();
 		//Start OSC and set listener
 		try {
@@ -110,6 +111,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		assert netAddress != null : "PostOffice constructor: netAddress must be a valid String";
 		
+		_onOSC = true;
 		POInit();
 		//Start OSC and set listener
 		try {
@@ -142,11 +144,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_keySubs = HashMultimap.create();
 		_mouseSubs = HashMultimap.create();
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
-		_oscSubs = HashMultimap.create();
 		_keyQueue = new ConcurrentLinkedQueue<KeyMessage>();
 		_mouseQueue = new ConcurrentLinkedQueue<MouseMessage>();
 		_mouseWheelQueue = new ConcurrentLinkedQueue<MouseWheelMessage>();
-		_oscQueue = new ConcurrentLinkedQueue<OscMessage>();
+		if(_onOSC) {
+			_oscSubs = HashMultimap.create();
+			_oscQueue = new ConcurrentLinkedQueue<OscMessage>();
+		}
 	}
 	
 	///////////////////////////////////////
@@ -165,6 +169,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	/**
 	 * Registers a subscription to messages sent by a specific mouse button
+	 * Buttons are defined by constants in the Post Office class
 	 * Subscribe with "NO_BUTTON" to receive information about mouse movements when no button is pressed
 	 * @param sub - the MouseSubscriber signing up
 	 * @param button - an integer corresponding to a mouse button whose messages the subscriber wants
@@ -194,6 +199,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param address - the address whose messages the subscriber wants
 	 */
 	public void registerOscSubscription(OscSubscriber sub, String address) {
+		assert _onOSC : "PostOffice.registerOscSubscription: cannot register an OSC subscription unless OSC is on";
 		assert sub != null : "PostOffice.registerOscSubscription: sub must be a valid OscSubscriber";
 		assert address != null : "PostOffice.registerOscSubscription: address must be a valid String";
 		_oscSubs.put(address, sub);
@@ -208,6 +214,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send - integer to be sent
 	 */
 	public void sendInt(String address, int send) {
+		assert _onOSC : "PostOffice.sendInt: cannot send an OSC message while OSC is off";
 		assert address != null : "PostOffice.sendInt: address must be a valid String";
 		Object[] array = new Object[1];
 		array[0] = (Integer) send;
@@ -226,6 +233,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send
 	 */
 	public void sendFloat(String address, float send) {
+		assert _onOSC : "PostOffice.sendFloat: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendFloat: address must be a valid String";
 		Object[] array = new Object[1];
 		array[0] = (Float) send;
@@ -244,6 +252,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send
 	 */
 	public void sendBoolean(String address, boolean send) {
+		assert _onOSC : "PostOffice.sendBoolean: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendBoolean: address must be a valid String";
 		Object[] array = new Object[1];
 		array[0] = (Boolean) send;
@@ -262,6 +271,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send
 	 */
 	public void sendList(String address, ArrayList<Object> send) {
+		assert _onOSC : "PostOffice.sendList: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendList: address must be a valid String";
 		assert send != null : "PostOffice.sendList: send must be a valid ArrayList";
 		int size = send.size();
@@ -310,12 +320,14 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				sub.handleMouseWheelSubscriber(m);
 			}
 		}
-		while(!_oscQueue.isEmpty()) {
-			OscMessage m = _oscQueue.poll();
-			String address = m.getAddress();
-			Set<OscSubscriber> subs = _oscSubs.get(address);
-			for(OscSubscriber sub : subs) {
-				sub.handleOscMessage(m);
+		if(_onOSC) {
+			while(!_oscQueue.isEmpty()) {
+				OscMessage m = _oscQueue.poll();
+				String address = m.getAddress();
+				Set<OscSubscriber> subs = _oscSubs.get(address);
+				for(OscSubscriber sub : subs) {
+					sub.handleOscMessage(m);
+				}
 			}
 		}
 	}
