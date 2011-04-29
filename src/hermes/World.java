@@ -334,7 +334,8 @@ public class World extends Thread {
 		long elapsed = System.currentTimeMillis() - time;
 		if(elapsed < updateLength) {
 			try {
-				wait(elapsed - updateLength);
+				wait(updateLength - elapsed);
+				System.out.println("waiting");
 			} catch (InterruptedException e) {}
 		}
 	}
