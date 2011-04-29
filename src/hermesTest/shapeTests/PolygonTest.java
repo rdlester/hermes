@@ -2,7 +2,7 @@ package src.hermesTest.shapeTests;
 
 import static org.junit.Assert.*;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import org.junit.*;
 
@@ -20,7 +20,7 @@ public class PolygonTest {
 	public void test_collidePolygon() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
-		LinkedList<PVector> points1 = new LinkedList<PVector>();
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
@@ -28,7 +28,7 @@ public class PolygonTest {
 		
 		//Triangle will collide with first along hypotenuse
 		PVector pos2 = new PVector(10,10);
-		LinkedList<PVector> points2 = new LinkedList<PVector>();
+		ArrayList<PVector> points2 = new ArrayList<PVector>();
 		points2.add(new PVector(0,0));
 		points2.add(new PVector(0,-10));
 		points2.add(new PVector(-10,0));
@@ -36,7 +36,7 @@ public class PolygonTest {
 		
 		//Triangle will collide with second at vertex
 		PVector pos3 = new PVector(10,0);
-		LinkedList<PVector> points3 = new LinkedList<PVector>();
+		ArrayList<PVector> points3 = new ArrayList<PVector>();
 		points3.add(new PVector(10,0));
 		points3.add(new PVector(0,0));
 		points3.add(new PVector(0,20));
@@ -44,7 +44,7 @@ public class PolygonTest {
 		
 		//Square, will not collide with first or second
 		PVector posNo = new PVector(20,20);
-		LinkedList<PVector> pointsNo = new LinkedList<PVector>();
+		ArrayList<PVector> pointsNo = new ArrayList<PVector>();
 		pointsNo.add(new PVector(20,20));
 		pointsNo.add(new PVector(0,0));
 		pointsNo.add(new PVector(10,0));
@@ -73,7 +73,7 @@ public class PolygonTest {
 	public void test_collideRectangle() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
-		LinkedList<PVector> points1 = new LinkedList<PVector>();
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
@@ -106,7 +106,7 @@ public class PolygonTest {
 	public void test_collideCircle() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
-		LinkedList<PVector> points1 = new LinkedList<PVector>();
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
@@ -131,7 +131,7 @@ public class PolygonTest {
 	public void test_projectionVectorPolygon() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
-		LinkedList<PVector> points1 = new LinkedList<PVector>();
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
@@ -139,7 +139,7 @@ public class PolygonTest {
 		
 		//Triangle will collide with first along hypotenuse
 		PVector pos2 = new PVector(10,10);
-		LinkedList<PVector> points2 = new LinkedList<PVector>();
+		ArrayList<PVector> points2 = new ArrayList<PVector>();
 		points2.add(new PVector(0,0));
 		points2.add(new PVector(0,-10));
 		points2.add(new PVector(-10,0));
@@ -151,7 +151,7 @@ public class PolygonTest {
 		
 		//Triangle will collide with second at vertex
 		PVector pos3 = new PVector(10,0);
-		LinkedList<PVector> points3 = new LinkedList<PVector>();
+		ArrayList<PVector> points3 = new ArrayList<PVector>();
 		points3.add(new PVector(10,0));
 		points3.add(new PVector(0,0));
 		points3.add(new PVector(0,20));
@@ -175,7 +175,7 @@ public class PolygonTest {
 	public void test_projectionVectorRectangle() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
-		LinkedList<PVector> points1 = new LinkedList<PVector>();
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
@@ -206,7 +206,7 @@ public class PolygonTest {
 	public void test_projectionVectorCircle() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
-		LinkedList<PVector> points1 = new LinkedList<PVector>();
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
@@ -215,7 +215,6 @@ public class PolygonTest {
 		//Circle that collides
 		PVector pos2 = new PVector(10,10);
 		Circle c1 = new Circle(pos2,8);
-		
 		PVector projectV1 = p1.projectionVector(c1);
 		float result = (float) 0.656854212284881;
 		assertEquals(projectV1.x,result,1e-8);
@@ -223,11 +222,41 @@ public class PolygonTest {
 		
 		//Other circles that collide
 		PVector pos3 = new PVector(20,0);
-		Circle c3 = new Circle(pos3,10);
-		assertTrue(p1.collide(c3));
-		
-		PVector projectV2 = p1.projectionVector(c3);
+		Circle c2 = new Circle(pos3,10);
+		assertTrue(p1.collide(c2));
+		PVector projectV2 = p1.projectionVector(c2);
 		assertEquals(projectV2.x,0,1e-8);
 		assertEquals(projectV2.y,0,1e-8);
+		
+//		PVector pos4 = new PVector(1,1);
+//		Circle c3 = new Circle(pos4, 5);
+//		assertTrue(p1.collide(c3));
+//		PVector projectV3 = p1.projectionVector(c3);
+//		System.out.println(projectV3);
+//		assertEquals(projectV3.x,0,1e-8);
+//		assertEquals(projectV3.y,0,1e-8);
+		
+		PVector pos5 = new PVector(20,1);
+		Circle c4 = new Circle(pos5,12);
+		PVector projectV4 = p1.projectionVector(c4);
+		PVector result4 = new PVector(10,1);
+		result4.normalize();
+		result4.mult((float)(12-Math.sqrt(101)));
+		assertEquals(projectV4.x,result4.x,1e-6);
+		assertEquals(projectV4.y,result4.y,1e-6);
+		
+		//Test with polygon that is not at (0,0) but rather (10,10)
+		ArrayList<PVector> points2 = new ArrayList<PVector>();
+		points2.add(new PVector(0,0));
+		points2.add(new PVector(10,0));
+		points2.add(new PVector(0,10));
+		Polygon p2 = new Polygon(pos2, points2);
+		
+		PVector pos6 = new PVector(0,10);
+		Circle c5 = new Circle(pos6,11);
+		PVector projectV5 = p1.projectionVector(c5);
+		System.out.println(projectV5);
+		assertEquals(projectV5.x,-1,1e-8);
+		assertEquals(projectV5.y,0,1e-8);
 	}
 }
