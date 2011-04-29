@@ -38,7 +38,7 @@ public class World extends Thread {
 	private List<Interaction> _interactions; // used to hold all the interactions we need to check
 	private LinkedList<GenericGroup<?,?>> _groupsToUpdate; //used to hold all the being groups to be updated individually
 	
-	private long updateLength = 0;
+	private long _updateLength = 0;
 	
 	@SuppressWarnings("rawtypes")
 	public World(PostOffice postOffice, Camera view) {
@@ -332,10 +332,9 @@ public class World extends Thread {
 		resolveGroupQueues();
 		
 		long elapsed = System.currentTimeMillis() - time;
-		if(elapsed < updateLength) {
+		if(elapsed < _updateLength) {
 			try {
-				wait(updateLength - elapsed);
-				System.out.println("waiting");
+				sleep(_updateLength - elapsed);
 			} catch (InterruptedException e) {}
 		}
 	}
@@ -388,7 +387,7 @@ public class World extends Thread {
 	
 	// locks the update rate to happen no more than rate times per second
 	public void lockUpdateRate(int rate) {
-		updateLength = 1 / rate * 1000;
+		_updateLength = (long)(1.0f / ((float)rate) * 1000.0f);
 	}
 
 	//to be used in the _detectedInteractions queue

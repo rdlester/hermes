@@ -73,4 +73,13 @@ public class worldTest {
 		assertTrue(updated1.contains(b4));
 	}
 	
+	@Test
+	public void test_LockUpdateRate() {
+		World w = new World(new PostOffice(), new Camera());
+		w.lockUpdateRate(5);
+		long time = System.currentTimeMillis();
+		w.update();
+		long elapsed = System.currentTimeMillis() - time;
+		assertEquals(elapsed,200,5);
+	}
 }
