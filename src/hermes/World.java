@@ -41,15 +41,15 @@ public class World extends Thread {
 	private long updateLength = 0;
 	
 	@SuppressWarnings("rawtypes")
-	public World(PostOffice postOffice, Camera camera) {
+	public World(PostOffice postOffice, Camera view) {
 		
 		assert postOffice != null : "World constructor: postOffice must be a valid PostOffice";
-		assert camera != null : "World constructor: camera must be a valid Camera";
+		assert view != null : "World constructor: camera must be a valid Camera";
 		
 		//set the World's PApplet to the one set in Hermes
 		_parentApplet = Hermes.getPApplet();
 		_postOffice = postOffice;
-		_camera = camera;
+		_camera = view;
 		
 		_interactions = new LinkedList<Interaction>();
 		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
@@ -61,7 +61,7 @@ public class World extends Thread {
 		_updateGroup = new Group<Being>(this);
 		
 		//initialize the Camera
-		registerBeing(camera, true);
+		registerBeing(view, true);
 		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
@@ -226,10 +226,8 @@ public class World extends Thread {
 		
 		long time = System.currentTimeMillis();
 		
-		// the update loop proceeds in 3 steps:
-		
 		// 1. handle the message queue from the post office
-		//TODO: integrate this
+		_postOffice.checkMail();
 		
 		// 2. go through the registered groups to update beings individually
 		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
