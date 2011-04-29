@@ -26,9 +26,9 @@ void setup() {
  _world.lockUpdateRate(3);
  
  PVector firstposition = new PVector(20,20);
- _firstMrRectangle = new MrRectangle(new Rectangle(firstposition,10,10), firstposition, new PVector(10,0));
+ _firstMrRectangle = new MrRectangle(new Rectangle(firstposition,10,10), firstposition, new PVector(40,0));
  PVector secondposition = new PVector(20,40);
- _secondMrRectangle = new MrRectangle(new Rectangle(secondposition,10,10), secondposition, new PVector(20,0));
+ _secondMrRectangle = new MrRectangle(new Rectangle(secondposition,10,10), secondposition, new PVector(60,0));
  _world.registerBeing(_firstMrRectangle, true);
  _world.registerBeing(_secondMrRectangle, true);
  
