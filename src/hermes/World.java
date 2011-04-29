@@ -61,7 +61,7 @@ public class World extends Thread {
 		_updateGroup = new Group<Being>(this);
 		
 		//initialize the Camera
-		registerBeing(camera, true);
+		registerBeing(camera, false);
 		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
@@ -246,8 +246,14 @@ public class World extends Thread {
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
+			
+			
+			if(interaction.getA().equals(_cameraGroup)) {
+				_camera.collisionsReset();
+			} 
+			
 			Collection A = interaction.getA().getBeings();
-			Collection B = interaction.getB().getBeings();
+			Collection B = interaction.getB().getBeings();			
 			if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
 				// perform the O(n^2) calculation on all the groups
 				for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
@@ -275,6 +281,10 @@ public class World extends Thread {
 						}
 					}
 				}
+			}
+			
+			if(interaction.getA().equals(_cameraGroup)) {
+				_camera.collisionsComplete();
 			}
 		}
 		//handle all detected interactions here (for not immediate interactions)
@@ -339,6 +349,7 @@ public class World extends Thread {
 				wait(elapsed - updateLength);
 			} catch (InterruptedException e) {}
 		}
+
 	}
 	
 	/**
@@ -357,11 +368,11 @@ public class World extends Thread {
 		// see if an interaction was detected
 		if(interaction.getInteractor().detect(being1, being2)) {
 			if(interaction.isImmediate()) { // if immediate, handle it now
-				synchronized(being1) {
-					synchronized(being2) {
-						interaction.getInteractor().handle(being1, being2);
+					synchronized(being1) {
+						synchronized(being2) {
+							interaction.getInteractor().handle(being1, being2);
+						}
 					}
-				}
 			} else {//if not immediate, queue detection to handle later
 				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction));
 			}
