@@ -3,6 +3,7 @@ package src.hermes;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Iterator;
 import processing.core.*;
 import src.hermes.shape.Rectangle;
 
@@ -24,7 +25,7 @@ public class Camera extends Environment {
 
 	//Camera's default constructor which uses 1 to 1 world pixel ratio
 	public Camera() {
-		this(0,0,1,1);
+		this(0,0,Hermes.getPApplet().width,Hermes.getPApplet().height);
 	}
 	
 	//Camera's constructor with world coordinates for translation
@@ -97,25 +98,29 @@ public class Camera extends Environment {
 		PApplet pApplet = Hermes.getPApplet();
 		
 		// for each being in _beings do matrix manipulations and call the draw method of each being
-		for(Being being: _beings) {
-			
-			//keep track of initial state
-			pApplet.pushMatrix();
-			
-			//translate to being's coordinates on the screen 
-			//units of calculation: pixels = (worldmetric)/(worldmetric/pixel)
-			float beingXCoordinate = being.getPosition().x/(_worldCoordinateWidth/pApplet.width);
-			float beingYCoordinate = being.getPosition().y/(_worldCoordinateHeight/pApplet.height);
-			pApplet.translate(beingXCoordinate, beingYCoordinate);
-			//save this state
-			pApplet.pushMatrix();
-			
-			//draw being (will draw itself as though it were at (0,0))
-			being.draw();
-			
-			//pop the two states
-			pApplet.popMatrix();
-			pApplet.popMatrix();
+		synchronized(_beings) {
+			for(Iterator<Being> iter = _beings.iterator(); iter.hasNext(); ) {
+				Being being = iter.next();
+				
+				//keep track of initial state
+				pApplet.pushMatrix();
+				
+				//translate to being's coordinates on the screen 
+				//units of calculation: pixels = (worldmetric)/(worldmetric/pixel)
+				float beingXCoordinate = being.getPosition().x/(_worldCoordinateWidth/pApplet.width);
+				float beingYCoordinate = being.getPosition().y/(_worldCoordinateHeight/pApplet.height);
+				pApplet.translate(beingXCoordinate, beingYCoordinate);
+				//save this state
+				pApplet.pushMatrix();
+				
+				//draw being (will draw itself as though it were at (0,0))
+				being.draw();
+				
+				//pop the two states
+				pApplet.popMatrix();
+				pApplet.popMatrix();
+				
+			}
 		}
 		
 	}

@@ -238,9 +238,7 @@ public class World extends Thread {
 		}
 		
 		LinkedList<DetectedInteraction> unresolvedInteractions = new LinkedList<DetectedInteraction>();
-		
-		unresolvedInteractions = new LinkedList<DetectedInteraction>();
-		
+				
 		// 3. apply being updates
 		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getBeings());
 		
