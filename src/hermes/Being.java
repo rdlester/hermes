@@ -25,13 +25,13 @@ public abstract class Being {
 	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
-	public Being(Shape shape, PVector velocity) {
-		assert shape != null : "Being constructor: shape must be a valid Shape";
+	public Being(Shape collisionShape, PVector velocity) {
+		assert collisionShape != null : "Being constructor: shape must be a valid Shape";
 		assert velocity != null : "Being constructor: velocity must be a valid PVector";
 		
 		_groups = new LinkedList<GenericGroup<?,?>>();
-		_shape = shape;
-		_position = shape.getPosition();
+		_shape = collisionShape;
+		_position = collisionShape.getPosition();
 		_velocity = velocity;
 		_time = System.nanoTime();
 	}

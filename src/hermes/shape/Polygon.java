@@ -27,7 +27,7 @@ public class Polygon extends Shape {
 	
 	//Stores unit vectors representing direction of axes normal to edges of polygon
 	//Used for collision detection (SAT)
-	private LinkedList<PVector> _axes;
+	private ArrayList<PVector> _axes;
 	//Stores the vertex points defining the polygon
 	private List<PVector> _points;
 	
@@ -47,7 +47,7 @@ public class Polygon extends Shape {
 		_points = points;
 		
 		//Create the list of lines in the polygon
-		_axes = new LinkedList<PVector>();
+		_axes = new ArrayList<PVector>();
 		Iterator<PVector> pit = _points.iterator();
 		PVector first = pit.next();
 		PVector pre2 = first;
@@ -82,7 +82,7 @@ public class Polygon extends Shape {
 		if(project1 < projectpre) {
 			reverse(axis);
 		}
-		_axes.addLast(axis);
+		_axes.add(axis);
 	}
 	
 	/**
@@ -101,7 +101,7 @@ public class Polygon extends Shape {
 	 */
 	public void addPoint(PVector point) {
 		//Remove the axis for the edge between the current first and last points
-		_axes.removeLast();
+		_axes.remove(_axes.size());
 		
 		PVector first = _points.get(0);
 		PVector last = _points.get(_points.size()-1);
@@ -111,7 +111,7 @@ public class Polygon extends Shape {
 		_points.add(point);
 	}
 	
-	protected LinkedList<PVector> getAxes() {
+	protected ArrayList<PVector> getAxes() {
 		return _axes;
 	}
 	
@@ -188,73 +188,71 @@ public class Polygon extends Shape {
 	 * @return
 	 */
 	public PVector projectionVector(Circle other) {
-		ArrayList<PVector> resolutionList = new ArrayList<PVector>();
 		
-		PVector worldCenterOther = PVector.add(other.getCenter(), other.getPosition());
-		PVector dist = PVector.sub(_position, worldCenterOther);
+		PVector otherPos = PVector.add(other.getCenter(), other.getPosition());
+		otherPos.sub(_position);
 		
-		//Check for collisions along all axes in polygon
-		for(PVector axis : _axes) {
-			PVector project1 = getProjection(axis, this);
-			PVector project2 = getProjection(axis, other.getCenter(), other.getRadius());
+		PVector pre = _points.get(1);
+		PVector linePre = PVector.sub(pre, _points.get(0));
+		linePre.normalize();
+		
+		int size = _points.size();
+		for(int i = 2; i < size + 2; i++) {
+			PVector p = _points.get(i % size);
+			PVector line = PVector.sub(p, pre);
+			line.normalize();
 			
-			//Offset the projection of 1 away from 2
-			float offset = dist.dot(axis);
-			project1.add(offset, offset, 0);
-			
-			//Check if they are separated along axis
-			float top = project1.x - project2.y;
-			float bottom = project2.x - project1.y;
-			if(top > 0 ||  bottom > 0) {
-				//Found a separating axis! Not colliding.
-				return null;
+			//Check if circle is in voronoi region of vertex
+			if(checkEdge(otherPos, pre, linePre, line)) {
+				PVector axis = PVector.sub(otherPos, pre);
+				float overlap = other.getRadius() - axis.mag(); 
+				if(overlap >= 0) {
+					axis.normalize();
+					axis.mult(overlap);
+					return axis;
+				}
+				else return null;
 			}
 			
-			else {
-				return (top > bottom ?
-						PVector.mult(axis, bottom):
-						PVector.mult(axis, -top));
+			//Check if circle is in voronoi region of side
+			if(check(otherPos, pre, p, line)) {
+				PVector axis = _axes.get((i-2) % size);
+				float projP = p.dot(axis);
+				float projPos = otherPos.dot(axis);
+				float overlap = other.getRadius() - Math.abs(projP - projPos);
+				if(overlap >= 0) {
+					return PVector.mult(axis, overlap);
+				}
+				else return null;
 			}
+			
+			linePre = line;
+			pre = p;
 		}
 		
-		//Now check for collisions along axes between points of poly and circle center
-		for(PVector p : _points) {
-			//Get axis and projections along it
-			PVector axis = PVector.sub(p, worldCenterOther);
-			axis.normalize();
-			PVector project1 = getProjection(axis, this);
-			PVector project2 = getProjection(axis, worldCenterOther, other.getRadius());
-			
-			//Offset the projection of 1 away from 2
-			float offset = dist.dot(axis);
-			project1.add(offset, offset, 0);
-			
-			//Check if they are separated along axis
-			float top = project1.x - project2.y;
-			float bottom = project2.x - project1.y;
-			if(top > 0 ||  bottom > 0) {
-				//Found a separating axis! Not colliding.
-				return null;
-			}
-			
-			else {
-				return (top > bottom ?
-						PVector.mult(axis, bottom):
-						PVector.mult(axis, -top));
-			}
-		}
+		System.err.println("Circle is not in any voronoi region");
+		return null;
+	}
+
+	private boolean check(PVector otherPos, PVector pre, PVector p, PVector line) {
 		
-		//Figure out which resolution vector is smallest
-		float min = Float.MAX_VALUE;
-		PVector use = null;
-		for(PVector resolution : resolutionList) {
-			float temp = mag2(resolution);
-			if(temp < min) {
-				min = temp;
-				use = resolution;
-			}
-		}
-		return use;
+		float projPos = otherPos.dot(line);
+		float projPre = pre.dot(line);
+		float projP = p.dot(line);
+		
+		if(projPos <= projP && projPre <= projPos) return true;
+		else return false;
+	}
+
+	private boolean checkEdge(PVector otherPos, PVector pre, PVector linePre, PVector line) {
+		
+		float projPre1 = pre.dot(linePre);
+		float projPre2 = pre.dot(line);
+		float projPos1 = otherPos.dot(linePre);
+		float projPos2 = otherPos.dot(line);
+		
+		if(projPos1 > projPre1 && projPos2 < projPre2) return true;
+		else return false;
 	}
 
 	/**
@@ -277,7 +275,7 @@ public class Polygon extends Shape {
 		}
 		
 		//Check for collision along all axes in other polygon
-		LinkedList<PVector> axes = other.getAxes();
+		ArrayList<PVector> axes = other.getAxes();
 		for(PVector axis : axes) {
 			PVector result = checkSepAxis(axis, dist, other);
 			if(result == null) return null;

@@ -62,7 +62,6 @@ public class Rectangle extends Shape {
 		assert width > 0: "Rectangle constructor: width must be positive";
 		assert height > 0: "Rectangle constructor: height must be positive";
 		
-		
 		if(mode == PApplet.CENTER) {
 			_min = new PVector(-width / 2, -height / 2);
 			_max = new PVector(width / 2, height / 2);
