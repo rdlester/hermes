@@ -139,23 +139,27 @@ public class Camera extends Environment {
 
 			Being being = iter.next();
 
-			//keep track of initial state
-			pApplet.pushMatrix();
+			synchronized(being) {
+			
+				//keep track of initial state
+				pApplet.pushMatrix();
 
-			//translate to being's coordinates on the screen 
-			//units of calculation: pixels = (worldmetric)/(worldmetric/pixel)
-			float beingXCoordinate = being.getPosition().x/(_worldCoordinateWidth/pApplet.width);
-			float beingYCoordinate = being.getPosition().y/(_worldCoordinateHeight/pApplet.height);
-			pApplet.translate(beingXCoordinate, beingYCoordinate);
-			//save this state
-			pApplet.pushMatrix();
+				//translate to being's coordinates on the screen 
+				//units of calculation: pixels = (worldmetric)/(worldmetric/pixel)
+				float beingXCoordinate = being.getPosition().x/(_worldCoordinateWidth/pApplet.width);
+				float beingYCoordinate = being.getPosition().y/(_worldCoordinateHeight/pApplet.height);
+				pApplet.translate(beingXCoordinate, beingYCoordinate);
+				//save this state
+				pApplet.pushMatrix();
 
-			//draw being (will draw itself as though it were at (0,0))
-			being.draw();
+				//draw being (will draw itself as though it were at (0,0))
+				being.draw();
 
-			//pop the two states
-			pApplet.popMatrix();
-			pApplet.popMatrix();
+				//pop the two states
+				pApplet.popMatrix();
+				pApplet.popMatrix();
+			
+			}
 		}
 
 	}
