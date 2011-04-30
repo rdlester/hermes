@@ -13,10 +13,10 @@ import static src.hermes.HermesMath.*;
 public class Rectangle extends Shape {
 
 	private PVector _min, _max;
-	
+
 	public static final int TOP_LEFT = 0;
 	public static final int CENTER = 1;
-	
+
 	/**
 	 * creates a new Rectangle defined by a position and two point coordinates
 	 * note that position, min and max will be stored as references, so changing them later will change the rectangle
@@ -26,15 +26,15 @@ public class Rectangle extends Shape {
 	 */
 	public Rectangle(PVector position, PVector min, PVector max) {
 		super(position);
-		
+
 		assert min != null : "In Rectangle constructor: min must be a valid PVector";
 		assert max != null : "In Rectangle constructor: max must be a valid PVector";
 		assert min.x < max.x && min.y < max.y : "In Rectangle contructor: min must have a lower x,y position than max";
-			
+
 		_min = min; 
 		_max = max;
 	}
-	
+
 	/**
 	 * creates a Rectangle defined by a position, representing its center, and a width a height
 	 * note: position will be stored as a reference, so changing it will move the rectangle
@@ -45,7 +45,21 @@ public class Rectangle extends Shape {
 	public Rectangle(PVector position, float width, float height) {
 		this(position, new PVector(width,height,0.0f),PApplet.CENTER);
 	}
-	
+
+
+	/**
+	 * creates a Rectangle defined by a position, representing its center, and a width a height
+	 * note: position will be stored as a reference, so changing it will move the rectangle
+	 * @param x				the x coordinate of the upper left corner of the rectangle
+	 * @param y				the y coordinate of the upper left corner of the rectangle
+	 * @param width		the width of the rectangle (must be positive)
+	 * @param height	the height of the rectangle (must be positive)
+	 */
+	public Rectangle(float x, float y, float width, float height) {
+		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CORNER);
+	}
+
+
 	/**
 	 * 
 	 * @param position
@@ -55,13 +69,13 @@ public class Rectangle extends Shape {
 	 */
 	public Rectangle(PVector position, PVector dimensions, int mode) {
 		super(position);
-		
+
 		float width = dimensions.x;
 		float height = dimensions.y;
-		
+
 		assert width > 0: "Rectangle constructor: width must be positive";
 		assert height > 0: "Rectangle constructor: height must be positive";
-		
+
 		if(mode == PApplet.CENTER) {
 			_min = new PVector(-width / 2, -height / 2);
 			_max = new PVector(width / 2, height / 2);
@@ -70,7 +84,7 @@ public class Rectangle extends Shape {
 			_max = new PVector(width, height);
 		}
 	}
-	
+
 	/**
 	 * Getter for position of corner with lowest x,y values
 	 * @return
@@ -78,7 +92,7 @@ public class Rectangle extends Shape {
 	public PVector getMin() {
 		return _min;
 	}
-	
+
 	/**
 	 * Getter for position of corner with highest x,y values
 	 * @return
@@ -86,7 +100,7 @@ public class Rectangle extends Shape {
 	public PVector getMax() {
 		return _max;
 	}
-	
+
 	/**
 	 * @return	the absolute position of the rectangle's geometric center 
 	 */
@@ -96,7 +110,7 @@ public class Rectangle extends Shape {
 		center.add(_position);
 		return center;
 	}
-	
+
 	/**
 	 * scales the rectangle's width and height about its position
 	 * @param xScale	the x-axis scale factor
@@ -105,20 +119,20 @@ public class Rectangle extends Shape {
 	public void scale(float xScale, float yScale) {
 		assert xScale > 0 : "scale: xScale must be greater than zero";
 		assert yScale > 0 : "scale: yScale must be greater than zero";
-		
+
 		_min.x *= xScale;
 		_max.x *= xScale;
 		_min.y *= yScale;
 		_min.y *= yScale;
 	}
-	
+
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
-	
+
 	@Override
 	public PVector projectionVector(Circle other) {
 		PVector opposite = other.projectionVector(this);
@@ -130,7 +144,7 @@ public class Rectangle extends Shape {
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
-	
+
 	public PVector projectionVector(Rectangle other) {
 		if(other == this)	// no self-projection
 			return null;
@@ -148,13 +162,13 @@ public class Rectangle extends Shape {
 		// the projection vector is the smallest projection, in direction opposite the distance vector
 		return (xProject > yProject ? 
 				new PVector(xProject * - sign(xDist), 0.0f) : 
-				new PVector(0.0f, yProject * - sign(yDist))); 
+					new PVector(0.0f, yProject * - sign(yDist))); 
 	}	
-	
+
 	public Rectangle getBoundingBox() {
 		return this;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Position:" + _position + "\nMin:" + _min + "\nMax:" + _max;
