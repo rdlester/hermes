@@ -169,12 +169,15 @@ public abstract class MassedBeing extends Being {
 	 */
 	public static ImpulseCollision addCollision(MassedBeing being1, MassedBeing being2, 
 			PVector projection, float elasticity) {
-		ImpulseCollision collision = new ImpulseCollision(being1, being2, 
-				projection, elasticity);
-		collision.addImpulse();
-		being1.addCollision(collision);
-		being2.addCollision(collision);
-		return collision;
+		if(being1.getCollisionWith(being2) == null) {
+			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
+					projection, elasticity);
+			collision.addImpulse();
+			being1.addCollision(collision);
+			being2.addCollision(collision);
+			return collision;
+		}
+		return null;
 	}
 	
 	public ImpulseCollision getCollisionWith(MassedBeing other) {
