@@ -98,8 +98,17 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		return _position;
 	}
 	
+	/**
+	 * Sets the Being's new position
+	 * Note: this is a deep copy so the Being's
+	 * position and its Shape's position will always
+	 * be in sync
+	 * @param position
+	 */
 	public void setPosition(PVector position) {
-		_position = position;
+		_position.x = position.x;
+		_position.y = position.y;
+		_position.z = position.z;
 	}
 	
 	public PVector getVelocity() {

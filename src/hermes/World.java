@@ -223,7 +223,7 @@ public class World extends Thread {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
-		
+
 		long time = System.currentTimeMillis();
 		
 		// 1. handle the message queue from the post office
