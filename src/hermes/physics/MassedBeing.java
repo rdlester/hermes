@@ -198,4 +198,9 @@ public abstract class MassedBeing extends Being {
 		_collisions.add(collision);
 	}
 	
+	public String toString() {
+		return super.toString() + " Mass: " + _mass + " Elasticity: " + _elasticity + 
+		" Force: " + _force + " Impulse: " + _impulse;
+	}
+	
 }

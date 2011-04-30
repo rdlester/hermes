@@ -153,6 +153,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position.add(PVector.mult(_velocity, (float)dt));
 	}
 	
+	public String toString() {
+		return "position: " + _position + " velocity: " + _velocity;
+	}
+	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
 	//Left blank here, must be overrided by user to add functionality
 	public void handleKeyMessage(KeyMessage m) {
