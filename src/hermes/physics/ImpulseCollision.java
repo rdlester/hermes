@@ -33,6 +33,7 @@ public class ImpulseCollision {
 		_being2 = being2;
 		_projection = projection;
 		_elasticity = elasticity;
+		_impulse = zeroVector();
 	}
 	
 	/**
