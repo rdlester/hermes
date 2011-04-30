@@ -78,15 +78,6 @@ public class Camera extends Environment {
 	public void setWorldCoordinateHeight(float worldCoordinateHeight) {
 		_worldCoordinateHeight = worldCoordinateHeight;
 	}
-
-	//TODO: remove
-	/**
-	 * creates a new (empty) synchronized List of Beings _being
-	 * it will be re-populated each timestep
-	 */
-	public void update() {//TODO: changeto boolean? if Being's is change to boolean
-		//_beings = Collections.synchronizedList(new LinkedList<Being>());
-	}
 	
 	
 	public void collisionsReset() {
@@ -163,8 +154,5 @@ public class Camera extends Environment {
 		}
 
 	}
-
-
-
 
 }

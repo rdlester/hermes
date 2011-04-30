@@ -298,35 +298,43 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void checkMail() {
 		//Send all the messages in each queue to the corresponding subscribers
-		while(!_keyQueue.isEmpty()) {
-			KeyMessage m = _keyQueue.poll();
-			String key = m.getKey();
-			Set<KeySubscriber> subs = _keySubs.get(key);
-			for(KeySubscriber sub : subs) {
-				sub.handleKeyMessage(m);
+		synchronized(_keyQueue) {
+			while(!_keyQueue.isEmpty()) {
+				KeyMessage m = _keyQueue.poll();
+				String key = m.getKey();
+				Set<KeySubscriber> subs = _keySubs.get(key);
+				for(KeySubscriber sub : subs) {
+					sub.handleKeyMessage(m);
+				}
 			}
 		}
-		while(!_mouseQueue.isEmpty()) {
-			MouseMessage m = _mouseQueue.poll();
-			int button = m.getButton();
-			Set<MouseSubscriber> subs = _mouseSubs.get(button);
-			for(MouseSubscriber sub : subs) {
-				sub.handleMouseMessage(m);
+		synchronized(_mouseQueue) {
+			while(!_mouseQueue.isEmpty()) {
+				MouseMessage m = _mouseQueue.poll();
+				int button = m.getButton();
+				Set<MouseSubscriber> subs = _mouseSubs.get(button);
+				for(MouseSubscriber sub : subs) {
+					sub.handleMouseMessage(m);
+				}
 			}
 		}
-		while(!_mouseWheelQueue.isEmpty()) {
-			MouseWheelMessage m = _mouseWheelQueue.poll();
-			for(MouseWheelSubscriber sub : _mouseWheelSubs) {
-				sub.handleMouseWheelSubscriber(m);
+		synchronized(_mouseWheelQueue) {
+			while(!_mouseWheelQueue.isEmpty()) {
+				MouseWheelMessage m = _mouseWheelQueue.poll();
+				for(MouseWheelSubscriber sub : _mouseWheelSubs) {
+					sub.handleMouseWheelMessage(m);
+				}
 			}
 		}
 		if(_onOSC) {
-			while(!_oscQueue.isEmpty()) {
-				OscMessage m = _oscQueue.poll();
-				String address = m.getAddress();
-				Set<OscSubscriber> subs = _oscSubs.get(address);
-				for(OscSubscriber sub : subs) {
-					sub.handleOscMessage(m);
+			synchronized(_oscQueue) {
+				while(!_oscQueue.isEmpty()) {
+					OscMessage m = _oscQueue.poll();
+					String address = m.getAddress();
+					Set<OscSubscriber> subs = _oscSubs.get(address);
+					for(OscSubscriber sub : subs) {
+						sub.handleOscMessage(m);
+					}
 				}
 			}
 		}
@@ -352,7 +360,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		int key = e.getKeyCode();
 		String keyString = KeyEvent.getKeyText(key);
 		KeyMessage m = new KeyMessage(keyString, true);
-		_keyQueue.add(m);
+		synchronized(_keyQueue) {
+			_keyQueue.add(m);
+		}
 	}
 	/**
 	 * On a key release, make a new KeyMessage and add it to the queue
@@ -361,7 +371,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		int key = e.getKeyCode();
 		String keyString = KeyEvent.getKeyText(key);
 		KeyMessage m = new KeyMessage(keyString, false);
-		_keyQueue.add(m);
+		synchronized(_keyQueue) {
+			_keyQueue.add(m);
+		}
 	}
 	
 	///////////////////////////////
@@ -378,14 +390,18 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void mousePressed(MouseEvent e) {
 		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_PRESSED, e.getX(), e.getY());
-		_mouseQueue.add(m);
+		synchronized(_mouseQueue) {
+			_mouseQueue.add(m);
+		}
 	}
 	/**
 	 * On a mouse button release, make a new MouseMessage and add it to the queue
 	 */
 	public void mouseReleased(MouseEvent e) {
 		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_RELEASED, e.getX(), e.getY());
-		_mouseQueue.add(m);
+		synchronized(_mouseQueue) {
+			_mouseQueue.add(m);
+		}
 	}
 	/**
 	 * Ignore mouseEntered events
@@ -407,7 +423,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void mouseDragged(MouseEvent e) {
 		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_DRAGGED, e.getX(), e.getY());
-		_mouseQueue.add(m);
+		synchronized(_mouseQueue) {
+			_mouseQueue.add(m);
+		}
 		
 	}
 	/**
@@ -415,7 +433,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void mouseMoved(MouseEvent e) {
 		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_MOVED, e.getX(), e.getY());
-		_mouseQueue.add(m);
+		synchronized(_mouseQueue) {
+			_mouseQueue.add(m);
+		}
 		
 	}
 
@@ -426,7 +446,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		MouseWheelMessage m = new MouseWheelMessage(e.getWheelRotation());
-		_mouseWheelQueue.add(m);
+		synchronized(_mouseWheelQueue) {
+			_mouseWheelQueue.add(m);
+		}
 	}
 	
 	//////////////////
@@ -453,7 +475,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		 */
 		public void acceptMessage(Date time, com.illposed.osc.OSCMessage message) {
 			OscMessage m = new OscMessage(message);
-			_p._oscQueue.add(m);
+			synchronized(_p._oscQueue) {
+				_p._oscQueue.add(m);
+			}
 		}
 	}
 }

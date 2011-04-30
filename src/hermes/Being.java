@@ -2,9 +2,8 @@ package src.hermes;
 
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Collection;
 
+import src.hermes.postoffice.*;
 import src.hermes.shape.Rectangle;
 import src.hermes.shape.Shape;
 import processing.core.*;
@@ -13,7 +12,7 @@ import processing.core.*;
  * Basic game object class
  * Anything that is getting drawn or interacting with other game objects is a Being
  */
-public abstract class Being {
+public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
 	protected PVector _position; // the being's position
 	protected PVector _velocity; // the being's velocity
@@ -99,8 +98,17 @@ public abstract class Being {
 		return _position;
 	}
 	
+	/**
+	 * Sets the Being's new position
+	 * Note: this is a deep copy so the Being's
+	 * position and its Shape's position will always
+	 * be in sync
+	 * @param position
+	 */
 	public void setPosition(PVector position) {
-		_position = position;
+		_position.x = position.x;
+		_position.y = position.y;
+		_position.z = position.z;
 	}
 	
 	public PVector getVelocity() {
@@ -139,4 +147,18 @@ public abstract class Being {
 		_position.add(PVector.mult(_velocity, (float)dt));
 	}
 	
+	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
+	//Left blank here, must be overrided by user to add functionality
+	public void handleKeyMessage(KeyMessage m) {
+		//VOID
+	}
+	public void handleMouseMessage(MouseMessage m) {
+		//VOID
+	}
+	public void handleMouseWheelMessage(MouseWheelMessage m) {
+		//VOID
+	}
+	public void handleOscMessage(OscMessage m) {
+		//VOID
+	}
 }
