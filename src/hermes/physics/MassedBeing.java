@@ -129,14 +129,14 @@ public abstract class MassedBeing extends Being {
 	 * @param dt	the time elapsed since the last step
 	 */
 	public void step() {
-		long dt = updateTime();
+		double dt = ((double)updateTime()) / 1e9;
 		_force.div(_mass); 	// calculate the acceleration from the force
-		_force.mult(dt); 	// multiply by the time step
+		_force.mult((float)dt); 	// multiply by the time step
 		_velocity.add(_force);	// v = v0 + a*dt
 		_impulse.div(_mass); 	// change in velocity from impulse
 		_velocity.add(_impulse); // apply the impulse
 		// r = x0 + v*dt
-		_position.add(PVector.mult(_velocity, dt));
+		_position.add(PVector.mult(_velocity, (float)dt));
 		_position.add(_displacement);
 		_force.set(0,0,0);
 		_impulse.set(0,0,0);
