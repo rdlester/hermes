@@ -46,6 +46,8 @@ public abstract class MassedBeing extends Being {
 		_force = zeroVector();
 		_impulse = zeroVector();
 		_displacement = zeroVector();
+		
+		_collisions = new LinkedList<ImpulseCollision>();
 	}
 	
 	/**
@@ -105,6 +107,7 @@ public abstract class MassedBeing extends Being {
 	 */
 	public void setElasticity(float elasticity) {
 		assert _elasticity >= 0 : "MassedBeing.setElasticity: elasticity cannot be negative";
+		_elasticity = elasticity;
 	}
 	
 	/**
