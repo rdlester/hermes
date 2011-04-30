@@ -144,6 +144,7 @@ public abstract class MassedBeing extends Being {
 		_force.set(0,0,0);
 		_impulse.set(0,0,0);
 		_displacement.set(0,0,0);
+		_collisions.clear();
 	}
 	
 	/**
