@@ -152,13 +152,21 @@ public abstract class MassedBeing extends Being {
 	 */
 	public static ImpulseCollision addCollision(MassedBeing being1, MassedBeing being2, 
 			PVector projection) {
-		float elasticity = HermesMath.average(being1._elasticity, being2._elasticity);
-		ImpulseCollision collision = new ImpulseCollision(being1, being2, 
-				projection, elasticity);
-		collision.addImpulse();
-		being1.addCollision(collision);
-		being2.addCollision(collision);
-		return collision;
+		assert being1 != null : "addCollision: being1 must be a valid being";
+		assert being2 != null : "addCollision: being2 must be a valid being";
+		assert projection != null : "addCollision: projection must be a valid PVector";
+		
+		if(being1.getCollisionWith(being2) == null) {
+				
+			float elasticity = HermesMath.average(being1._elasticity, being2._elasticity);
+			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
+					projection, elasticity);
+			collision.addImpulse();
+			being1.addCollision(collision);
+			being2.addCollision(collision);
+			return collision;
+		}
+		return null;
 	}
 	
 	/**
@@ -169,6 +177,11 @@ public abstract class MassedBeing extends Being {
 	 */
 	public static ImpulseCollision addCollision(MassedBeing being1, MassedBeing being2, 
 			PVector projection, float elasticity) {
+		assert being1 != null : "addCollision: being1 must be a valid being";
+		assert being2 != null : "addCollision: being2 must be a valid being";
+		assert projection != null : "addCollision: projection must be a valid PVector";
+		assert elasticity > 0 : "addCollision: elasticity must be positive";
+		
 		if(being1.getCollisionWith(being2) == null) {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
