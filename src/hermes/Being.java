@@ -25,6 +25,25 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
 	public Being(Shape collisionShape, PVector velocity) {
+
+		initialize(collisionShape, velocity);
+
+	}
+
+
+	/**
+	 * Alternate constructor that defaults to 0 velocity. 
+	 * <br><br>When a Being's velocity in 0, the World that it is in won't'update the Being's position automatically. Thus, all motion must be handled through setX, setY, or setPosition
+	 * <br><br>NOTE: If this Being's velocity is later set to something other than 0, it will then have its position updated automatically
+	 * @param collisionShape		Shape used to determine Being's position and collision detection
+	 */
+	public Being(Shape collisionShape) { 
+		//Defaults to 0 velocity, so update won't move this Being
+		initialize(collisionShape, new PVector(0,0));
+	}
+	
+	
+	private void initialize(Shape collisionShape, PVector velocity) {
 		assert collisionShape != null : "Being constructor: shape must be a valid Shape";
 		assert velocity != null : "Being constructor: velocity must be a valid PVector";
 		
@@ -33,7 +52,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position = collisionShape.getPosition();
 		_velocity = velocity;
 		_time = System.nanoTime();
+		
 	}
+	
+	
 	
 	protected long updateTime() { 
 		long time = System.nanoTime();
@@ -116,6 +138,25 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position.y = y;
 		_position.z = z;
 	}
+	
+	
+	public void setPosition(float x, float y) {
+		_position.x = x;
+		_position.y = y;
+	}
+	
+	public void setX(float x) {
+		_position.x = x;
+	}
+	
+	public void setY(float y) {
+		_position.y = y;
+	}
+	
+	public void setZ(float z) {
+		_position.z = z;
+	}
+	
 	
 	public PVector getVelocity() {
 		return _velocity;

@@ -53,6 +53,14 @@ public class ImpulseCollision {
 	}
 	
 	/**
+	 * returns the accumulated impulse vector
+	 * @return	the impulse
+	 */
+	public PVector getImpulse() {
+		return _impulse;
+	}
+	
+	/**
 	 * add an impulse to the collision
 	 * @param impulse	the impulse to add
 	 * @param origin	the origin of the impulse (should be being1 or being2)
@@ -80,7 +88,7 @@ public class ImpulseCollision {
 	 * clears the impulse vector
 	 */
 	public void applyImpulses() {
-		_being1.addImpulse(reverse(_impulse));
+		_being1.addImpulse(getReverse(_impulse));
 		_being2.addImpulse(_impulse);
 		_impulse.set(0, 0, 0);
 	}
