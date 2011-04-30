@@ -111,6 +111,12 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position.z = position.z;
 	}
 	
+	public void setPosition(float x, float y, float z) {
+		_position.x = x;
+		_position.y = y;
+		_position.z = z;
+	}
+	
 	public PVector getVelocity() {
 		return _velocity;
 	}
@@ -145,6 +151,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	
 	protected void EulerIntegratePosition(double dt) {
 		_position.add(PVector.mult(_velocity, (float)dt));
+	}
+	
+	public String toString() {
+		return "position: " + _position + " velocity: " + _velocity;
 	}
 	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
