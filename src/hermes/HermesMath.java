@@ -5,10 +5,22 @@ import processing.core.*;
 public class HermesMath {
 
 	/**
+	 * Rotates vector counter-clockwise by an angle theta
+	 * @param vector	the vector to rotate
+	 * @param theta		the angle to rotate counter-clockwise by
+	 * @return			the rotated vector (not a new vector, merely a reference to the vector passed in)
+	 */
+	public static PVector rotate(PVector vector, double theta) {
+		float x = (float) (vector.x * Math.cos(theta) - vector.y * Math.sin(theta));
+		float y = (float) (vector.x * Math.sin(theta) + vector.y * Math.cos(theta));
+		return new PVector(x,y);
+	}
+	
+	/**
 	 * reverses the direction of a PVector in the coordinate system,
 	 *  so the signs of each component are inverted
 	 * @param vector	the vector to invert
-	 * @return			the vector (this is not a new vector, merely a reference to the vector passed in)
+	 * @return			the vector (not a new vector, merely a reference to the vector passed in)
 	 * example:
 	 * 	<code>
 	 * 	PVector v = new PVector(3,-2);
