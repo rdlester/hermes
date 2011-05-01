@@ -326,12 +326,16 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				}
 			}
 		}
+		
 		if(_onOSC) {
+			
 			synchronized(_oscQueue) {
 				while(!_oscQueue.isEmpty()) {
 					OscMessage m = _oscQueue.poll();
+					
 					String address = m.getAddress();
 					Set<OscSubscriber> subs = _oscSubs.get(address);
+
 					for(OscSubscriber sub : subs) {
 						sub.handleOscMessage(m);
 					}
@@ -474,6 +478,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		 * Adds it to queue
 		 */
 		public void acceptMessage(Date time, com.illposed.osc.OSCMessage message) {
+			System.out.println("GOT AN OSC MESSAGE!.. testing.. delete this println in PostOfficeOSCListener");
 			OscMessage m = new OscMessage(message);
 			synchronized(_p._oscQueue) {
 				_p._oscQueue.add(m);
