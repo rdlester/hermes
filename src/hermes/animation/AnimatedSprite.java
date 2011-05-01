@@ -73,8 +73,10 @@ public class AnimatedSprite {
 		
 		// make sure there are animations to choose from, and that they have been set within correct bounds
 		assert !_animations.isEmpty() : "setActiveAnimation Error: You tried to set an active Animation but you haven't added any Animations yet";
-		assert (animationIndex < 0 || animationIndex>=_animations.size()) : "setActiveAnimation Error: You tried to set your active Animation to: "+animationIndex+ ", which isn't in the bounds of the Animations";  
-			
+		assert (animationIndex >= 0 ) : "setActiveAnimation Error: You tried to set your active Animation to: "+animationIndex+ ", which is a negative number, and isn't in the bounds of the Animations";  
+		assert (animationIndex<_animations.size()) : "setActiveAnimation Error: You tried to set your active Animation to: "+animationIndex+ ", which isn't in the bounds of the Animations";  
+
+		
 		//if this is the first call to setActiveAnimation, set to true
 		if(!_setActiveAnimationWasCalled) {
 			_setActiveAnimationWasCalled=true;
@@ -306,14 +308,17 @@ public class AnimatedSprite {
 		} 
 
 		////////2)
-		if(Hermes.getPApplet().millis() - _timeOfLastFrameAdvance >= _currentMillisecondsPerFrame) { //if the millisecondsPerFrame specified has passed
+		int currentTime = Hermes.getPApplet().millis();
+		if(currentTime - _timeOfLastFrameAdvance >= _currentMillisecondsPerFrame) { //if the millisecondsPerFrame specified has passed
 
 			//we don't want to advance the frame if the Animation's numberOfPlays is 0 and you've played last frame, otherwise, go!
 			if (_numberOfPlaysRemaining==0 && _currentFrameIndex==_lastFrame) { 
 				_currentFrameIndex = _activeAnimation.getdefaultFrame(); //always draw the default if the Animation has completed all playbacks
+				_timeOfLastFrameAdvance = currentTime;
+
 			} else {
 				advanceFrame();
-
+				_timeOfLastFrameAdvance = currentTime;
 			}
 		} 
 
