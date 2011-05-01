@@ -93,6 +93,11 @@ public class ImpulseCollision {
 		_impulse.set(0, 0, 0);
 	}
 	
+	/**
+	 * whether the one of the beings in this collision is the specified being
+	 * @param being		the being to check for
+	 * @return			whether being is in this collision
+	 */
 	public boolean hasBeing(MassedBeing being) {
 		return _being1 == being || _being2 == being;
 	}

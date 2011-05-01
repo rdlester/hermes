@@ -4,6 +4,9 @@ import processing.core.*;
 
 public class HermesMath {
 
+	public static final float INFINITY = Float.POSITIVE_INFINITY;
+	public static final float MINUS_INFINITY = Float.NEGATIVE_INFINITY;
+	
 	/**
 	 * Rotates vector counter-clockwise by an angle theta
 	 * @param vector	the vector to rotate

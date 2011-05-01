@@ -99,6 +99,15 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
+	 * gets the current impulse on the being
+	 * this is a reference, if you manipulate the returned vector it will change the impulse
+	 * @return	the impulse
+	 */
+	public PVector getImpulse() {
+		return _impulse;
+	}
+	
+	/**
 	 * Sets the being's elasticity (bounciness). Elasticity cannot be negative, and
 	 * 	in general it should be no higher than 1. Collision between beings with elasticity
 	 * 	higher than one will result beings gaining velocity when they collide, violating
@@ -139,7 +148,8 @@ public abstract class MassedBeing extends Being {
 		_impulse.div(_mass); 	// change in velocity from impulse
 		_velocity.add(_impulse); // apply the impulse
 		// r = x0 + v*dt
-		_position.add(PVector.mult(_velocity, (float)dt));
+		PVector delta_position = PVector.mult(_velocity, (float)dt);
+		_position.add(delta_position);
 		_position.add(_displacement);
 		_force.set(0,0,0);
 		_impulse.set(0,0,0);
@@ -197,6 +207,11 @@ public abstract class MassedBeing extends Being {
 		return null;
 	}
 	
+	/**
+	 * returns the collision between this being and another, if such a collision has been added
+	 * @param other		the being to check for collision with
+	 * @return			the collision
+	 */
 	public ImpulseCollision getCollisionWith(MassedBeing other) {
 		for(ImpulseCollision collision : _collisions) {
 			if(collision.hasBeing(other))
