@@ -254,7 +254,7 @@ public class PolygonTest {
 		
 		PVector pos6 = new PVector(0,10);
 		Circle c5 = new Circle(pos6,11);
-		PVector projectV5 = p1.projectionVector(c5);
+		PVector projectV5 = p2.projectionVector(c5);
 		System.out.println(projectV5);
 		assertEquals(projectV5.x,-1,1e-8);
 		assertEquals(projectV5.y,0,1e-8);

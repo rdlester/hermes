@@ -141,6 +141,18 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	}
 	
 	
+	public float getX() {
+		return _position.x;
+	}
+	
+	public float getY() {
+		return _position.y;
+	}
+	
+	public float getZ() {
+		return _position.z;
+	}
+	
 	public void setPosition(float x, float y) {
 		_position.x = x;
 		_position.y = y;
@@ -157,6 +169,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	public void setZ(float z) {
 		_position.z = z;
 	}
+	
+	
+	
+	
 	
 	
 	public PVector getVelocity() {
