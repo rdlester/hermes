@@ -12,8 +12,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import com.google.common.collect.HashMultimap;
 import src.hermes.Hermes;
@@ -54,10 +54,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	private HashMultimap<String, OscSubscriber> _oscSubs;
 	
 	//Stores messages as they are received, which are then picked off by checkMail()
-	private ConcurrentLinkedQueue<KeyMessage> _keyQueue;
-	private ConcurrentLinkedQueue<MouseMessage> _mouseQueue;
-	private ConcurrentLinkedQueue<MouseWheelMessage> _mouseWheelQueue;
-	private ConcurrentLinkedQueue<OscMessage> _oscQueue;
+	private LinkedList<KeyMessage> _keyQueue;
+	private LinkedList<MouseMessage> _mouseQueue;
+	private LinkedList<MouseWheelMessage> _mouseWheelQueue;
+	private LinkedList<OscMessage> _oscQueue;
 	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
@@ -144,12 +144,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_keySubs = HashMultimap.create();
 		_mouseSubs = HashMultimap.create();
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
-		_keyQueue = new ConcurrentLinkedQueue<KeyMessage>();
-		_mouseQueue = new ConcurrentLinkedQueue<MouseMessage>();
-		_mouseWheelQueue = new ConcurrentLinkedQueue<MouseWheelMessage>();
+		_keyQueue = new LinkedList<KeyMessage>();
+		_mouseQueue = new LinkedList<MouseMessage>();
+		_mouseWheelQueue = new LinkedList<MouseWheelMessage>();
 		if(_onOSC) {
 			_oscSubs = HashMultimap.create();
-			_oscQueue = new ConcurrentLinkedQueue<OscMessage>();
+			_oscQueue = new LinkedList<OscMessage>();
 		}
 	}
 	

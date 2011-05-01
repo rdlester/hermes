@@ -1,7 +1,6 @@
 package src.hermes;
 
 import processing.core.PApplet;
-import java.math.*;
 
 /**
  * Library class for broad scale static helpers, storage of PApplet
@@ -14,7 +13,7 @@ public class Hermes {
 	 * Getter for the PApplet
 	 */
 	public static PApplet getPApplet() {
-		return _parentApplet;		
+		return _parentApplet;
 	}
 	
 	/**
