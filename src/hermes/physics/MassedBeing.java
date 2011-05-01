@@ -244,7 +244,9 @@ public abstract class MassedBeing extends Being {
 		_collisions.add(collision);
 	}
 	
-	public abstract boolean needsMoreSamples();
+	public boolean needsMoreSamples() {
+		return false;
+	}
 	
 	public String toString() {
 		return super.toString() + " Mass: " + _mass + " Elasticity: " + _elasticity + 
