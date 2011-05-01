@@ -10,7 +10,7 @@ import src.hermes.Hermes;
  * This class is used to process, store, and play animations. 
  *
  */
-class AnimatedSprite {
+public class AnimatedSprite {
 
 	private ArrayList<Animation> _animations; // storage container for various animations of a Sprite
 
