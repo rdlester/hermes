@@ -4,6 +4,9 @@ import processing.core.*;
 
 public class HermesMath {
 
+	public static final float INFINITY = Float.POSITIVE_INFINITY;
+	public static final float MINUS_INFINITY = Float.NEGATIVE_INFINITY;
+	
 	/**
 	 * reverses the direction of a PVector in the coordinate system,
 	 *  so the signs of each component are inverted
