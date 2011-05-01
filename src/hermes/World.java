@@ -246,7 +246,6 @@ public class World extends Thread {
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
 			
-			
 			if(interaction.getA().equals(_cameraGroup)) {
 				_camera.collisionsReset();
 			} 

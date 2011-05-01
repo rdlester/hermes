@@ -70,6 +70,15 @@ public class HermesMath {
 	}
 	
 	/**
+	 * instantiates a new vector that is a carbon copy of a vector
+	 * @param vector	the vector the copy
+	 * @return			the new copy
+	 */
+	public static PVector cloneVector(PVector vector) {
+		return new PVector(vector.x, vector.y, vector.z);
+	}
+	
+	/**
 	 * Gets the square of the magnitude of a PVector
 	 * Useful when taking the square root to find the true magnitude is not important
 	 * (saves time)
@@ -110,5 +119,6 @@ public class HermesMath {
 			acc += values[i];
 		return acc / values.length;
 	}
+
 	
 }

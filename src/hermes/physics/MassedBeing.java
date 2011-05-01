@@ -6,7 +6,7 @@ import processing.core.*;
 import src.hermes.*;
 import src.hermes.physics.*;
 import src.hermes.shape.Shape;
-import static src.hermes.HermesMath.zeroVector;
+import static src.hermes.HermesMath.*;
 
 /**
  * an extension of being representing a body with mass
@@ -22,7 +22,7 @@ public abstract class MassedBeing extends Being {
 	private PVector _impulse; // used to calculate the impulse being applied to this being
 	private PVector _displacement; // used to accumulate an instantaneous displacement on this being
 	
-	private LinkedList<ImpulseCollision> _collisions; // keeps track of all collisions in this step 
+	protected LinkedList<ImpulseCollision> _collisions; // keeps track of all collisions in this step 
 	
 	/**
 	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
@@ -142,19 +142,33 @@ public abstract class MassedBeing extends Being {
 	 */
 	public void step() {
 		double dt = ((double)updateTime()) / 1e9;
-		_force.div(_mass); 	// calculate the acceleration from the force
-		_force.mult((float)dt); 	// multiply by the time step
-		_velocity.add(_force);	// v = v0 + a*dt
+		applyImpulse();
+		EulerIntegrateVelocity(dt);
+		EulerIntegratePosition(dt);
+		clearForce();
+		clearCollisions();
+	}
+	
+	protected void applyImpulse() {
 		_impulse.div(_mass); 	// change in velocity from impulse
 		_velocity.add(_impulse); // apply the impulse
-		// r = x0 + v*dt
-		PVector delta_position = PVector.mult(_velocity, (float)dt);
-		_position.add(delta_position);
-		_position.add(_displacement);
-		_force.set(0,0,0);
-		_impulse.set(0,0,0);
-		_displacement.set(0,0,0);
+		zeroVector(_impulse);
+	}
+	
+	protected void EulerIntegrateVelocity(double dt) {
+		// a = F/m
+		PVector acceleration = PVector.div(_force, _mass);
+		// v = v0 + a*dt
+		acceleration.mult((float) dt);
+		_velocity.add(acceleration);	
+	}
+	
+	protected void clearCollisions() {
 		_collisions.clear();
+	}
+	
+	protected void clearForce() {
+		zeroVector(_force);
 	}
 	
 	/**
@@ -229,6 +243,8 @@ public abstract class MassedBeing extends Being {
 		
 		_collisions.add(collision);
 	}
+	
+	public abstract boolean needsMoreSamples();
 	
 	public String toString() {
 		return super.toString() + " Mass: " + _mass + " Elasticity: " + _elasticity + 
