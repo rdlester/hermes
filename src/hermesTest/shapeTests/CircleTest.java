@@ -17,14 +17,14 @@ public class CircleTest {
 	public void test_collideCircle() {
 		
 		PVector pos1 = new PVector(0,0); 
-		Circle c1 = new Circle(pos1, 10.0f);
+		Circle c1 = new Circle(pos1, 10);
 		PVector pos2 = new PVector(1,1);
-		Circle c2 = new Circle(pos2, 10.0f);
+		Circle c2 = new Circle(pos2, 10);
 		assertTrue(c1.collide(c2));
 		assertTrue(c2.collide(c1));
 		
-		PVector pos3 = new PVector(-20,-20);
-		Circle c3 = new Circle(pos3, 5);
+		PVector pos3 = new PVector(-21,-21);
+		Circle c3 = new Circle(pos3, 10);
 		assertFalse(c3.collide(c1));
 		assertFalse(c1.collide(c3));
 		assertFalse(c3.collide(c2));

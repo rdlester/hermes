@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import src.hermes.postoffice.*;
+
 /**
  * defines a generic "group" that wraps a collection of beings
  * @author Sam
@@ -11,7 +13,8 @@ import java.util.LinkedList;
  * @param <A>	the type of the beings in the group
  * @param <B>	the type of underlying collection used
  */
-public class GenericGroup<A extends Being, B extends Collection<A>> {
+public class GenericGroup<A extends Being, B extends Collection<A>> 
+							implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
 	private B _beings;		// the underlying collection
 	private World _world;	// the world containing the groups
@@ -112,6 +115,24 @@ public class GenericGroup<A extends Being, B extends Collection<A>> {
 
 	public World getWorld() {
 		return _world;
+	}
+
+	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
+	//Left blank here, must be overrided by user to add functionality
+	public void handleOscMessage(OscMessage m) {
+		//VOID
+	}
+
+	public void handleMouseWheelMessage(MouseWheelMessage m) {
+		//VOID
+	}
+
+	public void handleMouseMessage(MouseMessage m) {
+		//VOID
+	}
+
+	public void handleKeyMessage(KeyMessage m) {
+		//VOID
 	}
 	
 }

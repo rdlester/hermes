@@ -8,10 +8,22 @@ public class HermesMath {
 	public static final float MINUS_INFINITY = Float.NEGATIVE_INFINITY;
 	
 	/**
+	 * Rotates vector counter-clockwise by an angle theta
+	 * @param vector	the vector to rotate
+	 * @param theta		the angle to rotate counter-clockwise by
+	 * @return			the rotated vector (not a new vector, merely a reference to the vector passed in)
+	 */
+	public static PVector rotate(PVector vector, double theta) {
+		float x = (float) (vector.x * Math.cos(theta) - vector.y * Math.sin(theta));
+		float y = (float) (vector.x * Math.sin(theta) + vector.y * Math.cos(theta));
+		return new PVector(x,y);
+	}
+	
+	/**
 	 * reverses the direction of a PVector in the coordinate system,
 	 *  so the signs of each component are inverted
 	 * @param vector	the vector to invert
-	 * @return			the vector (this is not a new vector, merely a reference to the vector passed in)
+	 * @return			the vector (not a new vector, merely a reference to the vector passed in)
 	 * example:
 	 * 	<code>
 	 * 	PVector v = new PVector(3,-2);
@@ -70,6 +82,15 @@ public class HermesMath {
 	}
 	
 	/**
+	 * instantiates a new vector that is a carbon copy of a vector
+	 * @param vector	the vector the copy
+	 * @return			the new copy
+	 */
+	public static PVector cloneVector(PVector vector) {
+		return new PVector(vector.x, vector.y, vector.z);
+	}
+	
+	/**
 	 * Gets the square of the magnitude of a PVector
 	 * Useful when taking the square root to find the true magnitude is not important
 	 * (saves time)
@@ -110,5 +131,6 @@ public class HermesMath {
 			acc += values[i];
 		return acc / values.length;
 	}
+
 	
 }

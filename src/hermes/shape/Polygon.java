@@ -2,11 +2,8 @@ package src.hermes.shape;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import processing.core.PVector;
-import src.hermes.HermesMath;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -42,7 +39,7 @@ public class Polygon extends Shape {
 		super(position);
 		
 		assert points != null : "In Polygon constructor, points must be valid List";
-		assert points.size() > 0 : "In Polygon constructor, points must contain at least one point";
+		assert points.size() > 2 : "In Polygon constructor, points must contain at least three point";
 		
 		_points = points;
 		
@@ -75,7 +72,7 @@ public class Polygon extends Shape {
 	private void addAxis(PVector start, PVector end, PVector preStart) {
 		PVector axis = PVector.sub(start, end);
 		axis.normalize();
-		axis.mult(new PVector(1,-1,0));
+		rotate(axis,Math.PI/2);
 		float project1 = axis.dot(start);
 		float projectpre = axis.dot(preStart);
 		assert project1 != projectpre : "Polygon must be convex!";
@@ -219,7 +216,7 @@ public class Polygon extends Shape {
 					axis.mult(overlap);
 					return axis;
 				}
-				else return null;
+//				else return null;
 			}
 			
 			//Check if circle is in voronoi region of side
@@ -234,7 +231,7 @@ public class Polygon extends Shape {
 					//Create and return projection vector
 					return PVector.mult(axis, overlap);
 				}
-				else return null;
+//				else return null;
 			}
 			
 			sidePre = side;
@@ -242,7 +239,7 @@ public class Polygon extends Shape {
 		}
 		
 		//THIS SHOULD NEVER HAPPEN
-		System.err.println("Circle is not in any voronoi region");
+//		System.err.println("Circle is not in any voronoi region");
 		return null;
 	}
 

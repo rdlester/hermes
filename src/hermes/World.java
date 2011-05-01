@@ -67,6 +67,7 @@ public class World extends Thread {
 		//register an Interaction between _cameraGroup and _masterGroup
 		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor(), true);
 
+		lockUpdateRate(60); // lock the update rate to 60 updates/sec by default
 	}
 	
 	/**
@@ -245,7 +246,6 @@ public class World extends Thread {
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
 			
-			
 			if(interaction.getA().equals(_cameraGroup)) {
 				_camera.collisionsReset();
 			} 
@@ -398,9 +398,16 @@ public class World extends Thread {
 	
 	// locks the update rate to happen no more than rate times per second
 	public void lockUpdateRate(int rate) {
+		assert rate > 0 : "World.lockUpdateRate: rate must be greater than zero";
+		
 		_updateLength = (long)(1.0f / ((float)rate) * 1000.0f);
 	}
 
+	// unlocks the update rate (the rate is set to 60 by default)
+	public void unlockUpdateRate() {
+		_updateLength = 0;
+	}
+	
 	//to be used in the _detectedInteractions queue
 	private class DetectedInteraction<A extends Being, B extends Being> {
 		A _being1;
