@@ -60,7 +60,8 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	protected long updateTime() { 
 		long time = System.nanoTime();
 		long elapsed = time - _time;
-		_time = time;
+		if(elapsed > 0) 
+			_time = time;
 		return elapsed;
 	}
 	

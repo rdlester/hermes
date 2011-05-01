@@ -34,11 +34,7 @@ public class ImpulseCollisionTest {
 		assertEquals(collision.getImpulse().y, 2.0f, 1e-8);
 		collision.addImpulse(makeVector(-1,0), being2);
 		assertEquals(collision.getImpulse().x, 2.0f, 1e-8);
-		assertEquals(collision.getImpulse().y, 2.0f, 1e-8);
-		
-		being2 = new MyBeing(makeVector(2,0), makeVector(-1,0), 1.0f, 1.0f);
-		collision = new ImpulseCollision(being1, being2, makeVector(1.0f,1.0f), 1.0f);
-		
+		assertEquals(collision.getImpulse().y, 2.0f, 1e-8);	
 	}
 	
 	
