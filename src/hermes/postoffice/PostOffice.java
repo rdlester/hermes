@@ -23,7 +23,8 @@ import src.hermes.Hermes;
  * Tells subscribers of a specific type of message when one is received
  * and passes on information stored in message to subscriber
  */
-public class PostOffice implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+public class PostOffice implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener, 
+									com.illposed.osc.OSCListener {
 	
 	//Default ports for OSC communication
 	public static final int DEFAULT_PORT_IN = 7000;
@@ -44,8 +45,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	//OSCPorts for listening and receiving
 	private com.illposed.osc.OSCPortIn _receive;
 	private com.illposed.osc.OSCPortOut _send;
-	@SuppressWarnings("unused")
-	private com.illposed.osc.OSCListener _listener;
 	
 	//Maps that associate subscribers with messages they want to receive
 	private HashMultimap<String, KeySubscriber> _keySubs;
@@ -86,7 +85,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		try {
 			_receive = new com.illposed.osc.OSCPortIn(portIn);
 			_receive.startListening();
-			_listener = new PostOfficeOSCListener(this);
 		} catch (SocketException e) {
 			System.err.println("OSC Port In on " + portIn + " could not start");
 		}
@@ -127,7 +125,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		} catch (SocketException e) {
 			System.err.println("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
 		}
-		_listener = new PostOfficeOSCListener(this);
 	}
 	
 	/**
@@ -203,6 +200,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		assert sub != null : "PostOffice.registerOscSubscription: sub must be a valid OscSubscriber";
 		assert address != null : "PostOffice.registerOscSubscription: address must be a valid String";
 		_oscSubs.put(address, sub);
+		_receive.addListener(address, this);
 	}
 	
 	/////////////////////////////////
@@ -455,34 +453,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 	
-	//////////////////
-	//Get OSC Messages
-	/**
-	 * Implementation of OCSListener that turns illposed messages into our messages
-	 */
-	class PostOfficeOSCListener implements com.illposed.osc.OSCListener {
-		
-		//Reference to containing post office
-		PostOffice _p;
-		
-		/**
-		 * Constructor passes in reference to containing post office
-		 */
-		protected PostOfficeOSCListener(PostOffice p) {
-			_p = p;
-		}
-		
-		/**
-		 * Handles a received message
-		 * Converts it from illposed to our message
-		 * Adds it to queue
-		 */
-		public void acceptMessage(Date time, com.illposed.osc.OSCMessage message) {
-			System.out.println("GOT AN OSC MESSAGE!.. testing.. delete this println in PostOfficeOSCListener");
-			OscMessage m = new OscMessage(message);
-			synchronized(_p._oscQueue) {
-				_p._oscQueue.add(m);
-			}
+	public void acceptMessage(Date time, com.illposed.osc.OSCMessage message) {
+		OscMessage m = new OscMessage(message);
+		synchronized(_oscQueue) {
+			_oscQueue.add(m);
 		}
 	}
 }
