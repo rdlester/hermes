@@ -13,7 +13,9 @@ public class Hermes {
 	 * Getter for the PApplet
 	 */
 	public static PApplet getPApplet() {
-		return _parentApplet;
+		synchronized(_parentApplet) {
+			return _parentApplet;
+		}
 	}
 	
 	/**
