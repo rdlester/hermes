@@ -170,11 +170,6 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position.z = z;
 	}
 	
-	
-	
-	
-	
-	
 	public PVector getVelocity() {
 		return _velocity;
 	}
