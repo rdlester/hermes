@@ -22,4 +22,15 @@ public class Hermes {
 	public static void setPApplet(PApplet parentApplet) {
 		_parentApplet = parentApplet;		
 	}
+	
+	/**
+	 * causes the calling thread to sleep, catches InterruptedException without any interactions
+	 * @param time	the time (in milliseconds) to sleep
+	 */
+	public static void unsafeSleep(long time) {
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {}
+	}
+	
 }

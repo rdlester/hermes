@@ -11,7 +11,7 @@ public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 		if(projection == null || being1==being2)
 			return false;	// if they aren't colliding
 		// store the collision
-		MassedBeing.addCollision(being1, being2, projection);
+		MassedBeing.addImpulseCollision(being1, being2, projection);
 		return true;
 	}
 

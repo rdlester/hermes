@@ -178,7 +178,7 @@ public abstract class MassedBeing extends Being {
 	 * @param being2		the second being
 	 * @param projection	the projection vector from being1 to being2
 	 */
-	public static ImpulseCollision addCollision(MassedBeing being1, MassedBeing being2, 
+	public static ImpulseCollision addImpulseCollision(MassedBeing being1, MassedBeing being2, 
 			PVector projection) {
 		assert being1 != null : "addCollision: being1 must be a valid being";
 		assert being2 != null : "addCollision: being2 must be a valid being";
@@ -190,8 +190,8 @@ public abstract class MassedBeing extends Being {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
 			collision.addImpulse();
-			being1.addCollision(collision);
-			being2.addCollision(collision);
+			being1.addImpulseCollision(collision);
+			being2.addImpulseCollision(collision);
 			return collision;
 		}
 		return null;
@@ -203,7 +203,7 @@ public abstract class MassedBeing extends Being {
 	 * @param being2		the second being
 	 * @param projection	the projection vector from being1 to being2
 	 */
-	public static ImpulseCollision addCollision(MassedBeing being1, MassedBeing being2, 
+	public static ImpulseCollision addImpulseCollision(MassedBeing being1, MassedBeing being2, 
 			PVector projection, float elasticity) {
 		assert being1 != null : "addCollision: being1 must be a valid being";
 		assert being2 != null : "addCollision: being2 must be a valid being";
@@ -214,8 +214,8 @@ public abstract class MassedBeing extends Being {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
 			collision.addImpulse();
-			being1.addCollision(collision);
-			being2.addCollision(collision);
+			being1.addImpulseCollision(collision);
+			being2.addImpulseCollision(collision);
 			return collision;
 		}
 		return null;
@@ -238,7 +238,7 @@ public abstract class MassedBeing extends Being {
 	 * adds a collision to the being's collision list
 	 * @param collision		the collision
 	 */
-	protected void addCollision(ImpulseCollision collision) {
+	protected void addImpulseCollision(ImpulseCollision collision) {
 		assert collision != null : "MassedBeing.addCollision: collision must be valid";
 		
 		_collisions.add(collision);
