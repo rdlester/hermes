@@ -1,9 +1,14 @@
+import processing.opengl.*;
+
 //Hi! The comments in this piece might often seem verbose. They're there to provide some clear explanations of the functions of the library!
 
 import src.hermes.*;
 import src.hermes.shape.*;
 import src.hermes.animation.*;
 import src.hermes.postoffice.*;
+
+
+static final String systemName = "BulletCurtain";
 
 //todo: add camera rotation, make osc controllable.
 
@@ -29,6 +34,7 @@ int millisecondsPerFrame = 500; //how many milliseconds each from plays for (set
 AnimatedSprite spriteToUseForSubject; //use when generating the sprite of "subject"
 AnimatedSprite spriteToUseForOther; //use when generating the sprite of "Other"
 
+int curtainX = width/3;
 
 PatternGenerator patternGenerator;
 Subject subject;
@@ -37,12 +43,14 @@ Subject subject;
 World world;
 
 PostOffice postOffice;
+OtherGroup otherGroup; 
+
 Camera cam;
 
 void setup() { 
 
   Hermes.setPApplet(this);
-  size(640, 480);
+  size(640, 480, OPENGL);
 
   patternGenerator = new PatternGenerator(); //used to makes generative random patterns for AnimatedSprites
 
@@ -67,7 +75,20 @@ void setup() {
 
 
 
-  postOffice.registerOscSubscription(new MoveSubjectX(subject), "/BulletCurtain/SetSubjectX");
+
+  postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectX");
+  postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectY");
+
+
+
+
+
+  otherGroup = new OtherGroup(world);
+
+
+  
+  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/GenerateAnOther");
+
 
 
   world.lockUpdateRate(60);
@@ -152,6 +173,29 @@ class Subject extends SubjectObjectRelation {
 
   void update() {
   }
+
+
+  void handleOscMessage(OscMessage message) {
+
+    String[] msgSplit = message.getAddress().split("/");
+
+
+    if (msgSplit[1].equals(systemName)) {
+
+
+      if (msgSplit[2].equals("SetSubjectX")) {
+        float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        float remappedX = map(constrainedX, 0.0, 1.0, 0.0, subjectRightmostX - BODY_WIDTH);
+        setX(remappedX);
+      }
+
+      else if (msgSplit[2].equals("SetSubjectY")) {
+        float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
+        setY(remappedY);
+      }
+    }
+  }
 }
 
 
@@ -165,38 +209,55 @@ class Other extends SubjectObjectRelation {
 
   void update() {
     setX(getX() - howMuchToTravel);
+    
+    if (getX() + BODY_WIDTH < 0) {
+      world.removeBeingFromAllGroups(this);
+    } 
+    
   }
 }
 
 
 
 
+class OtherGroup extends Group {
 
-
-class MoveSubjectX implements OscSubscriber {
-
-  Subject subject;
-
-  MoveSubjectX(Subject subject) {
-    this.subject = subject;
+  OtherGroup(World world) {
+    super(world);
   }
+
+int spawnX;
+int spawnY;
 
   void handleOscMessage(OscMessage message) {
-    // float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-    //float remappedX = map(constrainedX, 0.0, 1.0, 0.0, width);
+    String[] msgSplit = message.getAddress().split("/");
 
-    println("H!");
-    //  subject.setX(remappedX);
-    
-
-
-    try {
-      message.getContents();
-    }
-    catch (NullPointerException n) {
-      println("null");
+    if (msgSplit[1].equals(systemName)) {
+      if (msgSplit[2].equals("GenerateAnOther")) {
+        if (message.getAndRemoveFloat() == 1.0) {       
+          Other other = new Other(spawnX, spawnY, spriteToUseForOther);
+          add(other);
+            world.registerBeing(other, true);
+        }
+        
+              else if (msgSplit[2].equals("SetOtherSpawnX")) {
+        float constraineX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        float remappedX = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
+        spawnX = remappedX;
+      }
+        
+        
+        
+        
+        
+        
+      }
+      
+      
+      
     }
   }
+  
+  
 }
-
 

@@ -196,7 +196,7 @@ public class OscMessage implements Message {
 	 * Gets an object[] of the inner contents of an OSCMessage 
 	 * @return contents
 	 */
-	public Object[] getContents() {
+	protected Object[] getContents() {
 		return _contents;
 	}
 	
