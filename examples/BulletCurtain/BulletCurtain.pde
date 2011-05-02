@@ -176,17 +176,26 @@ class Other extends SubjectObjectRelation {
 class MoveSubjectX implements OscSubscriber {
 
   Subject subject;
-  
+
   MoveSubjectX(Subject subject) {
     this.subject = subject;
   }
 
   void handleOscMessage(OscMessage message) {
-    float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-    float remappedX = map(constrainedX, 0.0, 1.0, 0.0, width);
-    
+    // float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+    //float remappedX = map(constrainedX, 0.0, 1.0, 0.0, width);
+
     println("H!");
-   subject.setX(remappedX);
+    //  subject.setX(remappedX);
+    
+
+
+    try {
+      message.getContents();
+    }
+    catch (NullPointerException n) {
+      println("null");
+    }
   }
 }
 
