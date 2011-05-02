@@ -72,7 +72,7 @@ public class Polygon extends Shape {
 	private void addAxis(PVector start, PVector end, PVector preStart) {
 		PVector axis = PVector.sub(start, end);
 		axis.normalize();
-		rotate(axis,Math.PI/2);
+		axis = rotate(axis,Math.PI/2);
 		float project1 = axis.dot(start);
 		float projectpre = axis.dot(preStart);
 		assert project1 != projectpre : "Polygon must be convex!";
