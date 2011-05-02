@@ -11,14 +11,14 @@ public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 		if(projection == null || being1==being2)
 			return false;	// if they aren't colliding
 		// store the collision
-		MassedBeing.addCollision(being1, being2, projection);
+		MassedBeing.addImpulseCollision(being1, being2, projection);
 		return true;
 	}
 
 	public boolean handle(MassedBeing being1, MassedBeing being2) {
 		ImpulseCollision collision = being1.getCollisionWith(being2);
 		collision.applyImpulses();
-		return true;
+		return !being1.needsMoreSamples() && !being2.needsMoreSamples();
 	}
 
 }
