@@ -36,6 +36,7 @@ public class OscMessage implements Message {
 	 */
 	protected OscMessage(com.illposed.osc.OSCMessage message) {
 		_address = message.getAddress();
+		_contents = message.getArguments();
 	}
 	
 	
