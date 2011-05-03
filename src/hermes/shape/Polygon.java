@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import processing.core.PVector;
+import src.hermes.HermesMath;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -72,7 +73,7 @@ public class Polygon extends Shape {
 	private void addAxis(PVector start, PVector end, PVector preStart) {
 		PVector axis = PVector.sub(start, end);
 		axis.normalize();
-		axis = rotate(axis,Math.PI/2);
+		axis = HermesMath.rotate(axis,Math.PI/2);
 		float project1 = axis.dot(start);
 		float projectpre = axis.dot(preStart);
 		assert project1 != projectpre : "Polygon must be convex!";
@@ -108,8 +109,22 @@ public class Polygon extends Shape {
 		_points.add(point);
 	}
 	
+	/**
+	 * Getter for axes list - only for internal use within shape classes
+	 * @return _axes
+	 */
 	protected ArrayList<PVector> getAxes() {
 		return _axes;
+	}
+	
+	/**
+	 * Rotates polygon counter-clockwise around position
+	 * @param theta
+	 */
+	public void rotate(double theta) {
+		for(PVector p : _points) {
+			p = HermesMath.rotate(p,theta);
+		}
 	}
 	
 	@Override
@@ -191,6 +206,8 @@ public class Polygon extends Shape {
 		//Get position of center of circle and subtract position of polygon from it to move it in range of points
 		PVector otherPos = PVector.add(other.getCenter(), other.getPosition());
 		otherPos.sub(_position);
+		
+		//TODO figure out if circle center is inside polygon
 		
 		//Get initial points and side
 		PVector pre = _points.get(1);
