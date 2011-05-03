@@ -103,13 +103,13 @@ class BallGroup extends Group<Ball> implements MouseSubscriber {
 
 
 
-class Ball extends MassedBeing {
+class Ball extends MultisampledMassedBeing {
   
   Group _group;
   color _color;
 
   Ball(PVector center, PVector velocity) {    
-    super(new Circle(center, 20), velocity, 1, 1);  
+    super(new Circle(center, 20), velocity, 1, 1, 35);  
     _color = color(random(255), random(255), random(255));  
   } 
 

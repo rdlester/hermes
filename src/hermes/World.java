@@ -364,7 +364,7 @@ public class World extends Thread {
 	private void interactionHelper(Being being1, Being being2, Interaction interaction, 
 			LinkedList<DetectedInteraction> detectedInteractionsQ) {
 		// see if an interaction was detected
-		if(interaction.getInteractor().detect(being1, being2)) {
+		if(being1 != being2 && interaction.getInteractor().detect(being1, being2)) {
 			if(interaction.isImmediate()) { // if immediate, handle it now
 					synchronized(being1) {
 						synchronized(being2) {

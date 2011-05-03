@@ -99,12 +99,21 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * gets the current impulse on the being
+	 * gets the current impulse on the being (note that this will be non-zero only after impulses have been applied, before updates)
 	 * this is a reference, if you manipulate the returned vector it will change the impulse
 	 * @return	the impulse
 	 */
 	public PVector getImpulse() {
 		return _impulse;
+	}
+	
+	/**
+	 * gets the current force on the being (note that this will be non-zero only after forces have been applied, before updates)
+	 * this is a reference, if you manipulate the returned vector it will change the force
+	 * @return	the force
+	 */
+	public PVector getForce() {
+		return _force;
 	}
 	
 	/**
