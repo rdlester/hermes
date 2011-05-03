@@ -34,7 +34,7 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 		}
 		if((projection.x==0 && Math.abs(projection.y)<smallerBeingHeight) ||
 				(projection.y==0 && Math.abs(projection.x)<smallerBeingWidth)) {
-			MassedBeing.addCollision(biggerBeing, smallerBeing, projection);
+			MassedBeing.addImpulseCollision(biggerBeing, smallerBeing, projection);
 			return true;
 		} else 
 			return false;

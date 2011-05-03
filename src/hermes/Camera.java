@@ -18,6 +18,8 @@ public class Camera extends Environment {
 	//width & height of user's world coordinates
 	private float _worldCoordinateWidth;
 	private float _worldCoordinateHeight;
+	
+	private float _zoomFactor;
 
 	//contains all the Beings colliding with the Camera in a given timestep
 	//repopulated each time step
@@ -38,6 +40,8 @@ public class Camera extends Environment {
 		_y = y;
 		_worldCoordinateWidth = worldCoordinateWidth;
 		_worldCoordinateHeight = worldCoordinateHeight;
+		
+		_zoomFactor = 1.0f;
 
 		_beingsPending = new LinkedList<Being>();
 		_beingsDrawn = new LinkedList<Being>();
@@ -79,7 +83,10 @@ public class Camera extends Environment {
 		_worldCoordinateHeight = worldCoordinateHeight;
 	}
 	
-	
+	/**
+	 * Resets internal state parameters, effectively clearing the cache of
+	 * collided Beings from the last time step
+	 */
 	public void collisionsReset() {
 		synchronized(_switchToBeingsPending) {
 			_switchToBeingsPending = false;
@@ -90,6 +97,11 @@ public class Camera extends Environment {
 		}
 	}
 	
+	/**
+	 * This method is a callback, letting the Camera know that the _beingsPending list
+	 * has been completed for this timestep, and that it can switch to make it the actively
+	 * drawn list of Beings on the next call to draw()
+	 */
 	public void collisionsComplete() {
 		synchronized(_switchToBeingsPending) {
 			_switchToBeingsPending = true;
@@ -105,6 +117,41 @@ public class Camera extends Environment {
 			_beingsPending.add(being);
 		}
 	}
+	
+	//TODO: make sure these work and comment properlyl
+	
+	/**
+	 * 
+	 * @param zoomFactor
+	 * @param worldZoomCenterX
+	 * @param worldZoomCenterY
+	 */
+	public void zoomWithWorldCoordinates(float zoomFactor, float worldZoomCenterX, float worldZoomCenterY) {
+		//change the World width and height of the Camera
+		_worldCoordinateWidth = _worldCoordinateWidth/zoomFactor;
+		_worldCoordinateHeight = _worldCoordinateHeight/zoomFactor;
+		
+		//find the new top-left point in World coordinates
+		_x = worldZoomCenterX - _worldCoordinateWidth/2;
+		_y = worldZoomCenterY - _worldCoordinateHeight/2;
+		
+		//set the _zoomFactor
+		_zoomFactor = zoomFactor;
+	}
+	
+	public void zoomWithScreenCoordinates(float zoomFactor, float screenZoomCenterX, float screenZoomCenterY) {
+		//translate from screen coordinates to world coordinates
+		//units of calculation: worldmetric = pixels * (worldmetric/pixel)
+		float worldX = screenZoomCenterX * (_worldCoordinateWidth/Hermes.getPApplet().width);
+		float worldY = screenZoomCenterY * (_worldCoordinateHeight/Hermes.getPApplet().height);
+		
+		//call other method that works with world coordinates
+		this.zoomWithWorldCoordinates(zoomFactor, worldX, worldY);		
+	}
+	
+	
+	
+	
 
 	/**
 	 * This method gets called by Processing's draw thread. It handles drawing all of the Beings that 
@@ -140,6 +187,7 @@ public class Camera extends Environment {
 				float beingXCoordinate = being.getPosition().x/(_worldCoordinateWidth/pApplet.width);
 				float beingYCoordinate = being.getPosition().y/(_worldCoordinateHeight/pApplet.height);
 				pApplet.translate(beingXCoordinate, beingYCoordinate);
+				//pApplet.scale(_zoomFactor);
 				//save this state
 				pApplet.pushMatrix();
 

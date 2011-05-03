@@ -138,6 +138,16 @@ public class AnimatedSprite {
 		assert (index < 0 || index>=_animations.size()) : "getAnimation Error: You tried to get an Animation at index: "+index+ ", which isn't in the bounds of the Animations";  
 		return _animations.get(index);
 	}
+	
+	/**
+	 *  the number of Animations added to this AnimatedSprite
+	 * @return		the number of Animations added to this AnimatedSprite
+	 */
+	public int getNumberOfAnimations() {
+		return _animations.size();
+		
+	}
+	
 
 	/**
 	 * Sets millisecondsPerFrame for this playback. It is valid until the next call to setActiveAnimation.

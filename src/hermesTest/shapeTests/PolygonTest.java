@@ -220,7 +220,7 @@ public class PolygonTest {
 		assertEquals(projectV1.x,result,1e-8);
 		assertEquals(projectV1.y,result,1e-8);
 		
-		//Other circles that collide
+		//collides at vertex
 		PVector pos3 = new PVector(20,0);
 		Circle c2 = new Circle(pos3,10);
 		assertTrue(p1.collide(c2));
@@ -228,13 +228,13 @@ public class PolygonTest {
 		assertEquals(projectV2.x,0,1e-8);
 		assertEquals(projectV2.y,0,1e-8);
 		
-//		PVector pos4 = new PVector(1,1);
-//		Circle c3 = new Circle(pos4, 5);
-//		assertTrue(p1.collide(c3));
-//		PVector projectV3 = p1.projectionVector(c3);
-//		System.out.println(projectV3);
-//		assertEquals(projectV3.x,0,1e-8);
-//		assertEquals(projectV3.y,0,1e-8);
+		PVector pos4 = new PVector(1,1);
+		Circle c3 = new Circle(pos4, 5);
+		assertTrue(p1.collide(c3));
+		PVector projectV3 = p1.projectionVector(c3);
+		System.out.println(projectV3);
+		assertEquals(projectV3.x,0,1e-8);
+		assertEquals(projectV3.y,0,1e-8);
 		
 		PVector pos5 = new PVector(20,1);
 		Circle c4 = new Circle(pos5,12);
