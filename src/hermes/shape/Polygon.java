@@ -118,13 +118,37 @@ public class Polygon extends Shape {
 	}
 	
 	/**
-	 * Rotates polygon counter-clockwise around position
+	 * Rotates polygon counter-clockwise around polygon's position ((0,0) in polygon coordinates)
 	 * @param theta
 	 */
 	public void rotate(double theta) {
 		for(PVector p : _points) {
-			p = HermesMath.rotate(p,theta);
+			HermesMath.rotate(p,theta);
 		}
+	}
+	
+	/**
+	 * Rotates polygon counter-clockwise around given position in polygon coordinates (same coordinates defining location of points)
+	 * @param position
+	 * @param theta
+	 */
+	public void rotate(PVector position, double theta) {
+		for(PVector p : _points) {
+			//translate points into coordinates where position is now (0,0)
+			PVector translatedP = PVector.sub(p, position);
+			HermesMath.rotate(translatedP, theta);
+			//translate back
+			p.add(position);
+		}
+	}
+	
+	/**
+	 * Rotates polygon counter-clockwise around given position in world coordinates
+	 */
+	public void rotateInWorld(PVector position, double theta) {
+		//map given world location into polygon coordinates
+		PVector polyLoc = PVector.sub(_position, position);
+		rotate(polyLoc,theta);
 	}
 	
 	@Override
