@@ -144,7 +144,7 @@ public class PolygonTest {
 		points2.add(new PVector(0,-10));
 		points2.add(new PVector(-10,0));
 		Polygon p2 = new Polygon(pos2, points2);
-		
+		//Test
 		PVector projectV1 = p1.projectionVector(p2);
 		assertEquals(projectV1.x,0,1e-8);
 		assertEquals(projectV1.y,0,1e-8);
@@ -156,19 +156,56 @@ public class PolygonTest {
 		points3.add(new PVector(0,0));
 		points3.add(new PVector(0,20));
 		Polygon p3 = new Polygon(pos3, points3);
-		
+		//Test
 		PVector projectV2 = p1.projectionVector(p3);
 		assertEquals(projectV2.x,0,1e-8);
 		assertEquals(projectV2.y,0,1e-8);
 		
-		PVector projectV3 = p2.projectionVector(p3);
-		assertEquals(projectV3.x,0,1e-8);
-		assertEquals(projectV3.y,0,1e-8);
+		//Actual collision
+		PVector pos4 = new PVector(5,-5);
+		ArrayList<PVector> points4 = new ArrayList<PVector>();
+		points4.add(new PVector(0,6));
+		points4.add(new PVector(-2,5));
+		points4.add(new PVector(-1,0));
+		points4.add(new PVector(1,0));
+		points4.add(new PVector(2,5));
+		Polygon p4 = new Polygon(pos4, points4);
+		//Test
+		PVector projectV4 = p1.projectionVector(p4);
+		assertEquals(projectV4.x,0,1e-8);
+		assertEquals(projectV4.y,-1,1e-8);
 		
-		//Just curious
-		PVector projectV4 = p1.projectionVector(p1);
-		assertEquals(projectV4.x,5,1e-8);
-		assertEquals(projectV4.y,5,1e-8);
+		//Little quadrilateral within triangle
+		PVector pos5 = new PVector(3,3);
+		ArrayList<PVector> points5 = new ArrayList<PVector>();
+		points5.add(new PVector(-1,-1));
+		points5.add(new PVector(1,-1));
+		points5.add(new PVector(1,1));
+		points5.add(new PVector(-2,1));
+		Polygon p5 = new Polygon(pos5, points5);
+		//Test
+		PVector projectV5 = p1.projectionVector(p5);
+		assertEquals(projectV5.x,-4,1e-8);
+		assertEquals(projectV5.y,0,1e-8);
+		
+		//Collision from "above"
+		PVector pos6 = new PVector(5,10);
+		ArrayList<PVector> points6 = new ArrayList<PVector>();
+		points6.add(new PVector(-5,-5));
+		points6.add(new PVector(-5,0));
+		points6.add(new PVector(0,0));
+		points6.add(new PVector(1,0));
+		points6.add(new PVector(2,5));
+		Polygon p6 = new Polygon(pos6, points6);
+		//Test
+		PVector projectV6 = p1.projectionVector(p6);
+		assertEquals(projectV6.x,2.5,1e-8);
+		assertEquals(projectV6.y,2.5,1e-8);
+		
+		//Collison with polygon at same exact location
+		PVector projectSame = p1.projectionVector(p1);
+		assertEquals(projectSame.x,5,1e-8);
+		assertEquals(projectSame.y,5,1e-8);
 	}
 	
 	@Test
@@ -200,8 +237,11 @@ public class PolygonTest {
 		PVector projectV2 = p1.projectionVector(r2);
 		assertEquals(projectV2.x,0,1e-8);
 		assertEquals(projectV2.y,0,1e-8);
+		
+		//TODO more tests
 	}
 	
+	//FRIGFRIGFRIG
 	@Test 
 	public void test_projectionVectorCircle() {
 		//Triangle
@@ -212,7 +252,7 @@ public class PolygonTest {
 		points1.add(new PVector(0,10));
 		Polygon p1 = new Polygon(pos1, points1);
 		
-		//Circle that collides
+		//Circle that collides at hypotenuse
 		PVector pos2 = new PVector(10,10);
 		Circle c1 = new Circle(pos2,8);
 		PVector projectV1 = p1.projectionVector(c1);
@@ -228,6 +268,7 @@ public class PolygonTest {
 		assertEquals(projectV2.x,0,1e-8);
 		assertEquals(projectV2.y,0,1e-8);
 		
+		//Is located just inside triangle
 		PVector pos4 = new PVector(1,1);
 		Circle c3 = new Circle(pos4, 5);
 		assertTrue(p1.collide(c3));
@@ -252,6 +293,7 @@ public class PolygonTest {
 		points2.add(new PVector(0,10));
 		Polygon p2 = new Polygon(pos2, points2);
 		
+		//Collides behind Polygon 2
 		PVector pos6 = new PVector(0,10);
 		Circle c5 = new Circle(pos6,11);
 		PVector projectV5 = p2.projectionVector(c5);
