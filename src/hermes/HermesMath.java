@@ -16,7 +16,8 @@ public class HermesMath {
 	public static PVector rotate(PVector vector, double theta) {
 		float x = (float) (vector.x * Math.cos(theta) - vector.y * Math.sin(theta));
 		float y = (float) (vector.x * Math.sin(theta) + vector.y * Math.cos(theta));
-		return new PVector(x,y);
+		vector.set(x, y, 0);
+		return vector;
 	}
 	
 	/**
