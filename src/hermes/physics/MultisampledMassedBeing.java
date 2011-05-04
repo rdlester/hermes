@@ -7,6 +7,8 @@ import static src.hermes.HermesMath.*;
 
 public abstract class MultisampledMassedBeing extends MassedBeing {
 
+	private static final int DEFAULT_SAMPLES = 8;
+	
 	private float _sampleLength; // the max length the being can travel per sample
 	private int _maxSamples;
 	
@@ -26,7 +28,7 @@ public abstract class MultisampledMassedBeing extends MassedBeing {
 		super(shape, velocity, mass, elasticity);
 		
 		_sampleLength = sampleLength;
-		_maxSamples = 4;
+		_maxSamples = DEFAULT_SAMPLES;
 	}
 	
 	@Override

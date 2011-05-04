@@ -109,7 +109,7 @@ class Ball extends MultisampledMassedBeing {
   color _color;
 
   Ball(PVector center, PVector velocity) {    
-    super(new Circle(center, 20), velocity, 1, 1, 35);  
+    super(new Circle(center, 20), velocity, 1, 1, 35, 8);  
     _color = color(random(255), random(255), random(255));  
   } 
 
