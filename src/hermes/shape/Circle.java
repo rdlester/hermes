@@ -39,7 +39,7 @@ public class Circle extends Shape {
 	public Circle(PVector position, float radius) {
 		super(position);
 		
-		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
+		assert radius >= 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
 		
 		_center = new PVector(0,0);
 		_radius = radius;

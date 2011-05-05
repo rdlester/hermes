@@ -191,15 +191,16 @@ public class Polygon extends Shape {
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
-		return reverse(other.projectionVector(this));
+		PVector opposite = other.projectionVector(this);
+		return opposite == null ? null : reverse(opposite);
 	}
 	
 	/**
 	 * Collides a polygon and a rectangle
 	 * by turning the rectangle into a polygon
 	 * and using the polygon collide method
-	 * @param other
-	 * @return
+	 * @param other - the rectangle
+	 * @return projection vector moving other out of this if colliding, null otherwise
 	 */
 	public PVector projectionVector(Rectangle other) {
 		//Turn Rectangle into a Polygon
@@ -218,6 +219,13 @@ public class Polygon extends Shape {
 		return projectionVector(rect);
 	}
 	
+	/**
+	 * Collides a polygon and a circle
+	 * Uses SAT to collide polygon and circle along normal axes
+	 * Uses voronoi regions to check collisions at vertices
+	 * @param other
+	 * @return projection vector moving other out of this if colliding, null otherwise
+	 */
 	public PVector projectionVector(Circle other) {
 		//Get distance between shapes
 		PVector dist = PVector.sub(_position, other.getPosition());
@@ -233,7 +241,7 @@ public class Polygon extends Shape {
 			else resolutionList.add(result);
 		}
 		
-		center.sub(dist);
+		center = PVector.sub(center, dist);
 		PVector pre = _points.get(1);
 		PVector sidePre = PVector.sub(pre, _points.get(0));
 		sidePre.normalize();
@@ -253,6 +261,7 @@ public class Polygon extends Shape {
 					axis.mult(overlap);
 					resolutionList.add(axis);
 				}
+				else break;
 			}
 		}
 		
@@ -268,74 +277,15 @@ public class Polygon extends Shape {
 		}
 		return use;
 	}
-	
-//	/**
-//	 * Gets the projection vector moving a circle out of this polygon
-//	 * Returns null if shapes are not colliding
-//	 * Uses voronoi region method
-//	 * @param other
-//	 * @return projection vector moving other out of this
-//	 */
-//	public PVector projectionVector(Circle other) {
-//		
-//		//Get position of center of circle and subtract position of polygon from it to move it in range of points
-//		PVector otherPos = PVector.add(other.getCenter(), other.getPosition());
-//		otherPos.sub(_position);
-//		
-//		//TODO figure out if circle center is inside polygon
-//		
-//		//Get initial points and side
-//		PVector pre = _points.get(1);
-//		PVector sidePre = PVector.sub(pre, _points.get(0));
-//		sidePre.normalize();
-//		
-//		//Iterate through all the sides + verticies of polygon
-//		int size = _points.size();
-//		for(int i = 2; i < size + 2; i++) {
-//			//Get next point and side
-//			PVector p = _points.get(i % size);
-//			PVector side = PVector.sub(p, pre);
-//			side.normalize();
-//			
-//			//Check if circle is in voronoi region of vertex
-//			if(checkEdge(otherPos, pre, sidePre, side)) {
-//				//Check if distance between center and vertex is less than radius
-//				PVector axis = PVector.sub(otherPos, pre);
-//				float overlap = other.getRadius() - axis.mag(); 
-//				if(overlap >= 0) {
-//					//Create and return projection vector
-//					axis.normalize();
-//					axis.mult(overlap);
-//					return axis;
-//				}
-//				else return null;
-//			}
-//			
-//			//Check if circle is in voronoi region of side
-//			if(check(otherPos, pre, p, side)) {
-//				//Get the corresponding axis from internal list
-//				PVector axis = _axes.get((i-2) % size);
-//				//Project side and circle onto axis, then check if distance is less than radius
-//				float radius = other.getRadius();
-//				float projP = p.dot(axis);
-//				float projPos = otherPos.dot(axis);
-//				float overlap = radius - (Math.abs(projPos) - Math.abs(projP));
-//				if(overlap >= 0 && overlap <= radius*2) {
-//					//Create and return projection vector
-//					return PVector.mult(axis, overlap);
-//				}
-////				else return null;
-//			}
-//			
-//			sidePre = side;
-//			pre = p;
-//		}
-//		
-//		//THIS SHOULD NEVER HAPPEN
-////		System.err.println("Circle is not in any voronoi region");
-//		return null;
-//	}
 
+	/**
+	 * Checks for collision between a polygon and a circle along a certain axis
+	 * @param axis - axis to check along
+	 * @param dist - distance between shapes, vector points from other to this
+	 * @param center - center of circle
+	 * @param radius - radius of circle
+	 * @return
+	 */
 	private PVector checkSepAxis(PVector axis, PVector dist, PVector center, float radius) {
 		PVector project1 = getProjection(axis, this);
 		PVector project2 = getProjection(axis, center, radius);
@@ -353,27 +303,44 @@ public class Polygon extends Shape {
 		}
 		
 		else {
-			return (Math.abs(top) > Math.abs(bottom) ?
+			return (top < bottom ?
 					PVector.mult(axis, -bottom):
 					PVector.mult(axis, -top));
 		}
 	}
 
-	private boolean check(PVector otherPos, PVector pre, PVector p, PVector line) {
+	/**
+	 * NO LONGER USED
+	 * Checks if circle is in a voronoi region of polygon side specified by pre, linePre, and line
+	 * @param circlePos - position of circle
+	 * @param pre - Point in common between linePre and line
+	 * @param p - current point
+	 * @param line - line between pre and p (was already calculated in method)
+	 * @return true if circle is in voronoi region, otherwise false
+	 */
+	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
 		
-		float projPos = otherPos.dot(line);
+		float projPos = circlePos.dot(line);
 		float projPre = pre.dot(line);
 		float projP = p.dot(line);
 		
 		return (projPos <= projP && projPre <= projPos);
 	}
 
-	private boolean checkEdge(PVector otherPos, PVector pre, PVector linePre, PVector line) {
+	/**
+	 * Checks if circle is in an edge/vertex voronoi region of polygon specified by pre, linePre, and line
+	 * @param circlePos - position of circle
+	 * @param pre - Point in common between linePre and line
+	 * @param linePre - line defining previous edge
+	 * @param line - line defining current edge
+	 * @return true if circle is in voronoi region, otherwise false
+	 */
+	private boolean checkEdge(PVector circlePos, PVector pre, PVector linePre, PVector line) {
 		
 		float projPre1 = pre.dot(linePre);
 		float projPre2 = pre.dot(line);
-		float projPos1 = otherPos.dot(linePre);
-		float projPos2 = otherPos.dot(line);
+		float projPos1 = circlePos.dot(linePre);
+		float projPos2 = circlePos.dot(line);
 		
 		return (projPos1 > projPre1 && projPos2 < projPre2);
 	}
@@ -383,7 +350,7 @@ public class Polygon extends Shape {
 	 * Projects polygons along each axis, and checks projections collide
 	 * If polygons do not collide along an axis, escapes check and returns false
 	 * @param other
-	 * @return
+	 * @return projection vector moving other out of this if colliding, null otherwise
 	 */
 	public PVector projectionVector(Polygon other) {
 		//Get distance between polygons
@@ -423,7 +390,7 @@ public class Polygon extends Shape {
 	 * @param axis - axis to check projections on
 	 * @param dist - distance between polygons
 	 * @param other - the other polygon
-	 * @return
+	 * @return PVector - the "projection vector" of the two shapes along specific axis if colliding, null otherwise 
 	 */
 	private PVector checkSepAxis(PVector axis, PVector dist, Polygon other) {
 		PVector project1 = getProjection(axis, this);
