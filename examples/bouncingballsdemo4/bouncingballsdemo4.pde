@@ -39,8 +39,8 @@ void setup() {
  
   _ballGroup = new BallGroup(_world);
   _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
-  _postOffice.reigsterOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
-  _postOffice.reigsterOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
+  _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
+  _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
   
   _boxGroup = new BoxGroup(_world);
   
@@ -130,7 +130,7 @@ class Ball extends MultisampledMassedBeing {
   color _color;
 
   Ball(PVector center, PVector velocity, float mass, float elasticity) {    
-    super(new Circle(center, 20), velocity, mass, elasticity, 35, 8);  
+    super(new Circle(center, 25 * mass), velocity, mass, elasticity, 35, 8);  
     _color = color(random(255), random(255), random(255));  
   } 
 
@@ -147,8 +147,9 @@ class Ball extends MultisampledMassedBeing {
 
   void draw() {
     fill(_color);
-    ellipse(0,0,40,40); // always draw at (0,0)
+    ellipse(0,0,50 * getMass(),50 * getMass()); // always draw at (0,0)
   }
+  
 }
 
 class Box extends MassedBeing {
