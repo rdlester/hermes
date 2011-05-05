@@ -17,6 +17,8 @@ public class ImpulseCollision {
 	private PVector _projection; 			// the projection vector from being1 to being2
 	private PVector _impulse; 				// the impulse on _being2 from _being1
 	private float _elasticity; 				// the elasticity of the collision
+	private PVector _being1Displacement,
+					_being2Displacement;	// the displacement on each being to project them out of collision
 	
 	/**
 	 * sets up a collision between beings
@@ -34,6 +36,8 @@ public class ImpulseCollision {
 		_projection = projection;
 		_elasticity = elasticity;
 		_impulse = zeroVector();
+		_being1Displacement = zeroVector();
+		_being2Displacement = zeroVector();
 	}
 	
 	/**
@@ -80,7 +84,8 @@ public class ImpulseCollision {
 	 * add an impulse to the beings, calculated between them, based on their current mass and velocity, to the beings
 	 */
 	public void addImpulse() {
-		addImpulse(Physics.calculateImpulse(_being1, _being2, _elasticity, _projection), _being1);
+		if(!(_projection.x == 0 && _projection.y == 0))
+			addImpulse(Physics.calculateImpulse(_being1, _being2, _elasticity, _projection), _being1);
 	}
 	
 	/**
@@ -90,7 +95,39 @@ public class ImpulseCollision {
 	public void applyImpulses() {
 		_being1.addImpulse(getReverse(_impulse));
 		_being2.addImpulse(_impulse);
-		_impulse.set(0, 0, 0);
+		zeroVector(_impulse);
+	}
+	
+	/**
+	 * calculates the projective displacement on each being
+	 */
+	public void calculateDisplacement() {
+		float m1 = _being1.getMass();
+		float m2 = _being2.getMass();
+		float M = m1 + m2;// need to deal with infinite masses
+		if(m1 == Float.POSITIVE_INFINITY && m2 == Float.POSITIVE_INFINITY) {
+			_being1Displacement = PVector.mult(getReverse(_projection), 0.5f);
+			_being2Displacement = PVector.mult(_projection, 0.5f);
+		} else if (m1 == Float.POSITIVE_INFINITY) {
+			_being1Displacement = zeroVector();
+			_being2Displacement = cloneVector(_projection);
+		} else if (m2 == Float.POSITIVE_INFINITY) {
+			_being1Displacement = getReverse(_projection);
+			_being2Displacement = zeroVector();
+		} else {
+			_being1Displacement = PVector.mult(getReverse(_projection), m2 / M);
+			_being2Displacement = PVector.mult(_projection, m1 / M);
+		}
+	}
+	
+	/**
+	 * applies the projective displacement to each being
+	 */
+	public void applyDisplacement() {
+		_being1.addDisplacement(_being1Displacement);
+		_being2.addDisplacement(_being2Displacement);
+		zeroVector(_being1Displacement);
+		zeroVector(_being2Displacement);
 	}
 	
 	/**

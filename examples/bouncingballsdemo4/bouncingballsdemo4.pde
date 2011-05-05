@@ -3,7 +3,7 @@
 *
 */
 
-import src.template.library.*;
+//import src.template.library.*;
 import src.hermes.*;
 import src.hermesTest.physicsTest.*;
 import src.hermesTest.postOfficeTests.*;
@@ -25,8 +25,11 @@ BoxGroup _boxGroup;
   float _origX, _origY;
   float _dX, _dY;
 
+final int WIDTH = 400;
+final int HEIGHT = 400;
+
 void setup() {
-  size(400,400); 
+  size(WIDTH, HEIGHT); 
   Hermes.setPApplet(this);
  
   _camera = new Camera();
@@ -35,7 +38,9 @@ void setup() {
   _world.lockUpdateRate(50);
  
   _ballGroup = new BallGroup(_world);
-  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.BUTTON1);
+  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
+  _postOffice.reigsterOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
+  _postOffice.reigsterOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
   
   _boxGroup = new BoxGroup(_world);
   
@@ -71,7 +76,8 @@ class BoxGroup extends Group<Box> {
 
 class BallGroup extends Group<Ball> implements MouseSubscriber {
   
-
+  float _newMass = 1;
+  float _newElasticity = 1;
   
   BallGroup(World world) {
    super(world); 
@@ -91,13 +97,28 @@ class BallGroup extends Group<Ball> implements MouseSubscriber {
      _dY = m.getY();  
    } else if(m.getAction()==PostOffice.MOUSE_RELEASED) {
       _mousePressed = false; 
-      Ball ball = new Ball(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY));
+      Ball ball = new Ball(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
       getWorld().registerBeing(ball, true);
       this.add(ball);
    }
-   
-
  }
+   
+   void handleOscMessage(OscMessage m) {
+     
+     String[] messages = m.getAddress().split("/");
+     
+     if(messages[1].equals("BouncingBalls")) {
+       
+       if(messages[2].equals("SetMass")) {
+         _newMass = constrain(m.getAndRemoveFloat(), 0, 1);
+       }
+       else if(messages[2].equals("SetElasticity")) {
+         _newElasticity = constrain(m.getAndRemoveFloat(), 0, 1);
+       }
+       
+     }
+     
+   }
   
 }
 
@@ -108,10 +129,21 @@ class Ball extends MultisampledMassedBeing {
   Group _group;
   color _color;
 
-  Ball(PVector center, PVector velocity) {    
-    super(new Circle(center, 20), velocity, 1, 1, 35);  
+  Ball(PVector center, PVector velocity, float mass, float elasticity) {    
+    super(new Circle(center, 20), velocity, mass, elasticity, 35, 8);  
     _color = color(random(255), random(255), random(255));  
   } 
+
+  void update() {
+    if(getX() < 0)
+      setX(0);
+    if(getY() < 0)
+      setY(0);
+    if(getX() > (float)WIDTH)
+      setX((float)WIDTH);
+    if(getY() > (float)HEIGHT)
+      setY((float)HEIGHT);
+  }
 
   void draw() {
     fill(_color);
@@ -122,7 +154,7 @@ class Ball extends MultisampledMassedBeing {
 class Box extends MassedBeing {
   
   Box() {
-   super(new Rectangle(new PVector(0,0), new PVector(0,0), new PVector(400,400)), new PVector(0,0), Float.POSITIVE_INFINITY, 1); 
+   super(new Rectangle(new PVector(0,0), new PVector(0,0), new PVector((float)WIDTH,(float)HEIGHT)), new PVector(0,0), Float.POSITIVE_INFINITY, 1); 
   }
   
   void draw() {}

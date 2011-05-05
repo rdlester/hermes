@@ -15,6 +15,10 @@ public class PatternGenerator {
 
     PImage[] generatedFrames = new PImage[numberOfFrames];
 
+
+      ///** change this later?
+      mainColor = color(random(255),random(255),random(255));
+
     //for every frame.. 
     for (int frameIndex = 0; frameIndex < generatedFrames.length; frameIndex++) {
 
@@ -74,6 +78,7 @@ public class PatternGenerator {
         //If the generated pattern has a 1, 
         if (pattern[row] == 1) {
           colorToUse = mainColor;
+          
         } // otherwise leave it as transparent;
 
 
@@ -188,4 +193,5 @@ public class PatternGenerator {
    
    */
 }
+
 

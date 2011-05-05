@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.Set;
+import javax.swing.SwingUtilities;
 
 import com.google.common.collect.HashMultimap;
 import src.hermes.Hermes;
@@ -32,9 +33,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Constants representing buttons
 	public static int NOBUTTON = MouseEvent.NOBUTTON;
-	public static int BUTTON1 = MouseEvent.BUTTON1;
-	public static int BUTTON2 = MouseEvent.BUTTON2;
-	public static int BUTTON3 = MouseEvent.BUTTON3;
+	public static int LEFT_BUTTON = MouseEvent.BUTTON1;
+	public static int MIDDLE_BUTTON = MouseEvent.BUTTON2;
+	public static int RIGHT_BUTTON = MouseEvent.BUTTON3;
 	
 	//Constants representing type of mouse action
 	public static int MOUSE_PRESSED = MouseEvent.MOUSE_PRESSED;
@@ -174,9 +175,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public void registerMouseSubscription(MouseSubscriber sub, int button) {
 		assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
 		assert button == NOBUTTON ||
-				button == BUTTON1 ||
-				button == BUTTON2 ||
-				button == BUTTON3 :
+				button == LEFT_BUTTON ||
+				button == MIDDLE_BUTTON ||
+				button == RIGHT_BUTTON :
 					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
 		_mouseSubs.put((Integer)button, sub);
 	}
@@ -391,7 +392,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * On a mouse press, make a new MouseMessage and add it to the queue
 	 */
 	public void mousePressed(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_PRESSED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), MOUSE_PRESSED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -400,7 +401,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * On a mouse button release, make a new MouseMessage and add it to the queue
 	 */
 	public void mouseReleased(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_RELEASED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), MOUSE_RELEASED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -424,17 +425,18 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is dragged, create a MouseMessage and add it to the group
 	 */
 	public void mouseDragged(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_DRAGGED, e.getX(), e.getY());
+		int button = e.getButton();
+		
+		MouseMessage m  = new MouseMessage(getMouseButton(e), MOUSE_DRAGGED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
-		
 	}
 	/**
 	 * When the mouse is moved, create a MouseMessage and add it to the queue
 	 */
 	public void mouseMoved(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(e.getButton(), MOUSE_MOVED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), MOUSE_MOVED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -459,4 +461,22 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_oscQueue.add(m);
 		}
 	}
+	
+	/**
+	 * finds the proper mouse button code from a Swing mouse event
+	 * use instead of e.getButton() because it may not work for some events on some systems
+	 * @param e		the MouseEvent
+	 * @return		the mouse button code
+	 */
+	public static int getMouseButton(MouseEvent e) {
+		if(SwingUtilities.isLeftMouseButton(e))
+			return LEFT_BUTTON;
+		else if(SwingUtilities.isMiddleMouseButton(e))
+			return MIDDLE_BUTTON;
+		else if(SwingUtilities.isRightMouseButton(e))
+			return RIGHT_BUTTON;
+		else
+			return NOBUTTON;
+	}
+	
 }
