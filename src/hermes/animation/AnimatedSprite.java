@@ -90,7 +90,7 @@ public class AnimatedSprite {
 			_currentInterruptible = _activeAnimation.getInterruptible();
 			_numberOfPlaysRemaining = _activeAnimation.getNumberOfTimesToPlay();
 			_initialFrame = 0;
-			_lastFrame = _animations.get(animationIndex).getNumberOfFrames() - 1;
+			_lastFrame = _activeAnimation.getNumberOfFrames() - 1;
 			_playDirectionLeftToRight = true;
 		} else { //Animation is not interruptible
 			//put the animationIndex on deck
