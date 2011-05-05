@@ -305,6 +305,7 @@ public class World extends Thread {
 			// perform updates
 			unresolvedUpdates = updateHelper(unresolvedUpdates);
 			// check for new interactions
+			LinkedList<DetectedInteraction> newInteractions = new LinkedList<DetectedInteraction>();
 			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
 				// go through all unresolved interactions
 				DetectedInteraction inter = iter.next();
@@ -316,27 +317,26 @@ public class World extends Thread {
 				for(Iterator<Being> iterB = groupB.iterator(); iterB.hasNext(); ) {
 					Being beingB = iterB.next();
 					if(inter.get_interactor().detect(A, beingB)) // if we find a new one, add it
-						iter.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
+						newInteractions.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
 				}
 				// check B against all members of groupA for new interactions
 				for(Iterator<Being> iterA = groupA.iterator(); iterA.hasNext(); ) {
 					Being beingA = iterA.next(); 
-					if(inter.get_interactor().detect(B, beingA))
-						iter.add(new DetectedInteraction(B, beingA, inter.getInteraction()));
+					if(inter.get_interactor().detect(beingA, B) && beingA != A)
+						newInteractions.add(new DetectedInteraction(beingA, B, inter.getInteraction()));
 				}
 			}
 			// try to resolve everything
-			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
+			for(ListIterator<DetectedInteraction> iter = newInteractions.listIterator(); iter.hasNext(); ) {
 				// go through all unresolved interactions
 				DetectedInteraction inter = iter.next();
-				GenericGroup groupA = inter.getInteraction().getA();
-				GenericGroup groupB = inter.getInteraction().getB();
 				Being A = inter.get_being1();
 				Being B = inter.get_being2();
 				// try to resolve the interaction
 				if(inter.get_interactor().handle(A, B))
 					iter.remove(); // if it is resolved, get rid of it
 			}
+			unresolvedInteractions = newInteractions;
 		}
 		
 		resolveGroupQueues();
@@ -364,7 +364,7 @@ public class World extends Thread {
 	private void interactionHelper(Being being1, Being being2, Interaction interaction, 
 			LinkedList<DetectedInteraction> detectedInteractionsQ) {
 		// see if an interaction was detected
-		if(interaction.getInteractor().detect(being1, being2)) {
+		if(being1 != being2 && interaction.getInteractor().detect(being1, being2)) {
 			if(interaction.isImmediate()) { // if immediate, handle it now
 					synchronized(being1) {
 						synchronized(being2) {

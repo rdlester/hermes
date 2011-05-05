@@ -17,7 +17,8 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 		float smallerBeingHeight, smallerBeingWidth;
 		if(width1>width2 && height1>height2) {
 			biggerBeing = being1;
-			smallerBeing = being2; smallerBeingHeight = height2; smallerBeingWidth = width2;
+			smallerBeing = being2;
+			smallerBeingHeight = height2; smallerBeingWidth = width2;
 		} else if(width1<width2 && height1<height2) {
 			biggerBeing = being2;
 			smallerBeing = being1; smallerBeingHeight = height1; smallerBeingWidth = width1;
@@ -42,8 +43,15 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 	}
 
 	public boolean handle(MassedBeing being1, MassedBeing being2) {
+		assert being1 != null : "InsideMassedCollider.handle: being1 must be a valid MassedBeing ";
+		assert being2 != null : "InsideMassedCollider.handle: being2 must be a valid MassedBeing ";
+		
 		ImpulseCollision collision = being1.getCollisionWith(being2);
+		
+		assert collision != null : "InsideMassedCollider.handle: internal: no collision found " + being1 + " " + being2;
+		
 		collision.applyImpulses();
-		return true;
+		collision.applyDisplacement();
+		return !being1.needsMoreSamples() && !being2.needsMoreSamples();
 	}
 }

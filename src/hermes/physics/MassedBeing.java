@@ -99,12 +99,30 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * gets the current impulse on the being
+	 * gets the current impulse on the being (note that this will be non-zero only after impulses have been applied, before updates)
 	 * this is a reference, if you manipulate the returned vector it will change the impulse
 	 * @return	the impulse
 	 */
 	public PVector getImpulse() {
 		return _impulse;
+	}
+	
+	/**
+	 * gets the current displacement on the being (note that this will be non-zero only after displacements have been applied, before updates)
+	 * this is a reference, if you manipulate the returned vector it will change the displacement
+	 * @return	the displacement
+	 */
+	public PVector getDisplacement() {
+		return _displacement;
+	}
+	
+	/**
+	 * gets the current force on the being (note that this will be non-zero only after forces have been applied, before updates)
+	 * this is a reference, if you manipulate the returned vector it will change the force
+	 * @return	the force
+	 */
+	public PVector getForce() {
+		return _force;
 	}
 	
 	/**
@@ -143,6 +161,7 @@ public abstract class MassedBeing extends Being {
 	public void step() {
 		double dt = ((double)updateTime()) / 1e9;
 		applyImpulse();
+		applyDisplacement();
 		EulerIntegrateVelocity(dt);
 		EulerIntegratePosition(dt);
 		clearForce();
@@ -153,6 +172,11 @@ public abstract class MassedBeing extends Being {
 		_impulse.div(_mass); 	// change in velocity from impulse
 		_velocity.add(_impulse); // apply the impulse
 		zeroVector(_impulse);
+	}
+	
+	protected void applyDisplacement() {
+		_position.add(_displacement);
+		zeroVector(_displacement);
 	}
 	
 	protected void EulerIntegrateVelocity(double dt) {
@@ -190,6 +214,7 @@ public abstract class MassedBeing extends Being {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
 			collision.addImpulse();
+			collision.calculateDisplacement();
 			being1.addImpulseCollision(collision);
 			being2.addImpulseCollision(collision);
 			return collision;
@@ -214,6 +239,7 @@ public abstract class MassedBeing extends Being {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
 			collision.addImpulse();
+			collision.applyDisplacement();
 			being1.addImpulseCollision(collision);
 			being2.addImpulseCollision(collision);
 			return collision;

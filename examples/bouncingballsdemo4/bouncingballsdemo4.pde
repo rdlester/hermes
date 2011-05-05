@@ -3,7 +3,7 @@
 *
 */
 
-import src.template.library.*;
+//import src.template.library.*;
 import src.hermes.*;
 import src.hermesTest.physicsTest.*;
 import src.hermesTest.postOfficeTests.*;
@@ -35,7 +35,7 @@ void setup() {
   _world.lockUpdateRate(50);
  
   _ballGroup = new BallGroup(_world);
-  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.BUTTON1);
+  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
   
   _boxGroup = new BoxGroup(_world);
   
@@ -103,13 +103,13 @@ class BallGroup extends Group<Ball> implements MouseSubscriber {
 
 
 
-class Ball extends MassedBeing {
+class Ball extends MultisampledMassedBeing {
   
   Group _group;
   color _color;
 
   Ball(PVector center, PVector velocity) {    
-    super(new Circle(center, 20), velocity, 1, 1);  
+    super(new Circle(center, 20), velocity, 1, 1, 35, 8);  
     _color = color(random(255), random(255), random(255));  
   } 
 
