@@ -18,6 +18,7 @@ public class MassedCollider implements Interactor<MassedBeing,MassedBeing> {
 	public boolean handle(MassedBeing being1, MassedBeing being2) {
 		ImpulseCollision collision = being1.getCollisionWith(being2);
 		collision.applyImpulses();
+		collision.applyDisplacement();
 		return !being1.needsMoreSamples() && !being2.needsMoreSamples();
 	}
 

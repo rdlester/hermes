@@ -38,9 +38,10 @@ public abstract class MultisampledMassedBeing extends MassedBeing {
 		double dt = ((double)updateTime()) / 1e9;
 		// update everything
 		applyImpulse();
+		applyDisplacement();
 		PVector v0 = cloneVector(_velocity);
-		EulerIntegrateVelocity(dt);
 		PVector x0 = cloneVector(_position);
+		EulerIntegrateVelocity(dt);
 		EulerIntegratePosition(dt);
 		PVector deltaX = PVector.sub(_position, x0);
 		// check if we need to multisample
@@ -57,10 +58,10 @@ public abstract class MultisampledMassedBeing extends MassedBeing {
 			setDone(false); // this will cause us to keep updating
 			_moreSamples = true;
 		} else {
-			clearCollisions();
 			_samples = 0;
 			_moreSamples = false;
 		}
+		clearCollisions();
 		clearForce();
 	}
 	
