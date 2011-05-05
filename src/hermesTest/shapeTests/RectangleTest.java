@@ -70,26 +70,26 @@ public class RectangleTest {
 		assertEquals(r1.projectionVector(r1), null); // self-collision
 		Rectangle r2 = new Rectangle(new PVector(0,0), 3, 3);
 		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
-		assertEquals(r1.projectionVector(r2).y, 4, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, -4, 1e-8);
 		// corner overlap
 		r2 = new Rectangle(new PVector(-3,-3),1,1);
 		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
 		assertEquals(r1.projectionVector(r2).y, 0, 1e-8);
 		// one side overlap
 		r2 = new Rectangle(new PVector(3,0),3,1);
-		assertEquals(r1.projectionVector(r2).x, -1, 1e-8);
+		assertEquals(r1.projectionVector(r2).x, 1, 1e-8);
 		assertEquals(r1.projectionVector(r2).y, 0, 1e-8);
-		assertEquals(r2.projectionVector(r1).x, 1, 1e-8);
+		assertEquals(r2.projectionVector(r1).x, -1, 1e-8);
 		assertEquals(r2.projectionVector(r1).y, 0, 1e-8);
 		r2 = new Rectangle(new PVector(-3,0),3,1);
-		assertEquals(r1.projectionVector(r2).x, 1, 1e-8);
+		assertEquals(r1.projectionVector(r2).x, -1, 1e-8);
 		assertEquals(r1.projectionVector(r2).y, 0, 1e-8);
 		r2 = new Rectangle(new PVector(0,3),1,3);
 		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
-		assertEquals(r1.projectionVector(r2).y, -1, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, 1, 1e-8);
 		r2 = new Rectangle(new PVector(0,-3),1,3);
 		assertEquals(r1.projectionVector(r2).x, 0, 1e-8);
-		assertEquals(r1.projectionVector(r2).y, 1, 1e-8);
+		assertEquals(r1.projectionVector(r2).y, -1, 1e-8);
 	}
 	
 	/**

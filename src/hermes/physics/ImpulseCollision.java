@@ -84,7 +84,8 @@ public class ImpulseCollision {
 	 * add an impulse to the beings, calculated between them, based on their current mass and velocity, to the beings
 	 */
 	public void addImpulse() {
-		addImpulse(Physics.calculateImpulse(_being1, _being2, _elasticity, _projection), _being1);
+		if(!(_projection.x == 0 && _projection.y == 0))
+			addImpulse(Physics.calculateImpulse(_being1, _being2, _elasticity, _projection), _being1);
 	}
 	
 	/**

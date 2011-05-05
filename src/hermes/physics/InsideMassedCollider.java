@@ -3,6 +3,7 @@ package src.hermes.physics;
 
 import src.hermes.*;
 import processing.core.PVector;
+import static src.hermes.HermesMath.*;
 
 public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing> {
 	
@@ -33,11 +34,16 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 		if(projection == null || being1==being2) {
 			return false;	// if they aren't colliding
 		}
-		if((projection.x==0 && Math.abs(projection.y)<smallerBeingHeight) ||
-				(projection.y==0 && Math.abs(projection.x)<smallerBeingWidth)) {
+		if(projection.x==0 && Math.abs(projection.y)<smallerBeingHeight) {
+			projection.sub(makeVector(0, smallerBeingHeight * sign(projection.y)));
 			MassedBeing.addImpulseCollision(biggerBeing, smallerBeing, projection);
 			return true;
-		} else 
+		} else if (projection.y==0 && Math.abs(projection.x)<smallerBeingWidth) { 
+			projection.sub(makeVector(smallerBeingWidth * sign(projection.x), 0));
+			MassedBeing.addImpulseCollision(biggerBeing, smallerBeing, projection);
+			return true;
+		}
+		else 
 			return false;
 
 	}

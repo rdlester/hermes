@@ -29,6 +29,11 @@ public class Physics {
 	 */
 	public static PVector calculateImpulse(PVector v1, PVector v2, 
 			float m1, float m2, float elasticity, PVector normal) {
+		assert v1 != null : "Physics.calculateImpulse: v1 must be a valid PVector";
+		assert v2 != null : "Physics.calculateImpulse: v2 must be a valid PVector";
+		assert normal != null : "Physics.calculateImpulse: normal must be a valid PVector";
+		assert !(normal.x == 0 && normal.y == 0) : "Physics.calculateImpulse: normal must be nonzero";
+		
 		PVector numerator = PVector.sub(v2, v1); // calculate relative velocity
 		numerator.mult(-1 - elasticity); 		 // factor by elasticity
 		float result = numerator.dot(normal); 	 // find normal component
