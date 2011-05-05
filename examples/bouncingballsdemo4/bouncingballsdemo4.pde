@@ -3,7 +3,7 @@
 *
 */
 
-import src.template.library.*;
+//import src.template.library.*;
 import src.hermes.*;
 import src.hermesTest.physicsTest.*;
 import src.hermesTest.postOfficeTests.*;
@@ -35,7 +35,7 @@ void setup() {
   _world.lockUpdateRate(50);
  
   _ballGroup = new BallGroup(_world);
-  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.BUTTON1);
+  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
   
   _boxGroup = new BoxGroup(_world);
   
