@@ -161,8 +161,8 @@ public class Rectangle extends Shape {
 			return null;
 		// the projection vector is the smallest projection, in direction opposite the distance vector
 		return (xProject > yProject ? 
-				new PVector(xProject * - sign(xDist), 0.0f) : 
-					new PVector(0.0f, yProject * - sign(yDist))); 
+				new PVector(xProject * sign(xDist), 0.0f) : 
+					new PVector(0.0f, yProject * sign(yDist))); 
 	}	
 
 	public Rectangle getBoundingBox() {
