@@ -27,7 +27,6 @@ public class GravityInteractor extends ColoumbInteractor {
 		super(-gravityConstant);
 	}
 
-	@Override
 	protected float beingFactor(MassedBeing being) {
 		return being.getMass();
 	}
