@@ -25,7 +25,17 @@ public class GravityEnvironment extends Environment {
 		return _acceleration;
 	}
 	
-	public class Interactor extends Collider<GravityEnvironment, MassedBeing> {
+	public static Group<GravityEnvironment> makeGravityGroup(PVector acceleration, Shape shape, World world) {
+		Group<GravityEnvironment> group = new Group<GravityEnvironment>(world);
+		group.add(new GravityEnvironment(acceleration, shape));
+		return group;
+	}
+	
+	public static Interactor makeGravityInteractor() {
+		return new Interactor();
+	}
+	
+	public static class Interactor extends Collider<GravityEnvironment, MassedBeing> {
 
 		@Override
 		public boolean handle(GravityEnvironment enviro, MassedBeing being) {

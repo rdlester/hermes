@@ -33,12 +33,7 @@ void setup() {
   Hermes.setPApplet(this);
  
   _camera = new Camera();
-  try {
-  _postOffice = new PostOffice(8080, 8000);
-  }
-  catch(PostOffice.OscServerException e) {
-    _postOffice = new PostOffice();
-  }
+  try { _postOffice = new PostOffice(8080, 8000); } catch(PostOffice.OscServerException e) { System.err.println("could not initialize OSC port"); }
   _world = new World(_postOffice, _camera);
   _world.lockUpdateRate(50);
  
@@ -57,7 +52,7 @@ void setup() {
   Group<GravityEnvironment> gravGroup = new Group<GravityEnvironment>(_world);
   _world.registerBeing(enviro, false);
   gravGroup.add(enviro);
-  _world.registerInteraction(gravGroup, _ballGroup, enviro.new Interactor(), false);
+  _world.registerInteraction(gravGroup, _ballGroup, GravityEnvironment.makeGravityInteractor(), false);
   
   Group<Platform> platforms = new Group<Platform>(_world);
   Platform plat1 = new Platform(new PVector(200,200),100);
@@ -92,7 +87,7 @@ class BoxGroup extends Group<Box> {
   
 }
 
-class BallGroup extends Group<Ball> {
+class BallGroup extends Group<Ball> implements MouseSubscriber {
   
   float _newMass = 1;
   float _newElasticity = 0.5;
@@ -101,6 +96,7 @@ class BallGroup extends Group<Ball> {
    super(world); 
    _mousePressed = false;
   }
+  
  
  void handleMouseMessage(MouseMessage m) {
    if(!_mousePressed && m.getAction()==PostOffice.MOUSE_PRESSED) {

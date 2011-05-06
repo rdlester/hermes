@@ -61,7 +61,7 @@ public class World extends Thread {
 		_updateGroup = new Group<Being>(this);
 		
 		//initialize the Camera
-		registerBeing(view, false);
+		registerBeing(_camera, true);
 		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
@@ -86,6 +86,10 @@ public class World extends Thread {
 		_active = false;
 	}
 
+	public Group<Camera> getCameraGroup() {
+		return _cameraGroup;
+	}
+	
 	/**
 	 * registers a being with the world, making it be drawn when it is on camera,
 	 *   its update() method will be called by the loop if update is true

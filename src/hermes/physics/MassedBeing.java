@@ -233,13 +233,13 @@ public abstract class MassedBeing extends Being {
 		assert being1 != null : "addCollision: being1 must be a valid being";
 		assert being2 != null : "addCollision: being2 must be a valid being";
 		assert projection != null : "addCollision: projection must be a valid PVector";
-		assert elasticity > 0 : "addCollision: elasticity must be positive";
+		assert elasticity >= 0 : "addCollision: elasticity must be positive";
 		
 		if(being1.getCollisionWith(being2) == null) {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
 			collision.addImpulse();
-			collision.applyDisplacement();
+			collision.calculateDisplacement();
 			being1.addImpulseCollision(collision);
 			being2.addImpulseCollision(collision);
 			return collision;

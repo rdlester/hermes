@@ -101,6 +101,22 @@ public class Rectangle extends Shape {
 		return _max;
 	}
 
+	public PVector getAbsMin() {
+		return PVector.add(_min, _position);
+	}
+	
+	public PVector getAbsMax() {
+		return PVector.add(_max, _position);
+	}
+	
+	public float getWidth() {
+		return _max.x - _min.x;
+	}
+	
+	public float getHeight() {
+		return _max.y - _min.y;
+	}
+	
 	/**
 	 * @return	the absolute position of the rectangle's geometric center 
 	 */

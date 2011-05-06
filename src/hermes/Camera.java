@@ -12,9 +12,6 @@ import src.hermes.shape.Rectangle;
  */
 public class Camera extends Environment {
 
-	//Rectangle _shape; 	// camera dimensions
-	float _x, _y;		// camera's TOP LEFT corner's location in the world
-
 	//width & height of user's world coordinates
 	private float _worldCoordinateWidth;
 	private float _worldCoordinateHeight;
@@ -34,10 +31,8 @@ public class Camera extends Environment {
 
 	//Camera's constructor with world coordinates for translation
 	public Camera(float x, float y, float worldCoordinateWidth, float worldCoordinateHeight) {
-		super(new Rectangle(new PVector(x,y,0.0f), new PVector(0,0), new PVector(worldCoordinateWidth, worldCoordinateHeight)),
+		super(new Rectangle(new PVector(x,y), new PVector(0,0), new PVector(worldCoordinateWidth, worldCoordinateHeight)),
 				HermesMath.zeroVector());
-		_x = x;
-		_y = y;
 		_worldCoordinateWidth = worldCoordinateWidth;
 		_worldCoordinateHeight = worldCoordinateHeight;
 		
@@ -49,24 +44,7 @@ public class Camera extends Environment {
 		_switchToBeingsPending = new Boolean(false);
 	}
 
-	//getters and setters
-
-	public float getX() {
-		return _x;
-	}
-
-	public void setX(float x) {
-		_x = x;
-	}
-
-	public float getY() {
-		return _y;
-	}
-
-	public void setY(float y) {
-		_y = y;
-	}
-
+	
 	public float getWorldCoordinateWidth() {
 		return _worldCoordinateWidth;
 	}
@@ -132,8 +110,8 @@ public class Camera extends Environment {
 		_worldCoordinateHeight = _worldCoordinateHeight/zoomFactor;
 		
 		//find the new top-left point in World coordinates
-		_x = worldZoomCenterX - _worldCoordinateWidth/2;
-		_y = worldZoomCenterY - _worldCoordinateHeight/2;
+		getPosition().x = worldZoomCenterX - _worldCoordinateWidth/2;
+		getPosition().y = worldZoomCenterY - _worldCoordinateHeight/2;
 		
 		//set the _zoomFactor
 		_zoomFactor = zoomFactor;
@@ -170,7 +148,9 @@ public class Camera extends Environment {
 			}
 		}
 		
-
+		pApplet.translate(-getPosition().x / (_worldCoordinateWidth/pApplet.width),
+				-getPosition().y / (_worldCoordinateHeight/pApplet.height));
+		
 		// for each being in _beings do matrix manipulations and call the draw method of each being
 		for(Iterator<Being> iter = _beingsDrawn.iterator(); iter.hasNext(); ) {
 
@@ -178,10 +158,9 @@ public class Camera extends Environment {
 			Being being = iter.next();
 
 			synchronized(being) {
-			
-				//keep track of initial state
-				pApplet.pushMatrix();
 
+				pApplet.pushMatrix();
+				
 				//translate to being's coordinates on the screen 
 				//units of calculation: pixels = (worldmetric)/(worldmetric/pixel)
 				float beingXCoordinate = being.getPosition().x/(_worldCoordinateWidth/pApplet.width);
