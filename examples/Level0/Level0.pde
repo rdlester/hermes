@@ -18,6 +18,7 @@ World world;
 Camera cam;
 PostOffice po;
 
+int mode = 0; // 0 is setup; 1 is run
 int frameWidth = 700;
 int frameHeight = 540;
 PVector canvasTopLeft = new PVector(30, 30);
@@ -36,6 +37,15 @@ class Canvas extends Being {
   
   Canvas() {
     super(new Rectangle(canvasTopLeft, new PVector(canvasWidth, canvasHeight), PApplet.CORNER));
+    initialize();
+  }
+  
+  void initialize() {
+    for(int i=0; i<canvasWidth/sideLength; i++) {
+     for(int j=0; j<canvasHeight/sideLength; j++) {
+      
+     } 
+    }
   }
   
   void draw() {
@@ -70,6 +80,16 @@ class Cell extends Being {
  }
   
 }
+
+///////////////////////////////////////////////////
+// GROUPS
+///////////////////////////////////////////////////
+
+class CellGroup extends Group {
+  
+  
+}
+
 ///////////////////////////////////////////////////
 // PAPPLET
 ///////////////////////////////////////////////////
