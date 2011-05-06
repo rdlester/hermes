@@ -12,5 +12,8 @@ public abstract class Environment extends Being {
 
 	public Environment(Shape shape, PVector velocity) {
 		super(shape, velocity);
-		// TODO Auto-generated constructor stub
-	}}
+	}
+
+	public void draw() {}
+	
+}

@@ -32,16 +32,16 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public static final int DEFAULT_PORT_OUT = 7070;
 	
 	//Constants representing buttons
-	public static int NOBUTTON = MouseEvent.NOBUTTON;
-	public static int LEFT_BUTTON = MouseEvent.BUTTON1;
-	public static int MIDDLE_BUTTON = MouseEvent.BUTTON2;
-	public static int RIGHT_BUTTON = MouseEvent.BUTTON3;
+	public static final int NOBUTTON = MouseEvent.NOBUTTON;
+	public static final int LEFT_BUTTON = MouseEvent.BUTTON1;
+	public static final int MIDDLE_BUTTON = MouseEvent.BUTTON2;
+	public static final int RIGHT_BUTTON = MouseEvent.BUTTON3;
 	
 	//Constants representing type of mouse action
-	public static int MOUSE_PRESSED = MouseEvent.MOUSE_PRESSED;
-	public static int MOUSE_RELEASED = MouseEvent.MOUSE_RELEASED;
-	public static int MOUSE_DRAGGED = MouseEvent.MOUSE_DRAGGED;
-	public static int MOUSE_MOVED = MouseEvent.MOUSE_MOVED;
+	public static final int MOUSE_PRESSED = MouseEvent.MOUSE_PRESSED;
+	public static final int MOUSE_RELEASED = MouseEvent.MOUSE_RELEASED;
+	public static final int MOUSE_DRAGGED = MouseEvent.MOUSE_DRAGGED;
+	public static final int MOUSE_MOVED = MouseEvent.MOUSE_MOVED;
 	
 	//OSCPorts for listening and receiving
 	private com.illposed.osc.OSCPortIn _receive;

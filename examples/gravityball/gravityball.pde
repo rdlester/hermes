@@ -47,6 +47,13 @@ void setup() {
   _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false);
   _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider(), false);
 
+  GravityEnvironment enviro = new GravityEnvironment(new PVector(0, -10),
+    new Rectangle(new PVector(0,0), new PVector(0,0), new PVector(WIDTH, HEIGHT)));
+  Group<GravityEnvironment> gravGroup = new Group<GravityEnvironment>(_world);
+  _world.registerBeing(enviro, false);
+  gravGroup.add(enviro);
+  _world.registerInteraction(gravGroup, _ballGroup, new GravityEnvironment.Interactor(), false);
+  
   smooth();
 
   _world.start(); // gets the World thread running

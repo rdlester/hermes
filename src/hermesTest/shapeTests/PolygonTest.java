@@ -18,6 +18,7 @@ public class PolygonTest {
 	 */
 	@Test
 	public void test_collidePolygon() {
+		//More extensive testing in test_projectionVectorPolygon
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
@@ -71,6 +72,7 @@ public class PolygonTest {
 	 */
 	@Test
 	public void test_collideRectangle() {
+		//More extensive testing in test_projectionVectorRectangle
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
@@ -104,6 +106,7 @@ public class PolygonTest {
 	
 	@Test 
 	public void test_collideCircle() {
+		//More extensive testing in test_projectionVectorCircle
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
@@ -145,6 +148,7 @@ public class PolygonTest {
 		points2.add(new PVector(-10,0));
 		Polygon p2 = new Polygon(pos2, points2);
 		//Test
+		assertTrue(p1.collide(p2));
 		PVector projectV1 = p1.projectionVector(p2);
 		assertEquals(projectV1.x,0,1e-8);
 		assertEquals(projectV1.y,0,1e-8);
@@ -223,22 +227,34 @@ public class PolygonTest {
 		PVector min1 = new PVector(0,0);
 		PVector max1 = new PVector(10,10);
 		Rectangle r1 = new Rectangle(pos2, min1, max1);
-		
+		//Test
 		PVector projectV1 = p1.projectionVector(r1);
 		assertEquals(projectV1.x,0,1e-8);
 		assertEquals(projectV1.y,0,1e-8);
 		
-		//Will collide through hypotenuse
+		//Will collide at hypotenuse
 		PVector pos3 = new PVector(10,10);
 		PVector min2 = new PVector(-5,-5);
 		PVector max2 = new PVector(5,5);
 		Rectangle r2 = new Rectangle(pos3, min2, max2);
-		
+		//Test
 		PVector projectV2 = p1.projectionVector(r2);
 		assertEquals(projectV2.x,0,1e-8);
 		assertEquals(projectV2.y,0,1e-8);
 		
-		//TODO more tests
+		//New displaced triangle
+		PVector pos4 = new PVector(10,10);
+		Polygon p2 = new Polygon(pos4,points1);
+		
+		//Overlaps at corner
+		PVector pos5 = new PVector(5,5);
+		PVector min3 = new PVector(-2,-2);
+		PVector max3 = new PVector(6,6);
+		Rectangle r3 = new Rectangle(pos5,min3,max3);
+		//Test
+		PVector projectV3 = p2.projectionVector(r3);
+		assertEquals(projectV3.x,-1,1e-8);
+		assertEquals(projectV3.y,0,1e-8);
 	}
 	
 	//FRIGFRIGFRIG
@@ -260,7 +276,7 @@ public class PolygonTest {
 		assertEquals(projectV1.x,result,1e-8);
 		assertEquals(projectV1.y,result,1e-8);
 		
-		//collides at vertex
+		//Collides at vertex
 		PVector pos3 = new PVector(20,0);
 		Circle c2 = new Circle(pos3,10);
 		assertTrue(p1.collide(c2));
@@ -273,10 +289,19 @@ public class PolygonTest {
 		Circle c3 = new Circle(pos4, 5);
 		assertTrue(p1.collide(c3));
 		PVector projectV3 = p1.projectionVector(c3);
-		System.out.println(projectV3);
-		assertEquals(projectV3.x,0,1e-8);
+		assertEquals(projectV3.x,-6,1e-8);
 		assertEquals(projectV3.y,0,1e-8);
 		
+		//Is inside triangle
+		PVector posIn = new PVector(3,3);
+		Circle cIn = new Circle(posIn, 1);
+		assertTrue(p1.collide(cIn));
+		PVector projectVIn = p1.projectionVector(cIn);
+		float res = (float)(5-(3-Math.sqrt(2)/2));
+		assertEquals(projectVIn.x,res,1e-8);
+		assertEquals(projectVIn.y,res,1e-8);
+		
+		//Into hypotenuse
 		PVector pos5 = new PVector(20,1);
 		Circle c4 = new Circle(pos5,12);
 		PVector projectV4 = p1.projectionVector(c4);
@@ -297,7 +322,6 @@ public class PolygonTest {
 		PVector pos6 = new PVector(0,10);
 		Circle c5 = new Circle(pos6,11);
 		PVector projectV5 = p2.projectionVector(c5);
-		System.out.println(projectV5);
 		assertEquals(projectV5.x,-1,1e-8);
 		assertEquals(projectV5.y,0,1e-8);
 	}
