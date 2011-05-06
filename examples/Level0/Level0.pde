@@ -25,6 +25,12 @@ PostOffice po;
 // BEINGS
 ////////////////////////////////////////
 
+class Cell extends Being {
+	Cell() {
+		
+	}
+}
+
 class Canvas extends Being {
   
   int canvasWidth = 400;

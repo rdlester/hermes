@@ -22,6 +22,10 @@ import src.hermes.postoffice.*;
 static final int WINDOW_WIDTH = 600;
 static final int WINDOW_HEIGHT = 600;
 
+World _world;
+Camera _camera;
+PostOffice _postOffice;
+
 ///////////////////////////////////////////////////
 // BEINGS
 ///////////////////////////////////////////////////
@@ -29,7 +33,7 @@ static final int WINDOW_HEIGHT = 600;
  * Template being - overwrite when making your own project
  */
 class MyBeing extends Being {
-	public MyBeing(Shape shape) {
+	MyBeing(Shape shape) {
 		super(shape);
 		//Add your constructor info here
 	}
@@ -53,15 +57,15 @@ class MyBeing extends Being {
  * Template interactor between a MyBeing and another MyBeing - overwrite when making your own project
  */
 class MyInteraction implements Interactor<MyBeing,MyBeing> {
-	public MyInteraction() {
+	MyInteraction() {
 		//Add your constructor info here
 	}
 	
-	public boolean detect(MyBeing being1, MyBeing being2) {
+	boolean detect(MyBeing being1, MyBeing being2) {
 		//Add your detect method here
 	}
 	
-	public boolean handle(MyBeing being1, MyBeing being2) {
+	boolean handle(MyBeing being1, MyBeing being2) {
 		//Add your handle method here
 	}
 }
@@ -69,9 +73,6 @@ class MyInteraction implements Interactor<MyBeing,MyBeing> {
 ///////////////////////////////////////////////////
 // PAPPLET
 ///////////////////////////////////////////////////
-World _world;
-Camera _camera;
-PostOffice _postOffice;
 
 void setup() {
 	size(WINDOW_WIDTH, WINDOW_HEIGHT); 
