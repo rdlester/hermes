@@ -48,11 +48,11 @@ int numCellsY = canvasHeight / cellSideLength;
 //Tool stored by dragging, used for placing tools on the board
 int toolMode = 0;
 //Constants defining the tool being dragged
-static int PUNCHER = 1;
-static int BATON = 2;
-static int FUSE = 3;
-static int SQUARE = 4;
-static int CIRCLE = 5;
+static final int PUNCHER = 1;
+static final int BATON = 2;
+static final int FUSE = 3;
+static final int SQUARE = 4;
+static final int CIRCLE = 5;
 
 Tool dragTool = null;
 
@@ -110,28 +110,29 @@ class Canvas extends Being {
 	x -= canvasTopLeftX;
 	y -= canvasTopLeftY;
 	
+	int action = m.getAction();
 	// if mouse released
 	// check that you are dragging a tool
-	if(m.getAction() == PostOffice.MOUSE_RELEASED && dragTool != null) {
-		int x = m.getX();
-		int y = m.getY();
-		x -= canvasTopLeftX;
-		y -= canvasTopLeftY;
-		// check that the mouse location is within the canvas
-		if(x >= 0 && y >= 0 && x <= canvasWidth && y <= canvasHeight) {
-			x /= cellSideLength;
-			y /= cellSideLength;
-			// add the tool to the appropriate cell
-			Cell in = _grid[x][y];
-		   // remove the tool at that cell if necessary
-			if(in.hasTool) {
-				Tool remove = in.getTool();
-				_toolGroup.remove(remove);
-			}
-			Tool newTool = dragTool;
-			in.setTool(dragTool);
-			_toolGroup.add(dragTool);
+	if(action == PostOffice.MOUSE_RELEASED && dragTool != null) {
+		x /= cellSideLength;
+		y /= cellSideLength;
+		// add the tool to the appropriate cell
+		Cell in = _grid[x][y];
+	   // remove the tool at that cell if necessary
+		if(in.hasTool) {
+			Tool remove = in.getTool();
+			_toolGroup.remove(remove);
 		}
+		dragTool.setPos(x * cellSideLength, y * cellSideLength);
+		in.setTool(dragTool);
+		_toolGroup.add(dragTool);
+		//TODO how to account for multi-cell objects? What about the baton (which doesn't actually take up a cell?)
+	}
+	else if(action == PostOffice.MOUSE_PRESSED) {
+		
+	}
+	else if(action == PostOffice.MOUSE_DRAGGED) {
+		
 	}
   }
 }
@@ -175,6 +176,8 @@ class Cell {
  }
 
 abstract class Tool extends Being {
+
+	abstract void setPos();
 
 }
 
