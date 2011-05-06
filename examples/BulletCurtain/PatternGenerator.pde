@@ -5,6 +5,8 @@ public class PatternGenerator {
   //alternatively, could just have a couple default sizes that are auto generated, and thus setAcvtiveAnimation calls.. 
 
 
+color[] rainbowColors = {color(255,51,52), color(255, 145, 48), color(255, 254, 136), color(0,184,48), color(0,210,255)} ;
+
   PatternGenerator() {
     //  PatternGenerator(int frameWidth, int frameHeight)
   }
@@ -17,7 +19,9 @@ public class PatternGenerator {
 
 
       ///** change this later?
-      mainColor = color(random(255),random(255),random(255));
+      //mainColor = color(random(255),random(255),random(255));
+
+      mainColor = rainbowColors[int(random(rainbowColors.length))];
 
     //for every frame.. 
     for (int frameIndex = 0; frameIndex < generatedFrames.length; frameIndex++) {
@@ -27,14 +31,6 @@ public class PatternGenerator {
 
     return generatedFrames;
   }
-
-
-
-
-
-
-
-
 
 
 
@@ -85,7 +81,8 @@ public class PatternGenerator {
         if (int(random(10)) == 0) {
 
           ///random
-          colorToUse = color(random(255), random(255), random(255));
+      //    colorToUse = color(random(255), random(255), random(255));
+colorToUse = rainbowColors[int(random(rainbowColors.length))];
 
           //        colorToUse = mainColor+ int(random (200));
         }
@@ -179,8 +176,6 @@ public class PatternGenerator {
    if (numberOfNeighbors == 3) {
    newBoard[col][row] = 1;
    
-   //if conway has any triggers, use em!
-   //could make this depend on if conway should remix.. but I think it might make sense to keep triggers already set
    
    
    }
