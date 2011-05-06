@@ -113,7 +113,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portOut - port to send messages on
 	 * @param netAddress - url of location to send messages to
 	 */
-	public PostOffice(int portIn, int portOut, String netAddress) throws OscServerException {
+	public PostOffice(int portIn, int portOut, String netAddress)  {
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		assert netAddress != null : "PostOffice constructor: netAddress must be a valid String";
@@ -125,14 +125,20 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_receive = new com.illposed.osc.OSCPortIn(portIn);
 			_receive.startListening();
 		} catch (SocketException e) {
-			throw new OscServerException("OSC Port In on " + portIn + " could not start");
+		//	throw new OscServerException("OSC Port In on " + portIn + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		}
 		try {
 			_send = new com.illposed.osc.OSCPortOut(InetAddress.getByName(netAddress), portOut);
 		} catch (UnknownHostException e) {
-			throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			//throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		} catch (SocketException e) {
-			throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			//throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		}
 	}
 	
