@@ -34,14 +34,17 @@
  
  	/OldestOtherX
  	/OldestOtherY
- 		oldest enemy ship x and y 
+ 		oldest Other's x and y 
  	/NewestOtherX
  	/NewestOtherY
- 		newest enemy ship x and y
+ 		newest Other's x and y
  	/MainCollidedWithOther
  		notification of player ship collision (trigger value of 1.0)
  	/OtherDestroyed
  		notification of destruction of an enemy ship (trigger value of 1.0)
+ /OtherDestroyedAtY
+ /OtherDestroyedAtX
+ x and y of the last destroyed Other 
  
  
  Continuous:
@@ -77,7 +80,8 @@ static final String systemName = "BulletCurtain";
 
 static final int numberOfWidthBlocks = 10;
 static final int numberOfHeightBlocks = 8;
-static final int pixelsPerBlock = 3;
+static final int pixelsPerBlock = 4;
+
 
 static final int BODY_WIDTH = numberOfWidthBlocks * pixelsPerBlock;
 static final int BODY_HEIGHT = numberOfHeightBlocks * pixelsPerBlock;
@@ -95,7 +99,7 @@ int millisecondsPerFrame = 1000; //how many milliseconds each from plays for (se
 AnimatedSprite spriteToUseForSubject; //use when generating the sprite of "subject"
 Animation[] commonAnimations; //use when generating the AnimatedSprites of "Others"
 
-float universalShotTravel;
+float universalShotTravel = 10;
 
 //AnimatedSprite spriteToUseForOther; 
 
@@ -110,10 +114,12 @@ World world;
 PostOffice postOffice;
 OtherGroup otherGroup; 
 
+ShotGroup shotGroup;
+
 Camera cam;
 
-static final int RES_WIDTH = 600;
-static final int RES_HEIGHT = 600;
+static final int RES_WIDTH = 640;
+static final int RES_HEIGHT = 480;
 
 void setup() { 
 
@@ -129,12 +135,8 @@ void setup() {
   subject = new Subject (RES_WIDTH / 8, RES_HEIGHT / 2, spriteToUseForSubject);
 
 
-
-
-  Other other = new Other(RES_WIDTH, RES_HEIGHT / 3, createAnimatedSpriteForOther());
-
   spriteToUseForSubject.setActiveAnimation(0);
-  other.animatedSprite.setActiveAnimation(0);
+
 
 
   cam = new Camera();
@@ -145,22 +147,47 @@ void setup() {
 
   //Register these two initial entities
   world.registerBeing(subject, true);
-  world.registerBeing(other, true);
+
 
   otherGroup = new OtherGroup(world);
+  shotGroup = new ShotGroup(world);
 
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectX");
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectY");
-  postOffice.registerOscSubscription(subject, "/BulletCurtain/HaveSubjectFire");
+  postOffice.registerOscSubscription(subject, "/BulletCurtain/HaveSubjectShoot");
 
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/GenerateAnOther");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnX");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnY");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
 
+  postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
+
+  ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
+
+  world.registerInteraction(shotGroup, otherGroup, shotOtherCollider, true);
+
   world.lockUpdateRate(60);
   world.start();
 }
+
+class ShotOtherCollider extends BoundingBoxCollider<Shot, Other> {
+
+  boolean handle(Shot shot, Other other) {
+
+
+    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyed", 1.0);
+
+    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtX", map(other.getX(), 0.0, RES_WIDTH, 0.0, 1.0));
+    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtY", map(other.getY(), 0.0, RES_HEIGHT, 0.0, 1.0));
+
+    world.removeBeingFromAllGroups(shot);
+    world.removeBeingFromAllGroups(other);
+
+    return true;
+  }
+}
+
 
 
 AnimatedSprite createAnimatedSpriteForOther() {
@@ -194,7 +221,7 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
 
 
 
-  //  spriteToUseForOther = new AnimatedSprite(); //animations must be added to this before it can be used!
+  //Create a common animation pool for all 'Others'
   commonAnimations = new Animation[NUMBER_OF_ANIMATIONS_IN_LIST];
 
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
@@ -205,10 +232,7 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
 
-    //Add this Animation to the AnimatedSpite
-    //spriteToUseForOther.addAnimation(generatedAnimation); //returns an int.. aka the index in the animation. useful sometimes, but not needed here
-
-    //Also build an animation pool
+    //Build the common animation pool for all 'Others'
     commonAnimations[i] = generatedAnimation;
   }
 }
@@ -279,6 +303,12 @@ class Subject extends SubjectObjectRelation {
         float remappedY = map(constrainedY, 0.0, 1.0, 0.0, RES_HEIGHT - BODY_HEIGHT);
         setY(remappedY);
       }
+
+      else if (msgSplit[2].equals("HaveSubjectShoot")) {
+        if (message.getAndRemoveFloat() == 1.0) {       
+          shoot();
+        }
+      }
     }
   }
 
@@ -288,25 +318,35 @@ class Subject extends SubjectObjectRelation {
     //Create a new shot, register it in the world, and register it for collisions
     Shot shot = new Shot(getX() + BODY_WIDTH, getY() + (BODY_HEIGHT/2), universalShotTravel);
     world.registerBeing(shot, true);
+    shotGroup.add(shot);
   }
 }
 
 
 class Shot extends Being {
   float travel;
+  static final float shotWidth = pixelsPerBlock * 2;
+  static final float shotHeight = pixelsPerBlock * 1;
 
   Shot(float x, float y, float travel) {
 
-    super(new Rectangle(x, y, BODY_WIDTH, BODY_HEIGHT));
+    super(new Rectangle(x, y, shotWidth, shotHeight));
     this.travel = travel;
   }
 
   void update() {
-    setX(getX() + shotTravel);
+    setX(getX() + travel);
 
     if (getX() > RES_WIDTH) {
       world.removeBeingFromAllGroups(this);
     }
+  }
+
+
+  void draw() {
+    noStroke();
+    fill(255);
+    rect(0, 0, shotWidth, shotHeight);
   }
 }
 
@@ -377,4 +417,28 @@ class OtherGroup extends Group {
     }
   }
 }
+
+
+
+
+
+class ShotGroup extends Group {
+
+  ShotGroup(World world) {
+    super(world);
+  }
+
+  float travelMultiplier;
+  float initialTravel;
+
+  void handleOscMessage(OscMessage message) {
+    String[] msgSplit = message.getAddress().split("/");
+
+    if (msgSplit[1].equals(systemName)) {
+      if (msgSplit[2].equals("")) {
+      }
+    }
+  }
+}
+
 
