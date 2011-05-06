@@ -18,12 +18,17 @@ World world;
 Camera cam;
 PostOffice po;
 
+//Frame size
 int frameWidth = 700;
 int frameHeight = 540;
+//Canvas size and location
 PVector canvasTopLeft = new PVector(30, 30);
 int canvasWidth = 360;
 int canvasHeight = 480;
+//Cell constants
 int cellSideLength = 40; //gives us 9 across, 12 down
+int numCellsX = canvasWidth / cellSideLength;
+int numCellsY = canvasHeight / cellSideLength;
 
 
 
@@ -32,16 +37,13 @@ int cellSideLength = 40; //gives us 9 across, 12 down
 // BEINGS
 ////////////////////////////////////////
 
-class Cell extends Being {
-	Cell() {
-		
-	}
-}
-
 class Canvas extends Being {
   
+	Tool[][] _grid;
+
   Canvas() {
     super(new Rectangle(canvasTopLeft, new PVector(canvasWidth, canvasHeight), PApplet.CORNER));
+	 _grid = new Tool[numCellsX][numCellsY];
   }
   
   void draw() {
@@ -69,11 +71,16 @@ class Cell extends Being {
   }
   
  void draw() {
-   noFill();
-   stroke(180);
-   rect(0, 0, cellSideLength, cellSideLength);
-   
+   //Draw arrow
+	strokeWeight(4 * _flowStrength);
+	line(cellSideLength/2, cellSideLength/4, cellSideLength/2, (3 * cellSideLength)/4);
+	line(cellSideLength/2, (3 * cellSideLength)/4, cellSideLength/)
+	
  }
+
+abstract class Tool extends Being {
+
+}
   
 }
 ///////////////////////////////////////////////////
