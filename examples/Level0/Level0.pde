@@ -18,7 +18,11 @@ World world;
 Camera cam;
 PostOffice po;
 
-int mode = 0; // 0 is setup; 1 is run
+
+static int BUILD = 0;
+static int RUN = 1;
+int mode = BUILD; // 0 is setup; 1 is run
+
 
 //Frame size
 int frameWidth = 700;
@@ -41,9 +45,11 @@ int canvasRightX = canvasTopLeftX + canvasWidth;
 
 //Cell constants
 float flowMax = 10;
-int cellSideLength = 40; //gives us 9 across, 12 down
-int numCellsX = canvasWidth / cellSideLength;
-int numCellsY = canvasHeight / cellSideLength;
+int cellSideLength = 40; //gives us 9 across, 12 down in canvas ; 3 across, 12 down in toolbox
+int canvasNumCellsX = canvasWidth / cellSideLength;
+int canvasNumCellsY = containerHeight / cellSideLength;
+int toolBoxNumCellsX = toolBoxWidth / cellSideLength;
+int toolBoxNumCellsY = containerHeight / cellSideLength;
 
 //Tool stored by dragging, used for placing tools on the board
 int toolMode = 0;
@@ -57,7 +63,6 @@ static final int CIRCLE = 5;
 Tool dragTool = null;
 
 
-
 ////////////////////////////////////////
 // BEINGS
 ////////////////////////////////////////
@@ -68,21 +73,23 @@ Tool dragTool = null;
  * Has inside bounding box
  * Responsible for placing tools into grid
  */
-class Canvas extends Being {
+class Canvas extends MassedBeing {
   
 	Cell[][] _grid;
 	Group<Tool> _toolGroup;
 
   Canvas() {
-    super(new Rectangle(new PVector(canvasTopLeftX, containerTopLeftY), new PVector(canvasWidth, containerHeight), PApplet.CORNER));
-	 _grid = new Cell[numCellsX][numCellsY];
+    super(new Rectangle(new PVector(canvasTopLeftX, containerTopLeftY), new PVector(canvasWidth, containerHeight), PApplet.CORNER),
+          new PVector(0,0), Float.POSITIVE_INFINITY, 1);
+    _grid = new Cell[canvasNumCellsX][canvasNumCellsY];
     initialize();
   }
   
   void initialize() {
-    for(int i=0; i<numCellsX; i++) {
-     for(int j=0; j<numCellsY; j++) {
-	   _grid[i][j] = new Cell();
+    for(int i=0; i<canvasNumCellsX; i++) {
+     for(int j=0; j<canvasNumCellsY; j++) {
+	   _grid[i][j] = new Cell(new PVector(toolBoxTopLeftX + i*cellSideLength, containerTopLeftY + j*cellSideLength));
+           world.registerBeing(_grid[i][j], false);
      } 
     }
   }
@@ -90,11 +97,16 @@ class Canvas extends Being {
 	//TODO Add cell randomizer
   
   void draw() {
+    noFill();
+    stroke(100);
+    rect(0, 0, canvasWidth, containerHeight);
+    
+    // draw the cells with arrows if in BUILD mode
 	 if(mode == BUILD) {
-	   for(int i=0; i<numCellsX; i++) {
-        for(int j=0; j<numCellsY; j++) {
+	   for(int i=0; i<canvasNumCellsX; i++) {
+        for(int j=0; j<canvasNumCellsY; j++) {
 	       Cell curr = _grid[i][j];
-	       curr.draw()
+	       curr.draw();
         } 
       }
     }
@@ -108,11 +120,12 @@ class Canvas extends Being {
 	int x = m.getX();
 	int y = m.getY();
 	x -= canvasTopLeftX;
-	y -= canvasTopLeftY;
+	y -= containerTopLeftY;
 	
 	int action = m.getAction();
 	// if mouse released
 	// check that you are dragging a tool
+<<<<<<< HEAD
 	if(action == PostOffice.MOUSE_RELEASED && dragTool != null) {
 		x /= cellSideLength;
 		y /= cellSideLength;
@@ -141,16 +154,17 @@ class Canvas extends Being {
  * Helper class for Canvas, defines a cell in the vector field
  * Location is defined by which cell of the 2D array they are stored in inside Canvas
  */
-class Cell {
+class Cell extends Being {
  
   PVector _flowDirection; //Any normalized vector
   float _flowStrength; //Cannot be negative or greater than flowMax
   Tool _tool;
   
-  Cell() {
+  Cell(PVector cellTopLeft) {
+    super(new Rectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength), PApplet.CORNER));
     _flowDirection = new PVector(0,1);
     _flowStrength = 1;
-	 _tool = true;
+    _tool = null;
   }
   
   void setFlowDir(PVector direction) {
@@ -158,27 +172,90 @@ class Cell {
   }
 
   void setFlowStrength(float strength) {
-	 _flowStrength = strength;
-	}
+    _flowStrength = strength;
+  }
 	
-	boolean hasTool() {
+  boolean hasTool() {
 		return _tool != null;
 	}
 	
 	void setTool(Tool tool) {
-		_Tool = tool;
+		_tool = tool;
 	}
+
+  Tool getTool() {
+   return _tool; 
+  }
 	
 	void draw() {
-		if(_tool == null) {
+          noFill();
+          stroke(255);
+          strokeWeight(2);
+          rect(0, 0, cellSideLength, cellSideLength);
+		if(_tool != null) {
+                  _tool.draw();
 		}
 	}
  }
 
 abstract class Tool extends Being {
+ Tool(Shape shp) {
+  super(shp); 
+ }
 
-	abstract void setPos();
+ abstract void setPos();
+}
 
+class FakeTool extends Tool {
+ 
+ FakeTool(PVector position) {
+   super(new Rectangle(position, new PVector(cellSideLength, cellSideLength), PApplet.CORNER));
+ } 
+  
+ void draw() {
+   fill(0);
+   rect(0, 0, cellSideLength, cellSideLength);
+ }
+
+  
+}
+
+/**
+ * The ToolBox contains the available tools for level-buidling
+ */
+class ToolBox extends Being {
+  
+  Cell[][] _grid;
+  Group<Tool> _toolGroup;
+  
+  ToolBox() {
+    super(new Rectangle(new PVector(toolBoxTopLeftX, containerTopLeftY), new PVector(toolBoxWidth, containerHeight), PApplet.CORNER));
+    _grid = new Cell[toolBoxNumCellsX][toolBoxNumCellsY];
+    initialize();
+  }
+  
+  void initialize() {
+     //make all the cells 
+     for(int i=0; i<toolBoxNumCellsX; i++) {
+       for(int j=0; j<toolBoxNumCellsY; j++) {
+	   _grid[i][j] = new Cell(new PVector(toolBoxTopLeftX + i*cellSideLength, containerTopLeftY + j*cellSideLength));
+           world.registerBeing(_grid[i][j], false);
+       } 
+     }
+  }
+  
+  /**
+   * Handles a mousemessage within the toolbox boundaries
+   */
+  void handleMouseMessage(MouseMessage m) {
+   
+    
+    
+  }
+  
+  void draw() {
+    rect(0, 0, toolBoxWidth, containerHeight); 
+  }
 }
 
 class MouseHandler implements MouseSubscriber {
@@ -251,8 +328,14 @@ void setup() {
   world = new World(po, cam);
   world.lockUpdateRate(50);
   
+  rectMode(CORNER);
+  
   Canvas canvas = new Canvas();
   world.registerBeing(canvas, false);
+  ToolBox toolBox = new ToolBox();
+  world.registerBeing(toolBox, false);
+  
+  //TODO: make the ball, bubbles, set modes, make inside massed collider
   
   smooth();
 
