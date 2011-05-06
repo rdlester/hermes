@@ -34,6 +34,11 @@ int canvasWidth = 360;
 //Toolbox X and width
 int toolBoxTopLeftX = 420;
 int toolBoxWidth = 250;
+//Bounding box of containers
+int containerBottomY = containerTopLeftY + containerHeight;
+int containerRightX = toolBoxTopLeftX + toolBoxWidth;
+int canvasRightX = canvasTopLeftX + canvasWidth;
+
 //Cell constants
 float flowMax = 10;
 int cellSideLength = 40; //gives us 9 across, 12 down
@@ -176,14 +181,49 @@ abstract class Tool extends Being {
 class MouseHandler implements MouseSubscriber {
 	
 	Canvas _c;
+	ToolBox _b
 	boolean _mousePressed;
 	
-	MouseHandler(Canvas c) {
-		
+	MouseHandler(Canvas c, ToolBox b) {
+		_c = c;
+		_b = b;
+		_mousePressed = false;
 	}
 	
-	void handleMouseMessage() {
-		
+	void handleMouseMessage(MouseMessage m) {
+		int y = m.getY();
+		if(y >= containerTopLeftY && y <= containerBottomY) { //Mouse is in Y range of containers
+			int x = m.getX();
+			if(x >= canvasTopLeftX && x <= containerRight) { //Is in X region of both containers
+				if(x <= canvasRightX) { //Is in canvas!
+					_c.handleMouseMessage(m);
+				}
+				else if(x >= toolBoxTopLeftX) { //Is in toolbox!
+					_b.handleMouseMessage(m);
+				}
+				else { //Not in a container
+					notInAContainer(MouseMessage m);
+				}
+			}
+			else { //Not in a container
+				notInAContainer(MouseMessage m);
+			}
+		}
+		else { //Not in a container
+			notInAContainer(MouseMessage m);
+		}
+	}
+	
+	void notInAContainer(MouseMessage m) {
+		if(dragTool != null) {
+			int action = m.getAction
+			if(action == PostOffice.MOUSE_RELEASED) {
+				dragTool = null; //Q: is drag tool in the group? Make sure you remove it when you pick it up!
+			}
+			if(action == PostOffice.MOUSE_DRAGGED) {
+				//Update location of image being dragged!
+			}
+		}
 	}
 }
 
@@ -191,24 +231,19 @@ class MouseHandler implements MouseSubscriber {
 // GROUPS
 ///////////////////////////////////////////////////
 
-class CellGroup extends Group {
-  
-  
-}
-
 ///////////////////////////////////////////////////
 // PAPPLET
 ///////////////////////////////////////////////////
 
 void setup() {
-  size(frameWidth, frameHeight); 
+  size(frameWidth, frameHeight);
   Hermes.setPApplet(this);
  
   cam = new Camera();
   try {
    po = new PostOffice(8080, 8000);
   } catch(Exception e) {
-   po = new PostOffice(); 
+   po = new PostOffice();
   }
   world = new World(po, cam);
   world.lockUpdateRate(50);

@@ -33,7 +33,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public static final int DEFAULT_PORT_OUT = 7070;
 	
 	//Constants representing buttons
-	public static final int NOBUTTON = MouseEvent.NOBUTTON;
+	public static final int NO_BUTTON = MouseEvent.NO_BUTTON;
 	public static final int LEFT_BUTTON = MouseEvent.BUTTON1;
 	public static final int MIDDLE_BUTTON = MouseEvent.BUTTON2;
 	public static final int RIGHT_BUTTON = MouseEvent.BUTTON3;
