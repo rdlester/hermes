@@ -37,7 +37,6 @@ public class GravityEnvironment extends Environment {
 	
 	public static class Interactor extends Collider<GravityEnvironment, MassedBeing> {
 
-		@Override
 		public boolean handle(GravityEnvironment enviro, MassedBeing being) {
 			being.addForce(PVector.mult(enviro.getAcceleration(), being.getMass()));
 			

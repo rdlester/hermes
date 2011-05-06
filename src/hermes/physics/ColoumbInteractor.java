@@ -23,14 +23,12 @@ public abstract class ColoumbInteractor implements Interactor<MassedBeing, Masse
 		_maxRangeSquared = Float.POSITIVE_INFINITY;
 	}
 	
-	@Override
 	public boolean detect(MassedBeing being1, MassedBeing being2) {
 		PVector r = PVector.sub(being1.getPosition(), being2.getPosition());
 		float d_squared = r.dot(r);
 		return d_squared <= _maxRangeSquared && d_squared != 0;
 	}
 
-	@Override
 	public boolean handle(MassedBeing being1, MassedBeing being2) {
 		PVector r = PVector.sub(being2.getPosition(), being1.getPosition());
 		float d_squared = r.dot(r);
