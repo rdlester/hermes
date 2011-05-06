@@ -1,7 +1,5 @@
 package src.hermes;
 
-import src.hermes.shape.Shape;
-
 /**
  * interactor that detects collisions between Beings based on their shape
  */
