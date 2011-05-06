@@ -114,7 +114,6 @@ class PlatformGroup extends Group<Platform> {
     float boxHeight = area.getHeight();
     float maxPlatWidth = boxWidth / 2;
     float minPlatWidth = Platform.HEIGHT * 2;
-    //int nRows = (int)(boxHeight / verticalStep) - 1;
     for(float y = area.getAbsMin().y + verticalStep; y <= area.getAbsMax().y - verticalStep; y += verticalStep) {
       float x = area.getAbsMin().x;
       while(x < area.getAbsMax().x) {
