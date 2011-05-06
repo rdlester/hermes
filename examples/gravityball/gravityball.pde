@@ -90,7 +90,7 @@ class BoxGroup extends Group<Box> {
 class BallGroup extends Group<Ball> implements MouseSubscriber {
   
   float _newMass = 1;
-  float _newElasticity = 0.1;
+  float _newElasticity = 0.5;
   
   BallGroup(World world) {
    super(world); 
