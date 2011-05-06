@@ -1,6 +1,7 @@
 package src.hermes.postoffice;
 
 import java.awt.event.KeyEvent;
+import static java.awt.event.KeyEvent.*;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -32,7 +33,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public static final int DEFAULT_PORT_OUT = 7070;
 	
 	//Constants representing buttons
-	public static final int NOBUTTON = MouseEvent.NOBUTTON;
+	public static final int NO_BUTTON = MouseEvent.NO_BUTTON;
 	public static final int LEFT_BUTTON = MouseEvent.BUTTON1;
 	public static final int MIDDLE_BUTTON = MouseEvent.BUTTON2;
 	public static final int RIGHT_BUTTON = MouseEvent.BUTTON3;
@@ -367,7 +368,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void keyPressed(KeyEvent e) {
 		int key = e.getKeyCode();
-		String keyString = KeyEvent.getKeyText(key);
+		System.out.println(key);
+		String keyString = getKeyText(key);
+		System.out.println(keyString);
 		KeyMessage m = new KeyMessage(keyString, true);
 		synchronized(_keyQueue) {
 			_keyQueue.add(m);
@@ -378,7 +381,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void keyReleased(KeyEvent e) {
 		int key = e.getKeyCode();
-		String keyString = KeyEvent.getKeyText(key);
+		String keyString = getKeyText(key);
 		KeyMessage m = new KeyMessage(keyString, false);
 		synchronized(_keyQueue) {
 			_keyQueue.add(m);
@@ -431,8 +434,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is dragged, create a MouseMessage and add it to the group
 	 */
 	public void mouseDragged(MouseEvent e) {
-		int button = e.getButton();
-		
 		MouseMessage m  = new MouseMessage(getMouseButton(e), MOUSE_DRAGGED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);

@@ -33,7 +33,11 @@ void setup() {
   Hermes.setPApplet(this);
  
   _camera = new Camera();
-  _postOffice = new PostOffice(8080, 8000);
+  try {
+   _postOffice = new PostOffice(8080, 8000);
+  } catch(Exception e) {
+   _postOffice = new PostOffice(); 
+  }
   _world = new World(_postOffice, _camera);
   _world.lockUpdateRate(50);
  

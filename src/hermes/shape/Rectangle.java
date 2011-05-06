@@ -56,7 +56,7 @@ public class Rectangle extends Shape {
 	 * @param height	the height of the rectangle (must be positive)
 	 */
 	public Rectangle(float x, float y, float width, float height) {
-		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CORNER);
+		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CENTER);
 	}
 
 
@@ -109,11 +109,11 @@ public class Rectangle extends Shape {
 		return PVector.add(_max, _position);
 	}
 	
-	public float getWidth() {
+	public float getRectWidth() {
 		return _max.x - _min.x;
 	}
 	
-	public float getHeight() {
+	public float getRectHeight() {
 		return _max.y - _min.y;
 	}
 	

@@ -177,9 +177,11 @@ public class Circle extends Shape {
 	}
 	
 	private PVector getOverlap(PVector worldCenter, PVector vertex) {
+		//Get vector from circle to vertex and overlap of shapes
 		PVector axis = PVector.sub(vertex, worldCenter);
 		float overlap = _radius - axis.mag();
 		if(overlap >= 0) {
+			//Get projection vector
 			axis.normalize();
 			axis.mult(overlap);
 			return axis;

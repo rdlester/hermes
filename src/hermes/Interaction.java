@@ -1,7 +1,5 @@
 package src.hermes;
 
-import java.util.Collection;
-
 /**
  * wraps all the elements of an interaction
  */

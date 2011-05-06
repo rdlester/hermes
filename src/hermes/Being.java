@@ -24,12 +24,16 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
+	
+	/**
+	 * Creates a Being. Should be called by an class that extends
+	 * Being.
+	 * @param collisionShape	Shape used to determine Being's position and collision detection
+	 * @param velocity			The Being's initial velocity. Velocity gets updated automatically every timestep.
+	 */
 	public Being(Shape collisionShape, PVector velocity) {
-
 		initialize(collisionShape, velocity);
-
 	}
-
 
 	/**
 	 * Alternate constructor that defaults to 0 velocity. 
@@ -42,7 +46,6 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		initialize(collisionShape, new PVector(0,0));
 	}
 	
-	
 	private void initialize(Shape collisionShape, PVector velocity) {
 		assert collisionShape != null : "Being constructor: shape must be a valid Shape";
 		assert velocity != null : "Being constructor: velocity must be a valid PVector";
@@ -52,10 +55,7 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position = collisionShape.getPosition();
 		_velocity = velocity;
 		_time = System.nanoTime();
-		
 	}
-	
-	
 	
 	protected long updateTime() { 
 		long time = System.nanoTime();
@@ -74,7 +74,7 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	 * adds the being to the group
 	 * @param group		the group to add to
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected void addToGroup(GenericGroup group) {
 		// need to lock on the group
 		synchronized(group) {
@@ -87,6 +87,7 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	 * removes the being from this group
 	 * @param group		the group to remove from
 	 */
+	@SuppressWarnings("rawtypes")
 	protected void removeFromGroup(GenericGroup group) {
 		// need to lock on the group
 		synchronized(group) {
@@ -140,7 +141,6 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_position.z = z;
 	}
 	
-	
 	public float getX() {
 		return _position.x;
 	}
@@ -178,7 +178,6 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_velocity = velocity;
 	}
 
-	
 	public Rectangle getBoundingBox() {
 		return _shape.getBoundingBox();
 	}
