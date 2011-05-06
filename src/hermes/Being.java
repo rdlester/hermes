@@ -24,6 +24,13 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	
 	private LinkedList<GenericGroup<?,?>> _groups;
 	
+	
+	/**
+	 * Creates a Being. Should be called by an class that extends
+	 * Being.
+	 * @param collisionShape	Shape used to determine Being's position and collision detection
+	 * @param velocity			The Being's initial velocity. Velocity gets updated automatically every timestep.
+	 */
 	public Being(Shape collisionShape, PVector velocity) {
 		initialize(collisionShape, velocity);
 	}
