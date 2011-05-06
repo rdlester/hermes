@@ -18,6 +18,7 @@ World world;
 Camera cam;
 PostOffice po;
 
+int mode = 0; // 0 is setup; 1 is run
 //Frame size
 int frameWidth = 700;
 int frameHeight = 540;
@@ -44,6 +45,15 @@ class Canvas extends Being {
   Canvas() {
     super(new Rectangle(canvasTopLeft, new PVector(canvasWidth, canvasHeight), PApplet.CORNER));
 	 _grid = new Tool[numCellsX][numCellsY];
+    initialize();
+  }
+  
+  void initialize() {
+    for(int i=0; i<numCellsX; i++) {
+     for(int j=0; j<numCellsY; j++) {
+      
+     } 
+    }
   }
   
   void draw() {
@@ -83,6 +93,16 @@ abstract class Tool extends Being {
 }
   
 }
+
+///////////////////////////////////////////////////
+// GROUPS
+///////////////////////////////////////////////////
+
+class CellGroup extends Group {
+  
+  
+}
+
 ///////////////////////////////////////////////////
 // PAPPLET
 ///////////////////////////////////////////////////
