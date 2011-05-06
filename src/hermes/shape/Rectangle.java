@@ -109,11 +109,11 @@ public class Rectangle extends Shape {
 		return PVector.add(_max, _position);
 	}
 	
-	public float getWidth() {
+	public float getRectWidth() {
 		return _max.x - _min.x;
 	}
 	
-	public float getHeight() {
+	public float getRectHeight() {
 		return _max.y - _min.y;
 	}
 	
