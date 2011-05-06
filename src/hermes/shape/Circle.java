@@ -94,14 +94,9 @@ public class Circle extends Shape {
 		//Projection vector is the unit vector pointing from this circle to other scaled by overlap
 		if(collides) {
 			float magnitude = sumRadii - distance;
-			if(dir.x == 0 && dir.y == 0) {
-				return new PVector(0,magnitude);
-			}
-			else {
-				dir.normalize();
-				dir.mult(magnitude);
-				return dir;
-			}
+			dir.normalize();
+			dir.mult(magnitude);
+			return dir;
 		}
 		else return null;
 	}
@@ -146,35 +141,14 @@ public class Circle extends Shape {
 				else {
 					//In region to the right&up of rectangle
 					//Get projection of both along up-right vertex (max)
-					PVector axis = PVector.sub(max, worldCenter);
-					axis.normalize();
-					axis.mult(_radius);
-					PVector project = PVector.add(worldCenter, axis);
-					if(project.x <= max.x && project.y <= max.y) {
-						float leftPath = max.x - project.x;
-						float downPath = max.y - project.y;
-						return (leftPath >= downPath ?
-								new PVector(0,-downPath):
-								new PVector(-leftPath,0));
-					}
-					
+					return getOverlap(worldCenter,max);
 				}
 			}
 			else {
 				//In region to the right&down of rectangle
 				//Get projection of both along bottom-right vertex
 				PVector brVertex = new PVector(max.x, min.y);
-				PVector axis = PVector.sub(brVertex, worldCenter);
-				axis.normalize();
-				axis.mult(_radius);
-				PVector project = PVector.add(worldCenter, axis);
-				if(project.x <= brVertex.x && brVertex.y <= project.y) {
-					float leftPath = brVertex.x - project.x;
-					float topPath = project.y - brVertex.y;
-					return (leftPath >= topPath ?
-							new PVector(0,topPath):
-							new PVector(-leftPath,0));
-				}
+				return getOverlap(worldCenter, brVertex);
 			}
 		}
 		else if(min.y <= worldCenter.y) {
@@ -190,36 +164,27 @@ public class Circle extends Shape {
 				//In region to the left&up of rectangle
 				//Get projection of both along top-left vertex
 				PVector tlVertex = new PVector(min.x, max.y);
-				PVector axis = PVector.sub(tlVertex, worldCenter);
-				axis.normalize();
-				axis.mult(_radius);
-				PVector project = PVector.add(worldCenter, axis);
-				if(tlVertex.x <= project.x && project.y <= tlVertex.y) {
-					float rightPath = project.x - tlVertex.x;
-					float downPath = tlVertex.y - project.y;
-					return (rightPath >= downPath ?
-							new PVector(0,-downPath):
-							new PVector(rightPath,0));
-				}
+				return getOverlap(worldCenter, tlVertex);
 			}
 		}
 		else {
 			//In region to the left&down of rectangle
 			//Get projection of both along bottom-left vertex (min)
-			PVector axis = PVector.sub(min, worldCenter);
-			axis.normalize();
-			axis.mult(_radius);
-			PVector project = PVector.add(worldCenter, axis);
-			if(min.x <= project.x && min.y <= project.y) {
-				float rightPath = project.x - min.x;
-				float upPath = project.y - min.y;
-				return (rightPath >= upPath ?
-						new PVector(0,upPath):
-						new PVector(rightPath,0));
-			}
+			return getOverlap(worldCenter, min);
 		}
 		
 		return null;
+	}
+	
+	private PVector getOverlap(PVector worldCenter, PVector vertex) {
+		PVector axis = PVector.sub(vertex, worldCenter);
+		float overlap = _radius - axis.mag();
+		if(overlap >= 0) {
+			axis.normalize();
+			axis.mult(overlap);
+			return axis;
+		}
+		else return null;
 	}
 	
 	@Override

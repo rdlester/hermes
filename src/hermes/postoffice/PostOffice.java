@@ -75,8 +75,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param applet - Top Processing PApplet running the PostOffice
 	 * @param portIn - port to receive messages on
 	 * @param portOut - port to send messages on
+	 * @throws OscServerException 
 	 */
-	public PostOffice(int portIn, int portOut) {
+	public PostOffice(int portIn, int portOut) throws OscServerException {
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		
@@ -87,14 +88,14 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_receive = new com.illposed.osc.OSCPortIn(portIn);
 			_receive.startListening();
 		} catch (SocketException e) {
-			System.err.println("OSC Port In on " + portIn + " could not start");
+			throw new OscServerException("OSC Port In on " + portIn + " could not start");
 		}
 		try {
 			_send = new com.illposed.osc.OSCPortOut(InetAddress.getLocalHost(),portOut);
 		} catch (UnknownHostException e) {
-			System.err.println("OSC Port Out on " + portOut + " could not start");
+			throw new OscServerException("OSC Port Out on " + portOut + " could not start");
 		} catch (SocketException e) {
-			System.err.println("OSC Port Out on " + portOut + " could not start");
+			throw new OscServerException("OSC Port Out on " + portOut + " could not start");
 		}
 	}
 	
@@ -105,7 +106,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portOut - port to send messages on
 	 * @param netAddress - url of location to send messages to
 	 */
-	public PostOffice(int portIn, int portOut, String netAddress) {
+	public PostOffice(int portIn, int portOut, String netAddress) throws OscServerException {
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		assert netAddress != null : "PostOffice constructor: netAddress must be a valid String";
@@ -117,14 +118,14 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_receive = new com.illposed.osc.OSCPortIn(portIn);
 			_receive.startListening();
 		} catch (SocketException e) {
-			System.err.println("OSC Port In on " + portIn + " could not start");
+			throw new OscServerException("OSC Port In on " + portIn + " could not start");
 		}
 		try {
 			_send = new com.illposed.osc.OSCPortOut(InetAddress.getByName(netAddress), portOut);
 		} catch (UnknownHostException e) {
-			System.err.println("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
 		} catch (SocketException e) {
-			System.err.println("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
 		}
 	}
 	
@@ -211,8 +212,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing only the given int
 	 * @param address - address message is to be sent on
 	 * @param send - integer to be sent
+	 * @throws OscSendException 
 	 */
-	public void sendInt(String address, int send) {
+	public void sendInt(String address, int send) throws OscSendException {
 		assert _onOSC : "PostOffice.sendInt: cannot send an OSC message while OSC is off";
 		assert address != null : "PostOffice.sendInt: address must be a valid String";
 		Object[] array = new Object[1];
@@ -222,7 +224,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			System.err.println("Error sending message " + send + " on " + address);
+			throw new OscSendException("Error sending message " + send + " on " + address);
 		}
 	}
 	
@@ -230,8 +232,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing only the given float
 	 * @param address
 	 * @param send
+	 * @throws OscSendException 
 	 */
-	public void sendFloat(String address, float send) {
+	public void sendFloat(String address, float send) throws OscSendException {
 		assert _onOSC : "PostOffice.sendFloat: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendFloat: address must be a valid String";
 		Object[] array = new Object[1];
@@ -241,7 +244,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			System.err.println("Error sending message " + send + " on " + address);
+			throw new OscSendException("Error sending message " + send + " on " + address);
 		}
 	}
 	
@@ -249,8 +252,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing only the given boolean
 	 * @param address
 	 * @param send
+	 * @throws OscSendException 
 	 */
-	public void sendBoolean(String address, boolean send) {
+	public void sendBoolean(String address, boolean send) throws OscSendException {
 		assert _onOSC : "PostOffice.sendBoolean: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendBoolean: address must be a valid String";
 		Object[] array = new Object[1];
@@ -260,7 +264,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			System.err.println("Error sending message " + send + " on " + address);
+			throw new OscSendException("Error sending message " + send + " on " + address);
 		}
 	}
 	
@@ -268,8 +272,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing the contents of the given list
 	 * @param address
 	 * @param send
+	 * @throws OscSendException 
 	 */
-	public void sendList(String address, ArrayList<Object> send) {
+	public void sendList(String address, ArrayList<Object> send) throws OscSendException {
 		assert _onOSC : "PostOffice.sendList: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendList: address must be a valid String";
 		assert send != null : "PostOffice.sendList: send must be a valid ArrayList";
@@ -283,11 +288,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			System.err.print("Error sending message ");
+			String message = "Error sending message ";
 			for(Object o : array) {
-				System.err.print(o + " ");
+				message += o + " ";
 			}
-			System.err.print("on address " + address + "\n");
+			message += "on address " + address + "\n";
+			throw new OscSendException(message);
 		}
 	}
 	
@@ -477,6 +483,19 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			return RIGHT_BUTTON;
 		else
 			return NOBUTTON;
+	}
+	
+	
+	public class OscServerException extends Exception {
+			public OscServerException(String message) {
+				super(message);
+			}
+	}
+	
+	public class OscSendException extends Exception {
+		public OscSendException(String message) {
+			super(message);
+		}
 	}
 	
 }
