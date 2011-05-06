@@ -66,18 +66,18 @@ class Player extends MassedBeing {
   void handleKeyMessage(KeyMessage m) {
     String szKey = m.getKey();
     if(m.isPressed()) { // the player's movement is controlled by w/a/s/d
-      if(szKey.equals("D"))
+      if(szKey.equals("D") || szKey.equals("RIGHT"))
         getVelocity().x = PLAYER_SPEED;
-      if(szKey.equals("A"))
+      if(szKey.equals("A") || szKey.equals("LEFT"))
         getVelocity().x = -PLAYER_SPEED;
-      if(szKey.equals("W") && !_jumped) {
+      if((szKey.equals("W") || szKey.equals("UP")) && !_jumped) {
         addImpulse(makeVector(0, -2*PLAYER_SPEED));
         _jumped = true;
       }
-      if(szKey.equals("S"))
+      if(szKey.equals("S") || szKey.equals("DOWN"))
         getVelocity().y = 2*PLAYER_SPEED;
     } else { // when a key is released, we stop the player
-        if(szKey.equals("D") || szKey.equals("A"))
+        if(szKey.equals("D") || szKey.equals("A") || szKey.equals("LEFT") || szKey.equals("RIGHT"))
           getVelocity().x = 0;
     }
   } 
@@ -191,6 +191,10 @@ void setup() {
   po.registerKeySubscription(player, "S");
   po.registerKeySubscription(player, "W");
   po.registerKeySubscription(player, "A");
+  po.registerKeySubscription(player, "UP");
+  po.registerKeySubscription(player, "DOWN");
+  po.registerKeySubscription(player, "LEFT");
+  po.registerKeySubscription(player, "RIGHT");
   
   // make player collide with platforms
   world.registerInteraction(playerGroup, platforms, new PlatformCollider(0), false);
@@ -201,6 +205,7 @@ void setup() {
     playerGroup, GravityEnvironment.makeGravityInteractor(), false);
   
   // run it!
+  smooth();
   world.lockUpdateRate(50);
   world.start();
 }

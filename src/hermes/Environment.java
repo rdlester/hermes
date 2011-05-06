@@ -1,7 +1,5 @@
 package src.hermes;
 
-import java.util.Collection;
-
 import processing.core.PVector;
 import src.hermes.shape.Shape;
 
