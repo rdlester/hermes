@@ -47,12 +47,18 @@ void setup() {
   _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false);
   _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider(), false);
 
-  GravityEnvironment enviro = new GravityEnvironment(new PVector(0, -10),
+  GravityEnvironment enviro = new GravityEnvironment(new PVector(0, 100),
     new Rectangle(new PVector(0,0), new PVector(0,0), new PVector(WIDTH, HEIGHT)));
   Group<GravityEnvironment> gravGroup = new Group<GravityEnvironment>(_world);
   _world.registerBeing(enviro, false);
   gravGroup.add(enviro);
-  _world.registerInteraction(gravGroup, _ballGroup, new GravityEnvironment.Interactor(), false);
+  _world.registerInteraction(gravGroup, _ballGroup, enviro.new Interactor(), false);
+  
+  Group<Platform> platforms = new Group<Platform>(_world);
+  Platform plat1 = new Platform(new PVector(200,200),100);
+  _world.registerBeing(plat1, true);
+  platforms.add(plat1);
+  _world.registerInteraction(platforms, _ballGroup, new MassedCollider(), false);
   
   smooth();
 
@@ -84,7 +90,7 @@ class BoxGroup extends Group<Box> {
 class BallGroup extends Group<Ball> implements MouseSubscriber {
   
   float _newMass = 1;
-  float _newElasticity = 1;
+  float _newElasticity = 0.1;
   
   BallGroup(World world) {
    super(world); 
@@ -129,8 +135,6 @@ class BallGroup extends Group<Ball> implements MouseSubscriber {
   
 }
 
-
-
 class Ball extends MultisampledMassedBeing {
   
   Group _group;
@@ -156,6 +160,22 @@ class Ball extends MultisampledMassedBeing {
     fill(_color);
     ellipse(0,0,50 * getMass(),50 * getMass()); // always draw at (0,0)
   }
+  
+}
+
+class Platform extends MassedBeing {
+  
+  float _width;
+  
+ Platform(PVector center, float width) {
+   super(new Rectangle(center, width, 40), new PVector(0,0), Float.POSITIVE_INFINITY, 1);
+   _width = width;
+ }
+  
+ void draw() {
+   fill(120);
+   rect(-_width/2, -20, _width, 40);
+ }
   
 }
 
