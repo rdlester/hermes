@@ -314,6 +314,7 @@ public class PolygonTest {
 		Circle c1 = new Circle(pos2,8);
 		PVector projectV1 = p1.projectionVector(c1);
 		float result = (float) 0.656854212284881;
+		System.out.println(projectV1);
 		assertEquals(projectV1.x,result,1e-8);
 		assertEquals(projectV1.y,result,1e-8);
 		

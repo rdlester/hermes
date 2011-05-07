@@ -118,7 +118,7 @@ class BallGroup extends Group<Ball> {
 				mode = RECT_MODE;
 				break;
 			case DELETE_KEY:
-				removeAll(this);
+				destroy();
 				break;
 		}
 	}

@@ -222,30 +222,39 @@ public class Polygon extends Shape {
 			else resolutionList.add(result);
 		}
 		
-		center = PVector.sub(center, dist);
-		PVector pre = _points.get(1);
-		PVector sidePre = PVector.sub(pre, _points.get(0));
-		sidePre.normalize();
-		
-		int size = _points.size();
-		for(int i = 2; i < size + 2; i++) {
-			PVector p = _points.get(i % size);
-			PVector side = PVector.sub(p, pre);
-			side.normalize();
-			if(checkEdge(center, pre, sidePre, side)) {
-				//Check if distance between center and vertex is less than radius
-				PVector axis = PVector.sub(center, pre);
-				float overlap = other.getRadius() - axis.mag(); 
-				if(overlap >= 0) {
-					//Create and return projection vector
-					axis.normalize();
-					axis.mult(overlap);
-					resolutionList.add(axis);
-				}
-				else return null;
-			}
+		//Check for collisions along axes between circle center and vertices
+		for(PVector p : _points) {
+			PVector axis = PVector.sub(center, PVector.add(p, dist));
+			axis.normalize();
+			PVector result = checkSepAxis(axis, dist, center, radius);
+			if(result == null) return null;
+			else resolutionList.add(result);
 		}
-		
+//		
+//		center = PVector.sub(center, dist);
+//		PVector pre = _points.get(1);
+//		PVector sidePre = PVector.sub(pre, _points.get(0));
+//		sidePre.normalize();
+//		
+//		int size = _points.size();
+//		for(int i = 2; i < size + 2; i++) {
+//			PVector p = _points.get(i % size);
+//			PVector side = PVector.sub(p, pre);
+//			side.normalize();
+//			if(checkEdge(center, pre, sidePre, side)) {
+//				//Check if distance between center and vertex is less than radius
+//				PVector axis = PVector.sub(center, pre);
+//				float overlap = other.getRadius() - axis.mag(); 
+//				if(overlap >= 0) {
+//					//Create and return projection vector
+//					axis.normalize();
+//					axis.mult(overlap);
+//					resolutionList.add(axis);
+//				}
+//				else return null;
+//			}
+//		}
+//		
 		//Figure out which resolution vector is smallest
 		float min = Float.MAX_VALUE;
 		PVector use = null;
