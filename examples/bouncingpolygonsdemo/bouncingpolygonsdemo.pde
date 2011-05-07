@@ -13,6 +13,7 @@ import src.hermesTest.shapeTests.*;
 import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
+import java.util.Random;
 
 World _world;
 PostOffice _postOffice;
@@ -27,6 +28,8 @@ BoxGroup _boxGroup;
 
 final int WIDTH = 400;
 final int HEIGHT = 400;
+
+static final int POLY_POINT = 4;
 
 void setup() {
   size(WIDTH, HEIGHT); 
@@ -159,10 +162,18 @@ class Ball extends MultisampledMassedBeing {
 static Polygon makePolygon(PVector center, float mass) {
 	float radius = 25 * mass;
 	ArrayList<PVector> points = new ArrayList<PVector>();
-	points.add(new PVector(0,radius));
-	points.add(new PVector(radius,0));
-	points.add(new PVector(0,-radius));
-	points.add(new PVector(-radius,0));
+	Random r = new Random();
+	for(int i = 0; i < POLY_POINT; i++) {
+		float nextX = r.nextFloat();
+		nextX = (nextX * 2 * radius) - radius;
+		float nextY = r.nextFloat();
+		nextY = (nextY * 2 * radius) - radius;
+		points.add(new PVector(nextX, nextY));
+	}
+	//points.add(new PVector(0,radius));
+	//points.add(new PVector(radius,0));
+	//points.add(new PVector(0,-radius));
+	//points.add(new PVector(-radius,0));
 	return new Polygon(center,points);
 }
 
