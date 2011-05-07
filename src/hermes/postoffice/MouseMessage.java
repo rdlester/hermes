@@ -67,7 +67,7 @@ public class MouseMessage implements Message {
 	public boolean equals(Object o) {
 		if(o instanceof MouseMessage) {
 			MouseMessage m = (MouseMessage) o;
-			if(m.getButton() == this.getButton()) return true;
+			return m.getButton() == this.getButton();
 		}
 		return false;
 	}
