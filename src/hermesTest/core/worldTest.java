@@ -5,7 +5,6 @@ import src.hermes.*;
 import static src.hermes.HermesMath.*;
 import src.hermes.shape.*;
 import src.hermes.postoffice.PostOffice;
-import src.hermes.postoffice.PostOffice.OscServerException;
 import src.hermes.shape.Shape;
 import processing.core.PApplet;
 import processing.core.PVector;
@@ -37,7 +36,7 @@ public class worldTest {
 
 		int nUpdates;
 		
-		public testWorld1(int nUpdates) throws OscServerException {
+		public testWorld1(int nUpdates) {
 			super(new PostOffice(5000,5001), new Camera());
 			this.nUpdates = nUpdates;
 		}
@@ -52,7 +51,7 @@ public class worldTest {
 	}
 	
 	@Test
-	public void test_UpdateBeings() throws OscServerException {
+	public void test_UpdateBeings() {
 		updated1 = new LinkedList<TestBeing1>();
 		PApplet papp = new PApplet();
 		Hermes.setPApplet(papp);
