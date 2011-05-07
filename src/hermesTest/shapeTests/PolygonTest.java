@@ -208,8 +208,8 @@ public class PolygonTest {
 		
 		//Collison with polygon at same exact location
 		PVector projectSame = p1.projectionVector(p1);
-		assertEquals(projectSame.x,5,1e-8);
-		assertEquals(projectSame.y,5,1e-8);
+		assertEquals(projectSame.x,-5,1e-8);
+		assertEquals(projectSame.y,-5,1e-8);
 	}
 	
 	@Test
@@ -255,6 +255,42 @@ public class PolygonTest {
 		PVector projectV3 = p2.projectionVector(r3);
 		assertEquals(projectV3.x,-1,1e-8);
 		assertEquals(projectV3.y,0,1e-8);
+		
+		////
+		// Colliding rotated squares
+		float radius = 25;
+		ArrayList<PVector> pointsSquare = new ArrayList<PVector>();
+		pointsSquare.add(new PVector(0,radius));
+		pointsSquare.add(new PVector(radius,0));
+		pointsSquare.add(new PVector(0,-radius));
+		pointsSquare.add(new PVector(-radius,0));
+		
+		PVector pos6 = new PVector(0,0);
+		Polygon s1 = new Polygon(pos6,pointsSquare);
+		
+		PVector pos7 = new PVector(50,0);
+		Polygon s2 = new Polygon(pos7,pointsSquare);
+		PVector projectS1 = s1.projectionVector(s2);
+		assertEquals(projectS1.x,0,1e-8);
+		assertEquals(projectS1.y,0,1e-8);
+		
+		PVector pos8 = new PVector(49,0);
+		Polygon s3 = new Polygon(pos8,pointsSquare);
+		PVector projectS2 = s1.projectionVector(s3);
+		assertEquals(projectS2.x,0.5,1e-6);
+		assertEquals(projectS2.y,-0.5,1e-6);
+		
+		PVector pos9 = new PVector(30,0);
+		Polygon s4 = new Polygon(pos9,pointsSquare);
+		PVector projectS3 = s1.projectionVector(s4);
+		assertEquals(projectS3.x,10,1e-6);
+		assertEquals(projectS3.y,-10,1e-6);
+		
+		PVector pos10 = new PVector(20,20);
+		Polygon s5 = new Polygon(pos10,pointsSquare);
+		PVector projectS4 = s1.projectionVector(s5);
+		assertEquals(projectS4.x,5,1e-6);
+		assertEquals(projectS4.y,5,1e-6);
 	}
 	
 	@Test 
