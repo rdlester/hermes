@@ -152,14 +152,7 @@ class Ball extends MultisampledMassedBeing {
   void draw() {
     fill(_color);
 		Polygon poly = (Polygon) getShape();
-		ArrayList<PVector> points = poly.getPoints();
-		int pSize = points.size();
-	 	PVector pre = points.get(0);
-    for(int i = 1; i < pSize+1; i++) {
-			PVector p = points.get(i % pSize);
-			line(pre.x,pre.y,p.x,p.y);
-			pre = p;
-    }
+		poly.draw();
   }
 }
 

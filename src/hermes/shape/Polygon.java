@@ -3,7 +3,9 @@ package src.hermes.shape;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import processing.core.PApplet;
 import processing.core.PVector;
+import src.hermes.Hermes;
 import src.hermes.HermesMath;
 import static src.hermes.HermesMath.*;
 
@@ -170,6 +172,17 @@ public class Polygon extends Shape {
 		PVector min = makeVector(xMin, yMin);
 		PVector max = makeVector(xMax, yMax);
 		return new Rectangle(_position, min, max);
+	}
+	
+	public void draw() {
+		PApplet papp = Hermes.getPApplet();
+		int pSize = _points.size();
+	 	PVector pre = _points.get(0);
+	 	for(int i = 1; i < pSize+1; i++) {
+			PVector p = _points.get(i % pSize);
+			papp.line(pre.x,pre.y,p.x,p.y);
+			pre = p;
+	 	}
 	}
 	
 	@Override
@@ -409,9 +422,9 @@ public class Polygon extends Shape {
 		}
 		
 		else {
-			return (Math.abs(top) > Math.abs(bottom) ?
+			return (top < bottom ?
 					PVector.mult(axis, -bottom):
-					PVector.mult(axis, -top));
+					PVector.mult(axis, top));
 		}
 	}
 	
