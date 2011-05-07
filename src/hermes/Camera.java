@@ -16,6 +16,7 @@ public class Camera extends Environment {
 	private float _worldCoordinateWidth;
 	private float _worldCoordinateHeight;
 	
+	@SuppressWarnings("unused")
 	private float _zoomFactor;
 
 	//contains all the Beings colliding with the Camera in a given timestep

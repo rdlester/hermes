@@ -5,6 +5,7 @@ package src.hermes.physics;
  * @author Sam
  *
  */
+@SuppressWarnings("serial")
 public class NonPositiveMassException extends Exception {
 
 	private MassedBeing _being;

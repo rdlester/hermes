@@ -2,7 +2,6 @@ package src.hermes.shape;
 
 import processing.core.PApplet;
 import processing.core.PVector;
-import src.hermes.Hermes;
 import static src.hermes.HermesMath.*;
 
 /**

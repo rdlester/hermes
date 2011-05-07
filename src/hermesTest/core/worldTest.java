@@ -5,9 +5,7 @@ import src.hermes.*;
 import static src.hermes.HermesMath.*;
 import src.hermes.shape.*;
 import src.hermes.postoffice.PostOffice;
-import src.hermes.shape.Shape;
 import processing.core.PApplet;
-import processing.core.PVector;
 
 import org.junit.*;
 import static org.junit.Assert.*;
