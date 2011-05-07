@@ -394,7 +394,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Users should control this with keyReleased events
 	 */
 	public void keyPressed(KeyEvent e) {
-		int key = e.getKeyCode();
 		KeyMessage m = new KeyMessage(e.getKeyCode(), e.getKeyChar(), true);
 		synchronized(_keyQueue) {
 			_keyQueue.add(m);

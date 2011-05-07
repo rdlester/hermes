@@ -257,7 +257,6 @@ public class PolygonTest {
 		assertEquals(projectV3.y,0,1e-8);
 	}
 	
-	//FRIGFRIGFRIG
 	@Test 
 	public void test_projectionVectorCircle() {
 		//Triangle
@@ -324,5 +323,18 @@ public class PolygonTest {
 		PVector projectV5 = p2.projectionVector(c5);
 		assertEquals(projectV5.x,-1,1e-8);
 		assertEquals(projectV5.y,0,1e-8);
+	}
+	
+	@Test
+	public void test_getBoundingBox() {
+		PVector center = new PVector(0,0);
+		float radius = 25;
+		ArrayList<PVector> points = new ArrayList<PVector>();
+		points.add(new PVector(0,radius));
+		points.add(new PVector(radius,0));
+		points.add(new PVector(0,-radius));
+		points.add(new PVector(-radius,0));
+		Polygon p = new Polygon(center,points);
+		Rectangle pBox = p.getBoundingBox();
 	}
 }

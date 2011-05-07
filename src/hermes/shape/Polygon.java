@@ -151,6 +151,27 @@ public class Polygon extends Shape {
 		rotate(polyLoc,theta);
 	}
 	
+	public Rectangle getBoundingBox() {
+		float xMax = Float.NEGATIVE_INFINITY;
+		float xMin = Float.POSITIVE_INFINITY;
+		float yMax = Float.NEGATIVE_INFINITY;
+		float yMin = Float.POSITIVE_INFINITY;
+		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
+			PVector point = iter.next();
+			if(point.x < xMin)
+				xMin = point.x;
+			if(point.x > xMax)
+				xMax = point.x;
+			if(point.y < yMin)
+				yMin = point.y;
+			if(point.y > yMax)
+				yMax = point.y;
+		}
+		PVector min = makeVector(xMin, yMin);
+		PVector max = makeVector(xMax, yMax);
+		return new Rectangle(_position, min, max);
+	}
+	
 	@Override
 	public boolean collide(Shape other) {
 		assert other != null : "Polygon.collide: other must be a valid Shape";
@@ -165,27 +186,6 @@ public class Polygon extends Shape {
 	}
 	public boolean collide(Polygon other) {
 		return projectionVector(other) != null;
-	}
-	
-	public Rectangle getBoundingBox() {
-		float xMax = Float.NEGATIVE_INFINITY;
-		float xMin = Float.POSITIVE_INFINITY;
-		float yMax = Float.NEGATIVE_INFINITY;
-		float yMin = Float.POSITIVE_INFINITY;
-		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
-			PVector point = iter.next();
-			if(point.x < xMin)
-				xMin = point.x;
-			if(point.x > xMax)
-				xMin = point.x;
-			if(point.y < yMin)
-				yMin = point.y;
-			if(point.y > yMax)
-				yMin = point.y;
-		}
-		PVector min = makeVector(xMin, yMin);
-		PVector max = makeVector(xMax, yMax);
-		return new Rectangle(_position, min, max);
 	}
 	
 	@Override
@@ -310,7 +310,7 @@ public class Polygon extends Shape {
 	}
 
 	/**
-	 * NO LONGER USED
+	 * NO LONGER USED but still works
 	 * Checks if circle is in a voronoi region of polygon side specified by pre, linePre, and line
 	 * @param circlePos - position of circle
 	 * @param pre - Point in common between linePre and line
@@ -318,14 +318,14 @@ public class Polygon extends Shape {
 	 * @param line - line between pre and p (was already calculated in method)
 	 * @return true if circle is in voronoi region, otherwise false
 	 */
-	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
-		
-		float projPos = circlePos.dot(line);
-		float projPre = pre.dot(line);
-		float projP = p.dot(line);
-		
-		return (projPos <= projP && projPre <= projPos);
-	}
+//	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
+//		
+//		float projPos = circlePos.dot(line);
+//		float projPre = pre.dot(line);
+//		float projP = p.dot(line);
+//		
+//		return (projPos <= projP && projPre <= projPos);
+//	}
 
 	/**
 	 * Checks if circle is in an edge/vertex voronoi region of polygon specified by pre, linePre, and line

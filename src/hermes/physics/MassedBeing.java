@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 import processing.core.*;
 import src.hermes.*;
-import src.hermes.physics.*;
 import src.hermes.shape.Shape;
 import static src.hermes.HermesMath.*;
 
