@@ -36,7 +36,7 @@ class Platform extends MassedBeing {
  
   void draw() {
     fill(COLOR);
-    rect(-_width / 2, -HEIGHT / 2, _width, HEIGHT);
+    rect(0, 0, _width, HEIGHT);
   }
  
 }
@@ -58,7 +58,7 @@ class Player extends MassedBeing {
   
   void draw() {
     fill(0);
-    rect(-PLAYER_WIDTH / 2, -PLAYER_HEIGHT / 2, PLAYER_WIDTH, PLAYER_HEIGHT);
+    rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
   }
   
   void resetJump() {
@@ -68,18 +68,18 @@ class Player extends MassedBeing {
   void handleKeyMessage(KeyMessage m) {
     String szKey = m.getKey();
     if(m.isPressed()) { // the player's movement is controlled by w/a/s/d
-      if(szKey.equals("D") || szKey.equals("RIGHT"))
+      if(szKey.equals("D") || szKey.equals("Right"))
         getVelocity().x = PLAYER_SPEED;
-      if(szKey.equals("A") || szKey.equals("LEFT"))
+      if(szKey.equals("A") || szKey.equals("Left"))
         getVelocity().x = -PLAYER_SPEED;
-      if((szKey.equals("W") || szKey.equals("UP")) && !_jumped) {
+      if((szKey.equals("W") || szKey.equals("Up")) && !_jumped) {
         addImpulse(makeVector(0, -2*PLAYER_SPEED));
         _jumped = true;
       }
-      if(szKey.equals("S") || szKey.equals("DOWN"))
+      if(szKey.equals("S") || szKey.equals("Down"))
         getVelocity().y = 2*PLAYER_SPEED;
     } else { // when a key is released, we stop the player
-        if(szKey.equals("D") || szKey.equals("A") || szKey.equals("LEFT") || szKey.equals("RIGHT"))
+        if(szKey.equals("D") || szKey.equals("A") || szKey.equals("Left") || szKey.equals("Right"))
           getVelocity().x = 0;
     }
   } 
@@ -99,7 +99,7 @@ class RectBeing extends Being {
   
   void draw() {
     fill(255);
-    rect(-_width / 2, -_height / 2, _width, _height);
+    rect(0, 0, _width, _height);
   }
   
 }
@@ -139,7 +139,7 @@ class PlatformGroup extends Group<Platform> {
       float platWidth = random(minPlatWidth, maxPlatWidth);
       float baseDist = random(minPlatWidth, maxPlatWidth);
       x += platWidth / 2 + baseDist / density;
-      while(x < area.getAbsMax().x) {
+      while(x < area.getAbsMax().x - platWidth / 2) {
         addPlatform(makeVector(x, y), platWidth);
         x += platWidth / 2;
         platWidth = random(minPlatWidth, maxPlatWidth);
@@ -198,7 +198,7 @@ void setup() {
   po = new PostOffice();
   world = new World(po, cam);
   
-  Rectangle initialBounds = new Rectangle(makeVector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 2 * WINDOW_WIDTH, 2 * WINDOW_HEIGHT);
+  Rectangle initialBounds = new Rectangle(zeroVector(), 2 * WINDOW_WIDTH, 2 * WINDOW_HEIGHT);
   
   //world.registerBeing(new RectBeing(initialBounds), false);
   
@@ -209,7 +209,7 @@ void setup() {
     120.0f, 0.8);    
   
   // set up the player
-  player = new Player(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2 + 60);
+  player = new Player(0, 60);
   Group<Player> playerGroup = new Group<Player>(world);
   world.registerBeing(player, true);
   playerGroup.add(player);
@@ -217,10 +217,10 @@ void setup() {
   po.registerKeySubscription(player, "S");
   po.registerKeySubscription(player, "W");
   po.registerKeySubscription(player, "A");
-  po.registerKeySubscription(player, "UP");
-  po.registerKeySubscription(player, "DOWN");
-  po.registerKeySubscription(player, "LEFT");
-  po.registerKeySubscription(player, "RIGHT");
+  po.registerKeySubscription(player, "Up");
+  po.registerKeySubscription(player, "Down");
+  po.registerKeySubscription(player, "Left");
+  po.registerKeySubscription(player, "Right");
   
   // make player collide with platforms
   world.registerInteraction(playerGroup, platforms, new PlatformCollider(0), false);
@@ -230,10 +230,11 @@ void setup() {
     initialBounds, world),
     playerGroup, GravityEnvironment.makeGravityInteractor(), false);
   
+  rectMode(CENTER);
   
   // run it!
   //smooth();
-  world.lockUpdateRate(50);
+  //world.lockUpdateRate(60);
   world.start();
 }
 

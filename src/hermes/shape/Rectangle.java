@@ -184,6 +184,26 @@ public class Rectangle extends Shape {
 	public Rectangle getBoundingBox() {
 		return this;
 	}
+	
+	/**
+	 * whether this rectangle completely encloses another 
+	 * (no part of other protrudes from this)
+	 * @param other		the other rectangle
+	 * @return			whether it is completely contained
+	 */
+	public boolean contains(Rectangle other) {
+		float minX1 = getAbsMin().x;
+		float minY1 = getAbsMin().y;
+		float maxX1 = getAbsMax().x;
+		float maxY1 = getAbsMax().y;
+		float minX2 = other.getAbsMin().x;
+		float minY2 = other.getAbsMin().y;
+		float maxX2 = other.getAbsMax().x;
+		float maxY2 = other.getAbsMax().y;
+		
+		return minX1 <= minX2 && minY1 <= minY2 &&
+				maxX1 >= maxX2 && maxY1 >= maxY2;
+	}
 
 	@Override
 	public String toString() {
