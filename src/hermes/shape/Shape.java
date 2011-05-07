@@ -63,5 +63,9 @@ public abstract class Shape {
 		return _position;
 	}
 	
+	/**
+	 * Shortcut method for drawing the shape on screen
+	 */
+	public abstract void draw();
 }
 

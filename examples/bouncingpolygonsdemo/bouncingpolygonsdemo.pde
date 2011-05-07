@@ -31,6 +31,15 @@ final int HEIGHT = 400;
 
 static final int POLY_POINT = 4;
 
+int mode = 0;
+static final int POLY_MODE = 0;
+static final int POLY_KEY = PostOffice.VK_0;
+static final int CIRCLE_MODE = 1;
+static final int CIRCLE_KEY = PostOffice.VK_1;
+static final int RECT_MODE = 2;
+static final int RECT_KEY = PostOffice.VK_2;
+static final int DELETE_KEY = PostOffice.D;
+
 void setup() {
   size(WIDTH, HEIGHT); 
   Hermes.setPApplet(this);
@@ -45,6 +54,10 @@ void setup() {
   _world.lockUpdateRate(50);
  
   _ballGroup = new BallGroup(_world);
+	_postOffice.registerKeySubscription(_ballGroup, POLY_KEY);
+	_postOffice.registerKeySubscription(_ballGroup, CIRCLE_KEY);
+	_postOffice.registerKeySubscription(_ballGroup, RECT_KEY);
+	_postOffice.registerKeySubscription(_ballGroup, DELETE_KEY);
   _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
@@ -62,6 +75,7 @@ void setup() {
 
 void draw() {
     background(230);
+		
     if(_mousePressed) {
      line(_origX, _origY, _dX, _dY); 
     }
@@ -81,7 +95,7 @@ class BoxGroup extends Group<Box> {
   
 }
 
-class BallGroup extends Group<Ball> implements MouseSubscriber {
+class BallGroup extends Group<Ball> {
   
   float _newMass = 1;
   float _newElasticity = 1;
@@ -90,25 +104,64 @@ class BallGroup extends Group<Ball> implements MouseSubscriber {
    super(world); 
    _mousePressed = false;
   }
-  
- 
- void handleMouseMessage(MouseMessage m) {
-   if(!_mousePressed && m.getAction()==PostOffice.MOUSE_PRESSED) {
-     _mousePressed = true;
-     _origX = m.getX();
-     _origY = m.getY();
-     _dX = m.getX();
-     _dY = m.getY();
-   } else if (m.getAction()==PostOffice.MOUSE_DRAGGED) {
-     _dX = m.getX();
-     _dY = m.getY();  
-   } else if(m.getAction()==PostOffice.MOUSE_RELEASED) {
-      _mousePressed = false; 
-      Ball ball = new Ball(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
-      getWorld().registerBeing(ball, true);
-      this.add(ball);
-   }
- }
+
+	void handleKeyMessage(KeyMessage m) {
+		int key = m.getKeyCode();
+		switch(key) {
+			case POLY_KEY:
+				mode = POLY_MODE;
+				break;
+			case CIRCLE_KEY:
+				mode = CIRCLE_MODE;
+				break;
+			case RECT_KEY:
+				mode = RECT_MODE;
+				break;
+			case DELETE_KEY:
+				removeAll(this);
+				break;
+		}
+	}
+
+	void handleMouseMessage(MouseMessage m) {
+		int action = m.getAction();
+		switch(action) {
+			case PostOffice.MOUSE_PRESSED:
+				if(!_mousePressed) {
+					_mousePressed = true;
+					_origX = m.getX();
+					_origY = m.getY();
+					_dX = m.getX();
+					_dY = m.getY();
+				}
+				break;
+			case PostOffice.MOUSE_DRAGGED:
+				_dX = m.getX();
+				_dY = m.getY();
+				break;
+			case PostOffice.MOUSE_RELEASED:
+				_mousePressed = false;
+				Ball ball;
+				switch(mode) {
+					case POLY_MODE:
+						ball = new PolyBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
+						break;
+					case CIRCLE_MODE:
+						ball = new CircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
+						break;
+					case RECT_MODE:
+						ball = new RectBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
+						break;
+					default:
+						System.out.println("In an invalid mode");
+						ball = new CircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
+						break;
+				}
+				getWorld().registerBeing(ball, true);
+				this.add(ball);
+				break;
+		}
+	}
    
    void handleOscMessage(OscMessage m) {
      
@@ -129,19 +182,17 @@ class BallGroup extends Group<Ball> implements MouseSubscriber {
   
 }
 
-
-
-class Ball extends MultisampledMassedBeing {
-  
-  Group _group;
+abstract class Ball extends MultisampledMassedBeing {
+	
+	Group _group;
   color _color;
 
-  Ball(PVector center, PVector velocity, float mass, float elasticity) {
-    super(makePolygon(center,mass), velocity, mass, elasticity, 35, 8);  
-    _color = color(random(255), random(255), random(255));  
-  } 
-
-  void update() {
+	Ball(Shape shape, PVector velocity, float mass, float elasticity) {
+		super(shape, velocity, mass, elasticity, 35, 8);
+		_color = color(random(255), random(255), random(255));
+	}
+	
+	void update() {
     if(getX() < 0)
       setX(0);
     if(getY() < 0)
@@ -152,29 +203,46 @@ class Ball extends MultisampledMassedBeing {
       setY((float)HEIGHT);
   }
 
-  void draw() {
-    fill(_color);
-		Polygon poly = (Polygon) getShape();
-		poly.draw();
+	void draw() {
+		fill(_color);
+		getShape().draw();
+	}
+}
+
+class PolyBall extends Ball {
+  PolyBall(PVector center, PVector velocity, float mass, float elasticity) {
+    super(makePolygon(center,mass), velocity, mass, elasticity);
   }
 }
 
 static Polygon makePolygon(PVector center, float mass) {
 	float radius = 25 * mass;
 	ArrayList<PVector> points = new ArrayList<PVector>();
-	Random r = new Random();
-	for(int i = 0; i < POLY_POINT; i++) {
-		float nextX = r.nextFloat();
-		nextX = (nextX * 2 * radius) - radius;
-		float nextY = r.nextFloat();
-		nextY = (nextY * 2 * radius) - radius;
-		points.add(new PVector(nextX, nextY));
-	}
-	//points.add(new PVector(0,radius));
-	//points.add(new PVector(radius,0));
-	//points.add(new PVector(0,-radius));
-	//points.add(new PVector(-radius,0));
+	//Random r = new Random();
+	//for(int i = 0; i < POLY_POINT; i++) {
+	//	float nextX = r.nextFloat();
+	//	nextX = (nextX * 2 * radius) - radius;
+	//	float nextY = r.nextFloat();
+	//	nextY = (nextY * 2 * radius) - radius;
+	//	points.add(new PVector(nextX, nextY));
+	//}
+	points.add(new PVector(0,radius));
+	points.add(new PVector(radius,0));
+	points.add(new PVector(0,-radius));
+	points.add(new PVector(-radius,0));
 	return new Polygon(center,points);
+}
+
+class CircleBall extends Ball {
+	CircleBall(PVector center, PVector velocity, float mass, float elasticity) {
+		super(new Circle(center, 25 * mass), velocity, mass, elasticity);
+	}
+}
+
+class RectBall extends Ball {
+	RectBall(PVector center, PVector velocity, float mass, float elasticity) {
+		super(new Rectangle(center, 25 * mass, 25 * mass), velocity, mass, elasticity);
+	}
 }
 
 class Box extends MassedBeing {

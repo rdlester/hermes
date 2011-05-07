@@ -1,6 +1,7 @@
 package src.hermes.shape;
 
 import processing.core.PVector;
+import src.hermes.Hermes;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -189,14 +190,17 @@ public class Circle extends Shape {
 		else return null;
 	}
 	
+	public Rectangle getBoundingBox() {
+		return new Rectangle(PVector.add(_position, _center), 2*_radius, 2*_radius);
+	}
+	
+	public void draw() {
+		Hermes.getPApplet().ellipse(_center.x, _center.y, 2*_radius, 2*_radius);
+	}
+	
 	@Override
 	public String toString() {
 		return "Position:" + _position + "\nCenter:" + _center + "\nRadius:" + _radius;
-	}
-
-	@Override
-	public Rectangle getBoundingBox() {
-		return new Rectangle(PVector.add(_position, _center), 2*_radius, 2*_radius);
 	}
 
 }

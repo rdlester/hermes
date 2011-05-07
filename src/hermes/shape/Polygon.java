@@ -153,38 +153,6 @@ public class Polygon extends Shape {
 		rotate(polyLoc,theta);
 	}
 	
-	public Rectangle getBoundingBox() {
-		float xMax = Float.NEGATIVE_INFINITY;
-		float xMin = Float.POSITIVE_INFINITY;
-		float yMax = Float.NEGATIVE_INFINITY;
-		float yMin = Float.POSITIVE_INFINITY;
-		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
-			PVector point = iter.next();
-			if(point.x < xMin)
-				xMin = point.x;
-			if(point.x > xMax)
-				xMax = point.x;
-			if(point.y < yMin)
-				yMin = point.y;
-			if(point.y > yMax)
-				yMax = point.y;
-		}
-		PVector min = makeVector(xMin, yMin);
-		PVector max = makeVector(xMax, yMax);
-		return new Rectangle(_position, min, max);
-	}
-	
-	public void draw() {
-		PApplet papp = Hermes.getPApplet();
-		int pSize = _points.size();
-	 	PVector pre = _points.get(0);
-	 	for(int i = 1; i < pSize+1; i++) {
-			PVector p = _points.get(i % pSize);
-			papp.line(pre.x,pre.y,p.x,p.y);
-			pre = p;
-	 	}
-	}
-	
 	@Override
 	public boolean collide(Shape other) {
 		assert other != null : "Polygon.collide: other must be a valid Shape";
@@ -274,7 +242,7 @@ public class Polygon extends Shape {
 					axis.mult(overlap);
 					resolutionList.add(axis);
 				}
-				else break;
+				else return null;
 			}
 		}
 		
@@ -318,7 +286,7 @@ public class Polygon extends Shape {
 		else {
 			return (top < bottom ?
 					PVector.mult(axis, -bottom):
-					PVector.mult(axis, -top));
+					PVector.mult(axis, top));
 		}
 	}
 
@@ -465,6 +433,36 @@ public class Polygon extends Shape {
 		float min = project - radius;
 		float max = project + radius;
 		return new PVector(min,max);
+	}
+	
+	public Rectangle getBoundingBox() {
+		float xMax = Float.NEGATIVE_INFINITY;
+		float xMin = Float.POSITIVE_INFINITY;
+		float yMax = Float.NEGATIVE_INFINITY;
+		float yMin = Float.POSITIVE_INFINITY;
+		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
+			PVector point = iter.next();
+			if(point.x < xMin)
+				xMin = point.x;
+			if(point.x > xMax)
+				xMax = point.x;
+			if(point.y < yMin)
+				yMin = point.y;
+			if(point.y > yMax)
+				yMax = point.y;
+		}
+		PVector min = makeVector(xMin, yMin);
+		PVector max = makeVector(xMax, yMax);
+		return new Rectangle(_position, min, max);
+	}
+	
+	public void draw() {
+		PApplet papp = Hermes.getPApplet();
+		papp.beginShape(PApplet.POLYGON);
+		for(PVector p : _points) {
+			papp.vertex(p.x, p.y);
+		}
+		papp.endShape();
 	}
 	
 	@Override
