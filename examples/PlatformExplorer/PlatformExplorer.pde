@@ -1,3 +1,5 @@
+import processing.opengl.*;
+
 import src.hermes.*;
 import src.hermesTest.physicsTest.*;
 import src.hermesTest.postOfficeTests.*;
@@ -84,6 +86,24 @@ class Player extends MassedBeing {
   
 }
 
+class RectBeing extends Being {
+  
+  float _width;
+  float _height;
+  
+  RectBeing(Rectangle rect) {
+    super(rect, zeroVector());
+    _width = rect.getRectWidth();
+    _height = rect.getRectHeight();
+  }
+  
+  void draw() {
+    fill(255);
+    rect(-_width / 2, -_height / 2, _width, _height);
+  }
+  
+}
+
 ///////////////////////////////////////////////
 // GROUPS
 ///////////////////////////////////////////////
@@ -116,12 +136,15 @@ class PlatformGroup extends Group<Platform> {
     float minPlatWidth = Platform.HEIGHT * 2;
     for(float y = area.getAbsMin().y + verticalStep; y <= area.getAbsMax().y - verticalStep; y += verticalStep) {
       float x = area.getAbsMin().x;
+      float platWidth = random(minPlatWidth, maxPlatWidth);
+      float baseDist = random(minPlatWidth, maxPlatWidth);
+      x += platWidth / 2 + baseDist / density;
       while(x < area.getAbsMax().x) {
-        float platWidth = random(minPlatWidth, maxPlatWidth);
-        float baseDist = random(minPlatWidth, maxPlatWidth);
-        x += platWidth / 2 + baseDist / density;
         addPlatform(makeVector(x, y), platWidth);
         x += platWidth / 2;
+        platWidth = random(minPlatWidth, maxPlatWidth);
+        baseDist = random(minPlatWidth, maxPlatWidth);
+        x += platWidth / 2 + baseDist / density;
       }
     }  
   }
@@ -167,7 +190,7 @@ Player player;
 ///////////////////////////////////////////////////
 
 void setup() {
-  size(WINDOW_WIDTH, WINDOW_HEIGHT);  // set window size
+  size(WINDOW_WIDTH, WINDOW_HEIGHT, JAVA2D);  // set window size
   Hermes.setPApplet(this);            // give the library the PApplet
   
   // set up the world, camera, and post office
@@ -175,10 +198,14 @@ void setup() {
   po = new PostOffice();
   world = new World(po, cam);
   
+  Rectangle initialBounds = new Rectangle(makeVector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 2 * WINDOW_WIDTH, 2 * WINDOW_HEIGHT);
+  
+  //world.registerBeing(new RectBeing(initialBounds), false);
+  
   // set up the platforms
   platforms = new PlatformGroup(world);
   platforms.generatePlatforms(
-    new Rectangle(makeVector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 2 * WINDOW_WIDTH, 2 * WINDOW_HEIGHT),
+    initialBounds,
     120.0f, 0.8);    
   
   // set up the player
@@ -200,11 +227,12 @@ void setup() {
   
   // add gravity to player
   world.registerInteraction(GravityEnvironment.makeGravityGroup(makeVector(0, 50),
-    new Rectangle(makeVector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2), 2 * WINDOW_WIDTH, 2 * WINDOW_HEIGHT), world),
+    initialBounds, world),
     playerGroup, GravityEnvironment.makeGravityInteractor(), false);
   
+  
   // run it!
-  smooth();
+  //smooth();
   world.lockUpdateRate(50);
   world.start();
 }
