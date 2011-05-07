@@ -20,7 +20,8 @@ Notes:
 
 
 
-
+//TODO:
+- mousemessage handling is messy - just do it from one place
 
 
 
@@ -72,12 +73,12 @@ int toolBoxNumCellsY = containerHeight / cellSideLength;
 //Tool stored by dragging, used for placing tools on the board
 int toolMode = 0;
 //Constants defining the tool being dragged
-static int PUNCHER = 1;
-static int BATON = 2;
-static int FUSE = 3;
-static int SQUARE = 4;
-static int CIRCLE = 5;
-static int FAKETOOL = 100; //TODO: remove this obvs
+final int PUNCHER = 1;
+final int BATON = 2;
+final int FUSE = 3;
+final int SQUARE = 4;
+final int CIRCLE = 5;
+final int FAKETOOL = 100; //TODO: remove this obvs
 
 Tool dragTool = null;
 
@@ -101,6 +102,7 @@ class Canvas extends MassedBeing {
     super(new Rectangle(new PVector(canvasLeftX, containerTopY), new PVector(canvasWidth, containerHeight), PApplet.CORNER),
           new PVector(0,0), Float.POSITIVE_INFINITY, 1);
     _grid = new Cell[canvasNumCellsX][canvasNumCellsY];
+    _toolGroup = new Group<Tool>(world);
     initialize();
   }
   
@@ -128,48 +130,40 @@ class Canvas extends MassedBeing {
 	int y = m.getY();
 	x -= canvasLeftX;
 	y -= containerTopY;
+        int i = x / cellSideLength;
+	int j = y / cellSideLength;
+	// add the tool to the appropriate cell
+	Cell in = _grid[i][j];
 	
 	int action = m.getAction();
-	// if mouse released
-	// check that you are dragging a tool
-/* I think thisis an old version
-	if(m.getAction() == PostOffice.MOUSE_RELEASED && dragTool != null) {
 
-		// check that the mouse location is within the canvas
-		if(x >= 0 && y >= 0 && x <= canvasWidth && y <= containerHeight) {
-			x /= cellSideLength;
-			y /= cellSideLength;
-			// add the tool to the appropriate cell
-			Cell in = _grid[x][y];
-		   // remove the tool at that cell if necessary
-			if(in.hasTool()) {
-				Tool remove = in.getTool();
-				_toolGroup.remove(remove);
-			}
-			Tool newTool = dragTool;
-			in.setTool(dragTool);
-			_toolGroup.add(dragTool);
-*/
-
-	if(action == PostOffice.MOUSE_RELEASED && dragTool != null) {
-		x /= cellSideLength;
-		y /= cellSideLength;
-		// add the tool to the appropriate cell
-		Cell in = _grid[x][y];
-	   // remove the tool at that cell if necessary
+	if(action == PostOffice.MOUSE_RELEASED) { 
+          if(dragTool != null) { //tool is being dropped into a cell
+          //NOTE: dragTool's CENTER is at the mouse location
+	        // remove the tool at that cell if necessary
 		if(in.hasTool()) {
-			Tool remove = in.getTool();
-			_toolGroup.remove(remove);
+                  Tool toRemove = in.getTool();
+                  in.setTool(null);
+		  world.removeBeingFromAllGroups(toRemove);
 		}
-		dragTool.setPosition(new PVector(x * cellSideLength, y * cellSideLength));
-		in.setTool(dragTool);
+		dragTool.setPosition(new PVector(canvasLeftX+(i*cellSideLength), containerTopY+(j*cellSideLength)));
+                in.setTool(dragTool);
 		_toolGroup.add(dragTool);
+                
+                //clean up global vars
+                dragTool = null;
 		//TODO how to account for multi-cell objects? What about the baton (which doesn't actually take up a cell?)
-	}
-	else if(action == PostOffice.MOUSE_PRESSED) {
-		
-	}
-	else if(action == PostOffice.MOUSE_DRAGGED) {
+	  }
+	} else if(action == PostOffice.MOUSE_PRESSED) {
+          //check if pressed on cell containing tool
+          if(in.hasTool()) {
+           dragTool = in.getTool();//set dragTool to the tool therein
+           in.setTool(null);
+          }	
+	} else if(action == PostOffice.MOUSE_DRAGGED) {
+          if(dragTool!=null) { //TODO: this code is identical in 3 places, probably a better way to do this
+            dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+          }
 		
 	}
   }
@@ -181,6 +175,11 @@ class Canvas extends MassedBeing {
 class ToolBox extends Being {
   
   Cell[][] _grid;
+  
+  //keep track of where the selector tools are
+  FakeTool _fakeTool;
+  int _fakeTooli = 1;
+  int _fakeToolj = 1;
   
   ToolBox() {
     super(new Rectangle(new PVector(toolBoxLeftX, containerTopY), new PVector(toolBoxWidth, containerHeight), PApplet.CORNER));
@@ -200,11 +199,9 @@ class ToolBox extends Being {
      
      //TODO: replace with real tools
      //make a fake tool for testing
-     int fakeTooli = 1;
-     int fakeToolj = 1;
-     FakeTool fakeTool = new FakeTool(new PVector(toolBoxLeftX + fakeTooli*cellSideLength, 
-                                                  containerTopY + fakeToolj*cellSideLength));
-     world.registerBeing(fakeTool, false);
+     _fakeTool = new FakeTool(new PVector(toolBoxLeftX + _fakeTooli*cellSideLength, 
+                                          containerTopY + _fakeToolj*cellSideLength));
+     _grid[_fakeTooli][_fakeToolj].setTool(_fakeTool);
   }
   
   /**
@@ -214,38 +211,51 @@ class ToolBox extends Being {
    
     //checks if it was a mouse pressed
     if(m.getAction() == PostOffice.MOUSE_PRESSED) {
-      println("pressed");
       //get pixel location of mouse press in frame
       int x = m.getX();
       int y = m.getY();
       //get pixel location of mouse press relative to toolbox topleft corner
-      x -= toolBoxWidth;
-      y -= containerHeight;
+      x -= toolBoxLeftX;
+      y -= containerTopY;
       //get i,j indices of cell containing mouse press
       int i = x / cellSideLength;
       int j = y / cellSideLength;
-      
       // if that cell contains a tool, set toolMode to that tool 
       if(_grid[i][j].hasTool()) {
         toolMode = _grid[i][j].getTool().getToolCode();
       }
     } else if(m.getAction() == PostOffice.MOUSE_DRAGGED) {
-      println("dragged");
-      if(toolMode!=0) { // toolMode already set
+      if(dragTool!=null) { //already dragging a tool
+        dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+      } else if(toolMode!=0) { // toolMode already set but no new tool created yet
         //instantiate new version of that tool 
         //TODO: make static method in tool to return a new instance of that tool (taking toolcode and pos)
-        //TODO: *******************START HERE*******************
+        dragTool = makeTool(toolMode, new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
       }
-      
     } else {
      //TODO: fill in 
     }
     
   }
 
-  //TODO: does this even need toget drawn?  
-  void draw() {
 
+  void draw() {
+    int haloi = -1;
+    int haloj = -1;
+    switch(toolMode) {
+     case FAKETOOL:  haloi = _fakeTooli;
+                     haloj = _fakeToolj;
+                     break;
+
+      
+    }
+    
+    if(haloi!=-1 && haloj!=-1) {
+      noFill();
+      strokeWeight(3);
+      stroke(255, 150, 193);
+      rect(haloi*cellSideLength, haloj*cellSideLength, cellSideLength, cellSideLength);
+    }
   }
   
 }
@@ -286,29 +296,47 @@ class Cell extends Being {
   Tool getTool() {
    return _tool; 
   }
-	
-	void draw() {
-          noFill();
-          stroke(255);
-          strokeWeight(2);
-          rect(0, 0, cellSideLength, cellSideLength);
-		if(_tool != null) {
-                  _tool.draw();
-		}
-	}
- }
 
+  void draw() {
+   noFill();
+   stroke(255);
+   strokeWeight(2);
+   rect(0, 0, cellSideLength, cellSideLength);
+   if(_tool != null) {
+     _tool.draw();
+   }
+  }
+ }
+ 
+ 
+/**
+ *
+ */
 abstract class Tool extends Being {
   int _toolCode;
  Tool(Shape shp, int toolCode) {
   super(shp); 
   _toolCode = toolCode;
+  world.registerBeing(this, false);
  }
 
  int getToolCode() {return _toolCode;}
-
 }
 
+Tool makeTool(int toolCode, PVector position) {
+   Tool toReturn = null;
+   switch(toolMode) {
+     case FAKETOOL: toReturn = new FakeTool(position); 
+                    break;
+     default:       println("Error in makeTool: toolCode did not match any tools");
+                    break;   
+   } 
+   return toReturn; 
+ }
+
+/**
+ *
+ */
 class FakeTool extends Tool {
  
  FakeTool(PVector position) {
@@ -317,13 +345,18 @@ class FakeTool extends Tool {
   
  void draw() {
    fill(0);
+   stroke(255);
+   strokeWeight(2);
    rect(0, 0, cellSideLength, cellSideLength);
+   
  }
 
   
 }
 
-
+/**
+ *
+ */
 class MouseHandler implements MouseSubscriber {
 	
 	Canvas _c;
@@ -350,15 +383,17 @@ class MouseHandler implements MouseSubscriber {
         }
 
 	void notInAContainer(MouseMessage m) {
-		if(dragTool != null) {
-			int action = m.getAction();
-			if(action == PostOffice.MOUSE_RELEASED) {
-				dragTool = null; //Q: is drag tool in the group? Make sure you remove it when you pick it up!
-			}
-			if(action == PostOffice.MOUSE_DRAGGED) {
-				//Update location of image being dragged!
-			}
-		}
+	  int action = m.getAction();
+	  if(action == PostOffice.MOUSE_RELEASED) {
+	     dragTool = null; //Q: is drag tool in the group? Make sure you remove it when you pick it up!
+	  }
+          if(action == PostOffice.MOUSE_DRAGGED) {
+            if(dragTool!=null) { // currently dragging a tool
+	      //Update location of tool being dragged
+              dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+            }
+	  }
+		
 	}
      
 }

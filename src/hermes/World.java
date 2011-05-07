@@ -126,7 +126,7 @@ public class World extends Thread {
 	 * queues a being to be removed from all of the groups it is in at the end of an update
 	 * @param being
 	 */
-	public void removeBeingFromAllGroups(Being being) {
+	public void deleteBeing(Being being) {
 		_removeFromAllGroupsQueue.addLast(being);
 	}
 	
