@@ -253,7 +253,7 @@ class ToolBox extends Being {
     if(haloi!=-1 && haloj!=-1) {
       noFill();
       strokeWeight(3);
-      stroke(255, 0, 0);
+      stroke(255, 150, 193);
       rect(haloi*cellSideLength, haloj*cellSideLength, cellSideLength, cellSideLength);
     }
   }
@@ -345,6 +345,8 @@ class FakeTool extends Tool {
   
  void draw() {
    fill(0);
+   stroke(255);
+   strokeWeight(2);
    rect(0, 0, cellSideLength, cellSideLength);
    
  }
