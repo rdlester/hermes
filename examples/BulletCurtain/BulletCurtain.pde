@@ -95,7 +95,7 @@ int animationSpeedMultiplier = 2;
 color mainColor = color (random(255), random(255), random(255), 255);
 color altColor = color (random(255), random(255), random(255), 255);
 int numberOfAnimationFrames = 5; //how many frames an animation gets when it is created
-int millisecondsPerFrame = 1000; //how many milliseconds each from plays for (set when created)
+int millisecondsPerFrame = 500; //how many milliseconds each from plays for (set when created)
 AnimatedSprite spriteToUseForSubject; //use when generating the sprite of "subject"
 Animation[] commonAnimations; //use when generating the AnimatedSprites of "Others"
 
@@ -116,6 +116,8 @@ OtherGroup otherGroup;
 
 ShotGroup shotGroup;
 
+StateBeing worldStateBeing;
+
 Camera cam;
 
 static final int RES_WIDTH = 640;
@@ -134,15 +136,12 @@ void setup() {
 
   subject = new Subject (RES_WIDTH / 8, RES_HEIGHT / 2, spriteToUseForSubject);
 
-
   spriteToUseForSubject.setActiveAnimation(0);
-
 
 
   cam = new Camera();
   postOffice = new PostOffice(8808, 8809);
   world = new World(postOffice, cam);
-
 
 
   //Register these two initial entities
@@ -152,6 +151,8 @@ void setup() {
   otherGroup = new OtherGroup(world);
   shotGroup = new ShotGroup(world);
 
+  worldStateBeing = new StateBeing();
+
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectX");
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectY");
   postOffice.registerOscSubscription(subject, "/BulletCurtain/HaveSubjectShoot");
@@ -160,8 +161,11 @@ void setup() {
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnX");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnY");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
+  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
 
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
+
+  postOffice.registerOscSubscription(worldStateBeing, "/BulletCurtain/SetAnimationSpeed");
 
   ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
 
@@ -354,14 +358,14 @@ class Shot extends Being {
 
 class Other extends SubjectObjectRelation {
 
-  float howMuchToTravel = 1;
+  Float howManyPixelsToTravel = 1.0;
 
   Other(float x, float y, AnimatedSprite animatedSprite) {
     super(x, y, animatedSprite);
   }
 
   void update() {
-    setX(getX() - howMuchToTravel);
+    setX(getX() - howManyPixelsToTravel);
 
     if (getX() + BODY_WIDTH < 0) {
       world.removeBeingFromAllGroups(this);
@@ -382,6 +386,8 @@ class OtherGroup extends Group {
   float spawnY = RES_HEIGHT/2 - BODY_HEIGHT/2;
   int animationIndexToUseOnSpawn = 0;
 
+Float groupTravelSpeed = 1.0;
+
   void handleOscMessage(OscMessage message) {
     String[] msgSplit = message.getAddress().split("/");
 
@@ -390,8 +396,13 @@ class OtherGroup extends Group {
         if (message.getAndRemoveFloat() == 1.0) {       
           Other other = new Other(spawnX, spawnY, createAnimatedSpriteForOther());
           other.animatedSprite.setActiveAnimation(animationIndexToUseOnSpawn % other.animatedSprite.getNumberOfAnimations());
+                other.animatedSprite.overrideMillisecondsPerFrame(millisecondsPerFrame);
+                other.howManyPixelsToTravel = groupTravelSpeed;
           add(other);
+
           world.registerBeing(other, true);
+          
+          
         }
       }
 
@@ -407,6 +418,13 @@ class OtherGroup extends Group {
         float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
         spawnY = remappedY;
       }
+
+     else if (msgSplit[2].equals("SetOtherTravelSpeed")) {
+        float travel = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        travel = map(travel, 0.0, 1.0, 0, 20);
+        groupTravelSpeed = travel;
+      }
+
 
 
       else if (msgSplit[2].equals("NewAnimationForSpawnedOthers")) {
@@ -441,4 +459,26 @@ class ShotGroup extends Group {
   }
 }
 
+
+//Dummy being for world state 
+class StateBeing extends Being {
+  StateBeing() {
+    super(new Rectangle(1, 1, 1, 1));
+  }
+
+  void draw() {
+  };
+
+  void handleOscMessage(OscMessage message) {
+    
+    String[] msgSplit = message.getAddress().split("/");
+    if (msgSplit[1].equals(systemName)) {
+      if (msgSplit[2].equals("SetAnimationSpeed")) {
+        float speed = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        speed = map(speed, 0.0, 1.0, 10.0, 2000.0);
+        millisecondsPerFrame = int(speed);
+      }
+    }
+  }
+}
 

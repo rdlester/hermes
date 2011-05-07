@@ -129,8 +129,10 @@ class Canvas extends MassedBeing {
 	x -= canvasLeftX;
 	y -= containerTopY;
 	
+	int action = m.getAction();
 	// if mouse released
 	// check that you are dragging a tool
+/* I think thisis an old version
 	if(m.getAction() == PostOffice.MOUSE_RELEASED && dragTool != null) {
 
 		// check that the mouse location is within the canvas
@@ -147,7 +149,28 @@ class Canvas extends MassedBeing {
 			Tool newTool = dragTool;
 			in.setTool(dragTool);
 			_toolGroup.add(dragTool);
+*/
+
+	if(action == PostOffice.MOUSE_RELEASED && dragTool != null) {
+		x /= cellSideLength;
+		y /= cellSideLength;
+		// add the tool to the appropriate cell
+		Cell in = _grid[x][y];
+	   // remove the tool at that cell if necessary
+		if(in.hasTool()) {
+			Tool remove = in.getTool();
+			_toolGroup.remove(remove);
 		}
+		dragTool.setPosition(new PVector(x * cellSideLength, y * cellSideLength));
+		in.setTool(dragTool);
+		_toolGroup.add(dragTool);
+		//TODO how to account for multi-cell objects? What about the baton (which doesn't actually take up a cell?)
+	}
+	else if(action == PostOffice.MOUSE_PRESSED) {
+		
+	}
+	else if(action == PostOffice.MOUSE_DRAGGED) {
+		
 	}
   }
 }
@@ -204,7 +227,7 @@ class ToolBox extends Being {
       
       // if that cell contains a tool, set toolMode to that tool 
       if(_grid[i][j].hasTool()) {
-        toolMode = getTool().getToolCode();
+        toolMode = _grid[i][j].getTool().getToolCode();
       }
     } else if(m.getAction() == PostOffice.MOUSE_DRAGGED) {
       println("dragged");
@@ -281,7 +304,9 @@ abstract class Tool extends Being {
   super(shp); 
   _toolCode = toolCode;
  }
+
  int getToolCode() {return _toolCode;}
+
 }
 
 class FakeTool extends Tool {
@@ -297,6 +322,7 @@ class FakeTool extends Tool {
 
   
 }
+
 
 class MouseHandler implements MouseSubscriber {
 	

@@ -33,7 +33,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public static final int DEFAULT_PORT_OUT = 7070;
 	
 	//Constants representing buttons
-	public static final int NO_BUTTON = MouseEvent.NO_BUTTON;
+	public static final int NO_BUTTON = MouseEvent.NOBUTTON;
 	public static final int LEFT_BUTTON = MouseEvent.BUTTON1;
 	public static final int MIDDLE_BUTTON = MouseEvent.BUTTON2;
 	public static final int RIGHT_BUTTON = MouseEvent.BUTTON3;
@@ -78,7 +78,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portOut - port to send messages on
 	 * @throws OscServerException 
 	 */
-	public PostOffice(int portIn, int portOut) throws OscServerException {
+	public PostOffice(int portIn, int portOut) {
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		
@@ -89,14 +89,20 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_receive = new com.illposed.osc.OSCPortIn(portIn);
 			_receive.startListening();
 		} catch (SocketException e) {
-			throw new OscServerException("OSC Port In on " + portIn + " could not start");
+			//throw new OscServerException("OSC Port In on " + portIn + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+			
 		}
 		try {
 			_send = new com.illposed.osc.OSCPortOut(InetAddress.getLocalHost(),portOut);
 		} catch (UnknownHostException e) {
-			throw new OscServerException("OSC Port Out on " + portOut + " could not start");
+			//throw new OscServerException("OSC Port Out on " + portOut + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		} catch (SocketException e) {
-			throw new OscServerException("OSC Port Out on " + portOut + " could not start");
+			//throw new OscServerException("OSC Port Out on " + portOut + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		}
 	}
 	
@@ -107,7 +113,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param portOut - port to send messages on
 	 * @param netAddress - url of location to send messages to
 	 */
-	public PostOffice(int portIn, int portOut, String netAddress) throws OscServerException {
+	public PostOffice(int portIn, int portOut, String netAddress)  {
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
 		assert portOut > 1000 : "PostOffice constructor: portOut must be a valid port number, greater than 1000";
 		assert netAddress != null : "PostOffice constructor: netAddress must be a valid String";
@@ -119,14 +125,20 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_receive = new com.illposed.osc.OSCPortIn(portIn);
 			_receive.startListening();
 		} catch (SocketException e) {
-			throw new OscServerException("OSC Port In on " + portIn + " could not start");
+		//	throw new OscServerException("OSC Port In on " + portIn + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		}
 		try {
 			_send = new com.illposed.osc.OSCPortOut(InetAddress.getByName(netAddress), portOut);
 		} catch (UnknownHostException e) {
-			throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			//throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		} catch (SocketException e) {
-			throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			//throw new OscServerException("OSC Port Out on " + portOut + ", net address " + netAddress + " could not start");
+			assert true : "PostOffice Error: OSC Port In on " + portIn + " could not start";
+
 		}
 	}
 	
@@ -176,7 +188,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 */
 	public void registerMouseSubscription(MouseSubscriber sub, int button) {
 		assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
-		assert button == NOBUTTON ||
+		assert button == NO_BUTTON ||
 				button == LEFT_BUTTON ||
 				button == MIDDLE_BUTTON ||
 				button == RIGHT_BUTTON :
@@ -215,7 +227,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send - integer to be sent
 	 * @throws OscSendException 
 	 */
-	public void sendInt(String address, int send) throws OscSendException {
+	public void sendInt(String address, int send) {
 		assert _onOSC : "PostOffice.sendInt: cannot send an OSC message while OSC is off";
 		assert address != null : "PostOffice.sendInt: address must be a valid String";
 		Object[] array = new Object[1];
@@ -225,7 +237,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			throw new OscSendException("Error sending message " + send + " on " + address);
+		//	throw new OscSendException("Error sending message " + send + " on " + address);
+			assert true : "sendInt Error: Error sending message " + send + " on " + address;
+
 		}
 	}
 	
@@ -235,7 +249,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send
 	 * @throws OscSendException 
 	 */
-	public void sendFloat(String address, float send) throws OscSendException {
+	public void sendFloat(String address, float send)  {
 		assert _onOSC : "PostOffice.sendFloat: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendFloat: address must be a valid String";
 		Object[] array = new Object[1];
@@ -245,7 +259,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			throw new OscSendException("Error sending message " + send + " on " + address);
+			//throw new OscSendException("Error sending message " + send + " on " + address);
+			assert true : "sendFloat Error: Error sending message " + send + " on " + address;
+
 		}
 	}
 	
@@ -255,7 +271,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send
 	 * @throws OscSendException 
 	 */
-	public void sendBoolean(String address, boolean send) throws OscSendException {
+	public void sendBoolean(String address, boolean send) {
 		assert _onOSC : "PostOffice.sendBoolean: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendBoolean: address must be a valid String";
 		Object[] array = new Object[1];
@@ -265,7 +281,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			throw new OscSendException("Error sending message " + send + " on " + address);
+			//throw new OscSendException("Error sending message " + send + " on " + address);
+			assert true : "sendBoolean Error: Error sending message " + send + " on " + address;
+
 		}
 	}
 	
@@ -275,7 +293,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param send
 	 * @throws OscSendException 
 	 */
-	public void sendList(String address, ArrayList<Object> send) throws OscSendException {
+	public void sendList(String address, ArrayList<Object> send) {
 		assert _onOSC : "PostOffice.sendList: cannot send an OSC message unless OSC is off";
 		assert address != null : "PostOffice.sendList: address must be a valid String";
 		assert send != null : "PostOffice.sendList: send must be a valid ArrayList";
@@ -289,12 +307,15 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			_send.send(mail);
 		}
 		catch(Exception e) {
-			String message = "Error sending message ";
+			String message = "sendList Error: problem sending message ";
 			for(Object o : array) {
 				message += o + " ";
 			}
 			message += "on address " + address + "\n";
-			throw new OscSendException(message);
+			
+			//throw new OscSendException(message);
+			assert true : message;
+
 		}
 	}
 	
@@ -483,7 +504,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		else if(SwingUtilities.isRightMouseButton(e))
 			return RIGHT_BUTTON;
 		else
-			return NOBUTTON;
+			return NO_BUTTON;
 	}
 	
 	
