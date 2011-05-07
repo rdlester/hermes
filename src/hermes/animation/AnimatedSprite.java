@@ -150,13 +150,13 @@ public class AnimatedSprite {
 	
 
 	/**
-	 * Sets millisecondsPerFrame for this playback. It is valid until the next call to setActiveAnimation.
+	 * Overrides millisecondsPerFrame for this playback. It is valid until the next call to setActiveAnimation.
 	 * <br>Note: this does not overwrite the Animation's internal millisecondsPerFrame
 	 * @param millisecondsPerFrame		How many milliseconds each Animation frame will play for
 	 */
-	public void setMillisecondsPerFrame(int millisecondsPerFrame) {
-		assert millisecondsPerFrame>0 : "setMillisecondsPerFrame Error: millisecondsPerFrame must be a positive integer, you enetered: "+millisecondsPerFrame;
-		assert _setActiveAnimationWasCalled : "setMillisecondsPerFrame Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
+	public void overrideMillisecondsPerFrame(int millisecondsPerFrame) {
+		assert millisecondsPerFrame>0 : "overrideMillisecondsPerFrame Error: millisecondsPerFrame must be a positive integer, you enetered: "+millisecondsPerFrame;
+		assert _setActiveAnimationWasCalled : "overrideMillisecondsPerFrame Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
 		
 		_millisecondsPerFrameOnDeck = millisecondsPerFrame;
 		_millisecondsPerFrameOnDeckFlag = true; //flag this to get updated by animate()
