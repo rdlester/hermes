@@ -244,7 +244,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		catch(Exception e) {
 		//	throw new OscSendException("Error sending message " + send + " on " + address);
-			assert true : "sendInt Error: Error sending message " + send + " on " + address;
+			assert false : "sendInt Error: Error sending message " + send + " on " + address;
 
 		}
 	}
@@ -266,7 +266,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		catch(Exception e) {
 			//throw new OscSendException("Error sending message " + send + " on " + address);
-			assert true : "sendFloat Error: Error sending message " + send + " on " + address;
+			assert false : "sendFloat Error: Error sending message " + send + " on " + address;
 
 		}
 	}
@@ -288,7 +288,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 		catch(Exception e) {
 			//throw new OscSendException("Error sending message " + send + " on " + address);
-			assert true : "sendBoolean Error: Error sending message " + send + " on " + address;
+			assert false : "sendBoolean Error: Error sending message " + send + " on " + address;
 
 		}
 	}
@@ -320,7 +320,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			message += "on address " + address + "\n";
 			
 			//throw new OscSendException(message);
-			assert true : message;
+			assert false : message;
 
 		}
 	}
