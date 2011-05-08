@@ -159,7 +159,7 @@ class Canvas extends MassedBeing {
   void initialize() {
     for(int i=0; i<canvasNumCellsX; i++) {
       for(int j=0; j<canvasNumCellsY; j++) {
-        _grid[i][j] = new Cell(new PVector(canvasLeftX + i*cellSideLength, containerTopY + j*cellSideLength));
+        _grid[i][j] = new Cell(new PVector(canvasLeftX + i*cellSideLength, containerTopY + j*cellSideLength),i,j);
         world.registerBeing(_grid[i][j], false);
       } 
     }
@@ -171,12 +171,12 @@ class Canvas extends MassedBeing {
     //Add new cells to end, pull from first
     LinkedList<Cell> queue = new LinkedList<Cell>();
     //Map keeping track of cell before current cell
-    HashMap<Cell,Cel> order = new HashMap<Cell,Cell>();
+    HashMap<Cell,Cell> order = new HashMap<Cell,Cell>();
     
     //Get initial direction
     //This is constrained between down and right 
     float initAngle = random(PI/2);
-    PVector initDir = rotate(INIT_DIR,-initAngle);
+    PVector initDir = HermesMath.rotate(INIT_DIR,-initAngle);
     float initStr = INIT_STR;
     //Get the first cell and set its vector
     Cell first = _grid[0][0];
@@ -190,16 +190,16 @@ class Canvas extends MassedBeing {
     queue.addLast(start);
     order.put(start,first);
     
-    while(cells.size() > 0) {
+    while(queue.size() > 0) {
       //Get next cell
-      Cell curr = cells.removeFirst();
+      Cell curr = queue.removeFirst();
       //Get the cell before this one
       Cell pre = order.get(curr);
       //Get the previous direction and rotate it by a constrained amount
       PVector preDir = pre.getFlowDir();
       float theta = random(PI/2) - PI/4;
       PVector nextDir = getRotate(preDir,theta);
-      curr.setFlowDir(nextDir)
+      curr.setFlowDir(nextDir);
       //Get the previous strength and adjust it
       float preStr = pre.getFlowStr();
       //TODO: adjust strength
@@ -378,7 +378,7 @@ class ToolBox extends Being {
      //make all the cells 
      for(int i=0; i<toolBoxNumCellsX; i++) {
        for(int j=0; j<toolBoxNumCellsY; j++) {
-         _grid[i][j] = new Cell(new PVector(toolBoxLeftX + i*cellSideLength, containerTopY + j*cellSideLength));
+         _grid[i][j] = new Cell(new PVector(toolBoxLeftX + i*cellSideLength, containerTopY + j*cellSideLength),i,j);
          world.registerBeing(_grid[i][j], false);
        } 
      }
@@ -601,7 +601,7 @@ class Ball extends MassedBeing {
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
     if(!in.hasTool()) { //appply the flow if the cell has no tool within
-     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
+     setVelocity(PVector.add(getVelocity(), in.getFlowDir()));
     } 
   }
   
@@ -669,7 +669,7 @@ class Bubble extends MassedBeing {
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
     if(!in.hasTool()) { //appply the flow if the cell has no tool within
-     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
+     setVelocity(PVector.add(getVelocity(), in.getFlowDir()));
     }
   } 
 }
