@@ -22,8 +22,6 @@ Notes:
 
 
 //TODO:
-- make run/build button better // jen
-- ask sam about multisampling -- need here?
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
 - make the tools //-rl
@@ -50,6 +48,7 @@ PostOffice po;
 
 final int BUILD = 0;
 final int RUN = 1;
+final int COMPLETED = 2;
 int mode = BUILD; // 0 is setup; 1 is run
 
 
@@ -539,7 +538,7 @@ class FakeTool extends Tool {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
-      } else if(mode == RUN) {
+      } else if(mode == RUN || mode == COMPLETED) {
         setMode(BUILD); 
       }
     }
@@ -561,7 +560,7 @@ class FakeTool extends Tool {
    if(mode == BUILD) {
      triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
      //ellipse(0, 0, innerSymbolLength, innerSymbolLength); 
-   } else if(mode == RUN) {
+   } else if(mode == RUN || mode == COMPLETED) {
      rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
   }
@@ -617,10 +616,22 @@ class Goal extends Being {
   world.registerBeing(this, false);
  }
  void draw() {
-  strokeWeight(2);
-  stroke(189, 0, 0);
-  line(10,10,cellSideLength-10,cellSideLength-10); //    \
-  line(cellSideLength-10, 10, 10, cellSideLength-10); //  /
+  if(mode == RUN) {
+    strokeWeight(3);
+    stroke(189, 0, 0);
+    line(10,10,cellSideLength-10,cellSideLength-10); //    \
+    line(cellSideLength-10, 10, 10, cellSideLength-10); //  /
+  } else if(mode == COMPLETED) {
+    strokeWeight(2);
+    stroke(255);
+    fill(62, 67, 71, 130);
+    rect(0, 0, cellSideLength, cellSideLength);
+    strokeWeight(3);
+    stroke(0, 240, 0);
+    line(15, 20, 20, 30); // \
+    line(20, 30, 30, 10); // /
+  }
+
  } 
 }
 
@@ -664,6 +675,7 @@ class Bubble extends MassedBeing {
 class BallGoalCollider extends Collider<Ball, Goal> {
   public boolean handle(Ball being1, Goal being2) {
     println("ball goal collided");
+    setMode(COMPLETED);
     return true;
   }
 }
@@ -800,6 +812,12 @@ void setMode(int newMode) {
     world.addBeing(ball, ballGroup);
     goal = new Goal();    //make the goal
     world.addBeing(goal, goalGroup);
+  } else if(newMode == COMPLETED) {
+    //TODO: fill in 
+    if(ball!=null) {
+      world.deleteBeing(ball);
+      ball = null; 
+    }
   }
   
   mode = newMode;
