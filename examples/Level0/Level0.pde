@@ -21,17 +21,17 @@ Notes:
 
 
 //TODO:
-- mousemessage handling is messy - just do it from one place
 - handle special case -- no putting tool on ball or goal
 - fix colours!! //-rl
 - make run/build button better
 - ask sam about multisampling -- need here?
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
-
+- determine end-game behaviour
 
 Bugs:
-- when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl
+- when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl//
+  //it still look weird to me, does it look right on yours? -jen
 
 
 
@@ -99,6 +99,8 @@ final int FAKETOOL = 100; //TODO: remove this obvs
 //Tool stored by dragging, used for placing tools on the board
 int toolMode = NOTOOL;
 Tool dragTool = null;
+int dragIniti = -1; // set to -1 when from toolbox,
+int dragInitj = -1; // real values when from canvas
 
 //ball
 Ball ball = null;
@@ -117,6 +119,7 @@ Group<Ball> ballGroup = null;
 Group<Goal> goalGroup = null;
 Group<Canvas> canvasGroup = null;
 Group<Tool> toolGroup = null;
+Group<Bubble> bubbleGroup = null;
 
 
 
@@ -174,12 +177,15 @@ class Canvas extends MassedBeing {
 	int j = y / cellSideLength;
 	// add the tool to the appropriate cell
 	Cell in = _grid[i][j];
+        //prohibited cells are those with ball, goal
+        boolean prohibitedCell = (i==balli && j==ballj) || (i==goali && j==goalj);
 	
 	int action = m.getAction();
 
 	if(action == PostOffice.MOUSE_RELEASED && mode == BUILD) { 
           if(dragTool != null) { //tool is being dropped into a cell
           //NOTE: dragTool's CENTER is at the mouse location
+           if(!prohibitedCell) {
 	        // remove the tool at that cell if necessary
 		if(in.hasTool()) {
                   Tool toRemove = in.getTool();
@@ -193,14 +199,31 @@ class Canvas extends MassedBeing {
                 //clean up global vars
                 dragTool = null;
 		//TODO how to account for multi-cell objects? What about the baton (which doesn't actually take up a cell?)
+           } else { // trying to drag into prohibited cell
+             if(dragIniti<0 && dragInitj<0) { //from toolbox
+               world.deleteBeing(dragTool);//delete the tool
+               dragTool = null;
+               dragIniti = -1;
+               dragInitj = -1;
+             } else { // from canvas
+               dragTool.setPosition(new PVector(canvasLeftX+(dragIniti*cellSideLength), containerTopY+(dragInitj*cellSideLength)));//return to previous place
+               _grid[dragIniti][dragInitj].setTool(dragTool);
+               dragTool = null;
+               dragIniti = -1;
+               dragInitj = -1;
+             }
+             
+           }
 	  }
 
 	} else if(action == PostOffice.MOUSE_PRESSED && mode == BUILD) {
           //check if pressed on cell containing tool
           if(in.hasTool()) {
            dragTool = in.getTool();//set dragTool to the tool therein
+           dragIniti = i;
+           dragInitj = j;
            in.setTool(null);
-          } else if(toolMode!=NOTOOL) { //cell has no tool and toolMode is set to something
+          } else if(toolMode!=NOTOOL && !prohibitedCell) { //cell has no tool and toolMode is set to something
             Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength, containerTopY+j*cellSideLength));
             in.setTool(newTool);
             _toolGroup.add(newTool);
@@ -209,7 +232,7 @@ class Canvas extends MassedBeing {
 	} else if(action == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
           if(dragTool!=null) { //TODO: this code is identical in 3 places, probably a better way to do this
             dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
-          } else if(toolMode!=NOTOOL) {
+          } else if(toolMode!=NOTOOL && !prohibitedCell) {
       	    // remove the tool at that cell if necessary
 	    if(in.hasTool()) {
               Tool toRemove = in.getTool();
@@ -293,6 +316,8 @@ class ToolBox extends Being {
         //instantiate new version of that tool 
         //TODO: make static method in tool to return a new instance of that tool (taking toolcode and pos)
         dragTool = makeTool(toolMode, new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+        dragIniti = -1;
+        dragInitj = -1;
       }
     } else if(m.getAction() == PostOffice.MOUSE_RELEASED && mode == BUILD) {
       //check if you are currently dragging a tool
@@ -535,6 +560,39 @@ class Goal extends Being {
  } 
 }
 
+/**
+ *
+ */
+class Bubble extends MassedBeing {
+  
+  Bubble(PVector position) {
+    super(new Circle(position, ballRadius), new PVector(0,0), ballMass, ballElasticity);
+    world.registerBeing(this, true);
+  }
+  
+  void draw() {
+    fill(146, 239, 233, 120);
+    noStroke();
+    ellipse(0,0,ballRadius,ballRadius);
+  }
+  
+  void update() {
+    //add the flow from the cell
+    int x = (int)getX();
+    int y = (int)getY();
+    x -= canvasLeftX;
+    y -= containerTopY;
+    int i = x / cellSideLength;
+    int j = y / cellSideLength;
+    Cell[][] grid = canvas.getGrid();
+    Cell in = grid[i][j];  
+    if(!in.hasTool()) { //appply the flow if the cell has no tool within
+     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
+    }
+  } 
+  
+}
+
 ///////////////////////////////////////////////////
 // INTERACTORS
 ///////////////////////////////////////////////////
@@ -644,6 +702,9 @@ class Zero {
  */
 void setMode(int newMode) {
   if(newMode == BUILD) {
+    if(bubbleGroup!=null) {//delete the bubbles
+      bubbleGroup.destroy();
+    }
     if(ball!=null) {     //delete the ball
       world.deleteBeing(ball);
       ball = null;
@@ -656,6 +717,8 @@ void setMode(int newMode) {
     //clean up global vars
     toolMode = NOTOOL;
     dragTool = null;
+    
+    makeBubbles();//make the bubbles (note: I put this before make the ball so that ball will be drawn overtop)
     ball = new Ball();    //make the ball
     world.addBeing(ball, ballGroup);
     goal = new Goal();    //make the goal
@@ -663,6 +726,18 @@ void setMode(int newMode) {
   }
   
   mode = newMode;
+}
+
+/**
+ *
+ */
+void makeBubbles() {
+   for(int i=0; i<canvasNumCellsX; i++) {
+    for(int j=0; j<canvasNumCellsY; j++) {
+     Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
+     world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
+     } 
+   }
 }
 
 ///////////////////////////////////////////////////
@@ -690,6 +765,7 @@ void setup() {
   goalGroup = new Group(world);
   toolGroup = new Group(world);
   canvasGroup = new Group(world);
+  bubbleGroup = new Group(world);
   
   //containers
   canvas = new Canvas();
@@ -710,8 +786,10 @@ void setup() {
   
   //register interactions
   world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);
+  world.registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider(), true);
   world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
   world.registerInteraction(toolGroup, ballGroup, new MassedCollider(), true);
+  
   
   smooth();
 
