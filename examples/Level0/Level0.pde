@@ -82,10 +82,20 @@ int canvasNumCellsY = containerHeight / cellSideLength;
 int toolBoxNumCellsX = toolBoxWidth / cellSideLength;
 int toolBoxNumCellsY = containerHeight / cellSideLength;
 
+//button stuff
+int buttonHover = 240;
+
 //run button
+int starNum = 8;
 int runButtonRadius = cellSideLength;
 int runButtonCenterX = canvasLeftX + cellSideLength;
 int runButtonCenterY = containerTopY - 10 - runButtonRadius;
+
+//random button
+int randomButtonSide = cellSideLength;
+int randomButtonX = canvasRightX - randomButtonSide;
+int randomButtonY = containerTopY - 10 - randomButtonSide;
+
 
 
 //Constants defining the tools
@@ -685,7 +695,7 @@ class RunButton extends Being {
 
    
   RunButton() {
-    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius), new PVector(0,0));
+    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -706,7 +716,7 @@ class RunButton extends Being {
    strokeWeight(3);
    stroke(62, 67, 71);
    if(_hover) {
-     fill(240);
+     fill(buttonHover);
    } else {
      fill(bgColor);
    }
@@ -717,6 +727,46 @@ class RunButton extends Being {
    } else if(mode == RUN || mode == COMPLETED) {
      rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
+  }
+}
+
+class RandomButton extends Being {
+  
+  Canvas _c;
+  boolean _hover;
+  
+  RandomButton(Canvas c) {
+    super(new Rectangle(randomButtonX,randomButtonY,randomButtonSide,randomButtonSide));
+    _c = c;
+    _hover = false;
+  }
+  
+  void handleMouseMessage(MouseMessage m) {
+    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+      _c.randomize();
+    }
+  }
+  
+  boolean getHover() {
+    return _hover;
+  }
+  void setHover(boolean hover) {
+    _hover = hover;
+  }
+  
+  void draw() {
+    if(_hover) {
+      fill(buttonHover);
+    }
+    else {
+      noFill();
+    }
+    getShape().draw();
+    //Draw star in the center
+    for(int i = 0; i < starNum; i++) {
+      rotate(PI/starNum);
+      line(randomButtonSide/4,randomButtonSide/4,-randomButtonSide/4,-randomButtonSide/4);
+    }
   }
 }
 
@@ -857,11 +907,13 @@ class MouseHandler implements MouseSubscriber {
   Canvas _c;
   ToolBox _b;
   RunButton _r;
+  RandomButton _rand;
 
-  MouseHandler(Canvas c, ToolBox b, RunButton r) {
+  MouseHandler(Canvas c, ToolBox b, RunButton r, RandomButton rand) {
     _c = c;
     _b = b;
     _r = r;
+    _rand = rand;
   }
 
   void handleMouseMessage(MouseMessage m) {
@@ -875,17 +927,24 @@ class MouseHandler implements MouseSubscriber {
     
     if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
       if(_r.getHover()) {_r.setHover(false);} // turn run button hover off
+      _rand.setHover(false);
       _c.handleMouseMessage(m); 
     } else if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
       checkCanvasHover();
+      _rand.setHover(false);
       if(_r.getHover()) {_r.setHover(false);} // turn run button hover off
       _b.handleMouseMessage(m);
     } else if(HermesMath.inCircle(x,y,runButtonCenterX,runButtonCenterY,runButtonRadius)) { // in run button
       checkCanvasHover();
+      _rand.setHover(false);
       if(!_r.getHover()) _r.setHover(true); // turn run button hover on
       _r.handleMouseMessage(m);
+    } else if(randomButtonX > x && randomButtonY > y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) {
+      _rand.setHover(true);
+      _rand.handleMouseMessage(m);
     } else { // not in container
       checkCanvasHover();
+      _rand.setHover(false);
       if(_r.getHover()) _r.setHover(false); // turn run button hover off
       notInAContainer(m); 
     }
@@ -1041,14 +1100,16 @@ void setup() {
   toolBox = new ToolBox();
   world.registerBeing(toolBox, false);
   
-  //run button
+  //buttons
   RunButton runButton = new RunButton();
   world.registerBeing(runButton, true);
   textFont(createFont("Courier", 36));
   textAlign(CENTER);
+  RandomButton randomButton = new RandomButton(canvas);
+  world.registerBeing(randomButton,false);
   
   //make the mousehandler and register subscriptions with the postoffice
-  MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton);
+  MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
 	po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
   
