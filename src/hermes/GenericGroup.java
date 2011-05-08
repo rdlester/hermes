@@ -146,11 +146,3 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	}
 	
 }
-/*
-class BackedGroup<A extends Being> extends GenericGroup<A, Collection<A>>{
-
-	public BackedGroup(Collection<A> beings) {
-		super(beings);
-	}
-	
-}*/

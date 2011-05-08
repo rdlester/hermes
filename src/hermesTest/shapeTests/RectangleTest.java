@@ -105,4 +105,18 @@ public class RectangleTest {
 		assertEquals(rect.getCenter().y, 1.5f, 1e-8);
 	}
 	
+	/**
+	 * tests Rectangle.contains(Rectangle)
+	 */
+	@Test
+	public void test_contains() {
+		Rectangle r1 = new Rectangle(new PVector(0,0), 6, 6);
+		assertTrue(r1.contains(r1));
+		Rectangle r2 = new Rectangle(new PVector(0,0), 4, 4);
+		assertTrue(r1.contains(r2));
+		assertFalse(r2.contains(r1));
+		r2 = new Rectangle(new PVector(0, 2), 2.5f, 2.5f);
+		assertFalse(r1.contains(r2));
+	}
+	
 }
