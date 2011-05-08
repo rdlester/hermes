@@ -339,8 +339,8 @@ public class AnimatedSprite {
 	 * advances _currentFrameIndex
 	 * <br>considers: the play direction, initial and last frame positions (including those where last is lower than initial), and lower and upper indices of the Animation's array 
 	 */
-	private void advanceFrame() { 
-
+	private void advanceFrame() {
+		
 		if (_initialFrame == _lastFrame) { //if the user has set the initalFrame and lastFrame to the same.. just display that frame
 			_currentFrameIndex = _initialFrame;
 
