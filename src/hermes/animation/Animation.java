@@ -78,7 +78,40 @@ public class Animation {
 		_frames = currentAnimation;
 	}
 	
+	/**
+	 * Builds an Animation from several image files on disk (where each is an individual frame in the Animation), and adds it to the Sprite's collection of Animations
+	 * 
+	 * <p>The method loads files with numbers starting from 0 to (numberOfImagesToLoad-1) and assumes numerical contiguity
+	 * <br>ex. BigBaboon0.jpg, BigBaboon1.jpg, BigBaboon2.jpg would have method call:
+	 * <br>addAnimationFromSequenceOfImages("BigBaboon", 3, ".jpg");</P>
+	 * 
+	 * <p>Works with all image filetypes supported by PImage: .gif, .jgp, tga, .png</p>
+	 * 
+	 * @param imageSequenceNamePrefix 	file prefix of all of the images to be loaded into this Animation ex. "BigBaboon"
+	 * @param numberOfImagesToLoad		total number of images to load (note: your names should be indexed starting from 0)
+	 * @param fileType					file extension including the 'dot' - supports: ".gif" ".jgp" ".tga" ".png"
+	 * @param millisecondsPerFrame		amount of time each frame in the Animation is displayed, in milliseconds
 
+	 * @return							the index of the newly created Animation
+	 */
+	public Animation(String imageSequenceNamePrefix, int startIndex, int endIndex, String fileType, int millisecondsPerFrame) {
+		//asserts to check for valid inputs
+		assert supportImageType(fileType): "addAnimation Error: Images of filetype: "+fileType+"not supported.\n Suported types: .gif, .jgp, tga, .png";
+
+		_millisecondsPerFrame = millisecondsPerFrame;
+		
+		ArrayList<PImage> currentAnimation = new ArrayList<PImage>(); // make an ArrayList to store Animation being built
+
+		//populates current Animation with the files named: <imageSequenceNamePrefix>i<fileType>
+		//ex. BigBaboon4.jpg
+		for (int i = startIndex; i <= endIndex; i++) { 
+			PImage currentImage = Hermes.getPApplet().loadImage(imageSequenceNamePrefix + i + fileType);
+			currentAnimation.add(currentImage);
+		}
+
+		_frames = currentAnimation;
+	}
+	
 	/**
 	 * Builds a new Animation from an ArrayList of PImages and adds it to the Sprite's collection of Animations
 
@@ -136,7 +169,7 @@ public class Animation {
 	 * @return			The PImage frame at the index
 	 */
 	public PImage getFrame(int index) {
-		assert  index < _frames.size() : "getFrame Error: Index must be between 0 and the number of frames in the Animation";
+		assert  (index>=0 && index < _frames.size()) : "getFrame Error: Index must be between 0 and the number of frames in the Animation";
 		
 		return _frames.get(index);	
 	}

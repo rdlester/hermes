@@ -30,6 +30,7 @@ Notes:
 Bugs:
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
   i.e. we're not drawing over those balls again
+- don't draw arrows in cells in toolbox (give null value or somehtin)
 
 
 
@@ -72,6 +73,8 @@ int toolBoxLeftX = 430;
 int toolBoxRightX = toolBoxLeftX + toolBoxWidth;
 
 //Cell constants
+static final PVector INIT_DIR = new PVector(0,1);
+static final float INIT_STR = 1;
 float flowMax = 10;
 int cellSideLength = 40; //gives us 9 across, 12 down in canvas ; 3 across, 12 down in toolbox
 int canvasNumCellsX = canvasWidth / cellSideLength;
@@ -149,6 +152,7 @@ class Canvas extends MassedBeing {
     return _grid; 
   }
   
+  //Initialize cell grid
   void initialize() {
     for(int i=0; i<canvasNumCellsX; i++) {
       for(int j=0; j<canvasNumCellsY; j++) {
@@ -156,6 +160,11 @@ class Canvas extends MassedBeing {
         world.registerBeing(_grid[i][j], false);
       } 
     }
+  }
+  
+  //Randomize grid using drunk walk and bfs
+  void randomize() {
+    
   }
 
 	//TODO Add cell randomizer
@@ -402,29 +411,29 @@ class ToolBox extends Being {
  */
 class Cell extends Being {
  
-  PVector _flowDirection; //Any normalized vector
-  float _flowStrength; //Cannot be negative or greater than flowMax
+  PVector _flowDir; //Any normalized vector
+  float _flowStr; //Cannot be negative or greater than flowMax
   Tool _tool;
   boolean _hover;
   
   Cell(PVector cellTopLeft) {
     super(new Rectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength), PApplet.CORNER));
-    _flowDirection = new PVector(0,1);
-    _flowStrength = 1;
+    _flowDir = INIT_DIR;
+    _flowStr = INIT_STR;
     _tool = null;
     _hover = false;
   }
   
   PVector getFlowDirection() {
-    return _flowDirection; 
+    return _flowDir; 
   }
   
   void setFlowDir(PVector direction) {
-    _flowDirection = direction; 
+    _flowDir = direction; 
   }
 
   void setFlowStrength(float strength) {
-    _flowStrength = strength;
+    _flowStr = strength;
   }
 	
   boolean hasTool() {
@@ -448,7 +457,7 @@ class Cell extends Being {
   }
 
   void draw() {
-    if(_hover) {
+    if(_hover && mode == BUILD) {
       fill(137, 148, 158);
     }
     else {
@@ -461,8 +470,9 @@ class Cell extends Being {
       if(hasTool()) { // the cell contains a tool
         _tool.draw();
       } else { // draw the arrow
+        //TODO: figure out algorithm for representing flow strength
         translate(cellSideLength/2, cellSideLength/2);
-        float angle = HermesMath.angle(_flowDirection);
+        float angle = HermesMath.angle(_flowDir);
         rotate(angle - PI/2);
         stroke(0,0,255,70);
         translate(0, cellSideLength/4);
@@ -471,14 +481,16 @@ class Cell extends Being {
         line(0,0,0,-cellSideLength/4);
         rotate(3*PI/2.0);
         line(0,0,0,-cellSideLength/4);
-        //TODO: idea: init flow to -1 and don't draw if <0, set flows for canvas in its initialize()
       }
     } else if(mode == RUN) { // in RUN mode
       //TODO: fill in
     }
   }
 }
- 
+
+///////////////////////////////////////////////////
+// TOOLS
+///////////////////////////////////////////////////
  
 /**
  *
@@ -522,6 +534,27 @@ class FakeTool extends Tool {
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
   }
+}
+
+/**
+ *
+ */
+class Triangle extends Tool {
+ 
+ Triangle(PVector center, double theta) {
+   super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
+         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
+   ((Polygon)this.getShape()).rotate(theta);
+ }
+
+ void rotate(double theta) {
+   ((Polygon)this.getShape()).rotate(theta);
+ } 
+ 
+ void draw() {
+  this.getShape().draw();
+ } 
+  
 }
 
 /**
@@ -680,7 +713,6 @@ class Bubble extends MassedBeing {
 
 class BallGoalCollider extends Collider<Ball, Goal> {
   public boolean handle(Ball being1, Goal being2) {
-    println("ball goal collided");
     setMode(COMPLETED);
     return true;
   }
@@ -833,10 +865,13 @@ void setMode(int newMode) {
  *
  */
 void makeBubbles() {
+  Cell[][] grid = canvas.getGrid();
   for(int i=0; i<canvasNumCellsX; i++) {
    for(int j=0; j<canvasNumCellsY; j++) {
-     Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
-     world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
+     if(!grid[i][j].hasTool()) {
+       Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
+       world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
+     }
    } 
   }
 }
@@ -881,8 +916,6 @@ void setup() {
   textFont(createFont("Courier", 36));
   textAlign(CENTER);
   
-  //TODO: make the ball, bubbles, set modes, make inside massed collider
-  
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
@@ -893,6 +926,7 @@ void setup() {
   world.registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider(), true);
   world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
   world.registerInteraction(toolGroup, ballGroup, new MassedCollider(), true);
+  world.registerInteraction(toolGroup, bubbleGroup, new MassedCollider(), true);
    
   smooth();
 

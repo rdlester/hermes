@@ -14,23 +14,34 @@ import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
 import java.util.Random;
+import static src.hermes.HermesMath.*;
 
+//Engine parts
 World _world;
 PostOffice _postOffice;
 Camera _camera;
 
+//Groups
 BallGroup _ballGroup;
 BoxGroup _boxGroup;
 
+//Tracking the mouse
 boolean _mousePressed;
 float _origX, _origY;
 float _dX, _dY;
 
+//Screen/World size
 final int WIDTH = 400;
 final int HEIGHT = 400;
 
+//Used in creating polygons, updated by OSC
 static int polyPoint = 3; //Number of points in PolyBalls
+static float polyRot = 0; //Amount to rotate new PolyBalls by
 
+//Constant determining ball size
+static final int ballSize = 25; //Size of ball, scaled by ball mass
+
+//Used for creating different shapes
 static int mode = 0; //Mode dictating which type of ball will get created
 static final int POLY_MODE = 0;
 static final int POLY_KEY = PostOffice.VK_1;
@@ -41,19 +52,21 @@ static final int RECT_KEY = PostOffice.VK_3;
 static final int DELETE_KEY = PostOffice.D;
 
 void setup() {
-  size(WIDTH, HEIGHT); 
+  size(WIDTH, HEIGHT);
   Hermes.setPApplet(this);
  
+  //Set up the engine
   _camera = new Camera();
   try {
-   _postOffice = new PostOffice(8080, 8000);
+    _postOffice = new PostOffice(8080, 8000);
   } catch(Exception e) {
-   _postOffice = new PostOffice(); 
+    _postOffice = new PostOffice();
   }
   _world = new World(_postOffice, _camera);
   _world.lockUpdateRate(50);
  
   _ballGroup = new BallGroup(_world);
+  //ball group handles all messages
 	_postOffice.registerKeySubscription(_ballGroup, POLY_KEY);
 	_postOffice.registerKeySubscription(_ballGroup, CIRCLE_KEY);
 	_postOffice.registerKeySubscription(_ballGroup, RECT_KEY);
@@ -62,9 +75,11 @@ void setup() {
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
 	_postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetSides");
+	_postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetRotate");
   
   _boxGroup = new BoxGroup(_world);
   
+  //Set up the interactions
   _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false);
   _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider(), false);
 
@@ -75,29 +90,37 @@ void setup() {
 
 
 void draw() {
-    background(230);
-		
-    if(_mousePressed) {
-     line(_origX, _origY, _dX, _dY); 
-    }
+  background(230); //Overwrite what's already been drawn
+	
+  if(_mousePressed) {
+    //Draw line indicating velocity of created ball
+    line(_origX, _origY, _dX, _dY);
+  }
     
-    _camera.draw(); // Camera object handles drawing all the appropriate Beings
+  _camera.draw(); //Camera object handles drawing all the appropriate Beings
 
 }
 
+/**
+ * Represents the program frame
+ * Keeps balls from escaping frame
+ */
 class BoxGroup extends Group<Box> {
- 
   BoxGroup(World world) {
     super(world);
     Box boite = new Box();
-    getWorld().registerBeing(boite, true);
+      getWorld().registerBeing(boite, true);
     this.add(boite);
   }
-  
 }
 
+/**
+ * Holds and keeps track of balls
+ * Handles messages and the creation of new balls
+ */
 class BallGroup extends Group<Ball> {
   
+  //Used in creating balls, updated via OSC
   float _newMass = 1;
   float _newElasticity = 1;
   
@@ -106,6 +129,7 @@ class BallGroup extends Group<Ball> {
    _mousePressed = false;
   }
 
+  //Updates ball creation mode depending on key press
 	void handleKeyMessage(KeyMessage m) {
 		int key = m.getKeyCode();
 		switch(key) {
@@ -124,10 +148,11 @@ class BallGroup extends Group<Ball> {
 		}
 	}
 
+  //Handles mouse messages for line drawing and ball creation
 	void handleMouseMessage(MouseMessage m) {
 		int action = m.getAction();
 		switch(action) {
-			case PostOffice.MOUSE_PRESSED:
+			case PostOffice.MOUSE_PRESSED: //Register mouse press and initialize variables
 				if(!_mousePressed) {
 					_mousePressed = true;
 					_origX = m.getX();
@@ -136,11 +161,11 @@ class BallGroup extends Group<Ball> {
 					_dY = m.getY();
 				}
 				break;
-			case PostOffice.MOUSE_DRAGGED:
+			case PostOffice.MOUSE_DRAGGED: //Update mouse location
 				_dX = m.getX();
 				_dY = m.getY();
 				break;
-			case PostOffice.MOUSE_RELEASED:
+			case PostOffice.MOUSE_RELEASED: //Deregister mouse press and create new ball
 				_mousePressed = false;
 				Ball ball;
 				switch(mode) {
@@ -163,7 +188,8 @@ class BallGroup extends Group<Ball> {
 				break;
 		}
 	}
-   
+  
+  //Updates variables influencing ball creation
 	void handleOscMessage(OscMessage m) {
 		String[] messages = m.getAddress().split("/");
 		if(messages[1].equals("BouncingBalls")) {
@@ -176,11 +202,17 @@ class BallGroup extends Group<Ball> {
 			else if(messages[2].equals("SetSides")) {
 				polyPoint = (int) m.getAndRemoveInt();
 			}
-       
-     }
-   }
+			else if(messages[2].equals("SetRotate")) {
+			  polyRot = constrain(m.getAndRemoveFloat(), 0, 2*PI);
+			} 
+    }
+  }
 }
 
+/**
+ * Abstract class for balls, contains basic functionality
+ * Only difference between type of balls is the type of shape used
+ */
 abstract class Ball extends MultisampledMassedBeing {
 	
 	Group _group;
@@ -208,56 +240,42 @@ abstract class Ball extends MultisampledMassedBeing {
 	}
 }
 
+/**
+ * Creates a polygonal ball
+ * Uses factory method inside of Polygon to create the polygons
+ */
 class PolyBall extends Ball {
   PolyBall(PVector center, PVector velocity, float mass, float elasticity) {
-    super(makePolygon(center,mass), velocity, mass, elasticity);
+    super(Polygon.createRegularPolygon(center,polyPoint,ballSize * mass), velocity, mass, elasticity);
+    ((Polygon) getShape()).rotate(polyRot);
   }
 }
 
-static Polygon makePolygon(PVector center, float mass) {
-	//float radius = 25 * mass;
-	ArrayList<PVector> points = new ArrayList<PVector>();
-	//Random r = new Random();
-	//for(int i = 0; i < polyPoint; i++) {
-	//	float nextX = r.nextFloat();
-	//	nextX = (nextX * 2 * radius) - radius;
-	//	float nextY = r.nextFloat();
-	//	nextY = (nextY * 2 * radius) - radius;
-	//	points.add(new PVector(nextX, nextY));
-	//}
-	//points.add(new PVector(0,radius));
-	//points.add(new PVector(radius,0));
-	//points.add(new PVector(0,-radius));
-	//points.add(new PVector(-radius,0));
-	PVector vertex = new PVector(0,25*mass);
-	points.add(vertex);
-	double rot = 2*PI / polyPoint;
-	for(int i = 1; i < polyPoint; i++) {
-		PVector next = HermesMath.getRotate(points.get(i-1),rot);
-		points.add(next);
-	}
-	return new Polygon(center,points);
-}
-
+/**
+ * Creates a circular ball
+ */
 class CircleBall extends Ball {
 	CircleBall(PVector center, PVector velocity, float mass, float elasticity) {
-		super(new Circle(center, 25 * mass), velocity, mass, elasticity);
+		super(new Circle(center, ballSize * mass), velocity, mass, elasticity);
 	}
 }
 
+/**
+ * Creates a square ball
+ */
 class RectBall extends Ball {
 	RectBall(PVector center, PVector velocity, float mass, float elasticity) {
-		super(new Rectangle(center, 25 * mass, 25 * mass), velocity, mass, elasticity);
+		super(new Rectangle(center, ballSize * mass, ballSize * mass), velocity, mass, elasticity);
 	}
 }
 
+/**
+ * Container box to the world
+ */
 class Box extends MassedBeing {
-  
   Box() {
    super(new Rectangle(new PVector(0,0), new PVector(0,0), new PVector((float)WIDTH,(float)HEIGHT)), new PVector(0,0), Float.POSITIVE_INFINITY, 1); 
   }
   
   void draw() {}
-  
 }
-
