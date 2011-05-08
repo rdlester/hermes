@@ -204,6 +204,14 @@ public class Rectangle extends Shape {
 				maxX1 >= maxX2 && maxY1 >= maxY2;
 	}
 
+	public boolean contains(float x, float y) {
+		return x >= getAbsMin().x && y >= getAbsMin().y && x <= getAbsMax().x && y <= getAbsMax().y;
+	}
+	
+	public boolean contains(PVector point) {
+		return contains(point.x, point.y);
+	}
+	
 	@Override
 	public String toString() {
 		return "Position:" + _position + "\nMin:" + _min + "\nMax:" + _max;
