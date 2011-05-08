@@ -25,12 +25,9 @@ Notes:
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
 - make the tools //-rl
-- determine end-game behaviour // jen
-- menus, save levels
+- menus, save levels (?do we want?)
 
 Bugs:
-- when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl//
-  //it still look weird to me, does it look right on yours? -jen
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen
 
 
@@ -105,7 +102,7 @@ int dragInitj = -1; // real values when from canvas
 Ball ball = null;
 int balli = 0; //index in canvas
 int ballj = 0;
-int ballRadius = 20;
+int ballRadius = 10;
 int ballMass = 100;
 int ballElasticity = 1;
 //goal
@@ -169,7 +166,7 @@ class Canvas extends MassedBeing {
       translate(balli*cellSideLength+cellSideLength/2, ballj*cellSideLength+cellSideLength/2);
       fill(189, 0, 0, 70);
       noStroke();
-      ellipse(0,0,ballRadius,ballRadius);
+      ellipse(0,0,ballRadius*2,ballRadius*2);
       popMatrix();
       
       //draw phantom goal
@@ -599,7 +596,7 @@ class Ball extends MassedBeing {
   void draw() {
     fill(189, 0, 0);
     noStroke();
-    ellipse(0,0,ballRadius,ballRadius);
+    ellipse(0,0,ballRadius*2,ballRadius*2);
   }
   
 }
@@ -648,7 +645,7 @@ class Bubble extends MassedBeing {
   void draw() {
     fill(146, 239, 233, 120);
     noStroke();
-    ellipse(0,0,ballRadius,ballRadius);
+    ellipse(0,0,ballRadius*2,ballRadius*2);
   }
   
   void update() {
