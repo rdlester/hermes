@@ -35,11 +35,12 @@ public class AnimatedSprite {
 	private boolean _playDirectionLeftToRightOnDeck;
 	private boolean _playDirectionLeftToRightOnDeckFlag;
 	private boolean _playingOnDeck = true;
+	private boolean _interruptibleOnDeck;
 
 
 	//these are changed by override methods 
 	// (the setters won't overwrite the stored values of the individual animations.. they just affect the current activeAnimation's playback) 
-	private boolean _currentInterruptible;
+	private boolean _currentInterruptible = true;
 	private int _numberOfPlaysRemaining;
 
 	private int _timeOfLastFrameAdvance; //used to keep track of when to advance frames
@@ -108,6 +109,7 @@ public class AnimatedSprite {
 			_lastFrameOnDeckFlag = true;
 			_playDirectionLeftToRightOnDeck = true;
 			_playDirectionLeftToRightOnDeckFlag = true;
+			_interruptibleOnDeck = _animations.get(animationIndex).getInterruptible();
 		}
 	}
 
@@ -285,8 +287,6 @@ public class AnimatedSprite {
 	    _playingOnDeck = false;
 	}
 
-
-
 	/**
 	 * This method handles advancing the Animation's frame, and then returns the PImage corresponding to the Animation's current state
 	 * 
@@ -314,6 +314,7 @@ public class AnimatedSprite {
 			if (_indexOfAnimationOnDeckFlag) { //set activeAnimation was called - update the active animation using onDeck buffer
 				_activeAnimation = _animations.get(_indexOfAnimationOnDeck);	
 				_indexOfAnimationOnDeckFlag = false; //reset flag
+				_currentInterruptible = _interruptibleOnDeck;
 			}
 
 			if (_millisecondsPerFrameOnDeckFlag) { 
