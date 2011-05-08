@@ -23,15 +23,15 @@ Notes:
 //TODO:
 - mousemessage handling is messy - just do it from one place
 - handle special case -- no putting tool on ball or goal
-- fix colours!!
+- fix colours!! //-rl
 - make run/build button better
 - ask sam about multisampling -- need here?
-- make cell arrows draw
-- make cell arrow "randomizer"
+- make cell arrows draw //I will do this! -rl
+- make cell arrow "randomizer" //this too! -rl
 
 
 Bugs:
-- when circle collides it looks like 2*radius or something (maybe corner vs centre)
+- when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl
 
 
 
