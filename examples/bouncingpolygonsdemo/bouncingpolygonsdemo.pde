@@ -22,22 +22,22 @@ Camera _camera;
 BallGroup _ballGroup;
 BoxGroup _boxGroup;
 
-  boolean _mousePressed;
-  float _origX, _origY;
-  float _dX, _dY;
+boolean _mousePressed;
+float _origX, _origY;
+float _dX, _dY;
 
 final int WIDTH = 400;
 final int HEIGHT = 400;
 
-static final int POLY_POINT = 4;
+static int polyPoint = 3; //Number of points in PolyBalls
 
-int mode = 0;
+static int mode = 0; //Mode dictating which type of ball will get created
 static final int POLY_MODE = 0;
-static final int POLY_KEY = PostOffice.VK_0;
+static final int POLY_KEY = PostOffice.VK_1;
 static final int CIRCLE_MODE = 1;
-static final int CIRCLE_KEY = PostOffice.VK_1;
+static final int CIRCLE_KEY = PostOffice.VK_2;
 static final int RECT_MODE = 2;
-static final int RECT_KEY = PostOffice.VK_2;
+static final int RECT_KEY = PostOffice.VK_3;
 static final int DELETE_KEY = PostOffice.D;
 
 void setup() {
@@ -61,6 +61,7 @@ void setup() {
   _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
+	_postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetSides");
   
   _boxGroup = new BoxGroup(_world);
   
@@ -163,23 +164,21 @@ class BallGroup extends Group<Ball> {
 		}
 	}
    
-   void handleOscMessage(OscMessage m) {
-     
-     String[] messages = m.getAddress().split("/");
-     
-     if(messages[1].equals("BouncingBalls")) {
-       
-       if(messages[2].equals("SetMass")) {
-         _newMass = constrain(m.getAndRemoveFloat(), 0, 1);
-       }
-       else if(messages[2].equals("SetElasticity")) {
-         _newElasticity = constrain(m.getAndRemoveFloat(), 0, 1);
-       }
+	void handleOscMessage(OscMessage m) {
+		String[] messages = m.getAddress().split("/");
+		if(messages[1].equals("BouncingBalls")) {
+			if(messages[2].equals("SetMass")) {
+				_newMass = constrain(m.getAndRemoveFloat(), 0, 1);
+			}
+			else if(messages[2].equals("SetElasticity")) {
+				_newElasticity = constrain(m.getAndRemoveFloat(), 0, 1);
+			}
+			else if(messages[2].equals("SetSides")) {
+				polyPoint = (int) m.getAndRemoveInt();
+			}
        
      }
-     
    }
-  
 }
 
 abstract class Ball extends MultisampledMassedBeing {
@@ -216,20 +215,27 @@ class PolyBall extends Ball {
 }
 
 static Polygon makePolygon(PVector center, float mass) {
-	float radius = 25 * mass;
+	//float radius = 25 * mass;
 	ArrayList<PVector> points = new ArrayList<PVector>();
 	//Random r = new Random();
-	//for(int i = 0; i < POLY_POINT; i++) {
+	//for(int i = 0; i < polyPoint; i++) {
 	//	float nextX = r.nextFloat();
 	//	nextX = (nextX * 2 * radius) - radius;
 	//	float nextY = r.nextFloat();
 	//	nextY = (nextY * 2 * radius) - radius;
 	//	points.add(new PVector(nextX, nextY));
 	//}
-	points.add(new PVector(0,radius));
-	points.add(new PVector(radius,0));
-	points.add(new PVector(0,-radius));
-	points.add(new PVector(-radius,0));
+	//points.add(new PVector(0,radius));
+	//points.add(new PVector(radius,0));
+	//points.add(new PVector(0,-radius));
+	//points.add(new PVector(-radius,0));
+	PVector vertex = new PVector(0,25*mass);
+	points.add(vertex);
+	double rot = 2*PI / polyPoint;
+	for(int i = 1; i < polyPoint; i++) {
+		PVector next = HermesMath.getRotate(points.get(i-1),rot);
+		points.add(next);
+	}
 	return new Polygon(center,points);
 }
 

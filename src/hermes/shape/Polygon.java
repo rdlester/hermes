@@ -471,6 +471,8 @@ public class Polygon extends Shape {
 		for(PVector p : _points) {
 			papp.vertex(p.x, p.y);
 		}
+		PVector vert = _points.get(0);
+		papp.vertex(vert.x,vert.y);
 		papp.endShape();
 	}
 	

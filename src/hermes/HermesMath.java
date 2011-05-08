@@ -20,6 +20,12 @@ public class HermesMath {
 		return vector;
 	}
 	
+	public static PVector getRotate(PVector vector, double theta) {
+		float x = (float) (vector.x * Math.cos(theta) - vector.y * Math.sin(theta));
+		float y = (float) (vector.x * Math.sin(theta) + vector.y * Math.cos(theta));
+		return new PVector(x,y);
+	}
+	
 	/**
 	 * reverses the direction of a PVector in the coordinate system,
 	 *  so the signs of each component are inverted
