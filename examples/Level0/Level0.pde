@@ -28,6 +28,7 @@ Notes:
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
 - determine end-game behaviour
+- 
 
 Bugs:
 - when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl//
@@ -732,12 +733,12 @@ void setMode(int newMode) {
  *
  */
 void makeBubbles() {
-   for(int i=0; i<canvasNumCellsX; i++) {
-    for(int j=0; j<canvasNumCellsY; j++) {
+  for(int i=0; i<canvasNumCellsX; i++) {
+   for(int j=0; j<canvasNumCellsY; j++) {
      Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
      world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
-     } 
-   }
+   } 
+  }
 }
 
 ///////////////////////////////////////////////////
@@ -783,6 +784,7 @@ void setup() {
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
+	po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
   
   //register interactions
   world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);
