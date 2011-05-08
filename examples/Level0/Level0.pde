@@ -747,6 +747,7 @@ abstract class Tool extends MassedBeing {
   
 }
 
+//position is always TOP LEFT
 Tool makeTool(int toolCode, PVector position, double theta) {
    Tool toReturn = null;
    switch(toolCode) {
@@ -786,13 +787,11 @@ class FakeTool extends Tool {
  *
  */
 class Triangle extends Tool {
- 
- boolean _selected = false;
   
  Triangle(PVector center, double theta) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
-   ((Polygon)this.getShape()).rotate(theta);
+   rotate(theta);
  }
 
  void rotate(double theta) {
