@@ -26,6 +26,7 @@ Notes:
 - ask sam about multisampling -- need here?
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
+- make the tools //-rl
 - determine end-game behaviour // jen
 - menus, save levels
 
@@ -55,6 +56,7 @@ int mode = BUILD; // 0 is setup; 1 is run
 //Frame size
 int frameWidth = 700;
 int frameHeight = 630;
+int bgColor = color(122, 131, 139);
 
 //Container sizes and locations
 //Y location and size is same for both
@@ -81,12 +83,9 @@ int toolBoxNumCellsX = toolBoxWidth / cellSideLength;
 int toolBoxNumCellsY = containerHeight / cellSideLength;
 
 //run button
-int runButtonWidth = 120;
-int runButtonHeight = 40;
-int runButtonLeftX = canvasLeftX;
-int runButtonBottomY = containerTopY-10;
-int runButtonTopY = runButtonBottomY-runButtonHeight;
-int runButtonRightX = runButtonLeftX+runButtonWidth;
+int runButtonRadius = cellSideLength;
+int runButtonCenterX = canvasLeftX + cellSideLength;
+int runButtonCenterY = containerTopY - 10 - runButtonRadius;
 
 
 //Constants defining the tools
@@ -453,7 +452,7 @@ class Cell extends Being {
 
   void draw() {
     if(_hover) {
-      fill(150);
+      fill(137, 148, 158);
     }
     else {
       noFill();
@@ -531,15 +530,16 @@ class FakeTool extends Tool {
 /**
  * The user pushes the RunButton to run the simulation, changing mode to RUN
  */
-class RunButton extends Being {
+ 
+ class RunButton extends Being {
   
-  int buttonColor;
-  int runColor = color(255, 50, 50);    
-  int buildColor = color(50, 255, 50);
+  float runButtonDiameter = runButtonRadius*2;
+  float innerSymbolLength = runButtonDiameter/3;
+  boolean _hover = false;
 
+   
   RunButton() {
-    super(new Rectangle(new PVector(runButtonLeftX, runButtonTopY), new PVector(runButtonWidth, runButtonHeight), PApplet.CORNER), new PVector(0,0));
-    buttonColor = buildColor;
+    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius), new PVector(0,0));
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -547,36 +547,35 @@ class RunButton extends Being {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
-        buttonColor = buildColor; 
       } else if(mode == RUN) {
         setMode(BUILD); 
-        buttonColor = runColor;
       }
     }
   }
   
+  boolean getHover() {return _hover;}
+  void setHover(boolean hover) {_hover = hover;}
+  
   void draw() {
+   strokeWeight(3);
+   stroke(62, 67, 71);
+   if(_hover) {
+     fill(240);
+   } else {
+     fill(bgColor);
+   }
+   ellipse(0, 0, runButtonDiameter, runButtonDiameter); 
+   fill(62, 67, 71);
    if(mode == BUILD) {
-     fill(50, 255, 50);
-     noStroke();
-     rect(0, 0, runButtonWidth, runButtonHeight); 
-     fill(255);
-     text("Run", 50, 40);
+     triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
+     //ellipse(0, 0, innerSymbolLength, innerSymbolLength); 
    } else if(mode == RUN) {
-     fill(255, 50, 50); 
-     noStroke();
-     rect(0, 0, runButtonWidth, runButtonHeight); 
-     fill(255);
-     text("Build", 50, 36);
+     rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
   }
   
-  void update() {
-    if(mouseX>frameWidth/2) {
-      buttonColor = color(255);
-    } 
-  }
 }
+
 
 /**
  *
@@ -703,21 +702,29 @@ class MouseHandler implements MouseSubscriber {
     int y = m.getY();
     
     if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
-      _c.handleMouseMessage(m);
-    } else {
-      if(_c.getHover()) { //remove hover from canvas
-        _c.eraseHover();
-        _c.setHover(false);
-      }
-      //check other locations
-      if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
-        _b.handleMouseMessage(m);
-      } else if(runButtonLeftX<x && x<runButtonRightX && runButtonTopY<y && y<runButtonBottomY) {
-        _r.handleMouseMessage(m);
-      } else { // not in container
-        notInAContainer(m);
-      }
-    } 
+      if(_r.getHover()) {_r.setHover(false);} // turn run button hover off
+      _c.handleMouseMessage(m); 
+    } else if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
+      checkCanvasHover();
+      if(_r.getHover()) {_r.setHover(false);} // turn run button hover off
+      _b.handleMouseMessage(m);
+    } else if(HermesMath.inCircle(x,y,runButtonCenterX,runButtonCenterY,runButtonRadius)) { // in run button
+      checkCanvasHover();
+      if(!_r.getHover()) _r.setHover(true); // turn run button hover on
+      _r.handleMouseMessage(m);
+    } else { // not in container
+      checkCanvasHover();
+      if(_r.getHover()) _r.setHover(false); // turn run button hover off
+      notInAContainer(m); 
+    }
+    
+  } 
+  
+  void checkCanvasHover() {
+    if(_c.getHover()) { //remove hover from canvas
+      _c.eraseHover();
+      _c.setHover(false);
+    }
   }
 
   void notInAContainer(MouseMessage m) {
@@ -877,6 +884,6 @@ void setup() {
 }
 
 void draw() {
-    background(110);
+    background(bgColor);
     cam.draw(); // Camera object handles drawing all the appropriate Beings
 }
