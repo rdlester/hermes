@@ -320,7 +320,6 @@ class ToolBox extends Being {
   }
   
   void initialize() {
-    
      //make all the cells 
      for(int i=0; i<toolBoxNumCellsX; i++) {
        for(int j=0; j<toolBoxNumCellsY; j++) {
@@ -402,7 +401,6 @@ class ToolBox extends Being {
       rect(haloi*cellSideLength, haloj*cellSideLength, cellSideLength, cellSideLength);
     }
   }
-  
 }
 
 /**
@@ -488,6 +486,150 @@ class Cell extends Being {
   }
 }
 
+/**
+ *
+ */
+class Ball extends MassedBeing {
+  
+  Ball() {
+    super(new Circle(new PVector((canvasLeftX+balli*cellSideLength)+cellSideLength/2, 
+                                 (containerTopY+ballj*cellSideLength)+cellSideLength/2),
+                     ballRadius), 
+          new PVector(0,0), ballMass, ballElasticity);
+    world.registerBeing(this, true);
+  }
+  
+  void update() {
+    //add the flow from the cell
+    int x = (int)getX();
+    int y = (int)getY();
+    x -= canvasLeftX;
+    y -= containerTopY;
+    int i = x / cellSideLength;
+    int j = y / cellSideLength;
+    Cell[][] grid = canvas.getGrid();
+    Cell in = grid[i][j];  
+    if(!in.hasTool()) { //appply the flow if the cell has no tool within
+     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
+    } 
+  }
+  
+  void draw() {
+    fill(189, 0, 0);
+    noStroke();
+    ellipse(0,0,ballRadius*2,ballRadius*2);
+  }
+}
+
+/**
+ *
+ */
+class Goal extends Being {
+ Goal() {
+  super(new Rectangle(new PVector((canvasLeftX+goali*cellSideLength), 
+                                 (containerTopY+goalj*cellSideLength)), 
+                      new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
+        new PVector(0,0));
+  world.registerBeing(this, false);
+ }
+ void draw() {
+  if(mode == RUN) {
+    strokeWeight(3);
+    stroke(189, 0, 0);
+    line(10,10,cellSideLength-10,cellSideLength-10); //    \
+    line(cellSideLength-10, 10, 10, cellSideLength-10); //  /
+  } else if(mode == COMPLETED) {
+    strokeWeight(2);
+    stroke(255);
+    fill(62, 67, 71, 130);
+    rect(0, 0, cellSideLength, cellSideLength);
+    strokeWeight(3);
+    stroke(0, 240, 0);
+    line(15, 20, 20, 30); // \
+    line(20, 30, 30, 10); // /
+  }
+ } 
+}
+
+/**
+ *
+ */
+class Bubble extends MassedBeing {
+  
+  Bubble(PVector position) {
+    super(new Circle(position, ballRadius), new PVector(0,0), ballMass, ballElasticity);
+    world.registerBeing(this, true);
+  }
+  
+  void draw() {
+    fill(146, 239, 233, 120);
+    noStroke();
+    ellipse(0,0,ballRadius*2,ballRadius*2);
+  }
+  
+  void update() {
+    //add the flow from the cell
+    int x = (int)getX();
+    int y = (int)getY();
+    x -= canvasLeftX;
+    y -= containerTopY;
+    int i = x / cellSideLength;
+    int j = y / cellSideLength;
+    Cell[][] grid = canvas.getGrid();
+    Cell in = grid[i][j];  
+    if(!in.hasTool()) { //appply the flow if the cell has no tool within
+     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
+    }
+  } 
+}
+
+/**
+ * The user pushes the RunButton to run the simulation, changing mode to RUN
+ */
+class RunButton extends Being {
+  
+  float runButtonDiameter = runButtonRadius*2;
+  float innerSymbolLength = runButtonDiameter/3;
+  boolean _hover = false;
+
+   
+  RunButton() {
+    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius), new PVector(0,0));
+  }
+  
+  void handleMouseMessage(MouseMessage m) {
+    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+      //switch modes
+      if(mode == BUILD) {
+        setMode(RUN);
+      } else if(mode == RUN || mode == COMPLETED) {
+        setMode(BUILD); 
+      }
+    }
+  }
+  
+  boolean getHover() {return _hover;}
+  void setHover(boolean hover) {_hover = hover;}
+  
+  void draw() {
+   strokeWeight(3);
+   stroke(62, 67, 71);
+   if(_hover) {
+     fill(240);
+   } else {
+     fill(bgColor);
+   }
+   ellipse(0, 0, runButtonDiameter, runButtonDiameter); 
+   fill(62, 67, 71);
+   if(mode == BUILD) {
+     triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
+     //ellipse(0, 0, innerSymbolLength, innerSymbolLength); 
+   } else if(mode == RUN || mode == COMPLETED) {
+     rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
+   }
+  }
+}
+
 ///////////////////////////////////////////////////
 // TOOLS
 ///////////////////////////////////////////////////
@@ -553,158 +695,7 @@ class Triangle extends Tool {
  
  void draw() {
   this.getShape().draw();
- } 
-  
-}
-
-/**
- * The user pushes the RunButton to run the simulation, changing mode to RUN
- */
- 
- class RunButton extends Being {
-  
-  float runButtonDiameter = runButtonRadius*2;
-  float innerSymbolLength = runButtonDiameter/3;
-  boolean _hover = false;
-
-   
-  RunButton() {
-    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius), new PVector(0,0));
-  }
-  
-  void handleMouseMessage(MouseMessage m) {
-    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
-      //switch modes
-      if(mode == BUILD) {
-        setMode(RUN);
-      } else if(mode == RUN || mode == COMPLETED) {
-        setMode(BUILD); 
-      }
-    }
-  }
-  
-  boolean getHover() {return _hover;}
-  void setHover(boolean hover) {_hover = hover;}
-  
-  void draw() {
-   strokeWeight(3);
-   stroke(62, 67, 71);
-   if(_hover) {
-     fill(240);
-   } else {
-     fill(bgColor);
-   }
-   ellipse(0, 0, runButtonDiameter, runButtonDiameter); 
-   fill(62, 67, 71);
-   if(mode == BUILD) {
-     triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
-     //ellipse(0, 0, innerSymbolLength, innerSymbolLength); 
-   } else if(mode == RUN || mode == COMPLETED) {
-     rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
-   }
-  }
-  
-}
-
-
-/**
- *
- */
-class Ball extends MassedBeing {
-  
-  Ball() {
-    super(new Circle(new PVector((canvasLeftX+balli*cellSideLength)+cellSideLength/2, 
-                                 (containerTopY+ballj*cellSideLength)+cellSideLength/2),
-                     ballRadius), 
-          new PVector(0,0), ballMass, ballElasticity);
-    world.registerBeing(this, true);
-  }
-  
-  void update() {
-    //add the flow from the cell
-    int x = (int)getX();
-    int y = (int)getY();
-    x -= canvasLeftX;
-    y -= containerTopY;
-    int i = x / cellSideLength;
-    int j = y / cellSideLength;
-    Cell[][] grid = canvas.getGrid();
-    Cell in = grid[i][j];  
-    if(!in.hasTool()) { //appply the flow if the cell has no tool within
-     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
-    } 
-  }
-  
-  void draw() {
-    fill(189, 0, 0);
-    noStroke();
-    ellipse(0,0,ballRadius*2,ballRadius*2);
-  }
-  
-}
-
-/**
- *
- */
-class Goal extends Being {
- Goal() {
-  super(new Rectangle(new PVector((canvasLeftX+goali*cellSideLength), 
-                                 (containerTopY+goalj*cellSideLength)), 
-                      new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
-        new PVector(0,0));
-  world.registerBeing(this, false);
- }
- void draw() {
-  if(mode == RUN) {
-    strokeWeight(3);
-    stroke(189, 0, 0);
-    line(10,10,cellSideLength-10,cellSideLength-10); //    \
-    line(cellSideLength-10, 10, 10, cellSideLength-10); //  /
-  } else if(mode == COMPLETED) {
-    strokeWeight(2);
-    stroke(255);
-    fill(62, 67, 71, 130);
-    rect(0, 0, cellSideLength, cellSideLength);
-    strokeWeight(3);
-    stroke(0, 240, 0);
-    line(15, 20, 20, 30); // \
-    line(20, 30, 30, 10); // /
-  }
-
- } 
-}
-
-/**
- *
- */
-class Bubble extends MassedBeing {
-  
-  Bubble(PVector position) {
-    super(new Circle(position, ballRadius), new PVector(0,0), ballMass, ballElasticity);
-    world.registerBeing(this, true);
-  }
-  
-  void draw() {
-    fill(146, 239, 233, 120);
-    noStroke();
-    ellipse(0,0,ballRadius*2,ballRadius*2);
-  }
-  
-  void update() {
-    //add the flow from the cell
-    int x = (int)getX();
-    int y = (int)getY();
-    x -= canvasLeftX;
-    y -= containerTopY;
-    int i = x / cellSideLength;
-    int j = y / cellSideLength;
-    Cell[][] grid = canvas.getGrid();
-    Cell in = grid[i][j];  
-    if(!in.hasTool()) { //appply the flow if the cell has no tool within
-     setVelocity(PVector.add(getVelocity(), in.getFlowDirection()));
-    }
-  } 
-  
+ }  
 }
 
 ///////////////////////////////////////////////////
