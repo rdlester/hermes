@@ -26,7 +26,12 @@ Notes:
 - fix colours!!
 - make run/build button better
 - ask sam about multisampling -- need here?
+- make cell arrows draw
+- make cell arrow "randomizer"
 
+
+Bugs:
+- when circle collides it looks like 2*radius or something (maybe corner vs centre)
 
 
 
@@ -111,6 +116,7 @@ int goalj = canvasNumCellsY-1;
 Group<Ball> ballGroup = null;
 Group<Goal> goalGroup = null;
 Group<Canvas> canvasGroup = null;
+Group<Tool> toolGroup = null;
 
 
 
@@ -396,12 +402,13 @@ class Cell extends Being {
 /**
  *
  */
-abstract class Tool extends Being {
+abstract class Tool extends MassedBeing {
   int _toolCode;
- Tool(Shape shp, int toolCode) {
-  super(shp); 
+ Tool(Shape shp, PVector velocity, float mass, float elasticity, int toolCode) {
+  super(shp, velocity, mass, elasticity); 
   _toolCode = toolCode;
-  world.registerBeing(this, false);
+  world.registerBeing(this, true);
+  world.addBeing(this, toolGroup);
  }
 
  int getToolCode() {return _toolCode;}
@@ -424,7 +431,8 @@ Tool makeTool(int toolCode, PVector position) {
 class FakeTool extends Tool {
  
  FakeTool(PVector position) {
-   super(new Rectangle(position, new PVector(cellSideLength, cellSideLength), PApplet.CORNER), FAKETOOL);
+   super(new Rectangle(position, new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
+         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, FAKETOOL);
  } 
   
  void draw() {
@@ -677,9 +685,16 @@ void setup() {
   rectMode(CORNER);
   setMode(BUILD);
   
+  //instantiate groups
+  ballGroup = new Group(world);
+  goalGroup = new Group(world);
+  toolGroup = new Group(world);
+  canvasGroup = new Group(world);
+  
   //containers
   canvas = new Canvas();
   world.registerBeing(canvas, true);
+  world.addBeing(canvas, canvasGroup);
   toolBox = new ToolBox();
   world.registerBeing(toolBox, false);
   
@@ -693,15 +708,10 @@ void setup() {
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
   
-  //instantiate groups
-  ballGroup = new Group(world);
-  goalGroup = new Group(world);
-  canvasGroup = new Group(world);
-  world.addBeing(canvas, canvasGroup);
-  
   //register interactions
   world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);
   world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
+  world.registerInteraction(toolGroup, ballGroup, new MassedCollider(), true);
   
   smooth();
 
