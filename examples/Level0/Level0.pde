@@ -448,7 +448,7 @@ class Cell extends Being {
   }
 
   void draw() {
-    if(_hover) {
+    if(_hover && mode == BUILD) {
       fill(137, 148, 158);
     }
     else {
@@ -680,7 +680,6 @@ class Bubble extends MassedBeing {
 
 class BallGoalCollider extends Collider<Ball, Goal> {
   public boolean handle(Ball being1, Goal being2) {
-    println("ball goal collided");
     setMode(COMPLETED);
     return true;
   }
@@ -833,10 +832,13 @@ void setMode(int newMode) {
  *
  */
 void makeBubbles() {
+  Cell[][] grid = canvas.getGrid();
   for(int i=0; i<canvasNumCellsX; i++) {
    for(int j=0; j<canvasNumCellsY; j++) {
-     Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
-     world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
+     if(!grid[i][j].hasTool()) {
+       Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
+       world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
+     }
    } 
   }
 }
@@ -881,8 +883,6 @@ void setup() {
   textFont(createFont("Courier", 36));
   textAlign(CENTER);
   
-  //TODO: make the ball, bubbles, set modes, make inside massed collider
-  
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
@@ -893,6 +893,7 @@ void setup() {
   world.registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider(), true);
   world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
   world.registerInteraction(toolGroup, ballGroup, new MassedCollider(), true);
+  world.registerInteraction(toolGroup, bubbleGroup, new MassedCollider(), true);
    
   smooth();
 
