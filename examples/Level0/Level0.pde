@@ -1,4 +1,4 @@
-import src.template.library.*;
+import java.util.LinkedList;
 import src.hermes.*;
 import src.hermesTest.physicsTest.*;
 import src.hermesTest.postOfficeTests.*;
@@ -127,6 +127,10 @@ Group<Bubble> bubbleGroup = null;
 // BEINGS
 ////////////////////////////////////////
 
+
+////////////////////////////////////////
+// CONTAINERS
+////////////////////////////////////////
 /**
  * Central canvas for building levels/tracks
  * Holds information for vector field
@@ -164,7 +168,67 @@ class Canvas extends MassedBeing {
   
   //Randomize grid using drunk walk and bfs
   void randomize() {
+    //Queue for bfs
+    //Add new cells to end, pull from first
+    LinkedList<Cell> queue = new LinkedList<Cell>();
+    //Map keeping track of cell before current cell
+    HashMap<Cell,Cel> order = new HashMap<Cell,Cell>();
     
+    //Get initial direction
+    //This is constrained between down and right 
+    float initAngle = random(PI/2);
+    PVector initDir = rotate(INIT_DIR,-initAngle);
+    float initStr = INIT_STR;
+    //Get the first cell and set its vector
+    Cell first = _grid[0][0];
+    first.setFlowDir(initDir);
+    first.setFlowStr(initStr);
+    //Get the adjacent cells and set up bfs traversal
+    Cell start = _grid[1][0];
+    queue.addLast(start);
+    order.put(start,first);
+    start = _grid[0][1];
+    queue.addLast(start);
+    order.put(start,first);
+    
+    while(cells.size() > 0) {
+      //Get next cell
+      Cell curr = cells.removeFirst();
+      //Get the cell before this one
+      Cell pre = order.get(curr);
+      //Get the previous direction and rotate it by a constrained amount
+      PVector preDir = pre.getFlowDir();
+      float theta = random(PI/2) - PI/4;
+      PVector nextDir = getRotate(preDir,theta);
+      curr.setFlowDir(nextDir)
+      //Get the previous strength and adjust it
+      float preStr = pre.getFlowStr();
+      //TODO: adjust strength
+      curr.setFlowStr(preStr);
+      
+      //Get adjacent cells and add them if they exist and have not been added/checked
+      int i = curr.geti();
+      int j = curr.getj();
+      if(i - 1 >= 0) {
+        addCell(curr,_grid[i-1][j],queue,order);
+      }
+      if(j - 1 >= 0) {
+        addCell(curr,_grid[i][j-1],queue,order);
+      }
+      if(i+1 < canvasNumCellsX) {
+        addCell(curr,_grid[i+1][j],queue,order);
+      }
+      if(j+1 < canvasNumCellsY) {
+        addCell(curr,_grid[i][j+1],queue,order);
+      }
+    }
+  }
+  
+  void addCell(Cell curr, Cell next, LinkedList queue, HashMap<Cell,Cell> order) {
+    if(!order.containsKey(next)) {
+      queue.addLast(next);
+      order.put(next,curr);
+    }
   }
 
 	//TODO Add cell randomizer
@@ -413,16 +477,21 @@ class Cell extends Being {
   float _flowStr; //Cannot be negative or greater than flowMax
   Tool _tool;
   boolean _hover;
+  //Keeps track of cell's location in grid
+  int _i;
+  int _j;
   
-  Cell(PVector cellTopLeft) {
+  Cell(PVector cellTopLeft, int i, int j) {
     super(new Rectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength), PApplet.CORNER));
     _flowDir = INIT_DIR;
     _flowStr = INIT_STR;
     _tool = null;
     _hover = false;
+    _i = i;
+    _j = j;
   }
   
-  PVector getFlowDirection() {
+  PVector getFlowDir() {
     return _flowDir; 
   }
   
@@ -430,7 +499,11 @@ class Cell extends Being {
     _flowDir = direction; 
   }
 
-  void setFlowStrength(float strength) {
+  float getFlowStr() {
+    return _flowStr;
+  }
+  
+  void setFlowStr(float strength) {
     _flowStr = strength;
   }
 	
@@ -452,6 +525,14 @@ class Cell extends Being {
   
   void setHover(boolean hover) {
     _hover = hover;
+  }
+  
+  int geti() {
+    return _i;
+  }
+  
+  int getj() {
+    return _j;
   }
 
   void draw() {
@@ -486,6 +567,9 @@ class Cell extends Being {
   }
 }
 
+////////////////////////////////////////
+// EXTERNAL OBJECTS
+////////////////////////////////////////
 /**
  *
  */
@@ -631,7 +715,7 @@ class RunButton extends Being {
 }
 
 ///////////////////////////////////////////////////
-// TOOLS
+// TOOLS (ACCESSABLE TO SELF)
 ///////////////////////////////////////////////////
  
 /**
