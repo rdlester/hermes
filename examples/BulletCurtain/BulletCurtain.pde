@@ -162,8 +162,12 @@ void setup() {
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnY");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
+    postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
+  
 
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
+
+  postOffice.registerOscSubscription(shotGroup, "/BulletCurtain/SetTravelMultiplierForAllShots");
 
   postOffice.registerOscSubscription(worldStateBeing, "/BulletCurtain/SetAnimationSpeed");
 
@@ -185,8 +189,8 @@ class ShotOtherCollider extends BoundingBoxCollider<Shot, Other> {
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtX", map(other.getX(), 0.0, RES_WIDTH, 0.0, 1.0));
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtY", map(other.getY(), 0.0, RES_HEIGHT, 0.0, 1.0));
 
-    world.removeBeingFromAllGroups(shot);
-    world.removeBeingFromAllGroups(other);
+    world.deleteBeing(shot);
+    world.deleteBeing(other);
 
     return true;
   }
@@ -278,7 +282,6 @@ abstract class SubjectObjectRelation extends Being {
 
 class Subject extends SubjectObjectRelation {
 
-  float howMuchToTravel = 1;
 
   Subject(float x, float y, AnimatedSprite animatedSprite) {
     super(x, y, animatedSprite);
@@ -327,8 +330,16 @@ class Subject extends SubjectObjectRelation {
 }
 
 
+
+
+
+
+float shotTravelMultiplier = 1.0;
+
 class Shot extends Being {
+
   float travel;
+
   static final float shotWidth = pixelsPerBlock * 2;
   static final float shotHeight = pixelsPerBlock * 1;
 
@@ -339,10 +350,10 @@ class Shot extends Being {
   }
 
   void update() {
-    setX(getX() + travel);
+    setX(getX() + (travel * shotTravelMultiplier));
 
     if (getX() > RES_WIDTH) {
-      world.removeBeingFromAllGroups(this);
+      world.deleteBeing(this);
     }
   }
 
@@ -355,6 +366,28 @@ class Shot extends Being {
 }
 
 
+class ShotGroup extends Group {
+
+  ShotGroup(World world) {
+    super(world);
+  }
+
+  float initialTravel;
+
+  void handleOscMessage(OscMessage message) {
+    String[] msgSplit = message.getAddress().split("/");
+
+    if (msgSplit[1].equals(systemName)) {
+      if (msgSplit[2].equals("SetTravelMultiplierForAllShots")) {
+        float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 10);
+        shotTravelMultiplier = newMultiplier;
+      }
+    }
+  }
+}
+
+float otherTravelMultiplier = 1.0;
 
 class Other extends SubjectObjectRelation {
 
@@ -365,10 +398,10 @@ class Other extends SubjectObjectRelation {
   }
 
   void update() {
-    setX(getX() - howManyPixelsToTravel);
+    setX(getX() - (howManyPixelsToTravel * otherTravelMultiplier));
 
     if (getX() + BODY_WIDTH < 0) {
-      world.removeBeingFromAllGroups(this);
+      world.deleteBeing(this);
     }
   }
 }
@@ -386,7 +419,7 @@ class OtherGroup extends Group {
   float spawnY = RES_HEIGHT/2 - BODY_HEIGHT/2;
   int animationIndexToUseOnSpawn = 0;
 
-Float groupTravelSpeed = 1.0;
+  Float groupTravelSpeed = 1.0;
 
   void handleOscMessage(OscMessage message) {
     String[] msgSplit = message.getAddress().split("/");
@@ -396,13 +429,11 @@ Float groupTravelSpeed = 1.0;
         if (message.getAndRemoveFloat() == 1.0) {       
           Other other = new Other(spawnX, spawnY, createAnimatedSpriteForOther());
           other.animatedSprite.setActiveAnimation(animationIndexToUseOnSpawn % other.animatedSprite.getNumberOfAnimations());
-                other.animatedSprite.overrideMillisecondsPerFrame(millisecondsPerFrame);
-                other.howManyPixelsToTravel = groupTravelSpeed;
+          other.animatedSprite.overrideMillisecondsPerFrame(millisecondsPerFrame);
+          other.howManyPixelsToTravel = groupTravelSpeed;
           add(other);
 
           world.registerBeing(other, true);
-          
-          
         }
       }
 
@@ -419,9 +450,9 @@ Float groupTravelSpeed = 1.0;
         spawnY = remappedY;
       }
 
-     else if (msgSplit[2].equals("SetOtherTravelSpeed")) {
+      else if (msgSplit[2].equals("SetOtherTravelSpeed")) {
         float travel = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        travel = map(travel, 0.0, 1.0, 0, 20);
+        travel = map(travel, 0.0, 1.0, 1.0, 20);
         groupTravelSpeed = travel;
       }
 
@@ -432,32 +463,20 @@ Float groupTravelSpeed = 1.0;
           animationIndexToUseOnSpawn++;
         }
       }
-    }
-  }
-}
-
-
-
-
-
-class ShotGroup extends Group {
-
-  ShotGroup(World world) {
-    super(world);
-  }
-
-  float travelMultiplier;
-  float initialTravel;
-
-  void handleOscMessage(OscMessage message) {
-    String[] msgSplit = message.getAddress().split("/");
-
-    if (msgSplit[1].equals(systemName)) {
-      if (msgSplit[2].equals("")) {
+      
+      
+      else if (msgSplit[2].equals("SetTravelMultiplierForAllOthers")) {
+        if (message.getAndRemoveFloat() == 1.0) {       
+        float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+        newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 5);
+        otherTravelMultiplier = newMultiplier;
+        }
       }
+      
     }
   }
 }
+
 
 
 //Dummy being for world state 
@@ -470,7 +489,7 @@ class StateBeing extends Being {
   };
 
   void handleOscMessage(OscMessage message) {
-    
+
     String[] msgSplit = message.getAddress().split("/");
     if (msgSplit[1].equals(systemName)) {
       if (msgSplit[2].equals("SetAnimationSpeed")) {
