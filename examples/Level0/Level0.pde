@@ -30,6 +30,7 @@ Notes:
 Bugs:
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
   i.e. we're not drawing over those balls again
+- don't draw arrows in cells in toolbox (give null value or somehtin)
 
 
 
@@ -486,7 +487,10 @@ class Cell extends Being {
     }
   }
 }
- 
+
+///////////////////////////////////////////////////
+// TOOLS
+///////////////////////////////////////////////////
  
 /**
  *
@@ -530,6 +534,27 @@ class FakeTool extends Tool {
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
   }
+}
+
+/**
+ *
+ */
+class Triangle extends Tool {
+ 
+ Triangle(PVector center, double theta) {
+   super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
+         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
+   ((Polygon)this.getShape()).rotate(theta);
+ }
+
+ void rotate(double theta) {
+   ((Polygon)this.getShape()).rotate(theta);
+ } 
+ 
+ void draw() {
+  this.getShape().draw();
+ } 
+  
 }
 
 /**
