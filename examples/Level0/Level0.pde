@@ -28,7 +28,8 @@ Notes:
 - menus, save levels (?do we want?)
 
 Bugs:
-- look at the bubbles in cells where a tool is on start .. not sure what we want here -jen
+- look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
+  i.e. we're not drawing over those balls again
 
 
 
