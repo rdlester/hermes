@@ -138,12 +138,14 @@ class Canvas extends MassedBeing {
   
   Cell[][] _grid;
   Group<Tool> _toolGroup;
+  boolean _hover;
 
   Canvas() {
     super(new Rectangle(new PVector(canvasLeftX, containerTopY), new PVector(canvasWidth, containerHeight), PApplet.CORNER),
           new PVector(0,0), Float.POSITIVE_INFINITY, 1);
     _grid = new Cell[canvasNumCellsX][canvasNumCellsY];
     _toolGroup = new Group<Tool>(world);
+    _hover = false;
     initialize();
   }
   
@@ -193,10 +195,20 @@ class Canvas extends MassedBeing {
     y -= containerTopY;
     int i = x / cellSideLength;
     int j = y / cellSideLength;
-    // add the tool to the appropriate cell
+    //get corresponding cell
     Cell in = _grid[i][j];
+    
     //prohibited cells are those with ball, goal
     boolean prohibitedCell = (i==balli && j==ballj) || (i==goali && j==goalj);
+    
+    //update hover graphics if cell mouse is over has changed
+    if(!in.getHover()) {
+      _hover = true;
+      eraseHover();
+      if(!prohibitedCell) {
+        in.setHover(true);
+      }
+    }
     
     int action = m.getAction();
 
@@ -253,12 +265,31 @@ class Canvas extends MassedBeing {
           Tool toRemove = in.getTool();
           in.setTool(null);
           world.deleteBeing(toRemove);
-        }      
+        }
         Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength, containerTopY+j*cellSideLength));
         in.setTool(newTool);
         _toolGroup.add(newTool); 
       }
     }
+  }
+  
+  /**
+   * Helper method for mouse updates
+   */
+  void eraseHover() {
+    for(int i=0; i<canvasNumCellsX; i++) {
+      for(int j=0; j<canvasNumCellsY; j++) {
+        _grid[i][j].setHover(false);
+      } 
+    }
+  }
+  
+  boolean getHover() {
+    return _hover;
+  }
+  
+  void setHover(boolean hover) {
+    _hover = hover;
   }
 }
 
@@ -318,7 +349,7 @@ class ToolBox extends Being {
       //get i,j indices of cell containing mouse press
       int i = x / cellSideLength;
       int j = y / cellSideLength;
-      // if that cell contains a tool, set toolMode to that tool 
+      // if that cell contains a tool, set toolMode to that tool
       if(_grid[i][j].hasTool()) {
         toolMode = _grid[i][j].getTool().getToolCode();
       }
@@ -378,12 +409,14 @@ class Cell extends Being {
   PVector _flowDirection; //Any normalized vector
   float _flowStrength; //Cannot be negative or greater than flowMax
   Tool _tool;
+  boolean _hover;
   
   Cell(PVector cellTopLeft) {
     super(new Rectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength), PApplet.CORNER));
     _flowDirection = new PVector(0,1);
     _flowStrength = 1;
     _tool = null;
+    _hover = false;
   }
   
   PVector getFlowDirection() {
@@ -409,9 +442,22 @@ class Cell extends Being {
   Tool getTool() {
     return _tool; 
   }
+  
+  boolean getHover() {
+    return _hover;
+  }
+  
+  void setHover(boolean hover) {
+    _hover = hover;
+  }
 
   void draw() {
-    noFill();
+    if(_hover) {
+      fill(150);
+    }
+    else {
+      noFill();
+    }
     stroke(255);
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
@@ -650,12 +696,19 @@ class MouseHandler implements MouseSubscriber {
          
     if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
       _c.handleMouseMessage(m); 
-    } else if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
-      _b.handleMouseMessage(m);
-    } else if(runButtonLeftX<x && x<runButtonRightX && runButtonTopY<y && y<runButtonBottomY) {
-      _r.handleMouseMessage(m);
-    } else { // not in container
-      notInAContainer(m); 
+    } else {
+      if(_c.getHover()) { //remove hover from canvas
+        _c.eraseHover();
+        _c.setHover(false);
+      }
+      //check other locations
+      if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
+        _b.handleMouseMessage(m);
+      } else if(runButtonLeftX<x && x<runButtonRightX && runButtonTopY<y && y<runButtonBottomY) {
+        _r.handleMouseMessage(m);
+      } else { // not in container
+        notInAContainer(m); 
+      }
     } 
   }
 
