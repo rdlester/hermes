@@ -100,7 +100,7 @@ Ball ball = null;
 int balli = 0; //index in canvas
 int ballj = 0;
 int ballRadius = 20;
-int ballMass = 10;
+int ballMass = 100;
 int ballElasticity = 1;
 //goal
 Goal goal = null;
@@ -679,7 +679,7 @@ void setup() {
   
   //containers
   canvas = new Canvas();
-  world.registerBeing(canvas, false);
+  world.registerBeing(canvas, true);
   toolBox = new ToolBox();
   world.registerBeing(toolBox, false);
   
@@ -700,7 +700,7 @@ void setup() {
   world.addBeing(canvas, canvasGroup);
   
   //register interactions
-  world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), false);
+  world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);
   world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
   
   smooth();
