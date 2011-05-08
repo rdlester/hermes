@@ -19,6 +19,7 @@ import src.hermes.postoffice.PostOffice;
  */
 public class World extends Thread {
 	
+	@SuppressWarnings("unused")
 	private PApplet _parentApplet; //active PApplet sketch
 	private PostOffice _postOffice; //post office
 
@@ -183,7 +184,7 @@ public class World extends Thread {
 	 * register a group to have all its beings updated in the loop
 	 * @param grp		the group that contains the beings whose interactions
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings("rawtypes")
 	public void registerGroupUpdate(GenericGroup grp) {
 		_groupsToUpdate.add(grp);
 	}

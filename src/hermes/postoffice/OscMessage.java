@@ -211,7 +211,7 @@ public class OscMessage implements Message {
 	public boolean equals(Object o) {
 		if(o instanceof OscMessage) {
 			OscMessage m = (OscMessage) o;
-			if(this.getAddress() == m.getAddress()) return true;
+			return this.getAddress().equals(m.getAddress());
 		}
 		return false;
 	}

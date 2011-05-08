@@ -6,27 +6,40 @@ package src.hermes.postoffice;
  */
 public class KeyMessage implements Message {
 
+	//key code of message
+	private int _keyCode;
+	
 	//Char contained by message
-	private String _keyPressed;
+	private char _keyChar;
 	
 	//Boolean indicating if key is pressed or released
 	private boolean _isPressed;
 	
 	/**
 	 * Creates a new KeyMessage
-	 * @param keyString - String representing key
-	 * @param isPressed - true when key is pressed, false when key is released
+	 * @param keyCode - int corresponding to key, use PostOffice constants to determine key
+	 * @param keyChar - char corresponding to key, PostOffice.CHAR_UNDEFINED if key is non-unicode
+	 * @param b - true when key is pressed, false when key is released
 	 */
-	public KeyMessage(String keyString, boolean isPressed) {
-		_keyPressed = keyString;
+	public KeyMessage(int keyCode, char keyChar, boolean isPressed) {
+		_keyCode = keyCode;
+		_keyChar = keyChar;
 		_isPressed = isPressed;
+	}
+
+	/**
+	 * Getter for the code of the key acted upon
+	 */
+	public int getKeyCode() {
+		return _keyCode;
 	}
 	
 	/**
-	 * Getter for the name of the key acted upon
+	 * Getter for the char of the key acted upon
+	 * @return
 	 */
-	public String getKey() {
-		return _keyPressed;
+	public char getKeyChar() {
+		return _keyChar;
 	}
 	
 	/**
@@ -42,7 +55,7 @@ public class KeyMessage implements Message {
 	public boolean equals(Object o) {
 		if(o instanceof KeyMessage) {
 			KeyMessage m = (KeyMessage) o;
-			if(this.getKey().equals(m.getKey())) return true;
+			return this.getKeyCode() == m.getKeyCode();
 		}
 		return false;
 	}

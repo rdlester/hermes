@@ -3,7 +3,9 @@ package src.hermes.shape;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import processing.core.PApplet;
 import processing.core.PVector;
+import src.hermes.Hermes;
 import src.hermes.HermesMath;
 import static src.hermes.HermesMath.*;
 
@@ -167,27 +169,6 @@ public class Polygon extends Shape {
 		return projectionVector(other) != null;
 	}
 	
-	public Rectangle getBoundingBox() {
-		float xMax = Float.NEGATIVE_INFINITY;
-		float xMin = Float.POSITIVE_INFINITY;
-		float yMax = Float.NEGATIVE_INFINITY;
-		float yMin = Float.POSITIVE_INFINITY;
-		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
-			PVector point = iter.next();
-			if(point.x < xMin)
-				xMin = point.x;
-			if(point.x > xMax)
-				xMin = point.x;
-			if(point.y < yMin)
-				yMin = point.y;
-			if(point.y > yMax)
-				yMin = point.y;
-		}
-		PVector min = makeVector(xMin, yMin);
-		PVector max = makeVector(xMax, yMax);
-		return new Rectangle(_position, min, max);
-	}
-	
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
@@ -241,30 +222,39 @@ public class Polygon extends Shape {
 			else resolutionList.add(result);
 		}
 		
-		center = PVector.sub(center, dist);
-		PVector pre = _points.get(1);
-		PVector sidePre = PVector.sub(pre, _points.get(0));
-		sidePre.normalize();
-		
-		int size = _points.size();
-		for(int i = 2; i < size + 2; i++) {
-			PVector p = _points.get(i % size);
-			PVector side = PVector.sub(p, pre);
-			side.normalize();
-			if(checkEdge(center, pre, sidePre, side)) {
-				//Check if distance between center and vertex is less than radius
-				PVector axis = PVector.sub(center, pre);
-				float overlap = other.getRadius() - axis.mag(); 
-				if(overlap >= 0) {
-					//Create and return projection vector
-					axis.normalize();
-					axis.mult(overlap);
-					resolutionList.add(axis);
-				}
-				else break;
-			}
+		//Check for collisions along axes between circle center and vertices
+		for(PVector p : _points) {
+			PVector axis = PVector.sub(center, PVector.add(p, dist));
+			axis.normalize();
+			PVector result = checkSepAxis(axis, dist, center, radius);
+			if(result == null) return null;
+			else resolutionList.add(result);
 		}
-		
+//		
+//		center = PVector.sub(center, dist);
+//		PVector pre = _points.get(1);
+//		PVector sidePre = PVector.sub(pre, _points.get(0));
+//		sidePre.normalize();
+//		
+//		int size = _points.size();
+//		for(int i = 2; i < size + 2; i++) {
+//			PVector p = _points.get(i % size);
+//			PVector side = PVector.sub(p, pre);
+//			side.normalize();
+//			if(checkEdge(center, pre, sidePre, side)) {
+//				//Check if distance between center and vertex is less than radius
+//				PVector axis = PVector.sub(center, pre);
+//				float overlap = other.getRadius() - axis.mag(); 
+//				if(overlap >= 0) {
+//					//Create and return projection vector
+//					axis.normalize();
+//					axis.mult(overlap);
+//					resolutionList.add(axis);
+//				}
+//				else return null;
+//			}
+//		}
+//		
 		//Figure out which resolution vector is smallest
 		float min = Float.MAX_VALUE;
 		PVector use = null;
@@ -305,12 +295,12 @@ public class Polygon extends Shape {
 		else {
 			return (top < bottom ?
 					PVector.mult(axis, -bottom):
-					PVector.mult(axis, -top));
+					PVector.mult(axis, top));
 		}
 	}
 
 	/**
-	 * NO LONGER USED
+	 * NO LONGER USED but still works
 	 * Checks if circle is in a voronoi region of polygon side specified by pre, linePre, and line
 	 * @param circlePos - position of circle
 	 * @param pre - Point in common between linePre and line
@@ -318,14 +308,14 @@ public class Polygon extends Shape {
 	 * @param line - line between pre and p (was already calculated in method)
 	 * @return true if circle is in voronoi region, otherwise false
 	 */
-	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
-		
-		float projPos = circlePos.dot(line);
-		float projPre = pre.dot(line);
-		float projP = p.dot(line);
-		
-		return (projPos <= projP && projPre <= projPos);
-	}
+//	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
+//		
+//		float projPos = circlePos.dot(line);
+//		float projPre = pre.dot(line);
+//		float projP = p.dot(line);
+//		
+//		return (projPos <= projP && projPre <= projPos);
+//	}
 
 	/**
 	 * Checks if circle is in an edge/vertex voronoi region of polygon specified by pre, linePre, and line
@@ -409,9 +399,9 @@ public class Polygon extends Shape {
 		}
 		
 		else {
-			return (Math.abs(top) > Math.abs(bottom) ?
+			return (top < bottom ?
 					PVector.mult(axis, -bottom):
-					PVector.mult(axis, -top));
+					PVector.mult(axis, top));
 		}
 	}
 	
@@ -452,6 +442,38 @@ public class Polygon extends Shape {
 		float min = project - radius;
 		float max = project + radius;
 		return new PVector(min,max);
+	}
+	
+	public Rectangle getBoundingBox() {
+		float xMax = Float.NEGATIVE_INFINITY;
+		float xMin = Float.POSITIVE_INFINITY;
+		float yMax = Float.NEGATIVE_INFINITY;
+		float yMin = Float.POSITIVE_INFINITY;
+		for(Iterator<PVector> iter = _points.iterator(); iter.hasNext(); ) {
+			PVector point = iter.next();
+			if(point.x < xMin)
+				xMin = point.x;
+			if(point.x > xMax)
+				xMax = point.x;
+			if(point.y < yMin)
+				yMin = point.y;
+			if(point.y > yMax)
+				yMax = point.y;
+		}
+		PVector min = makeVector(xMin, yMin);
+		PVector max = makeVector(xMax, yMax);
+		return new Rectangle(_position, min, max);
+	}
+	
+	public void draw() {
+		PApplet papp = Hermes.getPApplet();
+		papp.beginShape(PApplet.POLYGON);
+		for(PVector p : _points) {
+			papp.vertex(p.x, p.y);
+		}
+		PVector vert = _points.get(0);
+		papp.vertex(vert.x,vert.y);
+		papp.endShape();
 	}
 	
 	@Override

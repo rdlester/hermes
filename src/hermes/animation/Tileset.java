@@ -17,6 +17,7 @@ public class Tileset {
 	 * @param tileWidth			width of tiles in the set, in pixels
 	 * @param tileHeight		height of tiles in the set, in pixels
 	 */
+	@SuppressWarnings("static-access")
 	public Tileset(PImage tileImage, int tileWidth, int tileHeight) {
 		_tileImage = tileImage;
 		_tileWidth = tileWidth;

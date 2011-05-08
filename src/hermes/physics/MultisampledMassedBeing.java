@@ -2,7 +2,6 @@ package src.hermes.physics;
 
 import processing.core.PVector;
 import src.hermes.shape.*;
-import src.hermes.*;
 import static src.hermes.HermesMath.*;
 
 public abstract class MultisampledMassedBeing extends MassedBeing {

@@ -101,6 +101,18 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	}
 	
 	/**
+	 * deletes everything in the group from the world at the end of the update
+	 * note: this means the group and its beings are totally destroyed!
+	 * they will be removed from any other groups they are in
+	 * this will always be O(n), regardless of the underlying collection
+	 */
+	public void destroy() {
+		for(Iterator<A> iter = iterator(); iter.hasNext(); ) {
+			_world.deleteBeing(iter.next());
+		}
+	}
+	
+	/**
 	 * @return	the number of beings contained
 	 */
 	public int size() {
@@ -134,11 +146,3 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	}
 	
 }
-/*
-class BackedGroup<A extends Being> extends GenericGroup<A, Collection<A>>{
-
-	public BackedGroup(Collection<A> beings) {
-		super(beings);
-	}
-	
-}*/

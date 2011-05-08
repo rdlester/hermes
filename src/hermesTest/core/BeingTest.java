@@ -2,7 +2,6 @@ package src.hermesTest.core;
 
 import org.junit.*;
 
-import processing.core.PVector;
 import static org.junit.Assert.*;
 import src.hermes.*;
 import src.hermes.shape.*;
