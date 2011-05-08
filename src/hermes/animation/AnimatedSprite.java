@@ -34,7 +34,7 @@ public class AnimatedSprite {
 	private boolean _lastFrameOnDeckFlag;
 	private boolean _playDirectionLeftToRightOnDeck;
 	private boolean _playDirectionLeftToRightOnDeckFlag;
-	private boolean _playingOnDeck;
+	private boolean _playingOnDeck = true;
 
 
 	//these are changed by override methods 
@@ -47,11 +47,10 @@ public class AnimatedSprite {
 	private boolean _setActiveAnimationWasCalled = false;
 	
 	//play/pause
-	private boolean _playing;
+	private boolean _playing = true;
 
 	public AnimatedSprite() {
 		_animations = new ArrayList<Animation>(); //make a new empty ArrayList to hold the Animations
-		this.play();
 	}
 
 
@@ -140,7 +139,7 @@ public class AnimatedSprite {
 	public Animation getAnimation(int index) {
 		// make sure there are animations to choose from, and that they have been set within correct bounds
 		assert !_animations.isEmpty() : "getAnimation Error: You tried to get an Animation but you haven't added any Animations yet";
-		assert (index < 0 || index>=_animations.size()) : "getAnimation Error: You tried to get an Animation at index: "+index+ ", which isn't in the bounds of the Animations";  
+		assert (index >= 0 && index<_animations.size()) : "getAnimation Error: You tried to get an Animation at index: "+index+ ", which isn't in the bounds of the Animations";  
 		return _animations.get(index);
 	}
 	
@@ -271,10 +270,10 @@ public class AnimatedSprite {
 	}
 	
 	/**
-	 *  This tells the Animated Sprite to play its activeAnimation. Is called automatically after the constructor and
-	 *  may be used after a call to pause() to restart the play.
+	 *  This tells the Animated Sprite to play its activeAnimation.
+	 *  It may be used after a call to pause() to restart the play.
 	 */
-	public void play() {
+	public void unpause() {
 		_playing = true;
 		_playingOnDeck = true;
 	}

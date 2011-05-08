@@ -169,7 +169,7 @@ public class Animation {
 	 * @return			The PImage frame at the index
 	 */
 	public PImage getFrame(int index) {
-		assert  index < _frames.size() : "getFrame Error: Index must be between 0 and the number of frames in the Animation";
+		assert  (index>=0 && index < _frames.size()) : "getFrame Error: Index must be between 0 and the number of frames in the Animation";
 		
 		return _frames.get(index);	
 	}
