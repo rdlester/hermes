@@ -1,17 +1,20 @@
-#N canvas 338 329 744 338 10;
+#N canvas 214 283 744 338 10;
 #X obj 229 302 sendOSC;
-#X obj 44 1 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+#X obj 9 16 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
-#X msg 45 26 connect localhost 8080;
-#X obj 170 145 hsl 128 15 0.01 0.99 0 0 empty empty elasticity -2 -8
-0 10 -262144 -1 -1 0 1;
-#X msg 177 174 send /BouncingBalls/SetElasticity \$1;
-#X obj 94 71 hsl 128 15 0.001 0.99 0 0 empty empty mass -2 -8 0 10
--262144 -1 -1 0 1;
-#X msg 128 108 send /BouncingBalls/SetMass \$1;
-#X obj 241 245 nbx 5 14 3 1e+37 0 0 empty empty Polygon_Sides 0 -8
-0 10 -262144 -1 -1 3 256;
-#X msg 241 265 send /BouncingBalls/SetSides \$1;
+#X msg 9 41 connect localhost 8080;
+#X obj 100 128 hsl 128 15 0.01 0.99 0 0 empty empty elasticity -2 -8
+0 10 -262144 -1 -1 3700 1;
+#X msg 115 148 send /BouncingBalls/SetElasticity \$1;
+#X obj 52 76 hsl 128 15 0.001 0.99 0 0 empty empty mass -2 -8 0 10
+-262144 -1 -1 4700 1;
+#X msg 63 95 send /BouncingBalls/SetMass \$1;
+#X obj 146 180 nbx 5 14 3 1e+37 0 0 empty empty sides 0 -8 0 10 -262144
+-1 -1 8 256;
+#X msg 159 197 send /BouncingBalls/SetSides \$1;
+#X obj 190 229 hsl 128 15 0.01 0.99 0 0 empty empty rotate -2 -8 0
+10 -262144 -1 -1 0 1;
+#X msg 204 248 send /BouncingBalls/SetRotate \$1;
 #X connect 1 0 2 0;
 #X connect 2 0 0 0;
 #X connect 3 0 4 0;
@@ -20,3 +23,5 @@
 #X connect 6 0 0 0;
 #X connect 7 0 8 0;
 #X connect 8 0 0 0;
+#X connect 9 0 10 0;
+#X connect 10 0 0 0;

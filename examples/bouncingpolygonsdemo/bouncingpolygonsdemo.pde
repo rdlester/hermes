@@ -31,6 +31,7 @@ final int WIDTH = 400;
 final int HEIGHT = 400;
 
 static int polyPoint = 3; //Number of points in PolyBalls
+static double polyRot = 0; //Amount to rotate new PolyBalls by
 static int ballSize = 25; //Size of ball, scaled by ball mass
 
 static int mode = 0; //Mode dictating which type of ball will get created
@@ -43,14 +44,14 @@ static final int RECT_KEY = PostOffice.VK_3;
 static final int DELETE_KEY = PostOffice.D;
 
 void setup() {
-  size(WIDTH, HEIGHT); 
+  size(WIDTH, HEIGHT);
   Hermes.setPApplet(this);
  
   _camera = new Camera();
   try {
    _postOffice = new PostOffice(8080, 8000);
   } catch(Exception e) {
-   _postOffice = new PostOffice(); 
+   _postOffice = new PostOffice();
   }
   _world = new World(_postOffice, _camera);
   _world.lockUpdateRate(50);
@@ -64,6 +65,7 @@ void setup() {
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
 	_postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetSides");
+	_postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetRotate");
   
   _boxGroup = new BoxGroup(_world);
   
@@ -178,6 +180,9 @@ class BallGroup extends Group<Ball> {
 			else if(messages[2].equals("SetSides")) {
 				polyPoint = (int) m.getAndRemoveInt();
 			}
+			else if(messages[2].equals("SetRotate")) {
+			  polyRot = constrain(m.getAndRemoveFloat(), 0, 2*PI);
+			}
        
      }
    }
@@ -213,6 +218,7 @@ abstract class Ball extends MultisampledMassedBeing {
 class PolyBall extends Ball {
   PolyBall(PVector center, PVector velocity, float mass, float elasticity) {
     super(Polygon.createRegularPolygon(center,polyPoint,ballSize * mass), velocity, mass, elasticity);
+    ((Polygon) getShape()).rotate(polyRot);
   }
 }
 
