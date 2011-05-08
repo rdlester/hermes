@@ -17,22 +17,22 @@ Notes:
 - may not need to register the canvas, toolbox with world (do not need to get drawn, updated) 
 - could we add a sort of map and filter functionality to group? since it's parametrized,  it might
   be doable (maybe using a class .... i dont know)
+- ask sam about multi-sampling
 
 
 
 //TODO:
-- handle special case -- no putting tool on ball or goal
-- fix colours!! //-rl
-- make run/build button better
+- make run/build button better // jen
 - ask sam about multisampling -- need here?
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
-- determine end-game behaviour
+- determine end-game behaviour // jen
+- menus, save levels
 
 Bugs:
 - when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl//
   //it still look weird to me, does it look right on yours? -jen
-
+- look at the bubbles in cells where a tool is on start .. not sure what we want here -jen
 
 
 
@@ -81,12 +81,13 @@ int toolBoxNumCellsX = toolBoxWidth / cellSideLength;
 int toolBoxNumCellsY = containerHeight / cellSideLength;
 
 //run button
-int runButtonWidth = 100;
-int runButtonHeight = 60;
+int runButtonWidth = 120;
+int runButtonHeight = 40;
 int runButtonLeftX = canvasLeftX;
-int runButtonTopY = containerTopY-80;
+int runButtonBottomY = containerTopY-10;
+int runButtonTopY = runButtonBottomY-runButtonHeight;
 int runButtonRightX = runButtonLeftX+runButtonWidth;
-int runButtonBottomY = runButtonTopY+runButtonHeight;
+
 
 //Constants defining the tools
 final int NOTOOL = 0;
@@ -162,7 +163,24 @@ class Canvas extends MassedBeing {
 	//TODO Add cell randomizer
   //TODO: does this even need toget drawn?
   void draw() {
-
+    if(mode == BUILD) {
+        //draw phantom ball
+        pushMatrix();
+        translate(balli*cellSideLength+cellSideLength/2, ballj*cellSideLength+cellSideLength/2);
+        fill(189, 0, 0, 70);
+        noStroke();
+        ellipse(0,0,ballRadius,ballRadius);
+        popMatrix();
+      
+        //draw phantom goal
+        pushMatrix();
+        translate(goali*cellSideLength, goalj*cellSideLength);
+        strokeWeight(2);
+        stroke(189, 0, 0, 70);
+        line(10,10,cellSideLength-10,cellSideLength-10); //    \
+        line(cellSideLength-10, 10, 10, cellSideLength-10); //  / 
+        popMatrix();
+    }
   }
 
   /**
@@ -391,12 +409,12 @@ class Cell extends Being {
   }
 	
   boolean hasTool() {
-		return _tool != null;
-	}
+    return _tool != null;
+  }
 	
-	void setTool(Tool tool) {
-		_tool = tool;
-	}
+  void setTool(Tool tool) {
+    _tool = tool;
+  }
 
   Tool getTool() {
    return _tool; 
@@ -475,18 +493,25 @@ class FakeTool extends Tool {
  * The user pushes the RunButton to run the simulation, changing mode to RUN
  */
 class RunButton extends Being {
+  
+  int buttonColor;
+  int runColor = color(255, 50, 50);    
+  int buildColor = color(50, 255, 50);
 
   RunButton() {
     super(new Rectangle(new PVector(runButtonLeftX, runButtonTopY), new PVector(runButtonWidth, runButtonHeight), PApplet.CORNER), new PVector(0,0));
+    buttonColor = buildColor;
   }
   
   void handleMouseMessage(MouseMessage m) {
     if(m.getAction() == PostOffice.MOUSE_PRESSED) {
       //switch modes
       if(mode == BUILD) {
-        setMode(RUN); 
+        setMode(RUN);
+        buttonColor = buildColor; 
       } else if(mode == RUN) {
         setMode(BUILD); 
+        buttonColor = runColor;
       }
     }
   }
@@ -494,11 +519,23 @@ class RunButton extends Being {
   void draw() {
    if(mode == BUILD) {
      fill(50, 255, 50);
+     noStroke();
+     rect(0, 0, runButtonWidth, runButtonHeight); 
+     fill(255);
+     text("Run", 50, 40);
    } else if(mode == RUN) {
      fill(255, 50, 50); 
+     noStroke();
+     rect(0, 0, runButtonWidth, runButtonHeight); 
+     fill(255);
+     text("Build", 50, 36);
    }
-   noStroke();
-   rect(0, 0, runButtonWidth, runButtonHeight); 
+  }
+  
+  void update() {
+   if(mouseX>frameWidth/2) {
+    buttonColor = color(255);
+   } 
   }
   
 }
@@ -776,7 +813,9 @@ void setup() {
   
   //run button
   RunButton runButton = new RunButton();
-  world.registerBeing(runButton, false);
+  world.registerBeing(runButton, true);
+  textFont(createFont("Courier", 36));
+  textAlign(CENTER);
   
   //TODO: make the ball, bubbles, set modes, make inside massed collider
   
