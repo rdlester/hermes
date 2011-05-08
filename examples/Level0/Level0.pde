@@ -22,17 +22,12 @@ Notes:
 
 
 //TODO:
-- make run/build button better // jen
-- ask sam about multisampling -- need here?
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
 - make the tools //-rl
-- determine end-game behaviour // jen
-- menus, save levels
+- menus, save levels (?do we want?)
 
 Bugs:
-- when circle collides it looks like 2*radius or something (maybe corner vs centre) //think I fixed this earlier -rl//
-  //it still look weird to me, does it look right on yours? -jen
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen
 
 
@@ -50,6 +45,7 @@ PostOffice po;
 
 final int BUILD = 0;
 final int RUN = 1;
+final int COMPLETED = 2;
 int mode = BUILD; // 0 is setup; 1 is run
 
 
@@ -106,7 +102,7 @@ int dragInitj = -1; // real values when from canvas
 Ball ball = null;
 int balli = 0; //index in canvas
 int ballj = 0;
-int ballRadius = 20;
+int ballRadius = 10;
 int ballMass = 100;
 int ballElasticity = 1;
 //goal
@@ -170,7 +166,7 @@ class Canvas extends MassedBeing {
       translate(balli*cellSideLength+cellSideLength/2, ballj*cellSideLength+cellSideLength/2);
       fill(189, 0, 0, 70);
       noStroke();
-      ellipse(0,0,ballRadius,ballRadius);
+      ellipse(0,0,ballRadius*2,ballRadius*2);
       popMatrix();
       
       //draw phantom goal
@@ -547,7 +543,7 @@ class FakeTool extends Tool {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
-      } else if(mode == RUN) {
+      } else if(mode == RUN || mode == COMPLETED) {
         setMode(BUILD); 
       }
     }
@@ -569,7 +565,7 @@ class FakeTool extends Tool {
    if(mode == BUILD) {
      triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
      //ellipse(0, 0, innerSymbolLength, innerSymbolLength); 
-   } else if(mode == RUN) {
+   } else if(mode == RUN || mode == COMPLETED) {
      rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
   }
@@ -608,7 +604,7 @@ class Ball extends MassedBeing {
   void draw() {
     fill(189, 0, 0);
     noStroke();
-    ellipse(0,0,ballRadius,ballRadius);
+    ellipse(0,0,ballRadius*2,ballRadius*2);
   }
   
 }
@@ -625,10 +621,22 @@ class Goal extends Being {
   world.registerBeing(this, false);
  }
  void draw() {
-  strokeWeight(2);
-  stroke(189, 0, 0);
-  line(10,10,cellSideLength-10,cellSideLength-10); //    \
-  line(cellSideLength-10, 10, 10, cellSideLength-10); //  /
+  if(mode == RUN) {
+    strokeWeight(3);
+    stroke(189, 0, 0);
+    line(10,10,cellSideLength-10,cellSideLength-10); //    \
+    line(cellSideLength-10, 10, 10, cellSideLength-10); //  /
+  } else if(mode == COMPLETED) {
+    strokeWeight(2);
+    stroke(255);
+    fill(62, 67, 71, 130);
+    rect(0, 0, cellSideLength, cellSideLength);
+    strokeWeight(3);
+    stroke(0, 240, 0);
+    line(15, 20, 20, 30); // \
+    line(20, 30, 30, 10); // /
+  }
+
  } 
 }
 
@@ -645,7 +653,7 @@ class Bubble extends MassedBeing {
   void draw() {
     fill(146, 239, 233, 120);
     noStroke();
-    ellipse(0,0,ballRadius,ballRadius);
+    ellipse(0,0,ballRadius*2,ballRadius*2);
   }
   
   void update() {
@@ -672,6 +680,7 @@ class Bubble extends MassedBeing {
 class BallGoalCollider extends Collider<Ball, Goal> {
   public boolean handle(Ball being1, Goal being2) {
     println("ball goal collided");
+    setMode(COMPLETED);
     return true;
   }
 }
@@ -808,6 +817,12 @@ void setMode(int newMode) {
     world.addBeing(ball, ballGroup);
     goal = new Goal();    //make the goal
     world.addBeing(goal, goalGroup);
+  } else if(newMode == COMPLETED) {
+    //TODO: fill in 
+    if(ball!=null) {
+      world.deleteBeing(ball);
+      ball = null; 
+    }
   }
   
   mode = newMode;
