@@ -14,6 +14,7 @@ import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
 import java.util.Random;
+import static src.hermes.HermesMath.*;
 
 World _world;
 PostOffice _postOffice;
@@ -30,6 +31,7 @@ final int WIDTH = 400;
 final int HEIGHT = 400;
 
 static int polyPoint = 3; //Number of points in PolyBalls
+static int ballSize = 25; //Size of ball, scaled by ball mass
 
 static int mode = 0; //Mode dictating which type of ball will get created
 static final int POLY_MODE = 0;
@@ -210,44 +212,19 @@ abstract class Ball extends MultisampledMassedBeing {
 
 class PolyBall extends Ball {
   PolyBall(PVector center, PVector velocity, float mass, float elasticity) {
-    super(makePolygon(center,mass), velocity, mass, elasticity);
+    super(Polygon.createRegularPolygon(center,polyPoint,ballSize * mass), velocity, mass, elasticity);
   }
-}
-
-static Polygon makePolygon(PVector center, float mass) {
-	//float radius = 25 * mass;
-	ArrayList<PVector> points = new ArrayList<PVector>();
-	//Random r = new Random();
-	//for(int i = 0; i < polyPoint; i++) {
-	//	float nextX = r.nextFloat();
-	//	nextX = (nextX * 2 * radius) - radius;
-	//	float nextY = r.nextFloat();
-	//	nextY = (nextY * 2 * radius) - radius;
-	//	points.add(new PVector(nextX, nextY));
-	//}
-	//points.add(new PVector(0,radius));
-	//points.add(new PVector(radius,0));
-	//points.add(new PVector(0,-radius));
-	//points.add(new PVector(-radius,0));
-	PVector vertex = new PVector(0,25*mass);
-	points.add(vertex);
-	double rot = 2*PI / polyPoint;
-	for(int i = 1; i < polyPoint; i++) {
-		PVector next = HermesMath.getRotate(points.get(i-1),rot);
-		points.add(next);
-	}
-	return new Polygon(center,points);
 }
 
 class CircleBall extends Ball {
 	CircleBall(PVector center, PVector velocity, float mass, float elasticity) {
-		super(new Circle(center, 25 * mass), velocity, mass, elasticity);
+		super(new Circle(center, ballSize * mass), velocity, mass, elasticity);
 	}
 }
 
 class RectBall extends Ball {
 	RectBall(PVector center, PVector velocity, float mass, float elasticity) {
-		super(new Rectangle(center, 25 * mass, 25 * mass), velocity, mass, elasticity);
+		super(new Rectangle(center, ballSize * mass, ballSize * mass), velocity, mass, elasticity);
 	}
 }
 

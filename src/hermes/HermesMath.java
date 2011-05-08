@@ -9,6 +9,7 @@ public class HermesMath {
 	
 	/**
 	 * Rotates vector counter-clockwise by an angle theta
+	 * Mutates the vector and returns it
 	 * @param vector	the vector to rotate
 	 * @param theta		the angle to rotate counter-clockwise by
 	 * @return			the rotated vector (not a new vector, merely a reference to the vector passed in)
@@ -20,6 +21,13 @@ public class HermesMath {
 		return vector;
 	}
 	
+	/**
+	 * Rotates vector counter-clockwise by an angle theta
+	 * Returns an entirely new vector (does not mutate)
+	 * @param vector
+	 * @param theta
+	 * @return
+	 */
 	public static PVector getRotate(PVector vector, double theta) {
 		float x = (float) (vector.x * Math.cos(theta) - vector.y * Math.sin(theta));
 		float y = (float) (vector.x * Math.sin(theta) + vector.y * Math.cos(theta));

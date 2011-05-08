@@ -484,4 +484,27 @@ public class Polygon extends Shape {
 		}
 		return output;
 	}
+	
+	///////////////////////////////
+	//Factories for Polygons
+	///////////////////////////////
+	/**
+	 * Creates a new regular polygon with a given number of sides at the given location
+	 * Radius determines how far away the vertices are from the center
+	 * @param pos - position of polygon
+	 * @param sides - number of sides in the polygon
+	 * @param radius - determines size of polygon
+	 */
+	public static Polygon createRegularPolygon(PVector pos, int sides, float radius) {
+		ArrayList<PVector> points = new ArrayList<PVector>();
+		PVector vertex = new PVector(0,-radius);
+		points.add(vertex);
+		double rot = 2*Math.PI / sides;
+		for(int i = 1; i < sides; i++) {
+			PVector next = getRotate(vertex,rot);
+			points.add(next);
+			vertex = next;
+		}
+		return new Polygon(pos,points);
+	}
 }
