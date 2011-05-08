@@ -2,6 +2,7 @@ package src.hermes.shape;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import src.hermes.Hermes;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -212,6 +213,10 @@ public class Rectangle extends Shape {
 		return contains(point.x, point.y);
 	}
 	
+	public void draw() {
+		Hermes.getPApplet().rect(_min.x,_min.y,_max.x-_min.x,_max.y-_min.y);
+	}
+
 	@Override
 	public String toString() {
 		return "Position:" + _position + "\nMin:" + _min + "\nMax:" + _max;
