@@ -62,6 +62,16 @@ public class Camera extends Environment {
 		_worldCoordinateHeight = worldCoordinateHeight;
 	}
 	
+	//pixels/(worldmetric)
+	public float getScreenToWorldRatioX() {
+		return Hermes.getPApplet().width/_worldCoordinateWidth;
+	}
+	
+	//pixels/(worldmetric)
+	public float getScreenToWorldRatioY() {
+		return Hermes.getPApplet().height/_worldCoordinateHeight;
+	}
+	
 	/**
 	 * Resets internal state parameters, effectively clearing the cache of
 	 * collided Beings from the last time step

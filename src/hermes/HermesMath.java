@@ -139,5 +139,50 @@ public class HermesMath {
 		return acc / values.length;
 	}
 
+	/**
+	 * returns the angle of the vector
+	 * (1,0) is 0
+	 * (0,1) is PI/2, etc.
+	 * @param dir
+	 * @return
+	 */
+	public static float angle(PVector dir) {
+		float angle = (float) Math.atan2(dir.y, dir.x);
+		if(angle < 0) {
+			angle += Math.PI * 2;
+			if( angle == Math.PI * 2) angle = 0;
+			return angle;
+		} 
+		else {
+			return angle;
+		}
+	}
 	
+	/**
+	 * Determines if a point is inside a circle
+	 * @param x - x location of point
+	 * @param y - y location of point
+	 * @param cirX - x location of center of circle
+	 * @param cirY - y location of center of circle
+	 * @param radius - radius of circle
+	 * @return true if point is in circle, false otherwise
+	 */
+	public static boolean inCircle(float x, float y, float cirX, float cirY, float radius) {
+		float distX = x - cirX;
+		float distY = y - cirY;
+		return distX*distX + distY*distY <= radius*radius;
+	}
+	
+	/**
+	 * Determines if a point is inside a circle
+	 * @param point - location of point
+	 * @param circleCenter - location of center of circle
+	 * @param radius - radius of circle
+	 * @return true if point is in circle, false otherwise
+	 */
+	public static boolean inCircle(PVector point, PVector circleCenter, float radius) {
+		float distX = point.x - circleCenter.x;
+		float distY = point.y - circleCenter.y;
+		return distX*distX + distY*distY <= radius*radius;
+	}
 }
