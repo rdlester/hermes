@@ -26,6 +26,7 @@ Notes:
 - ask sam about multisampling -- need here?
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
+- make the tools //-rl
 - determine end-game behaviour // jen
 - menus, save levels
 
@@ -55,6 +56,7 @@ int mode = BUILD; // 0 is setup; 1 is run
 //Frame size
 int frameWidth = 700;
 int frameHeight = 630;
+int bgColor = color(122, 131, 139);
 
 //Container sizes and locations
 //Y location and size is same for both
@@ -87,6 +89,10 @@ int runButtonLeftX = canvasLeftX;
 int runButtonBottomY = containerTopY-10;
 int runButtonTopY = runButtonBottomY-runButtonHeight;
 int runButtonRightX = runButtonLeftX+runButtonWidth;
+
+int runButtonRadius = cellSideLength;
+int runButtonCenterX = canvasLeftX + cellSideLength;
+int runButtonCenterY = containerTopY - 10 - runButtonRadius;
 
 
 //Constants defining the tools
@@ -492,15 +498,17 @@ class FakeTool extends Tool {
 /**
  * The user pushes the RunButton to run the simulation, changing mode to RUN
  */
-class RunButton extends Being {
+ 
+ class RunButton extends Being {
   
+  float runButtonDiameter = runButtonRadius*2;
+  float innerSymbolLength = runButtonDiameter/3;
   int buttonColor;
-  int runColor = color(255, 50, 50);    
-  int buildColor = color(50, 255, 50);
 
+   
   RunButton() {
-    super(new Rectangle(new PVector(runButtonLeftX, runButtonTopY), new PVector(runButtonWidth, runButtonHeight), PApplet.CORNER), new PVector(0,0));
-    buttonColor = buildColor;
+    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius), new PVector(0,0));
+    buttonColor = bgColor;
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -508,37 +516,27 @@ class RunButton extends Being {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
-        buttonColor = buildColor; 
       } else if(mode == RUN) {
         setMode(BUILD); 
-        buttonColor = runColor;
       }
     }
   }
   
   void draw() {
+   strokeWeight(3);
+   stroke(62, 67, 71);
+   noFill();
+   ellipse(0, 0, runButtonDiameter, runButtonDiameter); 
+   fill(62, 67, 71);
    if(mode == BUILD) {
-     fill(50, 255, 50);
-     noStroke();
-     rect(0, 0, runButtonWidth, runButtonHeight); 
-     fill(255);
-     text("Run", 50, 40);
+     triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
+     //ellipse(0, 0, innerSymbolLength, innerSymbolLength); 
    } else if(mode == RUN) {
-     fill(255, 50, 50); 
-     noStroke();
-     rect(0, 0, runButtonWidth, runButtonHeight); 
-     fill(255);
-     text("Build", 50, 36);
+     rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
   }
-  
-  void update() {
-   if(mouseX>frameWidth/2) {
-    buttonColor = color(255);
-   } 
-  }
-  
-}
+   
+ }
 
 /**
  *
@@ -670,7 +668,8 @@ class MouseHandler implements MouseSubscriber {
            _c.handleMouseMessage(m); 
          } else if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
            _b.handleMouseMessage(m);
-         } else if(runButtonLeftX<x && x<runButtonRightX && runButtonTopY<y && y<runButtonBottomY) {
+         //} else if(runButtonLeftX<x && x<runButtonRightX && runButtonTopY<y && y<runButtonBottomY) { //TODO: remove (from rect button)
+         } else if((new PVector(x,y).dist(new PVector(runButtonCenterX, runButtonCenterY))) < runButtonRadius) {
            _r.handleMouseMessage(m);
          } else { // not in container
            notInAContainer(m); 
@@ -837,7 +836,7 @@ void setup() {
 
 
 void draw() {
-    background(110);
+    background(bgColor);
     
     cam.draw(); // Camera object handles drawing all the appropriate Beings
 
