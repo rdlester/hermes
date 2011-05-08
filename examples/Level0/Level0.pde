@@ -465,8 +465,16 @@ class Cell extends Being {
       if(hasTool()) { // the cell contains a tool
         _tool.draw();
       } else { // draw the arrow
+        translate(cellSideLength/2, cellSideLength/2);
+        float angle = HermesMath.angle(_flowDirection);
+        rotate(angle - PI/2);
         stroke(0,0,255,70);
-        line(cellSideLength/2, cellSideLength/4, cellSideLength/2, 3*cellSideLength/4);//TODO: make actual arrow, for now just line
+        translate(0, cellSideLength/4);
+        line(0, 0, 0, -cellSideLength/2);
+        rotate(PI/4.0);
+        line(0,0,0,-cellSideLength/4);
+        rotate(3*PI/2.0);
+        line(0,0,0,-cellSideLength/4);
         //TODO: idea: init flow to -1 and don't draw if <0, set flows for canvas in its initialize()
       }
     } else if(mode == RUN) { // in RUN mode
@@ -679,11 +687,11 @@ class BallGoalCollider extends Collider<Ball, Goal> {
  *
  */
 class MouseHandler implements MouseSubscriber {
-  
+
   Canvas _c;
   ToolBox _b;
   RunButton _r;
-  
+
   MouseHandler(Canvas c, ToolBox b, RunButton r) {
     _c = c;
     _b = b;
@@ -693,9 +701,9 @@ class MouseHandler implements MouseSubscriber {
   void handleMouseMessage(MouseMessage m) {
     int x = m.getX();
     int y = m.getY();
-         
+    
     if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
-      _c.handleMouseMessage(m); 
+      _c.handleMouseMessage(m);
     } else {
       if(_c.getHover()) { //remove hover from canvas
         _c.eraseHover();
@@ -707,7 +715,7 @@ class MouseHandler implements MouseSubscriber {
       } else if(runButtonLeftX<x && x<runButtonRightX && runButtonTopY<y && y<runButtonBottomY) {
         _r.handleMouseMessage(m);
       } else { // not in container
-        notInAContainer(m); 
+        notInAContainer(m);
       }
     } 
   }
@@ -862,17 +870,13 @@ void setup() {
   world.registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider(), true);
   world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
   world.registerInteraction(toolGroup, ballGroup, new MassedCollider(), true);
-  
-  
+   
   smooth();
 
   world.start(); // gets the World thread running
 }
 
-
 void draw() {
     background(110);
-    
     cam.draw(); // Camera object handles drawing all the appropriate Beings
-
 }

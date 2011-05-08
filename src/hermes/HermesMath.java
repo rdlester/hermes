@@ -139,5 +139,15 @@ public class HermesMath {
 		return acc / values.length;
 	}
 
-	
+	public static float angle(PVector dir) {
+		float angle = (float) Math.atan2(dir.y, dir.x);
+		if(angle < 0) {
+			angle += Math.PI * 2;
+			if( angle == Math.PI * 2) angle = 0;
+			return angle;
+		} 
+		else {
+			return angle;
+		}
+	}
 }
