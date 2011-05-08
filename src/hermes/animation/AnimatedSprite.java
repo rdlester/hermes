@@ -34,6 +34,7 @@ public class AnimatedSprite {
 	private boolean _lastFrameOnDeckFlag;
 	private boolean _playDirectionLeftToRightOnDeck;
 	private boolean _playDirectionLeftToRightOnDeckFlag;
+	private boolean _playingOnDeck;
 
 
 	//these are changed by override methods 
@@ -44,9 +45,13 @@ public class AnimatedSprite {
 	private int _timeOfLastFrameAdvance; //used to keep track of when to advance frames
 	
 	private boolean _setActiveAnimationWasCalled = false;
+	
+	//play/pause
+	private boolean _playing;
 
 	public AnimatedSprite() {
 		_animations = new ArrayList<Animation>(); //make a new empty ArrayList to hold the Animations
+		this.play();
 	}
 
 
@@ -264,6 +269,22 @@ public class AnimatedSprite {
 		
 		return !_playDirectionLeftToRight;
 	}
+	
+	/**
+	 *  This tells the Animated Sprite to play its activeAnimation. Is called automatically after the constructor and
+	 *  may be used after a call to pause() to restart the play.
+	 */
+	public void play() {
+		_playing = true;
+		_playingOnDeck = true;
+	}
+	
+	/**
+	 * This pauses the Animated Sprite on its currentFrame. It respects the setting of Interruptible.
+	 */
+	public void pause() {
+	    _playingOnDeck = false;
+	}
 
 
 
@@ -315,22 +336,29 @@ public class AnimatedSprite {
 				_playDirectionLeftToRight = _playDirectionLeftToRightOnDeck; //update the play direction based on the onDeck buffer
 				_playDirectionLeftToRightOnDeckFlag = false; //reset flag
 			}
+			
+			if (!_playingOnDeck) {
+				_playing = _playingOnDeck;
+			}
+			
 		} 
 
 		////////2)
-		int currentTime = Hermes.getPApplet().millis();
-		if(currentTime - _timeOfLastFrameAdvance >= _currentMillisecondsPerFrame) { //if the millisecondsPerFrame specified has passed
-
-			//we don't want to advance the frame if the Animation's numberOfPlays is 0 and you've played last frame, otherwise, go!
-			if (_numberOfPlaysRemaining==0 && _currentFrameIndex==_lastFrame) { 
-				_currentFrameIndex = _activeAnimation.getdefaultFrame(); //always draw the default if the Animation has completed all playbacks
-				_timeOfLastFrameAdvance = currentTime;
-
-			} else {
-				advanceFrame();
-				_timeOfLastFrameAdvance = currentTime;
+		if(_playing) {
+			int currentTime = Hermes.getPApplet().millis();
+			if(currentTime - _timeOfLastFrameAdvance >= _currentMillisecondsPerFrame) { //if the millisecondsPerFrame specified has passed
+	
+				//we don't want to advance the frame if the Animation's numberOfPlays is 0 and you've played last frame, otherwise, go!
+				if (_numberOfPlaysRemaining==0 && _currentFrameIndex==_lastFrame) { 
+					_currentFrameIndex = _activeAnimation.getdefaultFrame(); //always draw the default if the Animation has completed all playbacks
+					_timeOfLastFrameAdvance = currentTime;
+	
+				} else {
+					advanceFrame();
+					_timeOfLastFrameAdvance = currentTime;
+				}
 			}
-		} 
+		}
 
 		return _activeAnimation.getFrame(_currentFrameIndex); //returns the currentFrame of the Animation
 	}
@@ -339,8 +367,8 @@ public class AnimatedSprite {
 	 * advances _currentFrameIndex
 	 * <br>considers: the play direction, initial and last frame positions (including those where last is lower than initial), and lower and upper indices of the Animation's array 
 	 */
-	private void advanceFrame() { 
-
+	private void advanceFrame() {
+		
 		if (_initialFrame == _lastFrame) { //if the user has set the initalFrame and lastFrame to the same.. just display that frame
 			_currentFrameIndex = _initialFrame;
 
