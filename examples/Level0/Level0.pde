@@ -107,6 +107,7 @@ final int QUADRANGLE = 1;
 final int TRIANGLE = 2;
 final int HEXAGON = 3;
 final int CIRCLETOOL = 4;
+final int WEDGE = 5;
 final int PUNCHER = 6;
 final int BATON = 7;
 final int FUSE = 8;
@@ -553,7 +554,7 @@ class Cell extends Being {
     stroke(255);
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
-    if(mode == BUILD) { // in BUILD mode
+    if(mode == BUILD && (_i!=goali || _j!=goalj)) { // in BUILD mode
       if(!hasTool() && _i>=0 && _j>=0) { // the cell does not contain a tool draw the arrow
         //TODO: figure out algorithm for representing flow strength
         translate(cellSideLength/2, cellSideLength/2);
@@ -819,7 +820,9 @@ Tool makeTool(int toolCode, PVector position, double theta) {
      case HEXAGON:    toReturn = new Hexagon(position, theta);
                       break;
      case CIRCLETOOL: toReturn = new CircleTool(position, theta);
-                      break;     
+                      break;
+     case WEDGE:      toReturn = new Wedge(position, theta);
+                      break;
      default:         println("Error in makeTool: toolCode did not match any tools");
                       break;   
    } 
@@ -926,7 +929,19 @@ class CircleTool extends Tool {
     super.draw();
     getShape().draw();
   }
+}
 
+class Wedge extends Tool {
+  
+  Wedge(PVector center, double theta, int elasticity) {
+    
+  }
+  
+  void rotate(double theta) {
+    
+  }
+  
+  void handleMouseMessage(MouseMessage m) {}
 }
 
 ///////////////////////////////////////////////////
@@ -1004,8 +1019,8 @@ class MouseHandler implements MouseSubscriber {
       _rand.setHover(false);
       _r.setHover(true); // turn run button hover on
       _r.handleMouseMessage(m);
-    } else if(randomButtonX - randomButtonSide/2 < x && randomButtonY - randomButtonSide/2 < y && x < randomButtonX + randomButtonSide/2 && y < randomButtonY + randomButtonSide/2) {
-      _rand.setHover(true);
+    } else if(randomButtonX - randomButtonSide/2 < x && randomButtonY - randomButtonSide/2 < y && x < randomButtonX + randomButtonSide/2 && y < randomButtonY + randomButtonSide/2) { // in random button
+      if(mode==BUILD) _rand.setHover(true);
       _rand.handleMouseMessage(m);
       _r.setHover(false); // turn run button hover off
     } else { // not in container
