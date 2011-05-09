@@ -107,6 +107,7 @@ final int QUADRANGLE = 1;
 final int TRIANGLE = 2;
 final int HEXAGON = 3;
 final int CIRCLETOOL = 4;
+final int WEDGE = 5;
 final int PUNCHER = 6;
 final int BATON = 7;
 final int FUSE = 8;
@@ -799,7 +800,9 @@ Tool makeTool(int toolCode, PVector position, double theta) {
      case HEXAGON:    toReturn = new Hexagon(position, theta);
                       break;
      case CIRCLETOOL: toReturn = new CircleTool(position, theta);
-                      break;     
+                      break;
+     case WEDGE:      toReturn = new WedgeTool(position, theta);
+                      break;
      default:         println("Error in makeTool: toolCode did not match any tools");
                       break;   
    } 
