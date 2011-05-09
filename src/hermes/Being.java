@@ -174,8 +174,24 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		return _velocity;
 	}
 	
+	public float getVelocityX() {
+	    return _velocity.x;
+	}
+	
+	public float getVelocityY() {
+	    return _velocity.y;
+	}
+	
 	public void setVelocity(PVector velocity) {
 		_velocity = velocity;
+	}
+	
+	public void setVelocityX(float x) {
+	    _velocity.x = x;
+	}
+	
+	public void setVelocityY(float y) {
+	    _velocity.y = y;
 	}
 
 	public Rectangle getBoundingBox() {
