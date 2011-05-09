@@ -870,13 +870,13 @@ class Triangle extends Tool {
 class Hexagon extends Tool {
  
   Hexagon(PVector center, double theta) {
-   super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
+    super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, 1, HEXAGON);
-   this.rotate(theta);
+    this.rotate(theta);
   } 
  
   void rotate(double theta) {
-   ((Polygon)this.getShape()).rotate(theta);
+    ((Polygon)this.getShape()).rotate(theta);
   } 
   
   void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
@@ -915,7 +915,7 @@ class Wedge extends Tool {
   
   Wedge(PVector center, double theta, int elasticity) {
     super(generateWedge(center), new PVector(0,0), Float.POSITIVE_INFINITY, elasticity, WEDGE);
-    rotate(theta);
+    this.rotate(theta);
   }
   
   void rotate(double theta) {
