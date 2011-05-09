@@ -801,7 +801,7 @@ Tool makeTool(int toolCode, PVector position, double theta) {
                       break;
      case CIRCLETOOL: toReturn = new CircleTool(position, theta);
                       break;
-     case WEDGE:      toReturn = new WedgeTool(position, theta);
+     case WEDGE:      toReturn = new Wedge(position, theta);
                       break;
      default:         println("Error in makeTool: toolCode did not match any tools");
                       break;   
@@ -909,7 +909,19 @@ class CircleTool extends Tool {
     super.draw();
     getShape().draw();
   }
+}
 
+class Wedge extends Tool {
+  
+  Wedge(PVector center, double theta, int elasticity) {
+    
+  }
+  
+  void rotate(double theta) {
+    
+  }
+  
+  void handleMouseMessage(MouseMessage m) {}
 }
 
 ///////////////////////////////////////////////////
