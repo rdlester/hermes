@@ -184,9 +184,9 @@ class Canvas extends MassedBeing {
     HashMap<Cell,Cell> order = new HashMap<Cell,Cell>();
     
     //Get initial direction
-    //This is constrained between down and right 
+    //This is constrained between down and right
     float initAngle = random(PI/2);
-    PVector initDir = HermesMath.rotate(INIT_DIR,-initAngle);
+    PVector initDir = HermesMath.getRotate(INIT_DIR,-initAngle);
     float initStr = INIT_STR;
     //Get the first cell and set its vector
     Cell first = _grid[0][0];
@@ -240,8 +240,6 @@ class Canvas extends MassedBeing {
     }
   }
 
-	//TODO Add cell randomizer
-  //TODO: does this even need toget drawn?
   void draw() {
     if(mode == BUILD) {
       //draw phantom ball
@@ -916,7 +914,7 @@ class MouseHandler implements MouseSubscriber {
       _rand.setHover(false);
       _r.setHover(true); // turn run button hover on
       _r.handleMouseMessage(m);
-    } else if(randomButtonX > x && randomButtonY > y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) {
+    } else if(randomButtonX - randomButtonSide/2 < x && randomButtonY - randomButtonSide/2 < y && x < randomButtonX + randomButtonSide/2 && y < randomButtonY + randomButtonSide/2) {
       _rand.setHover(true);
       _rand.handleMouseMessage(m);
     } else { // not in container
