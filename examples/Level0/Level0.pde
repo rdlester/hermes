@@ -849,8 +849,17 @@ abstract class Tool extends MassedBeing {
       stroke(255);
       strokeWeight(2);
     } else if(getElasticity()==STICKY) {
+      int ciliaNum = 16; //number of silia
+      int csize = 3; //size of the silia
       fill(0);
       noStroke();
+      if(s instanceOf Polygon) {
+        Polygon p = (Polygon) s;
+        ArrayList<PVector> points = p.getPointsCopy();
+        ArrayList<PVector> axes = p.getAxesCopy();
+      }
+      else if(s instanceOf Circle) {
+      }
     }    
   }
   
@@ -961,6 +970,16 @@ class CircleTool extends Tool {
   void draw() {
     super.draw();
     getShape().draw();
+    Circle c = (Circle) getShape();
+    float r = c.getRadius();
+    PVector initDir = new PVector(0,1); //Set the initial direction for silia
+    initDir.mult(r); // Multiply it out to the edge of the circle
+    for(int i = 0; i < ciliaNum; i++) {
+      //Rotate and draw a small line at the edge of the circle
+      rotate(initDir,2*PI/ciliaNum);
+      PVector loc = PVector.mult(initDir,r);
+      line(0,0,loc.x+csize,loc.y+csize);
+    }
   }
 }
 
