@@ -8,7 +8,6 @@ import src.hermesTest.shapeTests.*;
 import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
-import static src.hermes.HermesMath.*;
 
 /**
 Notes:
@@ -213,7 +212,7 @@ class Canvas extends MassedBeing {
       //Get the previous direction and rotate it by a constrained amount
       PVector preDir = pre.getFlowDir();
       float theta = random(PI/2) - PI/4;
-      PVector nextDir = getRotate(preDir,theta);
+      PVector nextDir = HermesMath.getRotate(preDir,theta);
       curr.setFlowDir(nextDir);
       //Get the previous strength and adjust it
       float preStr = pre.getFlowStr();
@@ -865,7 +864,7 @@ class SelectedToolAttributeSwitcher implements KeySubscriber {
           selectedTool.setElasticity(PERFECT);
         }
       } else if(m.getKeyChar()=='w') {     //if 'w', rotate by PI/2
-        selectedTool.rotate(PI/2);
+        selectedTool.rotate(PI/4);
       }
     }
   }  
@@ -910,6 +909,10 @@ class Quadrangle extends Tool {
   void draw() {
     super.draw();
     getShape().draw();
+    /*if(getElasticity() == STICKY) {
+      Polygon p = (Polygon) getShape();
+      drawCilia(p);
+    }*/
   }
 
 }
@@ -936,6 +939,10 @@ class Triangle extends Tool {
  void draw() {
   super.draw();
   getShape().draw();
+  /*if(getElasticity() == STICKY) {
+    Polygon p = (Polygon) getShape();
+    drawCilia(p);
+  }*/
   //TODO: add handle
  }  
 }
@@ -959,6 +966,10 @@ class Hexagon extends Tool {
   void draw() {
     super.draw();
     getShape().draw();
+    /*if(getElasticity() == STICKY) {
+      Polygon p = (Polygon) getShape();
+      drawCilia(p);
+    }*/
   }
 
 }
@@ -975,17 +986,24 @@ class CircleTool extends Tool {
   
   void draw() {
     super.draw();
+    pushMatrix();
     getShape().draw();
-    Circle c = (Circle) getShape();
-    float r = c.getRadius();
-    PVector initDir = new PVector(0,1); //Set the initial direction for silia
-    initDir.mult(r); // Multiply it out to the edge of the circle
-    for(int i = 0; i < ciliaNum; i++) {
-      //Rotate and draw a small line at the edge of the circle
-      rotate(initDir,2*PI/ciliaNum);
-      PVector loc = PVector.mult(initDir,r);
-      line(0,0,loc.x+csize,loc.y+csize);
-    }
+    popMatrix();
+    /*if(getElasticity() == STICKY) {
+      stroke(0);
+      Circle c = (Circle) getShape();
+      float r = c.getRadius();
+      PVector initDir = new PVector(0,1); //Set the initial direction for silia
+      initDir.mult(r); // Multiply it out to the edge of the circle
+      float rot = 2*PI / ciliaNum;
+      float rotCounter = 0;
+      for(int i = 0; i < ciliaNum; i++) {
+        //Rotate and draw a small line at the edge of the circle
+        HermesMath.rotate(initDir,rot);
+        rotCounter += rot;
+        line(initDir.x,initDir.y,initDir.x+(csize * cos(rotCounter)),initDir.y+(csize * sin(rotCounter)));
+      }
+    }*/
   }
 }
 
@@ -1003,18 +1021,23 @@ class Wedge extends Tool {
   
   void rotate(double theta) {
     super.rotate(theta);
-    double rot = (_totalRotation + PI/4) % (2*PI);
+    ((Polygon) getShape()).rotate(theta);
+    /*double rot = (_totalRotation + PI/4) % (2*PI);
     int sector = ((Double) (rot/(PI*2))).intValue();
     if(sector != _sector) {
       Polygon p = (Polygon) getShape();
       int alter = sector - _sector;
       p.rotate(PI/2 * alter);
-    }
+    }*/
   }
   
   void draw() {
     super.draw();
     getShape().draw();
+    /*if(getElasticity() == STICKY) {
+      Polygon p = (Polygon) getShape();
+      drawCilia(p);
+    }*/
   }
 }
 
@@ -1027,20 +1050,23 @@ Polygon generateWedge(PVector center) {
 }
 
 void drawCilia(Polygon p) {
+  stroke(0);
   ArrayList<PVector> points = p.getPointsCopy();
   int psize = points.size();
   int ciliaPerSide = ciliaNum / psize;
   ArrayList<PVector> axes = p.getAxesCopy();
-  translate(cellSideLength/2,cellSideLength/2);
   PVector pre = points.get(0);
   for(int i = 1; i < psize + 1; i++) {
     pushMatrix();
     PVector curr = points.get(i % psize);
     translate(curr.x,curr.y);
     PVector dir = PVector.sub(pre, curr);
-    dir.div(ciliaPerSide);
-    for(int i = 0; i < ciliaPerSide; i++) {
-      
+    float angle = HermesMath.angle(dir);
+    rotate(angle);
+    float dist = dir.mag() / ciliaPerSide;
+    for(int j = 0; j < ciliaPerSide; j++) {
+      translate(dist,0);
+      line(0,0,0,csize);
     }
     popMatrix();
   }
