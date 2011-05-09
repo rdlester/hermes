@@ -42,28 +42,15 @@
  		notification of player ship collision (trigger value of 1.0)
  	/OtherDestroyed
  		notification of destruction of an enemy ship (trigger value of 1.0)
- /OtherDestroyedAtY
- /OtherDestroyedAtX
- x and y of the last destroyed Other 
+        /OtherDestroyedAtY
+        /OtherDestroyedAtX
+                x and y of the last destroyed Other 
  
- 
- Continuous:
- otherDestroyedAtX
- otherDestroyedAtY
- oldestOtherX
- oldestOtherY
- newestOtherX
- newestOtherY
- setCurtainX
- 
- Triggers:
- otherDestroyed
- mainCollidedWithOther
- bulletCollidedRightWall
- otherCollidedLeftWall
- 
- ///if time, add built in accumulators with decay
  */
+
+//todo: 
+//add camera rotation, make osc controllable.
+//if time, consider built in accumulators with decay
 
 import processing.opengl.*;
 import src.hermes.*;
@@ -71,10 +58,7 @@ import src.hermes.shape.*;
 import src.hermes.animation.*;
 import src.hermes.postoffice.*;
 
-
 static final String systemName = "BulletCurtain";
-
-//todo: add camera rotation, make osc controllable.
 
 //size.. static and final because they are constants
 
@@ -120,8 +104,8 @@ StateBeing worldStateBeing;
 
 Camera cam;
 
-static final int RES_WIDTH = 640;
-static final int RES_HEIGHT = 480;
+static final int RES_WIDTH = 800;
+static final int RES_HEIGHT = 600;
 
 void setup() { 
 
@@ -162,8 +146,8 @@ void setup() {
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnY");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
-    postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
-  
+  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
+
 
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
 
@@ -269,7 +253,7 @@ abstract class SubjectObjectRelation extends Being {
 
     //First call to a subclass must be to the super constructor
     //in this case, it takes a Shape for position and collision detection
-    super(new Rectangle(x, y, BODY_WIDTH, BODY_HEIGHT));
+    super(new Rectangle(x, y, BODY_WIDTH, BODY_HEIGHT, CORNER));
 
     this.animatedSprite = animatedSprite;
   }
@@ -300,20 +284,26 @@ class Subject extends SubjectObjectRelation {
 
 
       if (msgSplit[2].equals("SetSubjectX")) {
-        float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        float remappedX = map(constrainedX, 0.0, 1.0, 0.0, curtainX - BODY_WIDTH);
-        setX(remappedX);
+        if (message.hasRemainingArguments()) {
+          float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          float remappedX = map(constrainedX, 0.0, 1.0, 0.0, curtainX - BODY_WIDTH);
+          setX(remappedX);
+        }
       }
 
       else if (msgSplit[2].equals("SetSubjectY")) {
-        float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        float remappedY = map(constrainedY, 0.0, 1.0, 0.0, RES_HEIGHT - BODY_HEIGHT);
-        setY(remappedY);
+        if (message.hasRemainingArguments()) {
+          float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          float remappedY = map(constrainedY, 0.0, 1.0, 0.0, RES_HEIGHT - BODY_HEIGHT);
+          setY(remappedY);
+        }
       }
 
       else if (msgSplit[2].equals("HaveSubjectShoot")) {
-        if (message.getAndRemoveFloat() == 1.0) {       
-          shoot();
+        if (message.hasRemainingArguments()) {
+          if (message.getAndRemoveFloat() == 1.0) {       
+            shoot();
+          }
         }
       }
     }
@@ -345,7 +335,7 @@ class Shot extends Being {
 
   Shot(float x, float y, float travel) {
 
-    super(new Rectangle(x, y, shotWidth, shotHeight));
+    super(new Rectangle(x, y, shotWidth, shotHeight, CORNER));
     this.travel = travel;
   }
 
@@ -378,10 +368,12 @@ class ShotGroup extends Group {
     String[] msgSplit = message.getAddress().split("/");
 
     if (msgSplit[1].equals(systemName)) {
-      if (msgSplit[2].equals("SetTravelMultiplierForAllShots")) {
-        float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 10);
-        shotTravelMultiplier = newMultiplier;
+      if (message.hasRemainingArguments()) {
+        if (msgSplit[2].equals("SetTravelMultiplierForAllShots")) {
+          float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 10);
+          shotTravelMultiplier = newMultiplier;
+        }
       }
     }
   }
@@ -426,53 +418,62 @@ class OtherGroup extends Group {
 
     if (msgSplit[1].equals(systemName)) {
       if (msgSplit[2].equals("GenerateAnOther")) {
-        if (message.getAndRemoveFloat() == 1.0) {       
-          Other other = new Other(spawnX, spawnY, createAnimatedSpriteForOther());
-          other.animatedSprite.setActiveAnimation(animationIndexToUseOnSpawn % other.animatedSprite.getNumberOfAnimations());
-          other.animatedSprite.overrideMillisecondsPerFrame(millisecondsPerFrame);
-          other.howManyPixelsToTravel = groupTravelSpeed;
-          add(other);
+        if (message.hasRemainingArguments()) {
+          if (message.getAndRemoveFloat() == 1.0) {       
+            Other other = new Other(spawnX, spawnY, createAnimatedSpriteForOther());
+            other.animatedSprite.setActiveAnimation(animationIndexToUseOnSpawn % other.animatedSprite.getNumberOfAnimations());
+            other.animatedSprite.overrideMillisecondsPerFrame(millisecondsPerFrame);
+            other.howManyPixelsToTravel = groupTravelSpeed;
+            add(other);
 
-          world.registerBeing(other, true);
+            world.registerBeing(other, true);
+          }
         }
       }
 
       else if (msgSplit[2].equals("SetOtherSpawnX")) {
-        float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        float remappedX = map(constrainedX, 0.0, 1.0, curtainX, RES_WIDTH - BODY_WIDTH);
-        spawnX = remappedX;
+        if (message.hasRemainingArguments()) {
+
+          float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          float remappedX = map(constrainedX, 0.0, 1.0, curtainX, RES_WIDTH - BODY_WIDTH);
+          spawnX = remappedX;
+        }
       }
 
 
       else if (msgSplit[2].equals("SetOtherSpawnY")) {
-        float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
-        spawnY = remappedY;
+        if (message.hasRemainingArguments()) {
+          float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
+          spawnY = remappedY;
+        }
       }
 
       else if (msgSplit[2].equals("SetOtherTravelSpeed")) {
-        float travel = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        travel = map(travel, 0.0, 1.0, 1.0, 20);
-        groupTravelSpeed = travel;
+        if (message.hasRemainingArguments()) {
+          float travel = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          travel = map(travel, 0.0, 1.0, 1.0, 20);
+          groupTravelSpeed = travel;
+        }
       }
-
-
 
       else if (msgSplit[2].equals("NewAnimationForSpawnedOthers")) {
-        if (message.getAndRemoveFloat() == 1.0) {       
-          animationIndexToUseOnSpawn++;
+        if (message.hasRemainingArguments()) {
+          if (message.getAndRemoveFloat() == 1.0) {       
+            animationIndexToUseOnSpawn++;
+          }
         }
       }
-      
-      
+
       else if (msgSplit[2].equals("SetTravelMultiplierForAllOthers")) {
-        if (message.getAndRemoveFloat() == 1.0) {       
-        float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 5);
-        otherTravelMultiplier = newMultiplier;
+        if (message.hasRemainingArguments()) {
+          if (message.getAndRemoveFloat() == 1.0) {       
+            float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+            newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 5);
+            otherTravelMultiplier = newMultiplier;
+          }
         }
       }
-      
     }
   }
 }
@@ -493,9 +494,11 @@ class StateBeing extends Being {
     String[] msgSplit = message.getAddress().split("/");
     if (msgSplit[1].equals(systemName)) {
       if (msgSplit[2].equals("SetAnimationSpeed")) {
-        float speed = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-        speed = map(speed, 0.0, 1.0, 10.0, 2000.0);
-        millisecondsPerFrame = int(speed);
+        if (message.hasRemainingArguments()) {
+          float speed = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
+          speed = map(speed, 0.0, 1.0, 10.0, 2000.0);
+          millisecondsPerFrame = int(speed);
+        }
       }
     }
   }

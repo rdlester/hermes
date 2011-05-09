@@ -138,6 +138,11 @@ public class OscMessage implements Message {
 	 */
 	public float getAndRemoveFloat() {
 		
+		//TAKE THIS OUT!
+		if (!hasRemainingArguments()) {
+			return 0.0f;
+		}
+		
 		//make sure the user has remaining arguments
 		assert hasRemainingArguments() : "OSCmessage error: You tried to call getAndRemoveFloat(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
 	

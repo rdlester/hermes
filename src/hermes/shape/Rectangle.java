@@ -16,6 +16,8 @@ public class Rectangle extends Shape {
 
 	public static final int TOP_LEFT = 0;
 	public static final int CENTER = 1;
+	
+	public static int mode = 0;
 
 	/**
 	 * creates a new Rectangle defined by a position and two point coordinates
@@ -58,6 +60,22 @@ public class Rectangle extends Shape {
 	public Rectangle(float x, float y, float width, float height) {
 		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CENTER);
 	}
+	
+	
+
+	/**
+	 * creates a Rectangle defined by a position, representing its center, and a width a height
+	 * note: position will be stored as a reference, so changing it will move the rectangle
+	 * @param x				the x coordinate of the upper left corner of the rectangle
+	 * @param y				the y coordinate of the upper left corner of the rectangle
+	 * @param width		the width of the rectangle (must be positive)
+	 * @param height	the height of the rectangle (must be positive)
+	 * @param mode 		the rect mode to use 'CORNER' or 'CENTER' 
+	 */
+	public Rectangle(float x, float y, float width, float height, int mode) {
+		this(new PVector(x, y), new PVector(width,height,0.0f),mode);
+	}
+	
 
 
 	/**
@@ -84,6 +102,7 @@ public class Rectangle extends Shape {
 			_max = new PVector(width, height);
 		}
 	}
+	
 
 	/**
 	 * Getter for position of corner with lowest x,y values
