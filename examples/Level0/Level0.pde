@@ -90,13 +90,13 @@ int runButtonCenterY = containerTopY - 10 - runButtonRadius;
 
 //Constants defining the tools
 final int NOTOOL = 0;
-final int TRIANGLE = 1;
-final int BATON = 2;
+final int QUADRANGLE = 1;
+final int TRIANGLE = 2;
 final int FUSE = 3;
 final int SQUARE = 4;
 final int CIRCLE = 5;
 final int PUNCHER = 6;
-final int FAKETOOL = 100; //TODO: remove this obvs
+final int BATON = 7;
 //Tool stored by dragging, used for placing tools on the board
 int toolMode = NOTOOL;
 Tool dragTool = null;
@@ -386,14 +386,12 @@ class ToolBox extends Being {
      //add the zero
      zero = new Zero();
      
-     //TODO: replace with real tools
-     //make a fake tool for testing
-     //faketool
-     Tool myfakeTool = makeTool(FAKETOOL, 
-                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
-                                            containerTopY + 1*cellSideLength+cellSideLength/2),
-                                0);
-     _grid[1][1].setTool(myfakeTool);
+     //quadrangle
+     Tool myquadrangle = makeTool(QUADRANGLE, 
+                                  new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                              containerTopY + 1*cellSideLength+cellSideLength/2),
+                                  0);
+     _grid[1][1].setTool(myquadrangle);
      
      //triangle
      Tool mytriangle = makeTool(TRIANGLE,
@@ -715,14 +713,20 @@ abstract class Tool extends MassedBeing {
   
   abstract void handleMouseMessage(MouseMessage m);
   
+  void draw() {
+    fill(0);
+    stroke(255);
+    strokeWeight(2); 
+  }
+  
 }
 
 //position is always CENTER
 Tool makeTool(int toolCode, PVector position, double theta) {
    Tool toReturn = null;
    switch(toolCode) {
-     case FAKETOOL: toReturn = new FakeTool(position); 
-                    break;
+     case QUADRANGLE: toReturn = new Quadrangle(position, theta); 
+                      break;
      case TRIANGLE: toReturn = new Triangle(position, theta);
                     break;
      default:       println("Error in makeTool: toolCode did not match any tools");
@@ -734,20 +738,23 @@ Tool makeTool(int toolCode, PVector position, double theta) {
 /**
  *
  */
-class FakeTool extends Tool {
+class Quadrangle extends Tool {
  
-  FakeTool(PVector position) {
-    super(new Rectangle(new PVector(position.x-cellSideLength/2, position.y-cellSideLength/2), new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
-          new PVector(0, 0), Float.POSITIVE_INFINITY, 1, FAKETOOL);
+  Quadrangle(PVector center, double theta) {
+   super(Polygon.createRegularPolygon(center, 4, cellSideLength/2),
+         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, QUADRANGLE);
+   this.rotate(theta);
+  } 
+ 
+  void rotate(double theta) {
+   ((Polygon)this.getShape()).rotate(theta);
   } 
   
   void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
   
   void draw() {
-    fill(0);
-    stroke(255);
-    strokeWeight(2);
-    rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
+    super.draw();
+    getShape().draw();
   }
   
   
@@ -761,7 +768,7 @@ class Triangle extends Tool {
  Triangle(PVector center, double theta) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
-   rotate(theta);
+   this.rotate(theta);
  }
 
  void rotate(double theta) {
@@ -778,9 +785,7 @@ class Triangle extends Tool {
  }
  
  void draw() {
-  fill(0);
-  stroke(255);
-  strokeWeight(2);
+  super.draw();
   getShape().draw();
   //TODO: add handle
  }  
