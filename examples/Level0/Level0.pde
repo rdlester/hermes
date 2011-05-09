@@ -568,13 +568,13 @@ class Cell extends Being {
 /**
  *
  */
-class Ball extends MassedBeing {
+class Ball extends MultisampledMassedBeing {
   
   Ball() {
     super(new Circle(new PVector((canvasLeftX+balli*cellSideLength)+cellSideLength/2, 
                                  (containerTopY+ballj*cellSideLength)+cellSideLength/2),
                      ballRadius), 
-          new PVector(0,0), ballMass, ballElasticity);
+          new PVector(0,0), ballMass, ballElasticity, 35, 8);
     world.registerBeing(this, true);
   }
   
@@ -588,10 +588,26 @@ class Ball extends MassedBeing {
     int j = y / cellSideLength;
         
     //check to make sure did not escape //TODO: remove this hack if possible!
-    if(i < 0) i=0;
-    if(i >= canvasNumCellsX) i=canvasNumCellsX-1;
-    if(j < 0) j=0;
-    if(j >= canvasNumCellsY) j=canvasNumCellsY-1;
+    if(i < 0) {
+      i=0;
+      setX(canvasLeftX);
+      setVelocityX(-getVelocityX());
+    }
+    if(i >= canvasNumCellsX) {
+      i=canvasNumCellsX-1;
+      setX(canvasRightX);
+      setVelocityX(-getVelocityX());
+    }
+    if(j < 0) {
+      j=0;
+      setY(containerTopY);
+      setVelocityY(-getVelocityY());
+    }
+    if(j >= canvasNumCellsY) {
+      j=canvasNumCellsY-1;
+      setY(containerBottomY);
+      setVelocityY(-getVelocityY());
+    }
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
@@ -640,10 +656,10 @@ class Goal extends Being {
 /**
  *
  */
-class Bubble extends MassedBeing {
+class Bubble extends MultisampledMassedBeing {
   
   Bubble(PVector position) {
-    super(new Circle(position, ballRadius/2), new PVector(0,0), ballMass, ballElasticity);
+    super(new Circle(position, ballRadius/2), new PVector(0,0), ballMass, ballElasticity, 35, 8);
     world.registerBeing(this, true);
   }
   
@@ -663,10 +679,26 @@ class Bubble extends MassedBeing {
     int j = y / cellSideLength;
     
     //check to make sure did not escape //TODO: remove this hack if possible!
-    if(i < 0) i=0;
-    if(i >= canvasNumCellsX) i=canvasNumCellsX-1;
-    if(j < 0) j=0;
-    if(j >= canvasNumCellsY) j=canvasNumCellsY-1;
+    if(i < 0) {
+      i=0;
+      setX(canvasLeftX);
+      setVelocityX(-getVelocityX());
+    }
+    if(i >= canvasNumCellsX) {
+      i=canvasNumCellsX-1;
+      setX(canvasRightX);
+      setVelocityX(-getVelocityX());
+    }
+    if(j < 0) {
+      j=0;
+      setY(containerTopY);
+      setVelocityY(-getVelocityY());
+    }
+    if(j >= canvasNumCellsY) {
+      j=canvasNumCellsY-1;
+      setY(containerBottomY);
+      setVelocityY(-getVelocityY());
+    }
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
