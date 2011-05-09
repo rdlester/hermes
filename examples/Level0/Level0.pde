@@ -26,11 +26,14 @@ Notes:
 - make cell arrow "randomizer" //this too! -rl
 - make the tools //-rl
 - menus, save levels (?do we want?)
+- don't draw arrow on gaol cell
 
 Bugs:
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
   i.e. we're not drawing over those balls again
 - don't draw arrows in cells in toolbox (give null value or somehtin)
+- hover wtf??
+
 
 
 
@@ -102,11 +105,11 @@ int randomButtonY = containerTopY - 10 - randomButtonSide;
 final int NOTOOL = 0;
 final int QUADRANGLE = 1;
 final int TRIANGLE = 2;
-final int FUSE = 3;
-final int SQUARE = 4;
-final int CIRCLE = 5;
+final int HEXAGON = 3;
+final int CIRCLETOOL = 4;
 final int PUNCHER = 6;
 final int BATON = 7;
+final int FUSE = 8;
 //Tool stored by dragging, used for placing tools on the board
 int toolMode = NOTOOL;
 Tool dragTool = null;
@@ -409,6 +412,20 @@ class ToolBox extends Being {
                                             containerTopY + 3*cellSideLength+cellSideLength/2),
                                 0);
      _grid[1][3].setTool(mytriangle);
+     
+     //hexagon
+     Tool myhexagon = makeTool(HEXAGON,
+                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                            containerTopY + 5*cellSideLength+cellSideLength/2),
+                                0);
+     _grid[1][5].setTool(myhexagon);     
+     
+     //circletool
+     Tool mycircletool = makeTool(CIRCLETOOL,
+                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                            containerTopY + 7*cellSideLength+cellSideLength/2),
+                                0);
+     _grid[1][7].setTool(mycircletool);    
 
           
      
@@ -763,6 +780,8 @@ abstract class Tool extends MassedBeing {
   
   abstract void handleMouseMessage(MouseMessage m);
   
+  abstract void rotate(double theta);
+  
   void draw() {
     fill(0);
     stroke(255);
@@ -777,10 +796,14 @@ Tool makeTool(int toolCode, PVector position, double theta) {
    switch(toolCode) {
      case QUADRANGLE: toReturn = new Quadrangle(position, theta); 
                       break;
-     case TRIANGLE: toReturn = new Triangle(position, theta);
-                    break;
-     default:       println("Error in makeTool: toolCode did not match any tools");
-                    break;   
+     case TRIANGLE:   toReturn = new Triangle(position, theta);
+                      break;
+     case HEXAGON:    toReturn = new Hexagon(position, theta);
+                      break;
+     case CIRCLETOOL: toReturn = new CircleTool(position, theta);
+                      break;     
+     default:         println("Error in makeTool: toolCode did not match any tools");
+                      break;   
    } 
    return toReturn; 
 }
@@ -806,8 +829,7 @@ class Quadrangle extends Tool {
     super.draw();
     getShape().draw();
   }
-  
-  
+
 }
 
 /**
@@ -839,6 +861,54 @@ class Triangle extends Tool {
   getShape().draw();
   //TODO: add handle
  }  
+}
+
+/**
+ *
+ */
+class Hexagon extends Tool {
+ 
+  Hexagon(PVector center, double theta) {
+   super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
+         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, HEXAGON);
+   this.rotate(theta);
+  } 
+ 
+  void rotate(double theta) {
+   ((Polygon)this.getShape()).rotate(theta);
+  } 
+  
+  void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
+  
+  void draw() {
+    super.draw();
+    getShape().draw();
+  }
+
+}
+
+/**
+ *
+ */
+class CircleTool extends Tool {
+ 
+  CircleTool(PVector center, double theta) {
+   super(new Circle(center, cellSideLength/2),
+         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, CIRCLETOOL);
+   this.rotate(theta);
+  } 
+ 
+  void rotate(double theta) {
+    //TODO: fil in?
+  } 
+  
+  void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
+  
+  void draw() {
+    super.draw();
+    getShape().draw();
+  }
+
 }
 
 ///////////////////////////////////////////////////
@@ -916,9 +986,10 @@ class MouseHandler implements MouseSubscriber {
       _rand.setHover(false);
       _r.setHover(true); // turn run button hover on
       _r.handleMouseMessage(m);
-    } else if(randomButtonX > x && randomButtonY > y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) {
+    } else if(randomButtonX < x && randomButtonY < y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) {
       _rand.setHover(true);
       _rand.handleMouseMessage(m);
+      _r.setHover(false); // turn run button hover off
     } else { // not in container
       checkCanvasHover();
       _rand.setHover(false);
