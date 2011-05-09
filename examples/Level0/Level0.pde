@@ -955,9 +955,14 @@ class Wedge extends Tool {
   }
   
   void handleMouseMessage(MouseMessage m) {}
+  
+  void draw() {
+    super.draw();
+    getShape().draw();
+  }
 }
 
-static Polygon generateWedge(PVector center) {
+Polygon generateWedge(PVector center) {
   ArrayList<PVector> points = new ArrayList<PVector>();
   points.add(new PVector(cellSideLength/2,cellSideLength/2));
   points.add(new PVector(-cellSideLength/2,cellSideLength/2));
