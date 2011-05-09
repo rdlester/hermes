@@ -19,7 +19,7 @@ Notes:
   be doable (maybe using a class .... i dont know)
 - ask sam about multi-sampling
 
-
+b
 
 //TODO:
 - make cell arrows draw //I will do this! -rl
@@ -610,9 +610,9 @@ class Ball extends MassedBeing {
         
     //check to make sure did not escape //TODO: remove this hack if possible!
     if(i < 0) i=0;
-    if(i > canvasNumCellsX) i=canvasNumCellsX;
+    if(i >= canvasNumCellsX) i=canvasNumCellsX-1;
     if(j < 0) j=0;
-    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    if(j >= canvasNumCellsY) j=canvasNumCellsY-1;
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
@@ -685,9 +685,9 @@ class Bubble extends MassedBeing {
     
     //check to make sure did not escape //TODO: remove this hack if possible!
     if(i < 0) i=0;
-    if(i > canvasNumCellsX) i=canvasNumCellsX;
+    if(i >= canvasNumCellsX) i=canvasNumCellsX-1;
     if(j < 0) j=0;
-    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    if(j >= canvasNumCellsY) j=canvasNumCellsY-1;
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
