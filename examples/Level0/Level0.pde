@@ -18,23 +18,13 @@ Notes:
 - could we add a sort of map and filter functionality to group? since it's parametrized,  it might
   be doable (maybe using a class .... i dont know)
 - ask sam about multi-sampling
+- at some point ... levels, menus, more tools, handles for rotating by mouse arbitrary angles
 
-b
 
 //TODO:
-- make cell arrows draw //I will do this! -rl
-- make cell arrow "randomizer" //this too! -rl
-- make the tools //-rl
-- menus, save levels (?do we want?)
-- new way to show selected tool in toolbox - with handle
-- rotation of tools, handle
-- set reasonable elasticities
+
 
 Bugs:
-- look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
-  i.e. we're not drawing over those balls again
-- don't draw arrows in cells in toolbox (give null value or somehtin)
-- hover wtf??
 
 
 
@@ -861,16 +851,21 @@ abstract class Tool extends MassedBeing {
   
 }
 
-class ElasticitySwitcher implements KeySubscriber {
+class SelectedToolAttributeSwitcher implements KeySubscriber {
   void handleKeyMessage(KeyMessage m) {
     if(selectedTool!=null) {
-      float elasticity = selectedTool.getElasticity();
-      if (elasticity==SPRINGY) {
-        selectedTool.setElasticity(STICKY);             
-      } else if(elasticity==PERFECT) {
-        selectedTool.setElasticity(SPRINGY);
-      } else if(elasticity==STICKY) {
-        selectedTool.setElasticity(PERFECT);
+      
+      if(m.getKeyChar()=='e') {      //if 'e', change elasticity
+        float elasticity = selectedTool.getElasticity();
+        if (elasticity==SPRINGY) {
+          selectedTool.setElasticity(STICKY);             
+        } else if(elasticity==PERFECT) {
+          selectedTool.setElasticity(SPRINGY);
+        } else if(elasticity==STICKY) {
+          selectedTool.setElasticity(PERFECT);
+        }
+      } else if(m.getKeyChar()=='w') {     //if 'w', rotate by PI/2
+        selectedTool.rotate(PI/2);
       }
     }
   }  
@@ -1279,9 +1274,10 @@ void setup() {
   world.registerBeing(randomButton,false);
   po.registerKeySubscription(randomButton,PostOffice.SPACE);
   
-  //key for ElasticitySwitcher
-  ElasticitySwitcher elasticitySwitcher = new ElasticitySwitcher();
-  po.registerKeySubscription(elasticitySwitcher,PostOffice.E);
+  //key for SelectedToolAttributeSwitcher
+  SelectedToolAttributeSwitcher selectedToolAttributeSwitcher = new SelectedToolAttributeSwitcher();
+  po.registerKeySubscription(selectedToolAttributeSwitcher,PostOffice.E);
+  po.registerKeySubscription(selectedToolAttributeSwitcher,PostOffice.W);
   
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
