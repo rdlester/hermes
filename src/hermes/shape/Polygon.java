@@ -93,6 +93,14 @@ public class Polygon extends Shape {
 		return _points;
 	}
 	
+	public ArrayList<PVector> getPointsCopy() {
+		ArrayList<PVector> copy = new ArrayList<PVector>();
+		for(PVector p : _points) {
+			copy.add(new PVector(p.x, p.y));
+		}
+		return copy;
+	}
+	
 	/**
 	 * Adds a point to the polygon
 	 * Point is assumed to be connected to the last point added
@@ -113,10 +121,22 @@ public class Polygon extends Shape {
 	
 	/**
 	 * Getter for axes list - only for internal use within shape classes
-	 * @return _axes
+	 * @return _axes itself, do not modify contents!
 	 */
 	protected ArrayList<PVector> getAxes() {
 		return _axes;
+	}
+	
+	/**
+	 * Public getter for axes list
+	 * @return copy of axes list
+	 */
+	public ArrayList<PVector> getAxesCopy() {
+		ArrayList<PVector> copy = new ArrayList<PVector>();
+		for(PVector p : _axes) {
+			copy.add(new PVector(p.x, p.y));
+		}
+		return copy;
 	}
 	
 	/**

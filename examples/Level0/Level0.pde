@@ -691,10 +691,25 @@ class RunButton extends Being {
   float runButtonDiameter = runButtonRadius*2;
   float innerSymbolLength = runButtonDiameter/3;
   boolean _hover = false;
-
+  boolean _keyPressed = false;
    
   RunButton() {
     super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
+  }
+  
+  void handleKeyMessage(KeyMessage m) {
+    if(m.isPressed() && !_keyPressed) {
+      if(mode == BUILD) {
+        setMode(RUN);
+      }
+      else {
+        setMode(BUILD);
+      }
+      _keyPressed = true;
+    }
+    else {
+      _keyPressed = false;
+    }
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -723,7 +738,7 @@ class RunButton extends Being {
    fill(62, 67, 71);
    if(mode == BUILD) {
      triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
-   } else if(mode == RUN || mode == COMPLETED) {
+   } else {
      rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
   }
@@ -733,11 +748,22 @@ class RandomButton extends Being {
   
   Canvas _c;
   boolean _hover;
+  boolean _keyPressed = false;
   
   RandomButton(Canvas c) {
     super(new Rectangle(randomButtonX,randomButtonY,randomButtonSide,randomButtonSide));
     _c = c;
     _hover = false;
+  }
+  
+  void handleKeyMessage(KeyMessage m) {
+    if(m.isPressed() && !_keyPressed) {
+      _c.randomize();
+      _keyPressed = true;
+    }
+    else {
+      _keyPressed = false;
+    }
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -934,6 +960,8 @@ class CircleTool extends Tool {
  */
 class Wedge extends Tool {
   
+  int _sector = 0;
+  
   Wedge(PVector center, double theta, float elasticity) {
     super(generateWedge(center), new PVector(0,0), Float.POSITIVE_INFINITY, elasticity, WEDGE);
     this.rotate(theta);
@@ -941,6 +969,13 @@ class Wedge extends Tool {
   
   void rotate(double theta) {
     super.rotate(theta);
+    double rot = (_totalRotation + PI/4) % (2*PI);
+    int sector = ((Double) (rot/(PI*2))).intValue();
+    if(sector != _sector) {
+      Polygon p = (Polygon) getShape();
+      int alter = sector - _sector;
+      p.rotate(PI/2 * alter);
+    }
   }
   
   void draw() {
@@ -1182,8 +1217,10 @@ void setup() {
   world.registerBeing(runButton, true);
   textFont(createFont("Courier", 36));
   textAlign(CENTER);
+  po.registerKeySubscription(runButton,PostOffice.R);
   RandomButton randomButton = new RandomButton(canvas);
   world.registerBeing(randomButton,false);
+  po.registerKeySubscription(randomButton,PostOffice.SPACE);
   
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
