@@ -49,10 +49,10 @@ public class OscMessage implements Message {
 	}
 	
 	/**
-	 * Helper to find out if the user has any remaining arguments in the OSCMessage
-	 * @return
+	 * method to find out if the user has any remaining arguments in the OSCMessage
+	 * @return		true if the message has remaining arguments
 	 */
-	private boolean hasRemainingArguments() {
+	public boolean hasRemainingArguments() {
 		return (_indexToRetrieveFrom <= _contents.length - 1);
 	}
 	

@@ -5,7 +5,10 @@ public class PatternGenerator {
   //alternatively, could just have a couple default sizes that are auto generated, and thus setAcvtiveAnimation calls.. 
 
 
-color[] rainbowColors = {color(255,51,52), color(255, 145, 48), color(255, 254, 136), color(0,184,48), color(0,210,255)} ;
+  color[] rainbowColors = {
+    color(255, 51, 52), color(255, 145, 48), color(255, 254, 136), color(0, 184, 48), color(0, 210, 255)
+  } 
+  ;
 
   PatternGenerator() {
     //  PatternGenerator(int frameWidth, int frameHeight)
@@ -18,10 +21,10 @@ color[] rainbowColors = {color(255,51,52), color(255, 145, 48), color(255, 254, 
     PImage[] generatedFrames = new PImage[numberOfFrames];
 
 
-      ///** change this later?
-      //mainColor = color(random(255),random(255),random(255));
+    ///** change this later?
+    //mainColor = color(random(255),random(255),random(255));
 
-      mainColor = rainbowColors[int(random(rainbowColors.length))];
+    mainColor = rainbowColors[int(random(rainbowColors.length))];
 
     //for every frame.. 
     for (int frameIndex = 0; frameIndex < generatedFrames.length; frameIndex++) {
@@ -74,15 +77,14 @@ color[] rainbowColors = {color(255,51,52), color(255, 145, 48), color(255, 254, 
         //If the generated pattern has a 1, 
         if (pattern[row] == 1) {
           colorToUse = mainColor;
-          
         } // otherwise leave it as transparent;
 
 
         if (int(random(10)) == 0) {
 
           ///random
-      //    colorToUse = color(random(255), random(255), random(255));
-colorToUse = rainbowColors[int(random(rainbowColors.length))];
+              colorToUse = color(random(255), random(255), random(255));
+       //   colorToUse = rainbowColors[int(random(rainbowColors.length))];
 
           //        colorToUse = mainColor+ int(random (200));
         }
@@ -188,5 +190,4 @@ colorToUse = rainbowColors[int(random(rainbowColors.length))];
    
    */
 }
-
 
