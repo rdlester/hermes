@@ -147,6 +147,9 @@ public class Polygon extends Shape {
 		for(PVector p : _points) {
 			HermesMath.rotate(p,theta);
 		}
+		for(PVector p : _axes) {
+			HermesMath.rotate(p,theta);
+		}
 	}
 	
 	/**
@@ -162,16 +165,19 @@ public class Polygon extends Shape {
 			//translate back
 			p.add(position);
 		}
+		for(PVector p : _axes) {
+			HermesMath.rotate(p,theta);
+		}
 	}
 	
-	/**
-	 * Rotates polygon counter-clockwise around given position in world coordinates
-	 */
-	public void rotateInWorld(PVector position, double theta) {
-		//map given world location into polygon coordinates
-		PVector polyLoc = PVector.sub(_position, position);
-		rotate(polyLoc,theta);
-	}
+//	/**
+//	 * Rotates polygon counter-clockwise around given position in world coordinates
+//	 */
+//	public void rotateInWorld(PVector position, double theta) {
+//		//map given world location into polygon coordinates
+//		PVector polyLoc = PVector.sub(_position, position);
+//		rotate(polyLoc,theta);
+//	}
 	
 	@Override
 	public boolean collide(Shape other) {
