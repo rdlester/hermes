@@ -947,7 +947,7 @@ class Wedge extends Tool {
   
   Wedge(PVector center, double theta, float elasticity) {
     super(generateWedge(center), new PVector(0,0), Float.POSITIVE_INFINITY, elasticity, WEDGE);
-    rotate(theta);
+    this.rotate(theta);
   }
   
   void rotate(double theta) {
@@ -955,6 +955,11 @@ class Wedge extends Tool {
   }
   
   void handleMouseMessage(MouseMessage m) {}
+  
+  void draw() {
+    super.draw();
+    getShape().draw();
+  }
 }
 
 Polygon generateWedge(PVector center) {
