@@ -119,9 +119,9 @@ int dragIniti = -1; // set to -1 when from toolbox,
 int dragInitj = -1; // real values when from canvas
 
 //tool elasticity
-final float SPRINGY = 1.2; //TODO: ??????set?
+final float SPRINGY = 1.5; //TODO: ??????set?
 final float PERFECT = 1;
-final float STICKY = 0;
+final float STICKY = 0.5;
 
 //ball
 Ball ball = null;
@@ -832,17 +832,26 @@ abstract class Tool extends MassedBeing {
       rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
     }
     
-    
     //check if is selectedTool
     if(selectedTool==this) {
-      fill(253, 253, 44); // plan on changing this
+      fill(253, 253, 44); // TODO: plan on changing this
       stroke(0);
       strokeWeight(2);
-    } else {
+    } 
+    
+    //switch over elasticity
+    if (getElasticity()==SPRINGY) {
+      noFill();
+      stroke(255);
+      strokeWeight(2);      
+    } else if(getElasticity()==PERFECT) {
       fill(0);
       stroke(255);
-      strokeWeight(2); 
-    }
+      strokeWeight(2);
+    } else if(getElasticity()==STICKY) {
+      fill(0);
+      noStroke();
+    }    
   }
   
 }
