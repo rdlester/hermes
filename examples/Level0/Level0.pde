@@ -834,9 +834,10 @@ abstract class Tool extends MassedBeing {
     
     //check if is selectedTool
     if(selectedTool==this) {
-      fill(253, 253, 44); // TODO: plan on changing this
-      stroke(0);
-      strokeWeight(2);
+      noFill();
+      strokeWeight(3);
+      stroke(253, 253, 44);
+      rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
     } 
     
     //switch over elasticity
