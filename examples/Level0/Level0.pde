@@ -29,6 +29,7 @@ Notes:
 - don't draw arrow on gaol cell
 - new way to show selected tool in toolbox - with handle
 - rotation of tools, handle
+- set reasonable elasticities
 
 Bugs:
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
@@ -112,17 +113,15 @@ final int PUNCHER = 6;
 final int BATON = 7;
 final int FUSE = 8;
 //Tool stored by dragging, used for placing tools on the board
-int toolMode = NOTOOL;
+Tool templateTool = null;
 Tool dragTool = null;
 int dragIniti = -1; // set to -1 when from toolbox,
 int dragInitj = -1; // real values when from canvas
 
-//template tools
-Triangle templateTriangle;
-Quadrangle templateQuandrangle;
-Hexagon templateHexagon;
-CircleTool templateCircleTool;
-Wedge templateWedge;
+//tool elasticity
+final float SPRINGY = 1.2; //TODO: ??????set?
+final float PERFECT = 1;
+final float STICKY = 0;
 
 //ball
 Ball ball = null;
@@ -337,21 +336,23 @@ class Canvas extends MassedBeing {
         dragIniti = i;
         dragInitj = j;
         in.setTool(null);
-      } else if(toolMode!=NOTOOL && !prohibitedCell) { //cell has no tool and toolMode is set to something
-        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2), 0);
+      } else if(templateTool!=null && !prohibitedCell) { //cell has no tool and templateTool is set to something
+        Tool newTool = makeTool(templateTool.getToolCode(), new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2),
+                                templateTool.getRotation(), templateTool.getElasticity());
         in.setTool(newTool);
       }    
     } else if(action == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //TODO: this code is identical in 3 places, probably a better way to do this
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
-      } else if(toolMode!=NOTOOL && !prohibitedCell) {
+      } else if(templateTool!=null && !prohibitedCell) {
         // remove the tool at that cell if necessary
         if(in.hasTool()) {
           Tool toRemove = in.getTool();
           in.setTool(null);
           world.deleteBeing(toRemove);
         }
-        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2), 0);
+        Tool newTool = makeTool(templateTool.getToolCode(), new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2),
+                                templateTool.getRotation(), templateTool.getElasticity());
         in.setTool(newTool);
       }
     }
@@ -406,38 +407,38 @@ class ToolBox extends Being {
      zero = new Zero();
      
      //quadrangle
-     templateQuadrangle = makeTool(QUADRANGLE, 
+     Tool templateQuadrangle = makeTool(QUADRANGLE, 
                                   new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                               containerTopY + 1*cellSideLength+cellSideLength/2),
-                                  0);
+                                  0, PERFECT);
      _grid[1][1].setTool(templateQuadrangle);
      
      //triangle
-     templateTriangle = makeTool(TRIANGLE,
+     Tool templateTriangle = makeTool(TRIANGLE,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 3*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][3].setTool(templateTriangle);
      
      //hexagon
-     templateHexagon = makeTool(HEXAGON,
+     Tool templateHexagon = makeTool(HEXAGON,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 5*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][5].setTool(templateHexagon);     
      
      //circletool
-     templateCircleTool = makeTool(CIRCLETOOL,
+     Tool templateCircleTool = makeTool(CIRCLETOOL,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 7*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][7].setTool(templateCircleTool);   
      
      //wedge
-     templateWedge = makeTool(WEDGE,
+     Tool templateWedge = makeTool(WEDGE,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 9*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][9].setTool(templateWedge);  
           
      
@@ -458,17 +459,18 @@ class ToolBox extends Being {
       //get i,j indices of cell containing mouse press
       int i = x / cellSideLength;
       int j = y / cellSideLength;
-      // if that cell contains a tool, set toolMode to that tool
+      // if that cell contains a tool, set templateTool to that tool
       if(_grid[i][j].hasTool()) {
-        toolMode = _grid[i][j].getTool().getToolCode();
-        _grid[i][j].getTool().handleMouseMessage(m);
+        templateTool = _grid[i][j].getTool();
+        templateTool.handleMouseMessage(m);
       }
     } else if(m.getAction() == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //already dragging a tool
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
-      } else if(toolMode!=0) { // toolMode already set but no new tool created yet
+      } else if(templateTool!=null) { // templateTool already set but no new tool created yet
         //instantiate new version of that tool 
-        dragTool = makeTool(toolMode, new PVector(m.getX(), m.getY()), 0);
+        dragTool = makeTool(templateTool.getToolCode(), new PVector(m.getX(), m.getY()),
+                                templateTool.getRotation(), templateTool.getElasticity());
         dragIniti = -1;
         dragInitj = -1;
       }
@@ -791,6 +793,7 @@ class RandomButton extends Being {
 abstract class Tool extends MassedBeing {
   int _toolCode;
   boolean _selected = false;
+  double _totalRotation=0;
   
   Tool(Shape shp, PVector velocity, float mass, float elasticity, int toolCode) {
     super(shp, velocity, mass, elasticity); 
@@ -806,7 +809,8 @@ abstract class Tool extends MassedBeing {
   
   abstract void handleMouseMessage(MouseMessage m);
   
-  abstract void rotate(double theta);
+  void rotate(double theta) {_totalRotation = (_totalRotation + theta)%(PI*2);}
+  double getRotation() {return _totalRotation;}
   
   void draw() {
     fill(0);
@@ -817,7 +821,7 @@ abstract class Tool extends MassedBeing {
 }
 
 //position is always CENTER
-Tool makeTool(int toolCode, PVector position, double theta, int elasticity) {
+Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
    Tool toReturn = null;
    switch(toolCode) {
      case QUADRANGLE: toReturn = new Quadrangle(position, theta, elasticity); 
@@ -841,13 +845,14 @@ Tool makeTool(int toolCode, PVector position, double theta, int elasticity) {
  */
 class Quadrangle extends Tool {
  
-  Quadrangle(PVector center, double theta, int elasticity) {
+  Quadrangle(PVector center, double theta, float elasticity) {
    super(Polygon.createRegularPolygon(center, 4, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, QUADRANGLE);
    this.rotate(theta);
   } 
  
   void rotate(double theta) {
+    super.rotate(theta);
    ((Polygon)this.getShape()).rotate(theta);
   } 
   
@@ -865,13 +870,14 @@ class Quadrangle extends Tool {
  */
 class Triangle extends Tool {
   
- Triangle(PVector center, double theta, int elasticity) {
+ Triangle(PVector center, double theta, float elasticity) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, TRIANGLE);
    this.rotate(theta);
  }
 
  void rotate(double theta) {
+   super.rotate(theta);
    ((Polygon)this.getShape()).rotate(theta);
  } 
  
@@ -896,14 +902,15 @@ class Triangle extends Tool {
  */
 class Hexagon extends Tool {
  
-  Hexagon(PVector center, double theta, int elasticity) {
+  Hexagon(PVector center, double theta, float elasticity) {
    super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, HEXAGON);
    this.rotate(theta);
   } 
  
   void rotate(double theta) {
-    ((Polygon)this.getShape()).rotate(theta);
+   super.rotate(theta);
+   ((Polygon)this.getShape()).rotate(theta);
   } 
   
   void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
@@ -920,14 +927,9 @@ class Hexagon extends Tool {
  */
 class CircleTool extends Tool {
  
-  CircleTool(PVector center, double theta, int elasticity) {
+  CircleTool(PVector center, double theta, float elasticity) {
    super(new Circle(center, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, CIRCLETOOL);
-   this.rotate(theta);
-  } 
- 
-  void rotate(double theta) {
-    //TODO: fil in?
   } 
   
   void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
@@ -943,13 +945,13 @@ class CircleTool extends Tool {
  */
 class Wedge extends Tool {
   
-  Wedge(PVector center, double theta, int elasticity) {
+  Wedge(PVector center, double theta, float elasticity) {
     super(generateWedge(center), new PVector(0,0), Float.POSITIVE_INFINITY, elasticity, WEDGE);
     this.rotate(theta);
   }
   
   void rotate(double theta) {
-    
+    super.rotate(theta);
   }
   
   void handleMouseMessage(MouseMessage m) {}
@@ -962,6 +964,7 @@ static Polygon generateWedge(PVector center) {
   points.add(new PVector(-cellSideLength/2,-cellSideLength/2));
   return new Polygon(center,points);
 }
+
 
 ///////////////////////////////////////////////////
 // GROUPS
@@ -1132,7 +1135,7 @@ void setMode(int newMode) {
     }
   } else if(newMode == RUN) {
     //clean up global vars
-    toolMode = NOTOOL;
+    templateTool = null;
     dragTool = null;
     
     makeBubbles();//make the bubbles (note: I put this before make the ball so that ball will be drawn overtop)
