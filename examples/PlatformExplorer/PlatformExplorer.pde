@@ -46,19 +46,39 @@ class Platform extends MassedBeing {
  */
 class Player extends MassedBeing {
   
-  final static float PLAYER_WIDTH = 10;
-  final static float PLAYER_HEIGHT = 30;
+  final static float PLAYER_WIDTH = 16;
+  final static float PLAYER_HEIGHT = 36;
   final static float PLAYER_SPEED = 50;
   
+  final static int FACING_LEFT = 1;
+  final static int FACING_RIGHT = 2;
+  
   boolean _jumped = false;
+  int _direction = FACING_RIGHT;
+  
+  AnimatedSprite _sprite;
+  int _animIndex;
   
   Player(float x, float y) {
     super(new Rectangle(makeVector(x, y), PLAYER_WIDTH, PLAYER_HEIGHT), zeroVector(), 1.0f, 1.0f);
+    
+    _sprite = new AnimatedSprite();
+    Animation anim = new Animation("skeilert_walk_final", 1, 24, ".png", (int)(1000.0f / 24.0f));
+    _animIndex = _sprite.addAnimation(anim);
+    println(_animIndex);
+    _sprite.setActiveAnimation(_animIndex);
   }
   
   void draw() {
     fill(0);
-    rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    //rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
+    scale(0.2);
+    imageMode(CENTER);
+    if(_direction == FACING_LEFT) {
+      scale(-1,1);
+      translate(20, 0);
+    }
+    image(_sprite.animate(), 0, 0);
   }
   
   void resetJump() {
@@ -68,19 +88,30 @@ class Player extends MassedBeing {
   void handleKeyMessage(KeyMessage m) {
     int nKey = m.getKeyCode();
     if(m.isPressed()) { // the player's movement is controlled by w/a/s/d
-      if(nKey == PostOffice.D || nKey == PostOffice.RIGHT)
+      if(nKey == PostOffice.D || nKey == PostOffice.RIGHT) {
         getVelocity().x = PLAYER_SPEED;
-      if(nKey == PostOffice.A || nKey == PostOffice.LEFT)
+        _direction = FACING_RIGHT;
+        _sprite.unpause();
+      }
+      if(nKey == PostOffice.A || nKey == PostOffice.LEFT) {
         getVelocity().x = -PLAYER_SPEED;
+        _direction = FACING_LEFT;
+        _sprite.unpause();
+      }
       if((nKey == PostOffice.W || nKey == PostOffice.UP) && !_jumped) {
         addImpulse(makeVector(0, -2*PLAYER_SPEED));
         _jumped = true;
+        //_sprite.pause();
       }
-      if(nKey == PostOffice.S || nKey == PostOffice.DOWN)
+      if(nKey == PostOffice.S || nKey == PostOffice.DOWN) {
         getVelocity().y = 2*PLAYER_SPEED;
+        //_sprite.pause();
+      }
     } else { // when a key is released, we stop the player
-        if(nKey == PostOffice.D || nKey == PostOffice.A || nKey == PostOffice.LEFT || nKey == PostOffice.RIGHT)
+        if(nKey == PostOffice.D || nKey == PostOffice.A || nKey == PostOffice.LEFT || nKey == PostOffice.RIGHT) {
           getVelocity().x = 0;
+          _sprite.pause();
+        }
     }
   } 
   
@@ -157,24 +188,6 @@ class SectorGrid extends Being {
   Integer packCoors(int x, int y) {
      return new Integer(x ^ y << 16);
    }
-  
-}
-   
-class RectBeing extends Being {
-  
-  float _width;
-  float _height;
-  
-  RectBeing(Rectangle rect) {
-    super(rect, zeroVector());
-    _width = rect.getRectWidth();
-    _height = rect.getRectHeight();
-  }
-  
-  void draw() {
-    fill(255);
-    rect(0, 0, _width, _height);
-  }
   
 }
 
