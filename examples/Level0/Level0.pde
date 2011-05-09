@@ -530,7 +530,7 @@ class Cell extends Being {
     stroke(255);
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
-    if(mode == BUILD) { // in BUILD mode
+    if(mode == BUILD && (_i!=goali || _j!=goalj)) { // in BUILD mode
       if(!hasTool() && _i>=0 && _j>=0) { // the cell does not contain a tool draw the arrow
         //TODO: figure out algorithm for representing flow strength
         translate(cellSideLength/2, cellSideLength/2);
