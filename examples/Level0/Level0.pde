@@ -19,14 +19,13 @@ Notes:
   be doable (maybe using a class .... i dont know)
 - ask sam about multi-sampling
 
-
+b
 
 //TODO:
 - make cell arrows draw //I will do this! -rl
 - make cell arrow "randomizer" //this too! -rl
 - make the tools //-rl
 - menus, save levels (?do we want?)
-- don't draw arrow on gaol cell
 - new way to show selected tool in toolbox - with handle
 - rotation of tools, handle
 - set reasonable elasticities
@@ -59,12 +58,12 @@ int mode = BUILD; // 0 is setup; 1 is run
 
 //Frame size
 int frameWidth = 700;
-int frameHeight = 630;
+int frameHeight = 590;
 int bgColor = color(122, 131, 139);
 
 //Container sizes and locations
 //Y location and size is same for both
-int containerHeight = 480;
+int containerHeight = 440;
 int containerTopY = 120;
 int containerBottomY = containerTopY + containerHeight;
 //Canvas X and width
@@ -109,9 +108,9 @@ final int TRIANGLE = 2;
 final int HEXAGON = 3;
 final int CIRCLETOOL = 4;
 final int WEDGE = 5;
-final int PUNCHER = 6;
-final int BATON = 7;
-final int FUSE = 8;
+final int PUNCHER = 6; //to be added
+final int BATON = 7; //to be added
+final int FUSE = 8; //to be added
 //Tool stored by dragging, used for placing tools on the board
 Tool templateTool = null;
 Tool dragTool = null;
@@ -460,9 +459,11 @@ class ToolBox extends Being {
       int i = x / cellSideLength;
       int j = y / cellSideLength;
       // if that cell contains a tool, set templateTool to that tool
-      if(_grid[i][j].hasTool()) {
+      if(_grid[i][j].hasTool() && _grid[i][j].isCovered()==0) {
         templateTool = _grid[i][j].getTool();
         templateTool.handleMouseMessage(m);
+      } else if(_grid[i][j].isCovered()!=0) { //currently being covered -- throw message to relevant cell
+        
       }
     } else if(m.getAction() == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //already dragging a tool
@@ -526,6 +527,7 @@ class Cell extends Being {
   //Keeps track of cell's location in grid
   int _i;
   int _j;
+  int _covered = 0;
   
   Cell(PVector cellTopLeft, int i, int j) {
     super(new Rectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength), PApplet.CORNER));
@@ -552,6 +554,10 @@ class Cell extends Being {
   
   int geti() {return _i;}
   int getj() {return _j;}
+  
+  void cover(int diff) {_cover=diff;}
+  void uncover() {_cover=0;}
+  int isCovered() {return _cover;}
 
   void draw() {
     if(_hover && mode == BUILD) {
@@ -610,9 +616,9 @@ class Ball extends MassedBeing {
         
     //check to make sure did not escape //TODO: remove this hack if possible!
     if(i < 0) i=0;
-    if(i > canvasNumCellsX) i=canvasNumCellsX;
+    if(i >= canvasNumCellsX) i=canvasNumCellsX-1;
     if(j < 0) j=0;
-    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    if(j >= canvasNumCellsY) j=canvasNumCellsY-1;
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
@@ -685,9 +691,9 @@ class Bubble extends MassedBeing {
     
     //check to make sure did not escape //TODO: remove this hack if possible!
     if(i < 0) i=0;
-    if(i > canvasNumCellsX) i=canvasNumCellsX;
+    if(i >= canvasNumCellsX) i=canvasNumCellsX-1;
     if(j < 0) j=0;
-    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    if(j >= canvasNumCellsY) j=canvasNumCellsY-1;
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
@@ -833,7 +839,10 @@ abstract class Tool extends MassedBeing {
   void deselect() {_selected = false;}
   boolean isSelected() {return _selected;}
   
-  abstract void handleMouseMessage(MouseMessage m);
+  void handleMouseMessage(MouseMessage m) {
+   //note:assumes clicked in own cell 
+   if(!isSelected()) select(); 
+  }
   
   void rotate(double theta) {_totalRotation = (_totalRotation + theta)%(PI*2);}
   double getRotation() {return _totalRotation;}
@@ -908,10 +917,7 @@ class Triangle extends Tool {
  } 
  
  void handleMouseMessage(MouseMessage m) {
-   //note:assumes clicked in own cell
-   if(!isSelected()) {
-    select(); 
-   }
+
    //TODO: handle
    println("clicked in triangle");
  }
