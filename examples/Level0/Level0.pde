@@ -914,7 +914,8 @@ class CircleTool extends Tool {
 class Wedge extends Tool {
   
   Wedge(PVector center, double theta, int elasticity) {
-    
+    super(generateWedge(center), new PVector(0,0), Float.POSITIVE_INFINITY, elasticity, WEDGE);
+    rotate(theta);
   }
   
   void rotate(double theta) {
@@ -922,6 +923,14 @@ class Wedge extends Tool {
   }
   
   void handleMouseMessage(MouseMessage m) {}
+}
+
+static Polygon generateWedge(PVector center) {
+  ArrayList<PVector> points = new ArrayList<PVector>();
+  points.add(new PVector(cellSideLength/2,cellSideLength/2));
+  points.add(new PVector(-cellSideLength/2,cellSideLength/2));
+  points.add(new PVector(-cellSideLength/2,-cellSideLength/2));
+  return new Polygon(center,points);
 }
 
 ///////////////////////////////////////////////////
