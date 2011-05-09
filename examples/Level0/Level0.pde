@@ -27,6 +27,8 @@ Notes:
 - make the tools //-rl
 - menus, save levels (?do we want?)
 - don't draw arrow on gaol cell
+- new way to show selected tool in toolbox - with handle
+- rotation of tools, handle
 
 Bugs:
 - look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
@@ -99,8 +101,6 @@ int randomButtonSide = cellSideLength;
 int randomButtonX = canvasRightX - randomButtonSide;
 int randomButtonY = containerTopY - 10 - randomButtonSide;
 
-
-
 //Constants defining the tools
 final int NOTOOL = 0;
 final int QUADRANGLE = 1;
@@ -116,6 +116,13 @@ int toolMode = NOTOOL;
 Tool dragTool = null;
 int dragIniti = -1; // set to -1 when from toolbox,
 int dragInitj = -1; // real values when from canvas
+
+//template tools
+Triangle templateTriangle;
+Quadrangle templateQuandrangle;
+Hexagon templateHexagon;
+CircleTool templateCircleTool;
+Wedge templateWedge;
 
 //ball
 Ball ball = null;
@@ -399,33 +406,39 @@ class ToolBox extends Being {
      zero = new Zero();
      
      //quadrangle
-     Tool myquadrangle = makeTool(QUADRANGLE, 
+     templateQuadrangle = makeTool(QUADRANGLE, 
                                   new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                               containerTopY + 1*cellSideLength+cellSideLength/2),
                                   0);
-     _grid[1][1].setTool(myquadrangle);
+     _grid[1][1].setTool(templateQuadrangle);
      
      //triangle
-     Tool mytriangle = makeTool(TRIANGLE,
+     templateTriangle = makeTool(TRIANGLE,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 3*cellSideLength+cellSideLength/2),
                                 0);
-     _grid[1][3].setTool(mytriangle);
+     _grid[1][3].setTool(templateTriangle);
      
      //hexagon
-     Tool myhexagon = makeTool(HEXAGON,
+     templateHexagon = makeTool(HEXAGON,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 5*cellSideLength+cellSideLength/2),
                                 0);
-     _grid[1][5].setTool(myhexagon);     
+     _grid[1][5].setTool(templateHexagon);     
      
      //circletool
-     Tool mycircletool = makeTool(CIRCLETOOL,
+     templateCircleTool = makeTool(CIRCLETOOL,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 7*cellSideLength+cellSideLength/2),
                                 0);
-     _grid[1][7].setTool(mycircletool);    
-
+     _grid[1][7].setTool(templateCircleTool);   
+     
+     //wedge
+     templateWedge = makeTool(WEDGE,
+                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                            containerTopY + 9*cellSideLength+cellSideLength/2),
+                                0);
+     _grid[1][9].setTool(templateWedge);  
           
      
   }
@@ -592,6 +605,13 @@ class Ball extends MassedBeing {
     y -= containerTopY;
     int i = x / cellSideLength;
     int j = y / cellSideLength;
+        
+    //check to make sure did not escape //TODO: remove this hack if possible!
+    if(i < 0) i=0;
+    if(i > canvasNumCellsX) i=canvasNumCellsX;
+    if(j < 0) j=0;
+    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
     if(!in.hasTool()) { //appply the flow if the cell has no tool within
@@ -642,17 +662,17 @@ class Goal extends Being {
 class Bubble extends MassedBeing {
   
   Bubble(PVector position) {
-    super(new Circle(position, ballRadius), new PVector(0,0), ballMass, ballElasticity);
+    super(new Circle(position, ballRadius/2), new PVector(0,0), ballMass, ballElasticity);
     world.registerBeing(this, true);
   }
   
   void draw() {
     fill(146, 239, 233, 120);
     noStroke();
-    ellipse(0,0,ballRadius*2,ballRadius*2);
+    ellipse(0,0,ballRadius,ballRadius);
   }
   
-  void update() {
+  void update() {    
     //add the flow from the cell
     int x = (int)getX();
     int y = (int)getY();
@@ -660,6 +680,13 @@ class Bubble extends MassedBeing {
     y -= containerTopY;
     int i = x / cellSideLength;
     int j = y / cellSideLength;
+    
+    //check to make sure did not escape //TODO: remove this hack if possible!
+    if(i < 0) i=0;
+    if(i > canvasNumCellsX) i=canvasNumCellsX;
+    if(j < 0) j=0;
+    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
     if(!in.hasTool()) { //appply the flow if the cell has no tool within
@@ -790,18 +817,18 @@ abstract class Tool extends MassedBeing {
 }
 
 //position is always CENTER
-Tool makeTool(int toolCode, PVector position, double theta) {
+Tool makeTool(int toolCode, PVector position, double theta, int elasticity) {
    Tool toReturn = null;
    switch(toolCode) {
-     case QUADRANGLE: toReturn = new Quadrangle(position, theta); 
+     case QUADRANGLE: toReturn = new Quadrangle(position, theta, elasticity); 
                       break;
-     case TRIANGLE:   toReturn = new Triangle(position, theta);
+     case TRIANGLE:   toReturn = new Triangle(position, theta, elasticity);
                       break;
-     case HEXAGON:    toReturn = new Hexagon(position, theta);
+     case HEXAGON:    toReturn = new Hexagon(position, theta, elasticity);
                       break;
-     case CIRCLETOOL: toReturn = new CircleTool(position, theta);
+     case CIRCLETOOL: toReturn = new CircleTool(position, theta, elasticity);
                       break;
-     case WEDGE:      toReturn = new Wedge(position, theta);
+     case WEDGE:      toReturn = new Wedge(position, theta, elasticity);
                       break;
      default:         println("Error in makeTool: toolCode did not match any tools");
                       break;   
@@ -814,9 +841,9 @@ Tool makeTool(int toolCode, PVector position, double theta) {
  */
 class Quadrangle extends Tool {
  
-  Quadrangle(PVector center, double theta) {
+  Quadrangle(PVector center, double theta, int elasticity) {
    super(Polygon.createRegularPolygon(center, 4, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, QUADRANGLE);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, QUADRANGLE);
    this.rotate(theta);
   } 
  
@@ -838,9 +865,9 @@ class Quadrangle extends Tool {
  */
 class Triangle extends Tool {
   
- Triangle(PVector center, double theta) {
+ Triangle(PVector center, double theta, int elasticity) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, TRIANGLE);
    this.rotate(theta);
  }
 
@@ -869,10 +896,10 @@ class Triangle extends Tool {
  */
 class Hexagon extends Tool {
  
-  Hexagon(PVector center, double theta) {
-    super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, HEXAGON);
-    this.rotate(theta);
+  Hexagon(PVector center, double theta, int elasticity) {
+   super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, HEXAGON);
+   this.rotate(theta);
   } 
  
   void rotate(double theta) {
@@ -893,9 +920,9 @@ class Hexagon extends Tool {
  */
 class CircleTool extends Tool {
  
-  CircleTool(PVector center, double theta) {
+  CircleTool(PVector center, double theta, int elasticity) {
    super(new Circle(center, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, CIRCLETOOL);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, CIRCLETOOL);
    this.rotate(theta);
   } 
  
@@ -911,6 +938,9 @@ class CircleTool extends Tool {
   }
 }
 
+/**
+ *
+ */
 class Wedge extends Tool {
   
   Wedge(PVector center, double theta, int elasticity) {
