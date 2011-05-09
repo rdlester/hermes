@@ -300,7 +300,7 @@ class Canvas extends MassedBeing {
             in.setTool(null);
             world.deleteBeing(toRemove);
           }
-          dragTool.setPosition(new PVector(canvasLeftX+(i*cellSideLength), containerTopY+(j*cellSideLength)));
+          dragTool.setPosition(new PVector(canvasLeftX+(i*cellSideLength)+cellSideLength/2, containerTopY+(j*cellSideLength)+cellSideLength/2));//////
           in.setTool(dragTool);
 
           //clean up global vars
@@ -313,7 +313,7 @@ class Canvas extends MassedBeing {
             dragIniti = -1;
             dragInitj = -1;
           } else { // from canvas
-            dragTool.setPosition(new PVector(canvasLeftX+(dragIniti*cellSideLength), containerTopY+(dragInitj*cellSideLength)));//return to previous place
+            dragTool.setPosition(new PVector(canvasLeftX+(dragIniti*cellSideLength)+cellSideLength/2, containerTopY+(dragInitj*cellSideLength)+cellSideLength/2));//return to previous place
             _grid[dragIniti][dragInitj].setTool(dragTool);
             dragTool = null;
             dragIniti = -1;
@@ -329,12 +329,12 @@ class Canvas extends MassedBeing {
         dragInitj = j;
         in.setTool(null);
       } else if(toolMode!=NOTOOL && !prohibitedCell) { //cell has no tool and toolMode is set to something
-        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength, containerTopY+j*cellSideLength), 0);
+        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2), 0);
         in.setTool(newTool);
       }    
     } else if(action == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //TODO: this code is identical in 3 places, probably a better way to do this
-        dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+        dragTool.setPosition(new PVector(m.getX(), m.getY()));
       } else if(toolMode!=NOTOOL && !prohibitedCell) {
         // remove the tool at that cell if necessary
         if(in.hasTool()) {
@@ -342,7 +342,7 @@ class Canvas extends MassedBeing {
           in.setTool(null);
           world.deleteBeing(toRemove);
         }
-        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength, containerTopY+j*cellSideLength), 0);
+        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2), 0);
         in.setTool(newTool);
       }
     }
@@ -388,7 +388,7 @@ class ToolBox extends Being {
      //make all the cells 
      for(int i=0; i<toolBoxNumCellsX; i++) {
        for(int j=0; j<toolBoxNumCellsY; j++) {
-         _grid[i][j] = new Cell(new PVector(toolBoxLeftX + i*cellSideLength, containerTopY + j*cellSideLength),i,j);
+         _grid[i][j] = new Cell(new PVector(toolBoxLeftX + i*cellSideLength, containerTopY + j*cellSideLength),-1,-1);
          world.registerBeing(_grid[i][j], false);
        } 
      }
@@ -400,16 +400,16 @@ class ToolBox extends Being {
      //make a fake tool for testing
      //faketool
      Tool myfakeTool = makeTool(FAKETOOL, 
-                              new PVector(toolBoxLeftX + 1*cellSideLength, 
-                                          containerTopY + 1*cellSideLength),
-                              0);
+                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                            containerTopY + 1*cellSideLength+cellSideLength/2),
+                                0);
      _grid[1][1].setTool(myfakeTool);
      
      //triangle
      Tool mytriangle = makeTool(TRIANGLE,
-                              new PVector(toolBoxLeftX + 1*cellSideLength, 
-                                          containerTopY + 3*cellSideLength),
-                              0);
+                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                            containerTopY + 3*cellSideLength+cellSideLength/2),
+                                0);
      _grid[1][3].setTool(mytriangle);
 
           
@@ -438,10 +438,10 @@ class ToolBox extends Being {
       }
     } else if(m.getAction() == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //already dragging a tool
-        dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+        dragTool.setPosition(new PVector(m.getX(), m.getY()));
       } else if(toolMode!=0) { // toolMode already set but no new tool created yet
         //instantiate new version of that tool 
-        dragTool = makeTool(toolMode, new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2), 0);
+        dragTool = makeTool(toolMode, new PVector(m.getX(), m.getY()), 0);
         dragIniti = -1;
         dragInitj = -1;
       }
@@ -508,49 +508,21 @@ class Cell extends Being {
     _j = j;
   }
   
-  PVector getFlowDir() {
-    return _flowDir; 
-  }
-  
-  void setFlowDir(PVector direction) {
-    _flowDir = direction; 
-  }
+  PVector getFlowDir() {return _flowDir;}
+  void setFlowDir(PVector direction) {_flowDir = direction;}
 
-  float getFlowStr() {
-    return _flowStr;
-  }
-  
-  void setFlowStr(float strength) {
-    _flowStr = strength;
-  }
+  float getFlowStr() {return _flowStr;}
+  void setFlowStr(float strength) {_flowStr = strength;}
 	
-  boolean hasTool() {
-    return _tool != null;
-  }
-	
-  void setTool(Tool tool) {
-    _tool = tool;
-  }
-
-  Tool getTool() {
-    return _tool; 
-  }
+  boolean hasTool() {return _tool != null;}
+  void setTool(Tool tool) {_tool = tool;}
+  Tool getTool() {return _tool;}
   
-  boolean getHover() {
-    return _hover;
-  }
+  boolean getHover() {return _hover;}
+  void setHover(boolean hover) {_hover = hover;}
   
-  void setHover(boolean hover) {
-    _hover = hover;
-  }
-  
-  int geti() {
-    return _i;
-  }
-  
-  int getj() {
-    return _j;
-  }
+  int geti() {return _i;}
+  int getj() {return _j;}
 
   void draw() {
     if(_hover && mode == BUILD) {
@@ -563,9 +535,7 @@ class Cell extends Being {
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
     if(mode == BUILD) { // in BUILD mode
-      if(hasTool()) { // the cell contains a tool
-        _tool.draw();
-      } else { // draw the arrow
+      if(!hasTool() && _i>=0 && _j>=0) { // the cell does not contain a tool draw the arrow
         //TODO: figure out algorithm for representing flow strength
         translate(cellSideLength/2, cellSideLength/2);
         float angle = HermesMath.angle(_flowDir);
@@ -797,12 +767,13 @@ abstract class Tool extends MassedBeing {
   
 }
 
+//position is always CENTER
 Tool makeTool(int toolCode, PVector position, double theta) {
    Tool toReturn = null;
    switch(toolCode) {
      case FAKETOOL: toReturn = new FakeTool(position); 
                     break;
-     case TRIANGLE: toReturn = new Triangle(new PVector(position.x + cellSideLength/2, position.y + cellSideLength/2), theta);
+     case TRIANGLE: toReturn = new Triangle(position, theta);
                     break;
      default:       println("Error in makeTool: toolCode did not match any tools");
                     break;   
@@ -816,7 +787,7 @@ Tool makeTool(int toolCode, PVector position, double theta) {
 class FakeTool extends Tool {
  
   FakeTool(PVector position) {
-    super(new Rectangle(position, new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
+    super(new Rectangle(new PVector(position.x-cellSideLength/2, position.y-cellSideLength/2), new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
           new PVector(0, 0), Float.POSITIVE_INFINITY, 1, FAKETOOL);
   } 
   
@@ -826,7 +797,7 @@ class FakeTool extends Tool {
     fill(0);
     stroke(255);
     strokeWeight(2);
-    rect(0, 0, cellSideLength, cellSideLength);
+    rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
   }
   
   
@@ -836,13 +807,11 @@ class FakeTool extends Tool {
  *
  */
 class Triangle extends Tool {
- 
- boolean _selected = false;
   
  Triangle(PVector center, double theta) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
-   ((Polygon)this.getShape()).rotate(theta);
+   rotate(theta);
  }
 
  void rotate(double theta) {
@@ -859,6 +828,9 @@ class Triangle extends Tool {
  }
  
  void draw() {
+  fill(0);
+  stroke(255);
+  strokeWeight(2);
   getShape().draw();
   //TODO: add handle
  }  
@@ -926,18 +898,18 @@ class MouseHandler implements MouseSubscriber {
     }
     
     if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
-      if(_r.getHover()) {_r.setHover(false);} // turn run button hover off
       _rand.setHover(false);
+      _r.setHover(false); // turn run button hover off
       _c.handleMouseMessage(m); 
     } else if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
       checkCanvasHover();
       _rand.setHover(false);
-      if(_r.getHover()) {_r.setHover(false);} // turn run button hover off
+      _r.setHover(false); // turn run button hover off
       _b.handleMouseMessage(m);
     } else if(HermesMath.inCircle(x,y,runButtonCenterX,runButtonCenterY,runButtonRadius)) { // in run button
       checkCanvasHover();
       _rand.setHover(false);
-      if(!_r.getHover()) _r.setHover(true); // turn run button hover on
+      _r.setHover(true); // turn run button hover on
       _r.handleMouseMessage(m);
     } else if(randomButtonX > x && randomButtonY > y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) {
       _rand.setHover(true);
@@ -945,7 +917,7 @@ class MouseHandler implements MouseSubscriber {
     } else { // not in container
       checkCanvasHover();
       _rand.setHover(false);
-      if(_r.getHover()) _r.setHover(false); // turn run button hover off
+      _r.setHover(false); // turn run button hover off
       notInAContainer(m); 
     }
     
@@ -970,7 +942,7 @@ class MouseHandler implements MouseSubscriber {
     if(action == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { // currently dragging a tool
         //Update location of tool being dragged
-        dragTool.setPosition(new PVector(m.getX()-cellSideLength/2, m.getY()-cellSideLength/2));
+        dragTool.setPosition(new PVector(m.getX(), m.getY()));
       }
     }
   }   
