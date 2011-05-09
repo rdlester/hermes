@@ -122,6 +122,7 @@ Triangle templateTriangle;
 Quadrangle templateQuandrangle;
 Hexagon templateHexagon;
 CircleTool templateCircleTool;
+Wedge templateWedge;
 
 //ball
 Ball ball = null;
@@ -430,8 +431,14 @@ class ToolBox extends Being {
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 7*cellSideLength+cellSideLength/2),
                                 0);
-     _grid[1][7].setTool(templateCircleTool);    
-
+     _grid[1][7].setTool(templateCircleTool);   
+     
+     //wedge
+     templateWedge = makeTool(WEDGE,
+                                new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
+                                            containerTopY + 9*cellSideLength+cellSideLength/2),
+                                0);
+     _grid[1][9].setTool(templateWedge);  
           
      
   }
@@ -810,18 +817,18 @@ abstract class Tool extends MassedBeing {
 }
 
 //position is always CENTER
-Tool makeTool(int toolCode, PVector position, double theta) {
+Tool makeTool(int toolCode, PVector position, double theta, int elasticity) {
    Tool toReturn = null;
    switch(toolCode) {
-     case QUADRANGLE: toReturn = new Quadrangle(position, theta); 
+     case QUADRANGLE: toReturn = new Quadrangle(position, theta, elasticity); 
                       break;
-     case TRIANGLE:   toReturn = new Triangle(position, theta);
+     case TRIANGLE:   toReturn = new Triangle(position, theta, elasticity);
                       break;
-     case HEXAGON:    toReturn = new Hexagon(position, theta);
+     case HEXAGON:    toReturn = new Hexagon(position, theta, elasticity);
                       break;
-     case CIRCLETOOL: toReturn = new CircleTool(position, theta);
+     case CIRCLETOOL: toReturn = new CircleTool(position, theta, elasticity);
                       break;
-     case WEDGE:      toReturn = new Wedge(position, theta);
+     case WEDGE:      toReturn = new Wedge(position, theta, elasticity);
                       break;
      default:         println("Error in makeTool: toolCode did not match any tools");
                       break;   
@@ -834,9 +841,9 @@ Tool makeTool(int toolCode, PVector position, double theta) {
  */
 class Quadrangle extends Tool {
  
-  Quadrangle(PVector center, double theta) {
+  Quadrangle(PVector center, double theta, int elasticity) {
    super(Polygon.createRegularPolygon(center, 4, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, QUADRANGLE);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, QUADRANGLE);
    this.rotate(theta);
   } 
  
@@ -858,9 +865,9 @@ class Quadrangle extends Tool {
  */
 class Triangle extends Tool {
   
- Triangle(PVector center, double theta) {
+ Triangle(PVector center, double theta, int elasticity) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, TRIANGLE);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, TRIANGLE);
    this.rotate(theta);
  }
 
@@ -889,9 +896,9 @@ class Triangle extends Tool {
  */
 class Hexagon extends Tool {
  
-  Hexagon(PVector center, double theta) {
+  Hexagon(PVector center, double theta, int elasticity) {
    super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, HEXAGON);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, HEXAGON);
    this.rotate(theta);
   } 
  
@@ -913,9 +920,9 @@ class Hexagon extends Tool {
  */
 class CircleTool extends Tool {
  
-  CircleTool(PVector center, double theta) {
+  CircleTool(PVector center, double theta, int elasticity) {
    super(new Circle(center, cellSideLength/2),
-         new PVector(0, 0), Float.POSITIVE_INFINITY, 1, CIRCLETOOL);
+         new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, CIRCLETOOL);
    this.rotate(theta);
   } 
  
@@ -931,6 +938,9 @@ class CircleTool extends Tool {
   }
 }
 
+/**
+ *
+ */
 class Wedge extends Tool {
   
   Wedge(PVector center, double theta, int elasticity) {
