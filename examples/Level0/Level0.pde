@@ -123,6 +123,10 @@ final float SPRINGY = 1.5; //TODO: ??????set?
 final float PERFECT = 1;
 final float STICKY = 0.5;
 
+//cilia
+int ciliaNum = 16; //number of silia
+int csize = 3; //size of the silia
+
 //ball
 Ball ball = null;
 int balli = 0; //index in canvas
@@ -838,7 +842,7 @@ abstract class Tool extends MassedBeing {
       strokeWeight(3);
       stroke(253, 253, 44);
       rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
-    } 
+    }
     
     //switch over elasticity
     if (getElasticity()==SPRINGY) {
@@ -850,17 +854,8 @@ abstract class Tool extends MassedBeing {
       stroke(255);
       strokeWeight(2);
     } else if(getElasticity()==STICKY) {
-      int ciliaNum = 16; //number of silia
-      int csize = 3; //size of the silia
       fill(0);
       noStroke();
-      if(s instanceOf Polygon) {
-        Polygon p = (Polygon) s;
-        ArrayList<PVector> points = p.getPointsCopy();
-        ArrayList<PVector> axes = p.getAxesCopy();
-      }
-      else if(s instanceOf Circle) {
-      }
     }    
   }
   
@@ -1034,6 +1029,26 @@ Polygon generateWedge(PVector center) {
   points.add(new PVector(-cellSideLength/2,cellSideLength/2));
   points.add(new PVector(-cellSideLength/2,-cellSideLength/2));
   return new Polygon(center,points);
+}
+
+void drawCilia(Polygon p) {
+  ArrayList<PVector> points = p.getPointsCopy();
+  int psize = points.size();
+  int ciliaPerSide = ciliaNum / psize;
+  ArrayList<PVector> axes = p.getAxesCopy();
+  translate(cellSideLength/2,cellSideLength/2);
+  PVector pre = points.get(0);
+  for(int i = 1; i < psize + 1; i++) {
+    pushMatrix();
+    PVector curr = points.get(i % psize);
+    translate(curr.x,curr.y);
+    PVector dir = PVector.sub(pre, curr);
+    dir.div(ciliaPerSide);
+    for(int i = 0; i < ciliaPerSide; i++) {
+      
+    }
+    popMatrix();
+  }
 }
 
 ///////////////////////////////////////////////////
