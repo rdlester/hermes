@@ -856,6 +856,21 @@ abstract class Tool extends MassedBeing {
   
 }
 
+class ElasticitySwitcher implements KeySubscriber {
+  void handleKeyMessage(KeyMessage m) {
+    if(selectedTool!=null) {
+      float elasticity = selectedTool.getElasticity();
+      if (elasticity==SPRINGY) {
+        selectedTool.setElasticity(STICKY);             
+      } else if(elasticity==PERFECT) {
+        selectedTool.setElasticity(SPRINGY);
+      } else if(elasticity==STICKY) {
+        selectedTool.setElasticity(PERFECT);
+      }
+    }
+  }  
+}
+
 //position is always CENTER
 Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
    Tool toReturn = null;
@@ -1224,17 +1239,19 @@ void setup() {
   //buttons
   RunButton runButton = new RunButton();
   world.registerBeing(runButton, true);
-  textFont(createFont("Courier", 36));
-  textAlign(CENTER);
   po.registerKeySubscription(runButton,PostOffice.R);
   RandomButton randomButton = new RandomButton(canvas);
   world.registerBeing(randomButton,false);
   po.registerKeySubscription(randomButton,PostOffice.SPACE);
   
+  //key for ElasticitySwitcher
+  ElasticitySwitcher elasticitySwitcher = new ElasticitySwitcher();
+  po.registerKeySubscription(elasticitySwitcher,PostOffice.E);
+  
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
-	po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
+  po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
   
   //register interactions
   world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);
