@@ -33,7 +33,8 @@ public class MouseMessage implements Message {
 	/**
 	 * Gets the button pressed on the mouse
 	 * Use BUTTON1, BUTTON2, BUTTON3 constants defined in MouseMessage
-	 * to figure out what button has been pressed 
+	 * to figure out what button has been pressed
+	 * @return      int corresponding to button, use LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON and NO_BUTTON constants in PostOffice to determine which button has been pressed
 	 */
 	public int getButton() {
 		return _buttonClicked;
@@ -42,6 +43,7 @@ public class MouseMessage implements Message {
 	 * Gets the action designated by the event
 	 * Use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED
 	 * to determined actions
+	 * @return      int corresponding to action, use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED constants in PostOffice to determine which action has been committed
 	 */
 	public int getAction() {
 		return _actionType;
@@ -49,6 +51,7 @@ public class MouseMessage implements Message {
 	
 	/**
 	 * Gets the x location of the mouse sending this message
+	 * @return      int corresponding to x location
 	 */
 	public int getX() {
 		return _x;
@@ -56,13 +59,14 @@ public class MouseMessage implements Message {
 	
 	/**
 	 * Gets the y location of the mouse sending this message
+	 * @return      int corresponding to y location
 	 */
 	public int getY() {
 		return _y;
 	}
 	
 	/**
-	 * Checks for equality of MouseMessages
+	 * Checks for equality of MouseMessages by comparing mouse button
 	 */
 	public boolean equals(Object o) {
 		if(o instanceof MouseMessage) {
