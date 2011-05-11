@@ -185,6 +185,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_keySubs.put(keyCode, sub);
 	}
 	
+	//TODO: should MouseSubscription take a shape defining location to listen for? (bring back mouse entered / mouse exited events?)
 	/**
 	 * Registers a subscription to messages sent by a specific mouse button
 	 * Buttons are defined by constants in the Post Office class
@@ -231,7 +232,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing only the given int
 	 * @param address - address message is to be sent on
 	 * @param send - integer to be sent
-	 * @throws OscSendException 
 	 */
 	public void sendInt(String address, int send) {
 		assert _onOSC : "PostOffice.sendInt: cannot send an OSC message while OSC is off";
@@ -253,7 +253,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing only the given float
 	 * @param address
 	 * @param send
-	 * @throws OscSendException 
 	 */
 	public void sendFloat(String address, float send)  {
 		assert _onOSC : "PostOffice.sendFloat: cannot send an OSC message unless OSC is off";
@@ -275,7 +274,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing only the given boolean
 	 * @param address
 	 * @param send
-	 * @throws OscSendException 
 	 */
 	public void sendBoolean(String address, boolean send) {
 		assert _onOSC : "PostOffice.sendBoolean: cannot send an OSC message unless OSC is off";
@@ -297,7 +295,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Sends an OscMessage on the given address containing the contents of the given list
 	 * @param address
 	 * @param send
-	 * @throws OscSendException 
 	 */
 	public void sendList(String address, ArrayList<Object> send) {
 		assert _onOSC : "PostOffice.sendList: cannot send an OSC message unless OSC is off";
@@ -328,6 +325,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	//////////////////////////////////////////////////////////////////////////
 	/**
 	 * Command that sends all messages queued by the PostOffice to subscribers
+	 * Called at end of update loop (for thread safety)
 	 */
 	public void checkMail() {
 		//Send all the messages in each queue to the corresponding subscribers
@@ -360,8 +358,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			}
 		}
 		
-		if(_onOSC) {
-			
+		if(_onOSC) { //Only check OSC queue is OSC server is running
 			synchronized(_oscQueue) {
 				while(!_oscQueue.isEmpty()) {
 					OscMessage m = _oscQueue.poll();
@@ -483,6 +480,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		}
 	}
 	
+	////////////////////////////////
+	//Get OSC messages from illposed
+	/**
+	 * Accepts and handles messages recieved by osc server
+	 * Called from within illposed library
+	 */
 	public void acceptMessage(Date time, com.illposed.osc.OSCMessage message) {
 		OscMessage m = new OscMessage(message);
 		synchronized(_oscQueue) {
@@ -508,8 +511,11 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	}
 	
 	
+	
+	////////////////////////
 	/* Virtual key codes. */
-
+	////////////////////////
+	
     public static final int ENTER = KeyEvent.VK_ENTER;
     public static final int BACK_SPACE = KeyEvent.VK_BACK_SPACE;
     public static final int TAB = KeyEvent.VK_TAB;

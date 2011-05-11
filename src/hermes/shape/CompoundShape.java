@@ -1,9 +1,9 @@
-/*package src.hermes.shape;
+package src.hermes.shape;
 
 import java.util.*;
 import processing.core.PVector;
 
-*//**
+/**
  * represents a compound shape containing any number of shapes
  * the position of contained shapes will be defined relative to the position
  * @author Sam
