@@ -9,7 +9,8 @@ import src.hermes.shape.Shape;
 import static src.hermes.HermesMath.*;
 
 /**
- * an extension of being representing a body with mass
+ * an extension of being representing a body with mass and elasticity
+ * 
  * @author Sam
  *
  */
@@ -74,10 +75,9 @@ public abstract class MassedBeing extends Being {
 	 * adds mass to the being
 	 * @param mass	the mass of the being
 	 */
-	public void addMass(float mass) throws NonPositiveMassException {
+	public void addMass(float mass) {
 		_mass += mass;
-		if(_mass <= 0)
-			throw new NonPositiveMassException(this);
+		assert mass > 0 : "MassedBeing.addMass: being mass has become non-positive";
 	}
 	
 	/**
@@ -147,10 +147,18 @@ public abstract class MassedBeing extends Being {
 		_force.add(force);
 	}
 	
+	/**
+	 * adds an impulse to the being, which will be applied at the next step
+	 * @param impulse	the impulse to add
+	 */
 	public void addImpulse(PVector impulse) {
 		_impulse.add(impulse);
 	}
 	
+	/**
+	 * adds a displacement to the being, which will be applied at the next step
+	 * @param displacement	the displacement to add
+	 */
 	public void addDisplacement(PVector displacement) {
 		_displacement.add(displacement);
 	}
@@ -170,17 +178,27 @@ public abstract class MassedBeing extends Being {
 		clearCollisions();
 	}
 	
+	/**
+	 * applies the currently acccumulated impulse and clears it
+	 */
 	protected void applyImpulse() {
 		_impulse.div(_mass); 	// change in velocity from impulse
 		_velocity.add(_impulse); // apply the impulse
 		zeroVector(_impulse);
 	}
 	
+	/**
+	 * applies the accumulated displacement and clears it
+	 */
 	protected void applyDisplacement() {
 		_position.add(_displacement);
 		zeroVector(_displacement);
 	}
 	
+	/**
+	 * integrates velocity on acceleration using Euler-Cromer
+	 * @param dt	the time step
+	 */
 	protected void EulerIntegrateVelocity(double dt) {
 		// a = F/m
 		PVector acceleration = PVector.div(_force, _mass);
@@ -189,10 +207,16 @@ public abstract class MassedBeing extends Being {
 		_velocity.add(acceleration);	
 	}
 	
+	/**
+	 * clears the collision list
+	 */
 	protected void clearCollisions() {
 		_impulseCollisions.clear();
 	}
 	
+	/**
+	 * clears all forces
+	 */
 	protected void clearForce() {
 		zeroVector(_force);
 	}
@@ -325,6 +349,11 @@ public abstract class MassedBeing extends Being {
 		_mergeCollisions.add(other);
 	}
 	
+	/**
+	 * whether the being requires more steps on this update -- used for motion multisampling
+	 * 	this will always return false, but is overriden by subclasses with multisampling support
+	 * @return
+	 */
 	public boolean needsMoreSamples() {
 		return false;
 	}

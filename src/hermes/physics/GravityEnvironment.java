@@ -5,16 +5,32 @@ import src.hermes.*;
 import src.hermes.shape.Shape;
 import static src.hermes.HermesMath.*;
 
+/**
+ * this Environment accelerates all objects intersecting with its shape with a specific acceleration
+ * @author Sam
+ *
+ */
 public class GravityEnvironment extends Environment {
 	
 	PVector _acceleration;
 	
+	/**
+	 * creates a new GravityEnvironment applying given acceleration, with given shape, moving with given velocity
+	 * @param acceleration	the acceleration
+	 * @param shape			the shape, objects intersecting with this shape will be accelerated
+	 * @param velocity		the velocity of the environment
+	 */
 	public GravityEnvironment(PVector acceleration, Shape shape, PVector velocity) {
 		super(shape, velocity);
 		
 		_acceleration = acceleration;
 	}
 	
+	/**
+	 * creates a new GravityEnvironment applying given acceleration, with given shape
+	 * @param acceleration	the acceleration
+	 * @param shape			the shape, objects intersecting with this shape will be accelerated
+	 */
 	public GravityEnvironment(PVector acceleration, Shape shape) {
 		super(shape, zeroVector());
 		
@@ -31,10 +47,21 @@ public class GravityEnvironment extends Environment {
 		return group;
 	}
 	
+	/**
+	 * creates a new GravityInteractor
+	 * @return	a new GravityInteractor
+	 */
 	public static Interactor makeGravityInteractor() {
 		return new Interactor();
 	}
 	
+	/**
+	 * an Interactor that applies gravity to MassedBeings
+	 * this accelerates MassedBeings by applying a force to them
+	 * note that MassedBeings of infinite mass will not be accelerated
+	 * @author Sam
+	 *
+	 */
 	public static class Interactor extends Collider<GravityEnvironment, MassedBeing> {
 
 		public boolean handle(GravityEnvironment enviro, MassedBeing being) {

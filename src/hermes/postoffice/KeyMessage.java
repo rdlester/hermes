@@ -38,7 +38,7 @@ public class KeyMessage implements Message {
 	 * @return char representing the key acted upon if key is unicode
 	 */
 	public char getKeyChar() {
-	    assert _keyChar != PostOffice.CHAR_UNDEFINED: "KeyMessage.getKeyChar() - Cannot get char of non-unicode key"
+	    assert _keyChar != PostOffice.CHAR_UNDEFINED : "KeyMessage.getKeyChar() - Cannot get char of non-unicode key";
 		return _keyChar;
 	}
 	

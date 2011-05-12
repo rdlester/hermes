@@ -41,6 +41,11 @@ public class World extends Thread {
 	
 	private long _updateLength = 0;
 	
+	/**
+	 * instantiates the world with a PostOffice to handle I/O and a Camera to handle drawing
+	 * @param postOffice	the PostOffice that will handle mouse, keyboard and OSC I/O
+	 * @param view			the camera that will be used for drawing
+	 */
 	@SuppressWarnings("rawtypes")
 	public World(PostOffice postOffice, Camera view) {
 		
@@ -87,6 +92,9 @@ public class World extends Thread {
 		_active = false;
 	}
 
+	/**
+	 * @return	the group used to wrap the camera object
+	 */
 	public Group<Camera> getCameraGroup() {
 		return _cameraGroup;
 	}
@@ -173,6 +181,9 @@ public class World extends Thread {
 	 * @param A			the first interacting group
 	 * @param B			the second interacting group
 	 * @param inter		the interaction handler
+	 * @param applyImmediate	whether to apply the interaction immediately
+	 * 								upon detection or later
+	 * @param optimizer	optimizer to use for the interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, 
@@ -181,16 +192,66 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * register a group to have all its beings updated in the loop
-	 * @param grp		the group that contains the beings whose interactions
+	 * register an interaction between A and all Beings in B
+	 * @param A					a Being
+	 * @param B					a group
+	 * @param inter				an interaction between the type of A and the type of B's elements 
+	 * @param applyImmediate	whether to apply the interaction immediately
+	 * 								upon detection or later
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void registerInteraction(Being A, GenericGroup B, Interactor inter, 
+			boolean applyImmediate) {
+		Group groupA = new Group(this);
+		groupA.add(A);
+		_interactions.add(new Interaction(groupA, B, inter, applyImmediate, null));
+	}
+	
+	/**
+	 * register an interaction between B and all Beings in A
+	 * @param A					a group
+	 * @param B					a being
+	 * @param inter				the interaction handler 
+	 * @param applyImmediate	whether to apply the interaction immediately
+	 * 								upon detection or later
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void registerInteraction(GenericGroup A, Being B, Interactor inter, 
+			boolean applyImmediate) {
+		Group groupB = new Group(this);
+		groupB.add(B);
+		_interactions.add(new Interaction(A, groupB, inter, applyImmediate, null));
+	}
+	
+	/**
+	 * register an interaction between Beings A and B
+	 * @param A					the first Being
+	 * @param B					the second Being
+	 * @param inter				the interaction handler
+	 * @param applyImmediate	whether to apply the interaction immediately
+	 * 								upon detection or later
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void registerInteraction(Being A, Being B, Interactor inter, 
+			boolean applyImmediate) {
+		Group groupA = new Group(this);
+		groupA.add(A);
+		Group groupB = new Group(this);
+		groupB.add(B);
+		_interactions.add(new Interaction(groupA, groupB, inter, applyImmediate, null));
+	}
+	
+	/**
+	 * register a group to have its update called in the update loop
+	 * @param group		the group to update
 	 */
 	@SuppressWarnings("rawtypes")
-	public void registerGroupUpdate(GenericGroup grp) {
-		_groupsToUpdate.add(grp);
+	public void registerGroupUpdate(GenericGroup group) {
+		_groupsToUpdate.add(group);
 	}
 
 	/**
-	 * runs the update loop
+	 * Runs the update loop. DO NOT CALL THIS -- call world.start() instead.
 	 */
 	public void run() {
 		setup();

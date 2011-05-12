@@ -2,6 +2,14 @@ package src.hermes;
 
 import processing.core.*;
 
+/**
+ * A collection of helpful math utilities.
+ * 
+ * HINT: import static src.hermes.HermesMath.*; to access these methods like you would processing library functions.
+ * 
+ * @author Sam
+ *
+ */
 public class HermesMath {
 
 	public static final float INFINITY = Float.POSITIVE_INFINITY;
@@ -80,6 +88,13 @@ public class HermesMath {
 		return vector;
 	}
 	
+	/**
+	 * nothing but syntatic sugar for new PVector(x,y,z)
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
 	public static PVector makeVector(float x, float y, float z) {
 		return new PVector(x,y,z);
 	}
@@ -97,7 +112,7 @@ public class HermesMath {
 	}
 	
 	/**
-	 * instantiates a new vector that is a carbon copy of a vector
+	 * instantiates a new vector that is a carbon copy of a given vector
 	 * @param vector	the vector the copy
 	 * @return			the new copy
 	 */

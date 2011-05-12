@@ -30,11 +30,11 @@ public class worldTest {
 		
 	}
 	
-	class testWorld1 extends World {
+	class TestWorld1 extends World {
 
 		int nUpdates;
 		
-		public testWorld1(int nUpdates) {
+		public TestWorld1(int nUpdates) {
 			super(new PostOffice(5000,5001), new Camera());
 			this.nUpdates = nUpdates;
 		}
@@ -48,12 +48,82 @@ public class worldTest {
 		}
 	}
 	
+	class TestWorld2 extends World {
+		
+		boolean preUpdated = false;
+		boolean postUpdated = false;
+		boolean setupCalled = false;
+		boolean shutdownCalled = false;
+		
+		public TestWorld2() {
+			super(new PostOffice(), new Camera());
+		}
+		
+		public void setup() {
+			setupCalled = true;
+		}
+		
+		public void shutDown() {
+			shutdownCalled = true;
+		}
+		
+		public void preUpdate() {
+			preUpdated = true;
+		}
+		
+		public void postUpdate() {
+			postUpdated = true;
+		}
+		
+		public void shutdown() {
+			shutdownCalled = true;
+		}
+		
+	}
+	
+	class TestBeing2 extends Being {
+		
+		boolean interacted = false;
+		
+		public TestBeing2() {
+			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
+		}
+
+		@Override
+		public void draw() {}
+		
+	}
+	
+	class TestInteractor1 implements Interactor<TestBeing2,TestBeing2> {
+
+		@Override
+		public boolean detect(TestBeing2 being1, TestBeing2 being2) {
+			return true;
+		}
+
+		@Override
+		public boolean handle(TestBeing2 being1, TestBeing2 being2) {
+			being1.interacted = true;
+			being2.interacted = true;
+			return true;
+		}
+		
+	}
+	
+	class TestInteractor2 extends TestInteractor1 {
+		
+		public boolean handle(TestBeing2 being1, TestBeing2 being2) {
+			return true;
+		}
+		
+	}
+	
 	@Test
 	public void test_UpdateBeings() {
 		updated1 = new LinkedList<TestBeing1>();
 		PApplet papp = new PApplet();
 		Hermes.setPApplet(papp);
-		testWorld1 tw1 = new testWorld1(3);
+		TestWorld1 tw1 = new TestWorld1(3);
 		TestBeing1 b1 = new TestBeing1();
 		TestBeing1 b2 = new TestBeing1();
 		TestBeing1 b3 = new TestBeing1();
@@ -69,6 +139,74 @@ public class worldTest {
 		assertFalse(updated1.contains(b2));
 		assertTrue(updated1.contains(b3));
 		assertTrue(updated1.contains(b4));
+	}
+	
+	@Test
+	public void test_run() {
+		TestWorld2 tw2 = new TestWorld2();
+		tw2.start();
+		Hermes.unsafeSleep(100);
+		assertTrue(tw2.setupCalled);
+		assertTrue(tw2.preUpdated);
+		assertTrue(tw2.postUpdated);
+		assertTrue(tw2.isActive());
+		tw2.deActivate();
+		Hermes.unsafeSleep(100);
+		assertFalse(tw2.isActive());
+		assertTrue(tw2.shutdownCalled);
+	}
+	
+	@Test
+	public void test_groupOperations() {
+		World w = new World(new PostOffice(), new Camera());
+		Group<Being> g1 = new Group<Being>(w);
+		// group add
+		TestBeing1 tb1 = new TestBeing1();
+		g1.add(tb1);
+		assertFalse(g1.getBeings().contains(tb1));
+		w.update();
+		assertTrue(g1.getBeings().contains(tb1));
+		// group remove
+		g1.remove(tb1);
+		assertTrue(g1.getBeings().contains(tb1));
+		w.update();
+		assertFalse(g1.getBeings().contains(tb1));
+		// delete
+		Group<Being> g2 = new Group<Being>(w);
+		g1.add(tb1);
+		g2.add(tb1);
+		w.deleteBeing(tb1);
+		assertFalse(g1.getBeings().contains(tb1));
+		assertFalse(g2.getBeings().contains(tb1));
+		
+	}
+	
+	@Test
+	public void test_interactions() {
+		World w = new World(new PostOffice(), new Camera());
+		TestBeing2 b1 = new TestBeing2();
+		TestBeing2 b2 = new TestBeing2();
+		w.registerInteraction(b1, b2, new TestInteractor1(), true);
+		w.update();
+		w.update();
+		assertTrue(b1.interacted);
+		assertTrue(b2.interacted);
+		w = new World(new PostOffice(), new Camera());
+		b1 = new TestBeing2();
+		b2 = new TestBeing2();
+		w.registerInteraction(b1, b2, new TestInteractor1(), false);
+		w.update();
+		w.update();
+		assertTrue(b1.interacted);
+		assertTrue(b2.interacted);
+		w = new World(new PostOffice(), new Camera());
+		b1 = new TestBeing2();
+		b2 = new TestBeing2();
+		w.registerInteraction(b1, b2, new TestInteractor2(), false);
+		w.update();
+		w.update();
+		assertFalse(b1.interacted);
+		assertFalse(b2.interacted);
 	}
 	
 	@Test

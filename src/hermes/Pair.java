@@ -1,6 +1,7 @@
 package src.hermes;
 
 /**
+ * utility for wrapping a pair of objects
  * 
  * @author Sam
  *
