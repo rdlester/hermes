@@ -93,6 +93,14 @@ public class Polygon extends Shape {
 		return _points;
 	}
 	
+	public ArrayList<PVector> getPointsCopy() {
+		ArrayList<PVector> copy = new ArrayList<PVector>();
+		for(PVector p : _points) {
+			copy.add(new PVector(p.x, p.y));
+		}
+		return copy;
+	}
+	
 	/**
 	 * Adds a point to the polygon
 	 * Point is assumed to be connected to the last point added
@@ -113,10 +121,22 @@ public class Polygon extends Shape {
 	
 	/**
 	 * Getter for axes list - only for internal use within shape classes
-	 * @return _axes
+	 * @return _axes itself, do not modify contents!
 	 */
 	protected ArrayList<PVector> getAxes() {
 		return _axes;
+	}
+	
+	/**
+	 * Public getter for axes list
+	 * @return copy of axes list
+	 */
+	public ArrayList<PVector> getAxesCopy() {
+		ArrayList<PVector> copy = new ArrayList<PVector>();
+		for(PVector p : _axes) {
+			copy.add(new PVector(p.x, p.y));
+		}
+		return copy;
 	}
 	
 	/**
@@ -125,6 +145,9 @@ public class Polygon extends Shape {
 	 */
 	public void rotate(double theta) {
 		for(PVector p : _points) {
+			HermesMath.rotate(p,theta);
+		}
+		for(PVector p : _axes) {
 			HermesMath.rotate(p,theta);
 		}
 	}
@@ -142,16 +165,19 @@ public class Polygon extends Shape {
 			//translate back
 			p.add(position);
 		}
+		for(PVector p : _axes) {
+			HermesMath.rotate(p,theta);
+		}
 	}
 	
-	/**
-	 * Rotates polygon counter-clockwise around given position in world coordinates
-	 */
-	public void rotateInWorld(PVector position, double theta) {
-		//map given world location into polygon coordinates
-		PVector polyLoc = PVector.sub(_position, position);
-		rotate(polyLoc,theta);
-	}
+//	/**
+//	 * Rotates polygon counter-clockwise around given position in world coordinates
+//	 */
+//	public void rotateInWorld(PVector position, double theta) {
+//		//map given world location into polygon coordinates
+//		PVector polyLoc = PVector.sub(_position, position);
+//		rotate(polyLoc,theta);
+//	}
 	
 	@Override
 	public boolean collide(Shape other) {

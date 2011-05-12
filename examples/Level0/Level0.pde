@@ -8,7 +8,6 @@ import src.hermesTest.shapeTests.*;
 import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
-import static src.hermes.HermesMath.*;
 
 /**
 Notes:
@@ -18,23 +17,13 @@ Notes:
 - could we add a sort of map and filter functionality to group? since it's parametrized,  it might
   be doable (maybe using a class .... i dont know)
 - ask sam about multi-sampling
-
+- at some point ... levels, menus, more tools, handles for rotating by mouse arbitrary angles
 
 
 //TODO:
-- make cell arrows draw //I will do this! -rl
-- make cell arrow "randomizer" //this too! -rl
-- make the tools //-rl
-- menus, save levels (?do we want?)
-- don't draw arrow on gaol cell
-- new way to show selected tool in toolbox - with handle
-- rotation of tools, handle
+
 
 Bugs:
-- look at the bubbles in cells where a tool is on start .. not sure what we want here -jen i think it's just a drawing order issue
-  i.e. we're not drawing over those balls again
-- don't draw arrows in cells in toolbox (give null value or somehtin)
-- hover wtf??
 
 
 
@@ -58,12 +47,12 @@ int mode = BUILD; // 0 is setup; 1 is run
 
 //Frame size
 int frameWidth = 700;
-int frameHeight = 630;
+int frameHeight = 590;
 int bgColor = color(122, 131, 139);
 
 //Container sizes and locations
 //Y location and size is same for both
-int containerHeight = 480;
+int containerHeight = 440;
 int containerTopY = 120;
 int containerBottomY = containerTopY + containerHeight;
 //Canvas X and width
@@ -108,21 +97,24 @@ final int TRIANGLE = 2;
 final int HEXAGON = 3;
 final int CIRCLETOOL = 4;
 final int WEDGE = 5;
-final int PUNCHER = 6;
-final int BATON = 7;
-final int FUSE = 8;
+final int PUNCHER = 6; //to be added
+final int BATON = 7; //to be added
+final int FUSE = 8; //to be added
 //Tool stored by dragging, used for placing tools on the board
-int toolMode = NOTOOL;
+Tool templateTool = null;
 Tool dragTool = null;
+Tool selectedTool = null;
 int dragIniti = -1; // set to -1 when from toolbox,
 int dragInitj = -1; // real values when from canvas
 
-//template tools
-Triangle templateTriangle;
-Quadrangle templateQuandrangle;
-Hexagon templateHexagon;
-CircleTool templateCircleTool;
-Wedge templateWedge;
+//tool elasticity
+final float SPRINGY = 1.5; //TODO: ??????set?
+final float PERFECT = 1;
+final float STICKY = 0.5;
+
+//cilia
+int ciliaNum = 16; //number of silia
+int csize = 3; //size of the silia
 
 //ball
 Ball ball = null;
@@ -140,8 +132,9 @@ int goalj = canvasNumCellsY-1;
 Group<Ball> ballGroup = null;
 Group<Goal> goalGroup = null;
 Group<Canvas> canvasGroup = null;
-ToolGroup toolGroup = null;
+Group<Tool> toolGroup = null;
 Group<Bubble> bubbleGroup = null;
+
 
 
 
@@ -219,7 +212,7 @@ class Canvas extends MassedBeing {
       //Get the previous direction and rotate it by a constrained amount
       PVector preDir = pre.getFlowDir();
       float theta = random(PI/2) - PI/4;
-      PVector nextDir = getRotate(preDir,theta);
+      PVector nextDir = HermesMath.getRotate(preDir,theta);
       curr.setFlowDir(nextDir);
       //Get the previous strength and adjust it
       float preStr = pre.getFlowStr();
@@ -311,7 +304,7 @@ class Canvas extends MassedBeing {
           }
           dragTool.setPosition(new PVector(canvasLeftX+(i*cellSideLength)+cellSideLength/2, containerTopY+(j*cellSideLength)+cellSideLength/2));//////
           in.setTool(dragTool);
-
+          selectedTool = dragTool;
           //clean up global vars
           dragTool = null;
           //TODO how to account for multi-cell objects? What about the baton (which doesn't actually take up a cell?)
@@ -336,23 +329,28 @@ class Canvas extends MassedBeing {
         dragTool = in.getTool();//set dragTool to the tool therein
         dragIniti = i;
         dragInitj = j;
+        selectedTool = dragTool;
         in.setTool(null);
-      } else if(toolMode!=NOTOOL && !prohibitedCell) { //cell has no tool and toolMode is set to something
-        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2), 0);
+      } else if(templateTool!=null && !prohibitedCell) { //cell has no tool and templateTool is set to something
+        Tool newTool = makeTool(templateTool.getToolCode(), new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2),
+                                templateTool.getRotation(), templateTool.getElasticity());
         in.setTool(newTool);
+        selectedTool = newTool;
       }    
     } else if(action == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //TODO: this code is identical in 3 places, probably a better way to do this
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
-      } else if(toolMode!=NOTOOL && !prohibitedCell) {
+      } else if(templateTool!=null && !prohibitedCell) {
         // remove the tool at that cell if necessary
         if(in.hasTool()) {
           Tool toRemove = in.getTool();
           in.setTool(null);
           world.deleteBeing(toRemove);
         }
-        Tool newTool = makeTool(toolMode, new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2), 0);
+        Tool newTool = makeTool(templateTool.getToolCode(), new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2),
+                                templateTool.getRotation(), templateTool.getElasticity());
         in.setTool(newTool);
+        selectedTool = newTool;
       }
     }
   }
@@ -406,38 +404,38 @@ class ToolBox extends Being {
      zero = new Zero();
      
      //quadrangle
-     templateQuadrangle = makeTool(QUADRANGLE, 
+     Tool templateQuadrangle = makeTool(QUADRANGLE, 
                                   new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                               containerTopY + 1*cellSideLength+cellSideLength/2),
-                                  0);
+                                  0, PERFECT);
      _grid[1][1].setTool(templateQuadrangle);
      
      //triangle
-     templateTriangle = makeTool(TRIANGLE,
+     Tool templateTriangle = makeTool(TRIANGLE,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 3*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][3].setTool(templateTriangle);
      
      //hexagon
-     templateHexagon = makeTool(HEXAGON,
+     Tool templateHexagon = makeTool(HEXAGON,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 5*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][5].setTool(templateHexagon);     
      
      //circletool
-     templateCircleTool = makeTool(CIRCLETOOL,
+     Tool templateCircleTool = makeTool(CIRCLETOOL,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 7*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][7].setTool(templateCircleTool);   
      
      //wedge
-     templateWedge = makeTool(WEDGE,
+     Tool templateWedge = makeTool(WEDGE,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 9*cellSideLength+cellSideLength/2),
-                                0);
+                                0, PERFECT);
      _grid[1][9].setTool(templateWedge);  
           
      
@@ -458,17 +456,18 @@ class ToolBox extends Being {
       //get i,j indices of cell containing mouse press
       int i = x / cellSideLength;
       int j = y / cellSideLength;
-      // if that cell contains a tool, set toolMode to that tool
+      // if that cell contains a tool, set templateTool to that tool
       if(_grid[i][j].hasTool()) {
-        toolMode = _grid[i][j].getTool().getToolCode();
-        _grid[i][j].getTool().handleMouseMessage(m);
+        templateTool = _grid[i][j].getTool();
+        templateTool.handleMouseMessage(m);
       }
     } else if(m.getAction() == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //already dragging a tool
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
-      } else if(toolMode!=0) { // toolMode already set but no new tool created yet
+      } else if(templateTool!=null) { // templateTool already set but no new tool created yet
         //instantiate new version of that tool 
-        dragTool = makeTool(toolMode, new PVector(m.getX(), m.getY()), 0);
+        dragTool = makeTool(templateTool.getToolCode(), new PVector(m.getX(), m.getY()),
+                                templateTool.getRotation(), templateTool.getElasticity());
         dragIniti = -1;
         dragInitj = -1;
       }
@@ -490,24 +489,6 @@ class ToolBox extends Being {
     zero.draw();
     popMatrix();
     
-    //draw a halo around the tool specified by toolMode
-    //TODO: replace with better select
-    /*
-    int haloi = -1;
-    int haloj = -1;
-    switch(toolMode) {
-     case FAKETOOL:  haloi = _fakeTooli;
-                     haloj = _fakeToolj;
-                     break;
-    }
-    
-    if(haloi!=-1 && haloj!=-1) {
-      noFill();
-      strokeWeight(3);
-      stroke(255, 150, 193);
-      rect(haloi*cellSideLength, haloj*cellSideLength, cellSideLength, cellSideLength);
-    }
-    */
   }
 }
 
@@ -587,13 +568,13 @@ class Cell extends Being {
 /**
  *
  */
-class Ball extends MassedBeing {
+class Ball extends MultisampledMassedBeing {
   
   Ball() {
     super(new Circle(new PVector((canvasLeftX+balli*cellSideLength)+cellSideLength/2, 
                                  (containerTopY+ballj*cellSideLength)+cellSideLength/2),
                      ballRadius), 
-          new PVector(0,0), ballMass, ballElasticity);
+          new PVector(0,0), ballMass, ballElasticity, 35, 8);
     world.registerBeing(this, true);
   }
   
@@ -607,10 +588,26 @@ class Ball extends MassedBeing {
     int j = y / cellSideLength;
         
     //check to make sure did not escape //TODO: remove this hack if possible!
-    if(i < 0) i=0;
-    if(i > canvasNumCellsX) i=canvasNumCellsX;
-    if(j < 0) j=0;
-    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    if(i < 0) {
+      i=0;
+      setX(canvasLeftX);
+      setVelocityX(-getVelocityX());
+    }
+    if(i >= canvasNumCellsX) {
+      i=canvasNumCellsX-1;
+      setX(canvasRightX);
+      setVelocityX(-getVelocityX());
+    }
+    if(j < 0) {
+      j=0;
+      setY(containerTopY);
+      setVelocityY(-getVelocityY());
+    }
+    if(j >= canvasNumCellsY) {
+      j=canvasNumCellsY-1;
+      setY(containerBottomY);
+      setVelocityY(-getVelocityY());
+    }
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
@@ -659,10 +656,10 @@ class Goal extends Being {
 /**
  *
  */
-class Bubble extends MassedBeing {
+class Bubble extends MultisampledMassedBeing {
   
   Bubble(PVector position) {
-    super(new Circle(position, ballRadius/2), new PVector(0,0), ballMass, ballElasticity);
+    super(new Circle(position, ballRadius/2), new PVector(0,0), ballMass, ballElasticity, 35, 8);
     world.registerBeing(this, true);
   }
   
@@ -682,10 +679,26 @@ class Bubble extends MassedBeing {
     int j = y / cellSideLength;
     
     //check to make sure did not escape //TODO: remove this hack if possible!
-    if(i < 0) i=0;
-    if(i > canvasNumCellsX) i=canvasNumCellsX;
-    if(j < 0) j=0;
-    if(j > canvasNumCellsY) j=canvasNumCellsY;
+    if(i < 0) {
+      i=0;
+      setX(canvasLeftX);
+      setVelocityX(-getVelocityX());
+    }
+    if(i >= canvasNumCellsX) {
+      i=canvasNumCellsX-1;
+      setX(canvasRightX);
+      setVelocityX(-getVelocityX());
+    }
+    if(j < 0) {
+      j=0;
+      setY(containerTopY);
+      setVelocityY(-getVelocityY());
+    }
+    if(j >= canvasNumCellsY) {
+      j=canvasNumCellsY-1;
+      setY(containerBottomY);
+      setVelocityY(-getVelocityY());
+    }
     
     Cell[][] grid = canvas.getGrid();
     Cell in = grid[i][j];  
@@ -703,10 +716,25 @@ class RunButton extends Being {
   float runButtonDiameter = runButtonRadius*2;
   float innerSymbolLength = runButtonDiameter/3;
   boolean _hover = false;
-
+  boolean _keyPressed = false;
    
   RunButton() {
     super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
+  }
+  
+  void handleKeyMessage(KeyMessage m) {
+    if(m.isPressed() && !_keyPressed) {
+      if(mode == BUILD) {
+        setMode(RUN);
+      }
+      else {
+        setMode(BUILD);
+      }
+      _keyPressed = true;
+    }
+    else {
+      _keyPressed = false;
+    }
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -735,7 +763,7 @@ class RunButton extends Being {
    fill(62, 67, 71);
    if(mode == BUILD) {
      triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
-   } else if(mode == RUN || mode == COMPLETED) {
+   } else {
      rect(-innerSymbolLength/2, -innerSymbolLength/2, innerSymbolLength, innerSymbolLength); 
    }
   }
@@ -745,11 +773,22 @@ class RandomButton extends Being {
   
   Canvas _c;
   boolean _hover;
+  boolean _keyPressed = false;
   
   RandomButton(Canvas c) {
     super(new Rectangle(randomButtonX,randomButtonY,randomButtonSide,randomButtonSide));
     _c = c;
     _hover = false;
+  }
+  
+  void handleKeyMessage(KeyMessage m) {
+    if(m.isPressed() && !_keyPressed) {
+      _c.randomize();
+      _keyPressed = true;
+    }
+    else {
+      _keyPressed = false;
+    }
   }
   
   void handleMouseMessage(MouseMessage m) {
@@ -790,7 +829,7 @@ class RandomButton extends Being {
  */
 abstract class Tool extends MassedBeing {
   int _toolCode;
-  boolean _selected = false;
+  double _totalRotation=0;
   
   Tool(Shape shp, PVector velocity, float mass, float elasticity, int toolCode) {
     super(shp, velocity, mass, elasticity); 
@@ -800,24 +839,71 @@ abstract class Tool extends MassedBeing {
   }
 
   int getToolCode() {return _toolCode;}
-  void select() {_selected = true;}
-  void deselect() {_selected = false;}
-  boolean isSelected() {return _selected;}
   
-  abstract void handleMouseMessage(MouseMessage m);
+  void handleMouseMessage(MouseMessage m) {
+   //note:assumes clicked in own cell 
+   selectedTool = this;
+  }
   
-  abstract void rotate(double theta);
+  void rotate(double theta) {_totalRotation = (_totalRotation + theta)%(PI*2);}
+  double getRotation() {return _totalRotation;}
   
   void draw() {
-    fill(0);
-    stroke(255);
-    strokeWeight(2); 
+    //check if is templateTool -- draw a halo around it
+    if(templateTool==this) {
+      noFill();
+      strokeWeight(3);
+      stroke(255, 150, 193);
+      rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
+    }
+    
+    //check if is selectedTool
+    if(selectedTool==this) {
+      noFill();
+      strokeWeight(3);
+      stroke(253, 253, 44);
+      rect(-cellSideLength/2, -cellSideLength/2, cellSideLength, cellSideLength);
+    }
+    
+    //switch over elasticity
+    if (getElasticity()==SPRINGY) {
+      noFill();
+      stroke(255);
+      strokeWeight(2);      
+    } else if(getElasticity()==PERFECT) {
+      fill(0);
+      stroke(255);
+      strokeWeight(2);
+    } else if(getElasticity()==STICKY) {
+      fill(0);
+      noStroke();
+    }    
   }
   
 }
 
+class SelectedToolAttributeSwitcher implements KeySubscriber {
+  void handleKeyMessage(KeyMessage m) {
+    if(selectedTool!=null) {
+      
+      if(m.getKeyChar()=='e') {      //if 'e', change elasticity
+        float elasticity = selectedTool.getElasticity();
+        if (elasticity==SPRINGY) {
+          selectedTool.setElasticity(STICKY);             
+        } else if(elasticity==PERFECT) {
+          selectedTool.setElasticity(SPRINGY);
+        } else if(elasticity==STICKY) {
+          selectedTool.setElasticity(PERFECT);
+        }
+      } else if(m.getKeyChar()=='w') {     //if 'w', rotate by PI/2
+        selectedTool.rotate(PI/4);
+      }
+    }
+  }  
+}
+
 //position is always CENTER
-Tool makeTool(int toolCode, PVector position, double theta, int elasticity) {
+Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
    Tool toReturn = null;
    switch(toolCode) {
      case QUADRANGLE: toReturn = new Quadrangle(position, theta, elasticity); 
@@ -841,21 +927,24 @@ Tool makeTool(int toolCode, PVector position, double theta, int elasticity) {
  */
 class Quadrangle extends Tool {
  
-  Quadrangle(PVector center, double theta, int elasticity) {
+  Quadrangle(PVector center, double theta, float elasticity) {
    super(Polygon.createRegularPolygon(center, 4, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, QUADRANGLE);
    this.rotate(theta);
   } 
  
   void rotate(double theta) {
+    super.rotate(theta);
    ((Polygon)this.getShape()).rotate(theta);
   } 
-  
-  void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
   
   void draw() {
     super.draw();
     getShape().draw();
+    /*if(getElasticity() == STICKY) {
+      Polygon p = (Polygon) getShape();
+      drawCilia(p);
+    }*/
   }
 
 }
@@ -864,29 +953,28 @@ class Quadrangle extends Tool {
  *
  */
 class Triangle extends Tool {
+  boolean _expanded = false;
+  int _timeOfLastClick = -1;
+  boolean _doubleClick = false;
   
- Triangle(PVector center, double theta, int elasticity) {
+ Triangle(PVector center, double theta, float elasticity) {
    super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, TRIANGLE);
    this.rotate(theta);
  }
 
  void rotate(double theta) {
+   super.rotate(theta);
    ((Polygon)this.getShape()).rotate(theta);
  } 
- 
- void handleMouseMessage(MouseMessage m) {
-   //note:assumes clicked in own cell
-   if(!isSelected()) {
-    select(); 
-   }
-   //TODO: handle
-   println("clicked in triangle");
- }
  
  void draw() {
   super.draw();
   getShape().draw();
+  /*if(getElasticity() == STICKY) {
+    Polygon p = (Polygon) getShape();
+    drawCilia(p);
+  }*/
   //TODO: add handle
  }  
 }
@@ -896,21 +984,24 @@ class Triangle extends Tool {
  */
 class Hexagon extends Tool {
  
-  Hexagon(PVector center, double theta, int elasticity) {
+  Hexagon(PVector center, double theta, float elasticity) {
    super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, HEXAGON);
    this.rotate(theta);
   } 
  
   void rotate(double theta) {
+   super.rotate(theta);
    ((Polygon)this.getShape()).rotate(theta);
   } 
-  
-  void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
   
   void draw() {
     super.draw();
     getShape().draw();
+    /*if(getElasticity() == STICKY) {
+      Polygon p = (Polygon) getShape();
+      drawCilia(p);
+    }*/
   }
 
 }
@@ -920,21 +1011,31 @@ class Hexagon extends Tool {
  */
 class CircleTool extends Tool {
  
-  CircleTool(PVector center, double theta, int elasticity) {
+  CircleTool(PVector center, double theta, float elasticity) {
    super(new Circle(center, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, CIRCLETOOL);
-   this.rotate(theta);
   } 
- 
-  void rotate(double theta) {
-    //TODO: fil in?
-  } 
-  
-  void handleMouseMessage(MouseMessage m) {} //TODO: fil in?
   
   void draw() {
     super.draw();
+    pushMatrix();
     getShape().draw();
+    popMatrix();
+    /*if(getElasticity() == STICKY) {
+      stroke(0);
+      Circle c = (Circle) getShape();
+      float r = c.getRadius();
+      PVector initDir = new PVector(0,1); //Set the initial direction for silia
+      initDir.mult(r); // Multiply it out to the edge of the circle
+      float rot = 2*PI / ciliaNum;
+      float rotCounter = 0;
+      for(int i = 0; i < ciliaNum; i++) {
+        //Rotate and draw a small line at the edge of the circle
+        HermesMath.rotate(initDir,rot);
+        rotCounter += rot;
+        line(initDir.x,initDir.y,initDir.x+(csize * cos(rotCounter)),initDir.y+(csize * sin(rotCounter)));
+      }
+    }*/
   }
 }
 
@@ -943,19 +1044,36 @@ class CircleTool extends Tool {
  */
 class Wedge extends Tool {
   
-  Wedge(PVector center, double theta, int elasticity) {
+  int _sector = 0;
+  
+  Wedge(PVector center, double theta, float elasticity) {
     super(generateWedge(center), new PVector(0,0), Float.POSITIVE_INFINITY, elasticity, WEDGE);
-    rotate(theta);
+    this.rotate(theta);
   }
   
   void rotate(double theta) {
-    
+    super.rotate(theta);
+    ((Polygon) getShape()).rotate(theta);
+    /*double rot = (_totalRotation + PI/4) % (2*PI);
+    int sector = ((Double) (rot/(PI*2))).intValue();
+    if(sector != _sector) {
+      Polygon p = (Polygon) getShape();
+      int alter = sector - _sector;
+      p.rotate(PI/2 * alter);
+    }*/
   }
   
-  void handleMouseMessage(MouseMessage m) {}
+  void draw() {
+    super.draw();
+    getShape().draw();
+    /*if(getElasticity() == STICKY) {
+      Polygon p = (Polygon) getShape();
+      drawCilia(p);
+    }*/
+  }
 }
 
-static Polygon generateWedge(PVector center) {
+Polygon generateWedge(PVector center) {
   ArrayList<PVector> points = new ArrayList<PVector>();
   points.add(new PVector(cellSideLength/2,cellSideLength/2));
   points.add(new PVector(-cellSideLength/2,cellSideLength/2));
@@ -963,22 +1081,27 @@ static Polygon generateWedge(PVector center) {
   return new Polygon(center,points);
 }
 
-///////////////////////////////////////////////////
-// GROUPS
-///////////////////////////////////////////////////
-
-class ToolGroup extends Group<Tool> {
- 
- ToolGroup(World theworld) {
-  super(theworld);
- }
-
- void deselectAll() {
-  for(Iterator<Tool> iter = iterator(); iter.hasNext(); ) {
-    iter.next().deselect();
+void drawCilia(Polygon p) {
+  stroke(0);
+  ArrayList<PVector> points = p.getPointsCopy();
+  int psize = points.size();
+  int ciliaPerSide = ciliaNum / psize;
+  ArrayList<PVector> axes = p.getAxesCopy();
+  PVector pre = points.get(0);
+  for(int i = 1; i < psize + 1; i++) {
+    pushMatrix();
+    PVector curr = points.get(i % psize);
+    translate(curr.x,curr.y);
+    PVector dir = PVector.sub(pre, curr);
+    float angle = HermesMath.angle(dir);
+    rotate(angle);
+    float dist = dir.mag() / ciliaPerSide;
+    for(int j = 0; j < ciliaPerSide; j++) {
+      translate(dist,0);
+      line(0,0,0,csize);
+    }
+    popMatrix();
   }
- } 
-  
 }
 
 ///////////////////////////////////////////////////
@@ -1021,7 +1144,7 @@ class MouseHandler implements MouseSubscriber {
     
     // no matter where you click, deselect all tools
     if(m.getAction() == PostOffice.MOUSE_PRESSED) {
-      toolGroup.deselectAll();
+      selectedTool = null;
     }
     
     if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
@@ -1132,8 +1255,9 @@ void setMode(int newMode) {
     }
   } else if(newMode == RUN) {
     //clean up global vars
-    toolMode = NOTOOL;
+    templateTool = null;
     dragTool = null;
+    selectedTool = null;
     
     makeBubbles();//make the bubbles (note: I put this before make the ball so that ball will be drawn overtop)
     ball = new Ball();    //make the ball
@@ -1189,7 +1313,7 @@ void setup() {
   //instantiate groups
   ballGroup = new Group(world);
   goalGroup = new Group(world);
-  toolGroup = new ToolGroup(world);
+  toolGroup = new Group(world);
   canvasGroup = new Group(world);
   bubbleGroup = new Group(world);
   
@@ -1203,15 +1327,20 @@ void setup() {
   //buttons
   RunButton runButton = new RunButton();
   world.registerBeing(runButton, true);
-  textFont(createFont("Courier", 36));
-  textAlign(CENTER);
+  po.registerKeySubscription(runButton,PostOffice.R);
   RandomButton randomButton = new RandomButton(canvas);
   world.registerBeing(randomButton,false);
+  po.registerKeySubscription(randomButton,PostOffice.SPACE);
+  
+  //key for SelectedToolAttributeSwitcher
+  SelectedToolAttributeSwitcher selectedToolAttributeSwitcher = new SelectedToolAttributeSwitcher();
+  po.registerKeySubscription(selectedToolAttributeSwitcher,PostOffice.E);
+  po.registerKeySubscription(selectedToolAttributeSwitcher,PostOffice.W);
   
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
   po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
-	po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
+  po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
   
   //register interactions
   world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);

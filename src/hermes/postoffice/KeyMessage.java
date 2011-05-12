@@ -28,29 +28,30 @@ public class KeyMessage implements Message {
 	}
 
 	/**
-	 * Getter for the code of the key acted upon
+	 * @return integer corresponding to key pressed, use key constants in PostOffice to determine key
 	 */
 	public int getKeyCode() {
 		return _keyCode;
 	}
 	
 	/**
-	 * Getter for the char of the key acted upon
-	 * @return
+	 * @return char representing the key acted upon if key is unicode
 	 */
 	public char getKeyChar() {
+	    assert _keyChar != PostOffice.CHAR_UNDEFINED: "KeyMessage.getKeyChar() - Cannot get char of non-unicode key"
 		return _keyChar;
 	}
 	
 	/**
 	 * Tells if key is pressed or not
+	 * @return true is key is pressed, false if key is released
 	 */
 	public boolean isPressed() {
 		return _isPressed;
 	}
 	
 	/**
-	 * Checks for equality of KeyMessage
+	 * Checks for equality of KeyMessage by comparing key codes
 	 */
 	public boolean equals(Object o) {
 		if(o instanceof KeyMessage) {
