@@ -5,7 +5,11 @@ import java.util.Iterator;
 import src.hermes.postoffice.*;
 
 /**
- * defines a generic "group" that wraps a collection of beings
+ * Defines a generic "group" of beings that wraps a collection of beings.
+ * The primary purpose of grouping is to allow creation and removal of beings from updates
+ * without threading issues. However, groups are also often used to store data about or provide
+ * access to the contained beings. 
+ * 
  * @author Sam
  *
  * @param <A>	the type of the beings in the group

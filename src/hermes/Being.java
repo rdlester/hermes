@@ -19,10 +19,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	
 	protected Shape _shape; 		 // the being's shape
 	
-	private boolean _done = true;
-	protected long _time;
+	private boolean _done = true;	// if the Being does not need more steps this update
+	protected long _time;			// the time of the last step
 	
-	private LinkedList<GenericGroup<?,?>> _groups;
+	private LinkedList<GenericGroup<?,?>> _groups;	// groups the being is a member of
 	
 	
 	/**
@@ -57,6 +57,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		_time = System.nanoTime();
 	}
 	
+	/**
+	 * updates the internal recorded time of the being using the current system time
+	 * @return	time elaspsed since the last call to updateTime
+	 */
 	protected long updateTime() { 
 		long time = System.nanoTime();
 		long elapsed = time - _time;
@@ -130,11 +134,29 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	 * @param position
 	 */
 	public void setPosition(PVector position) {
+		assert position != null : "Being.setPosition: position must be a valid PVector";
+		
 		_position.x = position.x;
 		_position.y = position.y;
 		_position.z = position.z;
 	}
 	
+	/**
+	 * sets the Being's position to give x,y values
+	 * @param x		x position
+	 * @param y		y position
+     */
+	public void setPosition(float x, float y) {
+		_position.x = x;
+		_position.y = y;
+	}
+	
+	/**
+	 * sets the Being's position to give x,y,z values
+	 * @param x		x position
+	 * @param y		y position
+	 * @param z		z position (at the currrent time a nonzero z may result in unexpected behavior)
+	 */
 	public void setPosition(float x, float y, float z) {
 		_position.x = x;
 		_position.y = y;
@@ -153,21 +175,12 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		return _position.z;
 	}
 	
-	public void setPosition(float x, float y) {
-		_position.x = x;
-		_position.y = y;
-	}
-	
 	public void setX(float x) {
 		_position.x = x;
 	}
 	
 	public void setY(float y) {
 		_position.y = y;
-	}
-	
-	public void setZ(float z) {
-		_position.z = z;
 	}
 	
 	public PVector getVelocity() {
@@ -182,8 +195,17 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	    return _velocity.y;
 	}
 	
+	/**
+	 * set the being's velocity to a give vector
+	 * 	this is a deep copy, changing velocity after this call will have no effect on the being
+	 * @param velocity	the velocity to set
+	 */
 	public void setVelocity(PVector velocity) {
-		_velocity = velocity;
+		assert velocity != null : "Being.setVelocity: velocity must be a valid PVector";
+		
+		_velocity.x = velocity.x;
+		_velocity.y = velocity.y;
+		_velocity.z = velocity.z;
 	}
 	
 	public void setVelocityX(float x) {
@@ -194,6 +216,10 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	    _velocity.y = y;
 	}
 
+	/**
+	 * the bounding box of the being's shape
+	 * @return	the bounding box of the being's shape
+	 */
 	public Rectangle getBoundingBox() {
 		return _shape.getBoundingBox();
 	}

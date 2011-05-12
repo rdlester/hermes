@@ -62,6 +62,7 @@ class Player extends MassedBeing {
   Player(float x, float y) {
     super(new Rectangle(makeVector(x, y), PLAYER_WIDTH, PLAYER_HEIGHT), zeroVector(), 1.0f, 1.0f);
     
+    // load the animated character walk cycle
     _sprite = new AnimatedSprite();
     Animation anim = new Animation("skeilert_walk_final", 1, 24, ".png", (int)(1000.0f / 24.0f));
     _animIndex = _sprite.addAnimation(anim);
@@ -70,17 +71,17 @@ class Player extends MassedBeing {
   }
   
   void draw() {
-    fill(0);
-    //rect(0, 0, PLAYER_WIDTH, PLAYER_HEIGHT);
     scale(0.2);
     imageMode(CENTER);
+    // if the character is facing left, invert the image
     if(_direction == FACING_LEFT) {
       scale(-1,1);
       translate(20, 0);
     }
-    image(_sprite.animate(), 0, 0);
+    image(_sprite.animate(), 0, 0); // draw the current animation frame
   }
   
+  // when this is called the player can jump again
   void resetJump() {
     _jumped = false;
   }
@@ -117,16 +118,19 @@ class Player extends MassedBeing {
   
 }
 
- 
-static class Sector extends Being {
+// used in platform generation 
+// populates a rectangle with platform 
+// sector coordinates are on a scale of 1800 pixels/unit (1/sector)
+static class Sector extends Environment {
   
-  final static int SECTOR_SIZE = 1800;
-  final static float VERTICAL_STEP = 120;
+  final static int SECTOR_SIZE = 1800;    // pixel width of the sectors
+  final static float VERTICAL_STEP = 120; // vertical space between platforms
   
-  Rectangle _rect;
+  Rectangle _rect;   // the rectangle
   
-  int x, y;
+  int x, y;         // coordinates -- these are in sector space (1 unit per sector), not pixel space
   
+  // creates a new sector at sector coors x,y, adds platforms to given PlatformGroup, with given density
   Sector(int x, int y, PlatformGroup platforms, float density) {
     super(rectOfSector(x,y));
     
@@ -137,10 +141,12 @@ static class Sector extends Being {
     platforms.generatePlatforms(_rect, VERTICAL_STEP, density);
   }
   
+  // the Rectangle defining the sector at this position
   static Rectangle rectOfSector(int x, int y) {
     return new Rectangle(makeVector((float)(x * SECTOR_SIZE), (float)(y * SECTOR_SIZE)), SECTOR_SIZE, SECTOR_SIZE);
   }
   
+  // rectangles of the neighbors of this sector
   Rectangle[] getNeighborRects() {
     Rectangle[] rects = new Rectangle[8];
     rects[0] = rectOfSector(x, y - 1); // north
@@ -154,16 +160,17 @@ static class Sector extends Being {
     
     return rects;
   }
-  
-  void draw() {}
     
 }
 
-class SectorGrid extends Being {
+// wraps the sector in the game, holding them in a Hashtable
+// this allows for storage of theoretically an inifinite number of sectors, allocated on the fly
+class SectorGrid extends Environment {
  
-  Hashtable<Integer, Sector> _sectors;
-  Sector _currentSector;
+  Hashtable<Integer, Sector> _sectors;  // all the sectors, hashed by a number derived from their coordinates
+  Sector _currentSector;                // the current sector containing the character
 
+  // sets up the grid with a starting sector
   SectorGrid(Sector first) {
       super(first._rect);
       _sectors = new Hashtable<Integer, Sector>(); 
@@ -183,12 +190,11 @@ class SectorGrid extends Being {
     return _sectors;
   }
   
-  void draw() {} 
+}
 
-  Integer packCoors(int x, int y) {
-     return new Integer(x ^ y << 16);
-   }
-  
+// used for generating the hash code for sectors
+Integer packCoors(int x, int y) {
+   return new Integer(x ^ y << 16);
 }
 
 ///////////////////////////////////////////////
@@ -222,12 +228,13 @@ class PlatformGroup extends Group<Platform> {
     float boxHeight = area.getRectHeight();
     float maxPlatWidth = boxWidth / 2;
     float minPlatWidth = Platform.HEIGHT * 2;
+    // iterate through rows
     for(float y = area.getAbsMin().y + verticalStep; y <= area.getAbsMax().y - verticalStep; y += verticalStep) {
-      float x = area.getAbsMin().x;
-      float platWidth = random(minPlatWidth, maxPlatWidth);
-      float baseDist = random(minPlatWidth, maxPlatWidth);
-      x += platWidth / 2 + baseDist / density;
-      while(x < area.getAbsMax().x - platWidth / 2) {
+      float x = area.getAbsMin().x; // start at the left end of the rect
+      float platWidth = random(minPlatWidth, maxPlatWidth); // width of the new platform
+      float baseDist = random(minPlatWidth, maxPlatWidth);  // distance before the new platform
+      x += platWidth / 2 + baseDist / density;              // move to the midpoint of the new platform
+      while(x < area.getAbsMax().x - platWidth / 2) {       // keep going right until a platform would leave the rect
         addPlatform(makeVector(x, y), platWidth);
         x += platWidth / 2;
         platWidth = random(minPlatWidth, maxPlatWidth);
@@ -244,12 +251,14 @@ class PlatformGroup extends Group<Platform> {
 // Interactors
 ///////////////////////////////////////////////////
 
+// handles player-platform collidions
 class PlatformCollider extends GenericMassedCollider<Player, Platform> {
   
   PlatformCollider(float elasticity) {
     super(elasticity);
   }
   
+  // reset the player's jump when he hits a platform, then do the normal projection/impulse collision stuff
   boolean handle(Player player, Platform platform) {
     player.resetJump();
     return super.handle(player, platform);
@@ -257,38 +266,40 @@ class PlatformCollider extends GenericMassedCollider<Player, Platform> {
   
 }
 
+// generates platforms when the camera enters an unexplored area
 class PlatformGenerator implements Interactor<SectorGrid, Camera> {
         
-   PlatformGroup _platformGroup;
+   PlatformGroup _platformGroup;      // group to add platforms to
    
    PlatformGenerator(PlatformGroup group) {
     _platformGroup = group;
    }
     
    boolean detect(SectorGrid grid, Camera cam) {
+     // we only need to do anything if the camera's box is not completely contained by the current sector
      return !grid.getCurrentSector().getBoundingBox().contains(cam.getBoundingBox());
    }
     
    boolean handle(SectorGrid grid, Camera cam) {
      Sector current = grid.getCurrentSector();
      Hashtable<Integer,Sector> sectors = grid.getSectors();
+     // see which neighbors of this sector the camera overlaps with
      Rectangle[] neighbors = current.getNeighborRects();
      for(int i = 0; i < 8; i++) {
        if(cam.getBoundingBox().collide(neighbors[i])) {
          int x = (int)neighbors[i].getPosition().x / Sector.SECTOR_SIZE;
          int y = (int)neighbors[i].getPosition().y / Sector.SECTOR_SIZE;
+         // see if we've visited this sector yet
          if(sectors.get(packCoors(x,y)) == null) {
+           // if not, generate platforms for it
            sectors.put(packCoors(x,y), new Sector(x, y, _platformGroup, random(0.5, 1)));
          }
+         // if the camera center is in a new bounding box, we need to change the current sector
          if(neighbors[i].contains(cam.getBoundingBox().getCenter()))
            grid.setCurrentSector(sectors.get(packCoors(x,y)));
        }
      }
      return true;
-   }
-   
-   Integer packCoors(int x, int y) {
-     return new Integer(x ^ y << 16);
    }
   
 }
@@ -332,20 +343,13 @@ void setup() {
   platforms = new PlatformGroup(world);
   Sector first = new Sector(0, 0, platforms, 0.8);
   SectorGrid grid = new SectorGrid(first);
-  Group<SectorGrid> gridGroup = new Group<SectorGrid>(world);
-  gridGroup.add(grid);
-  
-  Group<Camera> camGroup = new Group<Camera>(world);
-  camGroup.add(cam);
   
   // set up platform generation
-  world.registerInteraction(gridGroup, camGroup, new PlatformGenerator(platforms), true);
+  world.registerInteraction(grid, cam, new PlatformGenerator(platforms), true);
   
   // set up the player
-  player = new Player(0, 60);
-  Group<Player> playerGroup = new Group<Player>(world);
+  player = new Player(0, 60);  
   world.registerBeing(player, true);
-  playerGroup.add(player);
   po.registerKeySubscription(player, PostOffice.W);
   po.registerKeySubscription(player, PostOffice.A);
   po.registerKeySubscription(player, PostOffice.S);
@@ -356,25 +360,24 @@ void setup() {
   po.registerKeySubscription(player, PostOffice.RIGHT);
   
   // make player collide with platforms
-  world.registerInteraction(playerGroup, platforms, new PlatformCollider(0), false);
+  world.registerInteraction(player, platforms, new PlatformCollider(0), false);
   
   // add gravity to player
   world.registerInteraction(GravityEnvironment.makeGravityGroup(makeVector(0, 50),
     initialBounds, world),
-    playerGroup, GravityEnvironment.makeGravityInteractor(), false);
+    player, GravityEnvironment.makeGravityInteractor(), false);
   
   rectMode(CENTER);
   frameRate(48);
   
   // run it!
-  //smooth();
-  //world.lockUpdateRate(60);
   world.start();
 }
 
 void draw() {
   background(230);
   
+  // lock the camera to the player
   cam.setPosition(player.getPosition().x - WINDOW_WIDTH / 2, player.getPosition().y - WINDOW_HEIGHT / 2);
   
   cam.draw(); // draw the world

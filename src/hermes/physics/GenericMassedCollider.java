@@ -3,6 +3,18 @@ package src.hermes.physics;
 import processing.core.PVector;
 import src.hermes.*;
 
+/**
+ * this is a collision handler for MassedBeing and its subclasses which handles collisions
+ * 	using both projection (instantly separating the bodies) and impulse (changing their velocities)
+ * 
+ * use GenericMassedCollider, as opposed to MassedCollider, only if you intend to override the behavior
+ * 	and methods specific to a subclass of MassedBeing
+ * 
+ * @author Sam
+ *
+ * @param <A>	the first type of MassedBeing
+ * @param <B>	the second type of MassedBeing
+ */
 public class GenericMassedCollider<A extends MassedBeing, B extends MassedBeing> 
 	implements Interactor<A,B> {
 
