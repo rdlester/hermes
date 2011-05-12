@@ -205,10 +205,21 @@ public class Rectangle extends Shape {
 				maxX1 >= maxX2 && maxY1 >= maxY2;
 	}
 
+	/**
+	 * whether the Rectangle contains the given point coordinates (boundary is inclusive)
+	 * @param x		the x coordinate
+	 * @param y		the y coordinate
+	 * @return		true if (x,y) lies within the Rectangle
+	 */
 	public boolean contains(float x, float y) {
 		return x >= getAbsMin().x && y >= getAbsMin().y && x <= getAbsMax().x && y <= getAbsMax().y;
 	}
 	
+	/**
+	 * whether the Rectangle contains the given point vector (boundary is inclusive)
+	 * @param point		the point vector
+	 * @return			true if (x,y) lies within the Rectangle
+	 */
 	public boolean contains(PVector point) {
 		return contains(point.x, point.y);
 	}

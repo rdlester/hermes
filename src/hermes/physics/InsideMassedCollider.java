@@ -52,7 +52,7 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 		assert being1 != null : "InsideMassedCollider.handle: being1 must be a valid MassedBeing ";
 		assert being2 != null : "InsideMassedCollider.handle: being2 must be a valid MassedBeing ";
 		
-		ImpulseCollision collision = being1.getCollisionWith(being2);
+		ImpulseCollision collision = being1.getImpulseCollisionWith(being2);
 		
 		assert collision != null : "InsideMassedCollider.handle: internal: no collision found " + being1 + " " + being2;
 		

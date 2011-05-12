@@ -1,5 +1,6 @@
 package src.hermes.physics;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import processing.core.*;
@@ -21,7 +22,8 @@ public abstract class MassedBeing extends Being {
 	private PVector _impulse; // used to calculate the impulse being applied to this being
 	private PVector _displacement; // used to accumulate an instantaneous displacement on this being
 	
-	protected LinkedList<ImpulseCollision> _collisions; // keeps track of all collisions in this step 
+	private LinkedList<ImpulseCollision> _impulseCollisions; 	// keeps track of all collisions in this step 
+	private LinkedList<MassedBeing> _mergeCollisions;			// keeps track of all beings in a merge collision with this one
 	
 	/**
 	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
@@ -46,7 +48,8 @@ public abstract class MassedBeing extends Being {
 		_impulse = zeroVector();
 		_displacement = zeroVector();
 		
-		_collisions = new LinkedList<ImpulseCollision>();
+		_impulseCollisions = new LinkedList<ImpulseCollision>();
+		_mergeCollisions = new LinkedList<MassedBeing>();
 	}
 	
 	/**
@@ -158,7 +161,7 @@ public abstract class MassedBeing extends Being {
 	 * @param dt	the time elapsed since the last step
 	 */
 	public void step() {
-		double dt = ((double)updateTime()) / 1e9;
+		double dt = ((double)updateTime()) / 1e9 * Hermes.timeScale;
 		applyImpulse();
 		applyDisplacement();
 		EulerIntegrateVelocity(dt);
@@ -187,7 +190,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	protected void clearCollisions() {
-		_collisions.clear();
+		_impulseCollisions.clear();
 	}
 	
 	protected void clearForce() {
@@ -207,7 +210,7 @@ public abstract class MassedBeing extends Being {
 		assert being2 != null : "addCollision: being2 must be a valid being";
 		assert projection != null : "addCollision: projection must be a valid PVector";
 		
-		if(being1.getCollisionWith(being2) == null) {
+		if(being1.getImpulseCollisionWith(being2) == null) {
 				
 			float elasticity = HermesMath.average(being1._elasticity, being2._elasticity);
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
@@ -234,7 +237,7 @@ public abstract class MassedBeing extends Being {
 		assert projection != null : "addCollision: projection must be a valid PVector";
 		assert elasticity >= 0 : "addCollision: elasticity must be positive";
 		
-		if(being1.getCollisionWith(being2) == null) {
+		if(being1.getImpulseCollisionWith(being2) == null) {
 			ImpulseCollision collision = new ImpulseCollision(being1, being2, 
 					projection, elasticity);
 			collision.addImpulse();
@@ -251,8 +254,8 @@ public abstract class MassedBeing extends Being {
 	 * @param other		the being to check for collision with
 	 * @return			the collision
 	 */
-	public ImpulseCollision getCollisionWith(MassedBeing other) {
-		for(ImpulseCollision collision : _collisions) {
+	public ImpulseCollision getImpulseCollisionWith(MassedBeing other) {
+		for(ImpulseCollision collision : _impulseCollisions) {
 			if(collision.hasBeing(other))
 				return collision;
 		}
@@ -260,13 +263,66 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * adds a collision to the being's collision list
+	 * creates a merge collision between two beings
+	 * @param being1	the first being
+	 * @param being2	the second being
+	 */
+	public static void addMergeCollision(MassedBeing being1, MassedBeing being2) {
+		assert being1 != null : "addCollision: being1 must be a valid being";
+		assert being2 != null : "addCollision: being2 must be a valid being";
+		
+		if(being1 != being2 && !being1.hasMergeCollisionWith(being2)) {
+			being1.addMergeCollisionWith(being2);
+			being2.addMergeCollisionWith(being1);
+		}
+	}
+	
+	/**
+	 * whether the being is merge colliding with another
+	 * @param other		the being to check for collision with
+	 * @return			true is they are merge colliding, otherwise false
+	 */
+	public boolean hasMergeCollisionWith(MassedBeing other) {
+		for(MassedBeing being : _mergeCollisions) {
+			if(being == other)
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * clears all merge collisions in a being
+	 */
+	public void clearMergeCollisions() { 
+		_mergeCollisions.clear();
+	}
+	
+	/**
+	 * gets an iterator over all merge collisions
+	 * @return	the merge collisions
+	 */
+	public Iterator<MassedBeing> getMergeCollisions() {
+		return _mergeCollisions.iterator();
+	}
+	
+	/**
+	 * adds an impulse collision to the being's collision list
 	 * @param collision		the collision
 	 */
 	protected void addImpulseCollision(ImpulseCollision collision) {
-		assert collision != null : "MassedBeing.addCollision: collision must be valid";
+		assert collision != null : "MassedBeing.addImpulseCollision: collision must be valid";
 		
-		_collisions.add(collision);
+		_impulseCollisions.add(collision);
+	}
+	
+	/**
+	 * adds a merge collision to the being's collision list
+	 * @param other		the being to merge with
+	 */
+	protected void addMergeCollisionWith(MassedBeing other) {
+		assert other != null : "MassedBeing.addMergeCollisionWith: other must be a valid MassedBeing";
+	
+		_mergeCollisions.add(other);
 	}
 	
 	public boolean needsMoreSamples() {
