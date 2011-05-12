@@ -2,10 +2,10 @@ package src.hermes.postoffice;
 
 
 /**
- * First In, Last Out, meaning.
  * Message representing an OSC message
- * Very similar to illposed's OSCsMessage, but implementing Message so it can be used in PostOffice
- * The type of an OSCMessage is determined by the address it is sent on
+ * <br>Implements Message so that it can be used in PostOffice
+ * <br>OSCMessages have arguments, which can be untyped, so great care must be taken by the user to ensure types 
+ * <br>Behavior for retrieving messages is First In, Last Out, meaning if you call a getAndRemove method, you'll receive arguments in the order that they were added to the message before it was sent.
  */
 
 public class OscMessage implements Message {
@@ -137,11 +137,6 @@ public class OscMessage implements Message {
 	 * @return		 the float argument in the OSCMessage
 	 */
 	public float getAndRemoveFloat() {
-		
-		//TAKE THIS OUT!
-		if (!hasRemainingArguments()) {
-			return 0.0f;
-		}
 		
 		//make sure the user has remaining arguments
 		assert hasRemainingArguments() : "OSCmessage error: You tried to call getAndRemoveFloat(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
