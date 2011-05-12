@@ -84,10 +84,11 @@ void setup() {
 	} catch(Exception e) {
 	_postOffice = new PostOffice(); 
 	}
-
 	
 	_world = new World(_postOffice, _camera);
 	_world.lockUpdateRate(50);
+
+        _world.start();
 }
 
 void draw() {

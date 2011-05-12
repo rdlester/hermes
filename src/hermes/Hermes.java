@@ -8,6 +8,7 @@ import processing.core.PApplet;
 public class Hermes {
 	
 	private static PApplet _parentApplet; //Storage of sketch's PApplet. 
+	public static float timeScale = 1.0f;
 	
 	/**
 	 * Getter for the PApplet

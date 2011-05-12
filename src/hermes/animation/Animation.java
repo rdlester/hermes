@@ -81,14 +81,15 @@ public class Animation {
 	/**
 	 * Builds an Animation from several image files on disk (where each is an individual frame in the Animation), and adds it to the Sprite's collection of Animations
 	 * 
-	 * <p>The method loads files with numbers starting from 0 to (numberOfImagesToLoad-1) and assumes numerical contiguity
-	 * <br>ex. BigBaboon0.jpg, BigBaboon1.jpg, BigBaboon2.jpg would have method call:
-	 * <br>addAnimationFromSequenceOfImages("BigBaboon", 3, ".jpg");</P>
+	 * <p>The method loads files within the specified number range and assumes numerical contiguity
+	 * <br>ex. BigBaboon1.jpg, BigBaboon2.jpg, BigBaboon3.jpg would have method call:
+	 * <br>addAnimationFromSequenceOfImages("BigBaboon", 1, 3, ".jpg");</P>
 	 * 
 	 * <p>Works with all image filetypes supported by PImage: .gif, .jgp, tga, .png</p>
 	 * 
 	 * @param imageSequenceNamePrefix 	file prefix of all of the images to be loaded into this Animation ex. "BigBaboon"
-	 * @param numberOfImagesToLoad		total number of images to load (note: your names should be indexed starting from 0)
+	 * @param startIndex				starting index to load from
+	 * @param endIndex					ending index to load from
 	 * @param fileType					file extension including the 'dot' - supports: ".gif" ".jgp" ".tga" ".png"
 	 * @param millisecondsPerFrame		amount of time each frame in the Animation is displayed, in milliseconds
 

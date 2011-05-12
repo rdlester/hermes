@@ -364,6 +364,7 @@ void setup() {
     playerGroup, GravityEnvironment.makeGravityInteractor(), false);
   
   rectMode(CENTER);
+  frameRate(48);
   
   // run it!
   //smooth();

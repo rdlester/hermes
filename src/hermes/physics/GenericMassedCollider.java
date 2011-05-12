@@ -39,7 +39,7 @@ public class GenericMassedCollider<A extends MassedBeing, B extends MassedBeing>
 	}
 
 	public boolean handle(A being1, B being2) {
-		ImpulseCollision collision = being1.getCollisionWith(being2);
+		ImpulseCollision collision = being1.getImpulseCollisionWith(being2);
 		collision.applyImpulses();
 		collision.applyDisplacement();
 		return !being1.needsMoreSamples() && !being2.needsMoreSamples();

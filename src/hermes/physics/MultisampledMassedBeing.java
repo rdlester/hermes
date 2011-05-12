@@ -1,6 +1,7 @@
 package src.hermes.physics;
 
 import processing.core.PVector;
+import src.hermes.Hermes;
 import src.hermes.shape.*;
 import static src.hermes.HermesMath.*;
 
@@ -34,7 +35,7 @@ public abstract class MultisampledMassedBeing extends MassedBeing {
 	public void step() {
 		// get a new time and save state
 		long t0 = _time;
-		double dt = ((double)updateTime()) / 1e9;
+		double dt = ((double)updateTime()) / 1e9 * Hermes.timeScale;
 		// update everything
 		applyImpulse();
 		applyDisplacement();

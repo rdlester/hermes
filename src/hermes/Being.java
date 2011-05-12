@@ -198,7 +198,7 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	
 	protected void step() {
 		double elapsed = (double)updateTime();
-		EulerIntegratePosition(elapsed/1e9);
+		EulerIntegratePosition(elapsed/1e9*Hermes.timeScale);
 	}
 	
 	protected void EulerIntegratePosition(double dt) {
