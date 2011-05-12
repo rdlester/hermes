@@ -33,7 +33,7 @@ void setup() {
   Hermes.setPApplet(this);
  
   _camera = new Camera();
-  try { _postOffice = new PostOffice(8080, 8000); } catch(PostOffice.OscServerException e) { System.err.println("could not initialize OSC port"); }
+  _postOffice = new PostOffice(8080, 8000); 
   _world = new World(_postOffice, _camera);
   _world.lockUpdateRate(50);
  

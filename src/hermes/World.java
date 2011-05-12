@@ -311,6 +311,7 @@ public class World extends Thread {
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
+			InteractionHandler handler = new InteractionHandler(interaction, detectedInteractionsQ);
 			
 			if(interaction.getA().equals(_cameraGroup)) {
 				_camera.collisionsReset();
@@ -324,27 +325,12 @@ public class World extends Thread {
 					Being being1 = (Being)iterA.next();
 					for(Iterator iterB = B.iterator(); iterB.hasNext(); ) {
 						Being being2 = (Being)iterB.next();
-						this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
+						handler.interactionHandler(being1, being2);
 					}
 				} 
 			} else { // if this is an optimized interaction
 				Optimizer optimizer = interaction.getOptimizer();
-				if(optimizer.isDetectAll()) { //get back all pairs of interacting beings
-					for(Iterator<Pair> iterPairs = optimizer.detectAll(interaction.getInteractor()); iterPairs.hasNext(); ) {
-						Pair p = iterPairs.next();
-						Being being1 = (Being)p.getFirst();
-						Being being2 = (Being)p.getSecond();
-						this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
-					}
-				} else { //run through all beings in group A, get back all relevant members in group B
-					for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
-						Being being1 = (Being)iterA.next();
-						for(Iterator iterB = optimizer.detect(being1, interaction.getInteractor()); iterB.hasNext(); ) {
-							Being being2 = (Being)iterB.next();
-							this.interactionHelper(being1, being2, interaction, detectedInteractionsQ);
-						}
-					}
-				}
+				optimizer.detect(interaction.getA(), interaction.getB(), handler);
 			}
 			
 			if(interaction.getA().equals(_cameraGroup)) {
@@ -416,32 +402,7 @@ public class World extends Thread {
 
 	}
 	
-	/**
-	 * checks if an interaction is detected between being1 and being2; if the interaciton
-	 * is immediate, synchronizes on the beings and handles the interaction, otherwise
-	 * adds a new DetectedInteraction object to the detectedInteractionsQ
-	 * @param being1				the first interacting Being
-	 * @param being2				the second interacting Being
-	 * @param interaction			the interaction to detect, handle
-	 * @param detectedInteractionsQ	the aggregation of all detected interactions to be handled
-	 * 								later
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private void interactionHelper(Being being1, Being being2, Interaction interaction, 
-			LinkedList<DetectedInteraction> detectedInteractionsQ) {
-		// see if an interaction was detected
-		if(being1 != being2 && interaction.getInteractor().detect(being1, being2)) {
-			if(interaction.isImmediate()) { // if immediate, handle it now
-					synchronized(being1) {
-						synchronized(being2) {
-							interaction.getInteractor().handle(being1, being2);
-						}
-					}
-			} else {//if not immediate, queue detection to handle later
-				detectedInteractionsQ.add(new DetectedInteraction<Being, Being>(being1, being2, interaction));
-			}
-		}
-	}
+	
 
 	private List<Being> updateHelper(List<Being> beings) {
 		LinkedList<Being> unresolvedUpdates = new LinkedList<Being>();
@@ -459,9 +420,6 @@ public class World extends Thread {
 		return unresolvedUpdates;
 	}
 	
-	//Called by God's draw method to
-	public void draw() {}
-	
 	// locks the update rate to happen no more than rate times per second
 	public void lockUpdateRate(int rate) {
 		assert rate > 0 : "World.lockUpdateRate: rate must be greater than zero";
@@ -474,33 +432,7 @@ public class World extends Thread {
 		_updateLength = 0;
 	}
 	
-	//to be used in the _detectedInteractions queue
-	private class DetectedInteraction<A extends Being, B extends Being> {
-		A _being1;
-		B _being2;
-		Interaction<A, B> _interaction;
-		
-		DetectedInteraction(A b1, B b2, Interaction<A,B> interaction) {
-			_being1 =b1;
-			_being2 =b2;
-			_interaction = interaction;
-		}
-		
-		public A get_being1() {
-			return _being1;
-		}
-		public B get_being2() {
-			return _being2;
-		}
-		public Interactor<A, B> get_interactor() {
-			return _interaction.getInteractor();
-		}
-		
-		public Interaction<A,B> getInteraction() {
-			return _interaction;
-		}
-	}
-	
+
 	
 }
 
