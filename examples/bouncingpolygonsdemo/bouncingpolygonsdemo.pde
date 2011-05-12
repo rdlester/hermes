@@ -80,7 +80,7 @@ void setup() {
   _boxGroup = new BoxGroup(_world);
   
   //Set up the interactions
-  _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false);
+  _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false, new SelfInteractionOptimizer());
   _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider(), false);
 
   smooth();
