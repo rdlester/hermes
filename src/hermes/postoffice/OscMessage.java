@@ -62,11 +62,11 @@ public class OscMessage implements Message {
 	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
 	 *</p>
 	 *<p>The "getAndRemove" methods are "First In, Last Out" 
-	 *<br>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
-	 *<br>First, you would call "getAndRemoveInt()" which would return the int value of A 
-	 *<br>Next, you would call "getAndRemoveString()" which would return string B
-	 *<br>Lastly, you would call getAndRemoveFloat()" which would return string C
-	 *<br>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
+	 *<br/>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
+	 *<br/>First, you would call "getAndRemoveInt()" which would return the int value of A 
+	 *<br/>Next, you would call "getAndRemoveString()" which would return string B
+	 *<br/>Lastly, you would call getAndRemoveFloat()" which would return string C
+	 *<br/>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
 	 *</p>
 	 * 
 	 * @return		 the int argument in the OSCMessage
@@ -138,6 +138,11 @@ public class OscMessage implements Message {
 	 */
 	public float getAndRemoveFloat() {
 		
+		//TAKE THIS OUT!
+		if (!hasRemainingArguments()) {
+			return 0.0f;
+		}
+		
 		//make sure the user has remaining arguments
 		assert hasRemainingArguments() : "OSCmessage error: You tried to call getAndRemoveFloat(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
 	
@@ -186,15 +191,16 @@ public class OscMessage implements Message {
 	
 	/**
 	 * Gets the OSCAddress that this message pertains to
-	 * @return address
+	 * @return      address
 	 */
 	public String getAddress() {
 		return _address;
 	}
 	
 	/**
-	 * Gets an object[] of the inner contents of an OSCMessage 
-	 * @return contents
+	 * Gets an object[] of the inner contents of an OSCMessage
+	 * Be very careful using this! Please use getAndRemove methods instead! 
+	 * @return      contents
 	 */
 	protected Object[] getContents() {
 		return _contents;
@@ -202,12 +208,16 @@ public class OscMessage implements Message {
 	
 	/**
 	 * Get an illposed version of this message
+	 * @return      An illposed equivalent of this message
 	 */
 	protected com.illposed.osc.OSCMessage toIllposed() {
 		com.illposed.osc.OSCMessage m = new com.illposed.osc.OSCMessage(_address,_contents);
 		return m;
 	}
 	
+	/**
+	 * Equality check for OscMessage, compares messages based on Address string
+	 */
 	public boolean equals(Object o) {
 		if(o instanceof OscMessage) {
 			OscMessage m = (OscMessage) o;
