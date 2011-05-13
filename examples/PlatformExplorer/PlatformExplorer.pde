@@ -68,6 +68,7 @@ class Player extends MassedBeing {
     _animIndex = _sprite.addAnimation(anim);
     println(_animIndex);
     _sprite.setActiveAnimation(_animIndex);
+    _sprite.pause();
   }
   
   void draw() {
