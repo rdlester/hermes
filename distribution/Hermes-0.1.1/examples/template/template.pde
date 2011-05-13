@@ -11,7 +11,6 @@ import src.hermesTest.shapeTests.*;
 import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
-import static src.hermes.HermesMath.*;
 
 ///////////////////////////////////////////////////
 // CONSTANTS
@@ -57,7 +56,7 @@ class MyBeing extends Being {
 /**
  * Template interactor between a MyBeing and another MyBeing - overwrite when making your own project
  */
-class MyInteractor implements Interactor<MyBeing,MyBeing> {
+class MyInteraction implements Interactor<MyBeing,MyBeing> {
 	MyInteraction() {
 		//Add your constructor info here
 	}
@@ -68,7 +67,6 @@ class MyInteractor implements Interactor<MyBeing,MyBeing> {
 	
 	boolean handle(MyBeing being1, MyBeing being2) {
 		//Add your handle method here
-                return true;
 	}
 }
 
@@ -81,12 +79,15 @@ void setup() {
 	Hermes.setPApplet(this);
 
 	_camera = new Camera();
+	try {
 	_postOffice = new PostOffice(8080, 8000);
+	} catch(Exception e) {
+	_postOffice = new PostOffice(); 
+	}
+
+	
 	_world = new World(_postOffice, _camera);
-
-         //IMPORTANT: put all other setup here        
-
-        _world.start(); // this should be the last line in setup() method
+	_world.lockUpdateRate(50);
 }
 
 void draw() {
