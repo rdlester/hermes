@@ -10,8 +10,6 @@ import static src.hermes.HermesMath.*;
 
 /**
  * an extension of being representing a body with mass and elasticity
- * 
- * @author Sam
  *
  */
 public abstract class MassedBeing extends Being {
@@ -101,8 +99,8 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * gets the current impulse on the being (note that this will be non-zero only after impulses have been applied, before updates)
-	 * this is a reference, if you manipulate the returned vector it will change the impulse
+	 * Gets the current impulse on the being (note that this will be non-zero only after impulses have been applied, before updates).
+	 * This is a reference, if you manipulate the returned vector it will change the impulse.
 	 * @return	the impulse
 	 */
 	public PVector getImpulse() {
@@ -110,8 +108,8 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * gets the current displacement on the being (note that this will be non-zero only after displacements have been applied, before updates)
-	 * this is a reference, if you manipulate the returned vector it will change the displacement
+	 * Gets the current displacement on the being (note that this will be non-zero only after displacements have been applied, before updates).
+	 * This is a reference, if you manipulate the returned vector it will change the displacement.
 	 * @return	the displacement
 	 */
 	public PVector getDisplacement() {
