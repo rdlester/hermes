@@ -11,6 +11,7 @@ import src.hermesTest.shapeTests.*;
 import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
+import static src.hermes.HermesMath.*;
 
 ///////////////////////////////////////////////////
 // CONSTANTS
@@ -67,6 +68,7 @@ class MyInteraction implements Interactor<MyBeing,MyBeing> {
 	
 	boolean handle(MyBeing being1, MyBeing being2) {
 		//Add your handle method here
+                return true;
 	}
 }
 
@@ -79,11 +81,7 @@ void setup() {
 	Hermes.setPApplet(this);
 
 	_camera = new Camera();
-	try {
 	_postOffice = new PostOffice(8080, 8000);
-	} catch(Exception e) {
-	_postOffice = new PostOffice(); 
-	}
 	
 	_world = new World(_postOffice, _camera);
 	_world.lockUpdateRate(50);
