@@ -1,24 +1,7 @@
-//Container sizes and locations
-//Y location and size is same for both
-int containerHeight = 440;
-int containerTopY = 120;
-int containerBottomY = containerTopY + containerHeight;
-//Canvas X and width
-Canvas canvas = null;
-int canvasWidth = 360;
-int canvasLeftX = 30;
-int canvasRightX = canvasLeftX + canvasWidth;
-//Toolbox X and width
-ToolBox toolBox;
-int toolBoxWidth = 120;
-int toolBoxLeftX = 430;
-int toolBoxRightX = toolBoxLeftX + toolBoxWidth;
-
 //Cell constants
 static final PVector INIT_DIR = new PVector(0,1);
 static final float INIT_STR = 1;
 float flowMax = 10;
-int cellSideLength = 40; //gives us 9 across, 12 down in canvas ; 3 across, 12 down in toolbox
 int canvasNumCellsX = canvasWidth / cellSideLength;
 int canvasNumCellsY = containerHeight / cellSideLength;
 int toolBoxNumCellsX = toolBoxWidth / cellSideLength;
@@ -60,9 +43,11 @@ class Canvas extends MassedBeing {
     }
   }
   
-  //Randomize grid using drunk walk and bfs
+  /**
+   * Randomize grid using 'drunk walk' and breadth-first traversal
+   */
   void randomize() {
-    //Queue for bfs
+    //Queue for bft
     //Add new cells to end, pull from first
     LinkedList<Cell> queue = new LinkedList<Cell>();
     //Map keeping track of cell before current cell
@@ -117,7 +102,9 @@ class Canvas extends MassedBeing {
       }
     }
   }
-  
+  /**
+   * Helper method for randomize
+   */
   void addCell(Cell curr, Cell next, LinkedList queue, HashMap<Cell,Cell> order) {
     if(!order.containsKey(next)) {
       queue.addLast(next);
@@ -237,7 +224,7 @@ class Canvas extends MassedBeing {
   }
   
   /**
-   * Helper method for mouse updates
+   * Helper method for hovers
    */
   void eraseHover() {
     for(int i=0; i<canvasNumCellsX; i++) {
@@ -284,6 +271,7 @@ class ToolBox extends Being {
      //add the zero
      zero = new Zero();
      
+     //Add tools
      //quadrangle
      Tool templateQuadrangle = makeTool(QUADRANGLE, 
                                   new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
@@ -420,6 +408,7 @@ class Cell extends Being {
     else {
       noFill();
     }
+    //Draw cell square
     stroke(255);
     strokeWeight(2);
     rect(0, 0, cellSideLength, cellSideLength);
