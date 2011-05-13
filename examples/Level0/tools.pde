@@ -29,7 +29,7 @@ int csize = 3; //size of the silia
 ///////////////////////////////////////////////////
  
 /**
- *
+ * Contains basic logic of a tool
  */
 abstract class Tool extends MassedBeing {
   int _toolCode;
@@ -83,9 +83,11 @@ abstract class Tool extends MassedBeing {
       noStroke();
     }    
   }
-  
 }
 
+/**
+ * Handles key messages changing the elasticity of a tool
+ */
 class SelectedToolAttributeSwitcher implements KeySubscriber {
   void handleKeyMessage(KeyMessage m) {
     if(selectedTool!=null) {
@@ -106,6 +108,9 @@ class SelectedToolAttributeSwitcher implements KeySubscriber {
   }  
 }
 
+/**
+ * Factory method for creating a new tool
+ */
 //position is always CENTER
 Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
    Tool toReturn = null;
@@ -127,7 +132,7 @@ Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
 }
 
 /**
- *
+ * Dimond-shaped tool
  */
 class Quadrangle extends Tool {
  
@@ -154,7 +159,7 @@ class Quadrangle extends Tool {
 }
 
 /**
- *
+ * Triangular tool
  */
 class Triangle extends Tool {
   boolean _expanded = false;
@@ -184,7 +189,7 @@ class Triangle extends Tool {
 }
 
 /**
- *
+ * Hexagonal tool
  */
 class Hexagon extends Tool {
  
@@ -211,7 +216,7 @@ class Hexagon extends Tool {
 }
 
 /**
- *
+ * Circular tool
  */
 class CircleTool extends Tool {
  
@@ -244,7 +249,7 @@ class CircleTool extends Tool {
 }
 
 /**
- *
+ * Triangular tool, shaped like half of a square when cut down the diagonal
  */
 class Wedge extends Tool {
   
@@ -277,6 +282,10 @@ class Wedge extends Tool {
   }
 }
 
+/**
+ * Factory method for generating wedge polygons
+ * Required for super of wedge
+ */
 Polygon generateWedge(PVector center) {
   ArrayList<PVector> points = new ArrayList<PVector>();
   points.add(new PVector(cellSideLength/2,cellSideLength/2));
@@ -285,6 +294,10 @@ Polygon generateWedge(PVector center) {
   return new Polygon(center,points);
 }
 
+/**
+ * Helper method for drawing cilia on sides of sticky objects
+ * Currently not used
+ */
 void drawCilia(Polygon p) {
   stroke(0);
   ArrayList<PVector> points = p.getPointsCopy();

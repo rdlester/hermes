@@ -44,6 +44,23 @@ final int RUN = 1;
 final int COMPLETED = 2;
 int mode = BUILD; // 0 is setup; 1 is run
 
+//Container sizes and locations
+//Y location and size is same for both
+int containerHeight = 440;
+int containerTopY = 120;
+int containerBottomY = containerTopY + containerHeight;
+//Canvas X and width
+Canvas canvas = null;
+int canvasWidth = 360;
+int canvasLeftX = 30;
+int canvasRightX = canvasLeftX + canvasWidth;
+//Toolbox X and width
+ToolBox toolBox;
+int toolBoxWidth = 120;
+int toolBoxLeftX = 430;
+int toolBoxRightX = toolBoxLeftX + toolBoxWidth;
+
+int cellSideLength = 40; //gives us 9 across, 12 down in canvas ; 3 across, 12 down in toolbox
 
 //Frame size
 int frameWidth = 700;
@@ -62,7 +79,7 @@ Group<Bubble> bubbleGroup = null;
 ///////////////////////////////////////////////////
 
 /**
- *
+ * Handles dispatching of mouse clicks to revelant objects
  */
 class MouseHandler implements MouseSubscriber {
 
@@ -114,6 +131,7 @@ class MouseHandler implements MouseSubscriber {
     
   } 
   
+  //Helper methods
   void checkCanvasHover() {
     if(_c.getHover()) { //remove hover from canvas
       _c.eraseHover();
@@ -144,7 +162,7 @@ class MouseHandler implements MouseSubscriber {
 ///////////////////////////////////////////////////
 
 /**
- *
+ * The 0 at the top-left corner of the screen
  */
 class Zero {
   
@@ -178,7 +196,7 @@ class Zero {
 ///////////////////////////////////////////////////
 
 /**
- *
+ * Changing mode of game between BUILD, RUN, and COMPLETED
  */
 void setMode(int newMode) {
   if(newMode == BUILD) {
@@ -216,7 +234,7 @@ void setMode(int newMode) {
 }
 
 /**
- *
+ * Factory helper method for filling canvas with bubbles
  */
 void makeBubbles() {
   Cell[][] grid = canvas.getGrid();
@@ -239,11 +257,7 @@ void setup() {
   Hermes.setPApplet(this);
  
   cam = new Camera();
-  try {
-   po = new PostOffice(8080, 8000);
-  } catch(Exception e) {
-   po = new PostOffice();
-  }
+  po = new PostOffice(8080, 8000);
   world = new World(po, cam);
   world.lockUpdateRate(50);
   

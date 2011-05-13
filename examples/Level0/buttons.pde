@@ -21,11 +21,14 @@ class RunButton extends Being {
   float innerSymbolLength = runButtonDiameter/3;
   boolean _hover = false;
   boolean _keyPressed = false;
-   
+  
   RunButton() {
     super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
   }
   
+  /**
+   * Switches run mode on key press or mouse press
+   */
   void handleKeyMessage(KeyMessage m) {
     if(m.isPressed() && !_keyPressed) {
       if(mode == BUILD) {
@@ -58,13 +61,14 @@ class RunButton extends Being {
   void draw() {
    strokeWeight(3);
    stroke(62, 67, 71);
-   if(_hover) {
+   if(_hover) { //Add light highlighting when mouse is hovering over button
      fill(buttonHover);
    } else {
      fill(bgColor);
    }
    ellipse(0, 0, runButtonDiameter, runButtonDiameter); 
    fill(62, 67, 71);
+   //Draw inner symbol
    if(mode == BUILD) {
      triangle(-runButtonRadius/3.5+3, -runButtonRadius/3.5, runButtonRadius/4+3, 0, -runButtonRadius/3.5+3, runButtonRadius/3.5);
    } else {
@@ -88,6 +92,9 @@ class RandomButton extends Being {
     _hover = false;
   }
   
+  /**
+   * Tells canvas to randomize vector field on key press or mouse press
+   */
   void handleKeyMessage(KeyMessage m) {
     if(m.isPressed() && !_keyPressed) {
       _c.randomize();
@@ -104,12 +111,9 @@ class RandomButton extends Being {
     }
   }
   
-  boolean getHover() {
-    return _hover;
-  }
-  void setHover(boolean hover) {
-    _hover = hover;
-  }
+  
+  boolean getHover() {return _hover;}
+  void setHover(boolean hover) {_hover = hover;}
   
   void draw() {
     if(_hover) {
