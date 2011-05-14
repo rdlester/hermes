@@ -1,6 +1,7 @@
 package src.hermes.shape;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 
 import processing.core.PApplet;
@@ -45,6 +46,41 @@ public class Polygon extends Shape {
 		assert points.size() > 2 : "In Polygon constructor, points must contain at least three point";
 		
 		_points = points;
+		
+		//Create the list of lines in the polygon
+		_axes = new ArrayList<PVector>();
+		Iterator<PVector> pit = _points.iterator();
+		PVector first = pit.next();
+		PVector pre2 = first;
+		PVector second = pit.next();
+		PVector pre = second;
+		while(pit.hasNext()) {
+			PVector p = pit.next();
+			addAxis(p, pre, pre2);
+			pre2 = pre;
+			pre = p;
+		}
+
+		//Make the final lines between the first and the last point and first and second points
+		addAxis(first, pre, second);
+		addAxis(second,first,pre);
+	}
+	
+	/**
+	 * Constructor for Polygon
+	 * Takes a variable number of PVectors (must give at least 3)
+	 * Vertex points must be given in order such that
+	 * each point is connected to points given before and after it
+	 * @param position - Reference to Shape's position
+	 * @param points - the PVectors defining the verticies of the polygon
+	 */
+	public Polygon(PVector position, PVector... points) {
+		super(position);
+		
+		assert points != null : "In Polygon constructor, points must be valid PVectors";
+		assert points.length > 2 : "In Polygon constructor, points must contain at least three point";
+		
+		_points = (ArrayList<PVector>) Arrays.asList(points);
 		
 		//Create the list of lines in the polygon
 		_axes = new ArrayList<PVector>();
