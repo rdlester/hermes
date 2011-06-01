@@ -10,7 +10,7 @@ import src.hermes.shape.Rectangle;
 /**
  * used to determine what should be drawn
  */
-public class Camera extends Environment {
+public class Camera extends Being {
 
 	//width & height of user's world coordinates
 	private float _worldCoordinateWidth;

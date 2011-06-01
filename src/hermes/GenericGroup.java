@@ -15,18 +15,18 @@ import src.hermes.postoffice.*;
  * @param <A>	the type of the beings in the group
  * @param <B>	the type of underlying collection used
  */
-public class GenericGroup<A extends Being, B extends Collection<A>> 
+public class GenericGroup<A extends HObject, B extends Collection<A>> 
 							implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
-	private B _beings;		// the underlying collection
+	private B _objects;		// the underlying collection
 	private World _world;	// the world containing the groups
 	
 	/**
 	 * instantiates a group storing beings in a given collection
 	 * 	@param beings	the collection beings will be stored in
 	 */
-	public GenericGroup(B beings, World world) {
-		_beings = beings;
+	public GenericGroup(B objects, World world) {
+		_objects = objects;
 		_world = world;
 	}
 	
@@ -35,8 +35,8 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 * WARNING -- DO NOT ADD TO OR REMOVE FROM THIS COLLECTION DIRECTLY DURING THE UPDATE LOOP
 	 * @return	the beings
 	 */
-	public B getBeings() {
-		return _beings;
+	public B getObjects() {
+		return _objects;
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 * @return	an iterator
 	 */
 	public Iterator<A> iterator() {
-		return getBeings().iterator();
+		return getObjects().iterator();
 	}
 	
 	/**
@@ -59,7 +59,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 * @return			the added being
 	 */
 	public A add(A being) {
-		_world.addBeing(being, this);
+		_world.addToGroup(being, this);
 		return being;
 	}
 	
@@ -69,7 +69,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 * @return			the removed being
 	 */
 	public A remove(A being) {
-		_world.removeBeing(being, this);
+		_world.removeFromGroup(being, this);
 		return being;
 	}
 	
@@ -80,7 +80,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 */
 	public void addAll(GenericGroup<A,?> group) {
 		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
-			_world.addBeing(iter.next(), this);
+			_world.addToGroup(iter.next(), this);
 		}
 	}
 	
@@ -90,7 +90,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 */
 	public void removeAll(GenericGroup<A,?> group) {
 		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
-			_world.removeBeing(iter.next(), this);
+			_world.removeFromGroup(iter.next(), this);
 		}
 	}
 	
@@ -100,7 +100,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 */
 	public void clear() {
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ){
-			_world.removeBeing(iter.next(), this);
+			_world.removeFromGroup(iter.next(), this);
 		}
 	}
 	
@@ -112,7 +112,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 */
 	public void destroy() {
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ) {
-			_world.deleteBeing(iter.next());
+			_world.deleteFromGroups(iter.next());
 		}
 	}
 	
@@ -120,7 +120,7 @@ public class GenericGroup<A extends Being, B extends Collection<A>>
 	 * @return	the number of beings contained
 	 */
 	public int size() {
-		return _beings.size();
+		return _objects.size();
 	}
 	
 	public void setWorld(World world) {

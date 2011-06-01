@@ -11,7 +11,7 @@ import java.util.LinkedList;
  *
  */
 @SuppressWarnings({ "rawtypes" })
-public class InteractionHandler<A extends Being, B extends Being> {
+public class InteractionHandler<A extends HObject, B extends HObject> {
 
 	Interaction<A,B> _interaction;
 	LinkedList<DetectedInteraction> _detectedInteractionsQueue;

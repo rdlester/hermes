@@ -13,7 +13,6 @@ import src.hermes.postoffice.PostOffice;
 /**
  * Defines a 'game state'
  * Examples include: Levels, menu screens
- * Subclassed by user to create individual worlds
  * User creates the necessary Beings, Interactors, and Optimizers in setup
  * The other functions are implemented by us; we handle the running and drawing of the world
  */
@@ -24,9 +23,9 @@ public class World extends Thread {
 	private PostOffice _postOffice; //post office
 
 	// these hold add and delete operations until the end of the update
-	private LinkedList<Pair<Being,GenericGroup<?,?>>> _addQueue;
-	private LinkedList<Pair<Being,GenericGroup<?,?>>> _removeQueue;
-	private LinkedList<Being> _removeFromAllGroupsQueue;
+	private LinkedList<Pair<HObject,GenericGroup<?,?>>> _addQueue;
+	private LinkedList<Pair<HObject,GenericGroup<?,?>>> _removeQueue;
+	private LinkedList<HObject> _removeFromAllGroupsQueue;
 	
 	private Group<Being> _masterGroup; //this is the group used by the camera
 	private Group<Being> _updateGroup;
@@ -58,9 +57,9 @@ public class World extends Thread {
 		_camera = view;
 		
 		_interactions = new LinkedList<Interaction>();
-		_addQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
-		_removeQueue = new LinkedList<Pair<Being,GenericGroup<?,?>>>();
-		_removeFromAllGroupsQueue = new LinkedList<Being>();
+		_addQueue = new LinkedList<Pair<HObject,GenericGroup<?,?>>>();
+		_removeQueue = new LinkedList<Pair<HObject,GenericGroup<?,?>>>();
+		_removeFromAllGroupsQueue = new LinkedList<HObject>();
 		_groupsToUpdate = new LinkedList<GenericGroup<?,?>>();
 		
 		_masterGroup = new Group<Being>(this);
@@ -100,43 +99,43 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * registers a being with the world, making it be drawn when it is on camera,
-	 *   its update() method will be called by the loop if update is true
+	 * Registers a being with the world, making it be drawn when it is on camera,
+	 *   its update() method will be called by the loop if update is true.
 	 * @param being		the being to register
 	 * @param update	whether or not to update the being during the update loop
 	 * @return 			the registered being
 	 */
 	public Being registerBeing(Being being, boolean update) {
-		addBeing(being, _masterGroup);
+		addToGroup(being, _masterGroup);
 		if(update)
-			addBeing(being, _updateGroup);
+			addToGroup(being, _updateGroup);
 		return being;
 	}
 	
 	/**
-	 * queues a being to be added to a group at the end of an update
-	 * @param being		the being to add
-	 * @param group		the group to add the being to
+	 * Queues an HObject to be added to a group at the end of the current update.
+	 * @param object	the object to add
+	 * @param group		the group to add the object to
 	 */
-	public void addBeing(Being being, GenericGroup<?,?> group) {
-		_addQueue.addLast(new Pair<Being,GenericGroup<?,?>>(being, group));
+	public void addToGroup(HObject object, GenericGroup<?,?> group) {
+		_addQueue.addLast(new Pair<HObject,GenericGroup<?,?>>(object, group));
 	}
 	
 	/**
-	 * queues a being to be removed from a group at the end of an update
-	 * @param being		the being to remove
-	 * @param group		the group to add the being to
+	 * Queues an HObject to be removed from a group at the end of the current update.
+	 * @param object		the object to remove
+	 * @param group			the group to add the object to
 	 */
-	public void removeBeing(Being being, GenericGroup<?,?> group) {
-		_removeQueue.addLast(new Pair<Being,GenericGroup<?,?>>(being, group));
+	public void removeFromGroup(HObject object, GenericGroup<?,?> group) {
+		_removeQueue.addLast(new Pair<HObject,GenericGroup<?,?>>(object, group));
 	}
 	
 	/**
-	 * queues a being to be removed from all of the groups it is in at the end of an update
-	 * @param being
+	 * Queues an HObject to be removed from all of the groups it is in at the end of the current update.
+	 * @param object	the object to delete
 	 */
-	public void deleteBeing(Being being) {
-		_removeFromAllGroupsQueue.addLast(being);
+	public void deleteFromGroups(HObject object) {
+		_removeFromAllGroupsQueue.addLast(object);
 	}
 	
 	/**
@@ -144,26 +143,26 @@ public class World extends Thread {
 	 */
 	private void resolveGroupQueues() {
 		// resolve the add queue first
-		for(Iterator<Pair<Being,GenericGroup<?,?>>> iter = _addQueue.iterator(); iter.hasNext(); ) {
-			Pair<Being,GenericGroup<?,?>> pair = iter.next();
+		for(Iterator<Pair<HObject,GenericGroup<?,?>>> iter = _addQueue.iterator(); iter.hasNext(); ) {
+			Pair<HObject,GenericGroup<?,?>> pair = iter.next();
 			pair.first.addToGroup(pair.second); // add being to the group
 			iter.remove(); // remove the add from the queue
 		}
 		// resolve the remove queue 
-		for(Iterator<Pair<Being,GenericGroup<?,?>>> iter = _removeQueue.iterator(); iter.hasNext(); ) {
-			Pair<Being,GenericGroup<?,?>> pair = iter.next();
+		for(Iterator<Pair<HObject,GenericGroup<?,?>>> iter = _removeQueue.iterator(); iter.hasNext(); ) {
+			Pair<HObject,GenericGroup<?,?>> pair = iter.next();
 			pair.first.removeFromGroup(pair.second); // add being to the group
 			iter.remove(); // remove from the queue
 		}
 		// resolve the removeFromAllGroups queue
-		for(Iterator<Being> iter = _removeFromAllGroupsQueue.iterator(); iter.hasNext(); ) {
+		for(Iterator<HObject> iter = _removeFromAllGroupsQueue.iterator(); iter.hasNext(); ) {
 			iter.next().delete(); // delete the being
 			iter.remove(); // remove from the queue
 		}
 	}
 	
 	/**
-	 * register an interaction to be handled on the update loop
+	 * Register an interaction to be handled on the update loop.
 	 * @param A					the first interacting group
 	 * @param B					the second interacting group
 	 * @param inter				the interaction handler
@@ -177,7 +176,7 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * register an interaction to be handled on the update loop
+	 * Register an interaction to be handled on the update loop.
 	 * @param A			the first interacting group
 	 * @param B			the second interacting group
 	 * @param inter		the interaction handler
@@ -192,15 +191,15 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * register an interaction between A and all Beings in B
-	 * @param A					a Being
+	 * register an interaction between A and all objects in B
+	 * @param A					an HObjects
 	 * @param B					a group
 	 * @param inter				an interaction between the type of A and the type of B's elements 
 	 * @param applyImmediate	whether to apply the interaction immediately
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(Being A, GenericGroup B, Interactor inter, 
+	public void registerInteraction(HObject A, GenericGroup B, Interactor inter, 
 			boolean applyImmediate) {
 		Group groupA = new Group(this);
 		groupA.add(A);
@@ -208,7 +207,7 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * register an interaction between B and all Beings in A
+	 * register an interaction between B and all objects in A
 	 * @param A					a group
 	 * @param B					a being
 	 * @param inter				the interaction handler 
@@ -216,7 +215,7 @@ public class World extends Thread {
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(GenericGroup A, Being B, Interactor inter, 
+	public void registerInteraction(GenericGroup A, HObject B, Interactor inter, 
 			boolean applyImmediate) {
 		Group groupB = new Group(this);
 		groupB.add(B);
@@ -224,15 +223,15 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * register an interaction between Beings A and B
-	 * @param A					the first Being
-	 * @param B					the second Being
+	 * Register an interaction between HOjbects A and B.
+	 * @param A					the first object
+	 * @param B					the second object
 	 * @param inter				the interaction handler
 	 * @param applyImmediate	whether to apply the interaction immediately
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(Being A, Being B, Interactor inter, 
+	public void registerInteraction(HObject A, HObject B, Interactor inter, 
 			boolean applyImmediate) {
 		Group groupA = new Group(this);
 		groupA.add(A);
@@ -251,7 +250,9 @@ public class World extends Thread {
 	}
 
 	/**
-	 * Runs the update loop. DO NOT CALL THIS -- call world.start() instead.
+	 * DO NOT CALL THIS METHOD. <br>
+	 * This starts the update loop, but this should be done by calling World.start() 
+	 * 	instead, for threading purposes.
 	 */
 	public void run() {
 		setup();
@@ -305,7 +306,7 @@ public class World extends Thread {
 		LinkedList<DetectedInteraction> unresolvedInteractions = new LinkedList<DetectedInteraction>();
 				
 		// 3. apply being updates
-		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getBeings());
+		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
 		
 		// 3. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
@@ -317,8 +318,8 @@ public class World extends Thread {
 				_camera.collisionsReset();
 			} 
 			
-			Collection A = interaction.getA().getBeings();
-			Collection B = interaction.getB().getBeings();			
+			Collection A = interaction.getA().getObjects();
+			Collection B = interaction.getB().getObjects();			
 			if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
 				// perform the O(n^2) calculation on all the groups
 				for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
@@ -341,8 +342,8 @@ public class World extends Thread {
 		for(Iterator<DetectedInteraction> iter = detectedInteractionsQ.iterator(); iter.hasNext();) {
 			DetectedInteraction di = iter.next();
 			Interactor interactor = di.get_interactor();
-			Being being1 = di.get_being1();
-			Being being2 = di.get_being2();
+			HObject being1 = di.get_being1();
+			HObject being2 = di.get_being2();
 			synchronized(being1) {
 				synchronized(being2) {
 					if(!interactor.handle(being1, being2))
@@ -363,8 +364,8 @@ public class World extends Thread {
 				DetectedInteraction inter = iter.next();
 				GenericGroup groupA = inter.getInteraction().getA();
 				GenericGroup groupB = inter.getInteraction().getB();
-				Being A = inter.get_being1();
-				Being B = inter.get_being2();
+				HObject A = inter.get_being1();
+				HObject B = inter.get_being2();
 				// check A against all members of groupB for new interactions
 				for(Iterator<Being> iterB = groupB.iterator(); iterB.hasNext(); ) {
 					Being beingB = iterB.next();
@@ -382,8 +383,8 @@ public class World extends Thread {
 			for(ListIterator<DetectedInteraction> iter = newInteractions.listIterator(); iter.hasNext(); ) {
 				// go through all unresolved interactions
 				DetectedInteraction inter = iter.next();
-				Being A = inter.get_being1();
-				Being B = inter.get_being2();
+				HObject A = inter.get_being1();
+				HObject B = inter.get_being2();
 				// try to resolve the interaction
 				if(inter.get_interactor().handle(A, B))
 					iter.remove(); // if it is resolved, get rid of it
