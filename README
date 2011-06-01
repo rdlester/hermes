@@ -1,0 +1,23 @@
+HERMES
+
+by skeilert, jkovnats, rdlester, cnovello
+
+DOCUMENTATION
+
+web/howto.txt and web/index.html contain basic documentation about the library. doc contains the full javadoc.
+
+SOURCE
+
+The full source code of the library is in src/. The library itself is in the package src/hermes, and testing code is in src/hermesTest.
+
+EXAMPLES
+
+The examples/ folder contains a number of examples of the library in action. These are also in the ZIP in distribution.
+
+BINARIES
+
+distribution/Hermes-0.1.1 contains all files necessary for use of the library, with installation instructions. This requires Processing 1.2 or higher, and the JRE 1.5 or higher.
+
+BUILDING
+
+Building the library requires the JDK 1.5 or higher. resources/build.xml is an Ant script for building, although it must be configured specifically for your system. Consult build_readme.html for more info.

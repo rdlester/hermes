@@ -5,7 +5,7 @@ package src.hermes;
  * 
  * internal -- you do not need to understand this class!
  */
-class Interaction<A extends Being, B extends Being> {
+class Interaction<A extends HObject, B extends HObject> {
 
 	private GenericGroup<A,?> a;		// the first group in the interaction
 	private GenericGroup<B,?> b;		// the second group in the interaction

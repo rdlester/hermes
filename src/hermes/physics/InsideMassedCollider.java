@@ -5,6 +5,9 @@ import src.hermes.*;
 import processing.core.PVector;
 import static src.hermes.HermesMath.*;
 
+/**
+ * Collider that keeps a being;'s bounding box contained inside of another.
+ */
 public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing> {
 	
 	public boolean detect(MassedBeing being1, MassedBeing being2) {

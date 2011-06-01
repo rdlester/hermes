@@ -10,7 +10,7 @@ import static src.hermes.HermesMath.*;
  * @author Sam
  *
  */
-public class GravityEnvironment extends Environment {
+public class GravityEnvironment extends Being {
 	
 	PVector _acceleration;
 	

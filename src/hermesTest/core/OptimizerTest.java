@@ -12,7 +12,7 @@ import src.hermes.shape.*;
 
 public class OptimizerTest {
 
-	static class OptTestBeing extends Environment {
+	static class OptTestBeing extends Being {
 		
 		static Random r = new Random();
 		
@@ -68,7 +68,7 @@ public class OptimizerTest {
 		world.registerInteraction(group, group, new OptTestInter(), false, 
 				new SelfInteractionOptimizer<OptTestBeing>());
 		world.update();
-		for(OptTestBeing element : group.getBeings()) {
+		for(OptTestBeing element : group.getObjects()) {
 			assertEquals(element.compares, 99);
 			assertEquals(element.handles, 99);
 		}

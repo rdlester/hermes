@@ -1,8 +1,5 @@
 package src.hermes;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import src.hermes.postoffice.*;
 import src.hermes.shape.Rectangle;
 import src.hermes.shape.Shape;
@@ -12,7 +9,7 @@ import processing.core.*;
  * Basic game object class
  * Anything that is getting drawn or interacting with other game objects is a Being
  */
-public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
+public abstract class Being extends HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
 	protected PVector _position; // the being's position
 	protected PVector _velocity; // the being's velocity
@@ -20,10 +17,7 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	protected Shape _shape; 		 // the being's shape
 	
 	private boolean _done = true;	// if the Being does not need more steps this update
-	protected long _time;			// the time of the last step
-	
-	private LinkedList<GenericGroup<?,?>> _groups;	// groups the being is a member of
-	
+	protected long _time;			// the time of the last step	
 	
 	/**
 	 * Creates a Being. Should be called by an class that extends
@@ -50,7 +44,6 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 		assert collisionShape != null : "Being constructor: shape must be a valid Shape";
 		assert velocity != null : "Being constructor: velocity must be a valid PVector";
 		
-		_groups = new LinkedList<GenericGroup<?,?>>();
 		_shape = collisionShape;
 		_position = collisionShape.getPosition();
 		_velocity = velocity;
@@ -72,48 +65,7 @@ public abstract class Being implements KeySubscriber, MouseSubscriber, MouseWhee
 	/**
 	 * draws the object to the screen
 	 */
-	public abstract void draw();
-	
-	/**
-	 * adds the being to the group
-	 * @param group		the group to add to
-	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void addToGroup(GenericGroup group) {
-		// need to lock on the group
-		synchronized(group) {
-			group.getBeings().add(this);
-			_groups.add(group);
-		}
-	}
-	
-	/**
-	 * removes the being from this group
-	 * @param group		the group to remove from
-	 */
-	@SuppressWarnings("rawtypes")
-	protected void removeFromGroup(GenericGroup group) {
-		// need to lock on the group
-		synchronized(group) {
-			group.getBeings().remove(this);
-			_groups.remove(group);
-		}
-	}
-	
-	/**
-	 * removes the being from all containing groups
-	 */
-	protected void delete() {
-		// go through all the groups, deleting this being
-		for(Iterator<GenericGroup<?,?>> iter = _groups.iterator(); iter.hasNext(); ) {
-			GenericGroup<?,?> group = iter.next();
-			// need to lock on the group
-			synchronized(group) {
-				group.getBeings().remove(this);
-				iter.remove();
-			}
-		}
-	}
+	public void draw() {}
 	
 	/**
 	 * returns a being's shape

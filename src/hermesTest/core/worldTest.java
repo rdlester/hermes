@@ -163,21 +163,21 @@ public class worldTest {
 		// group add
 		TestBeing1 tb1 = new TestBeing1();
 		g1.add(tb1);
-		assertFalse(g1.getBeings().contains(tb1));
+		assertFalse(g1.getObjects().contains(tb1));
 		w.update();
-		assertTrue(g1.getBeings().contains(tb1));
+		assertTrue(g1.getObjects().contains(tb1));
 		// group remove
 		g1.remove(tb1);
-		assertTrue(g1.getBeings().contains(tb1));
+		assertTrue(g1.getObjects().contains(tb1));
 		w.update();
-		assertFalse(g1.getBeings().contains(tb1));
+		assertFalse(g1.getObjects().contains(tb1));
 		// delete
 		Group<Being> g2 = new Group<Being>(w);
 		g1.add(tb1);
 		g2.add(tb1);
-		w.deleteBeing(tb1);
-		assertFalse(g1.getBeings().contains(tb1));
-		assertFalse(g2.getBeings().contains(tb1));
+		w.deleteFromGroups(tb1);
+		assertFalse(g1.getObjects().contains(tb1));
+		assertFalse(g2.getObjects().contains(tb1));
 		
 	}
 	

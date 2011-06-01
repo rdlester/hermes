@@ -7,7 +7,7 @@ package src.hermes;
  * Sample advanced optimizers include quadtree
  * detect checks body A against the structure formed from Group B
  */
-public interface Optimizer<A extends Being, B extends Being, 
+public interface Optimizer<A extends HObject, B extends HObject, 
 				GroupA extends GenericGroup<A,?>, GroupB extends GenericGroup<B,?>> {
 	
 	/**

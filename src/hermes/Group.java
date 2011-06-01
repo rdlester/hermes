@@ -24,7 +24,7 @@ public class Group<A extends Being> extends GenericGroup<A, ArrayList<A>> {
 	 * @return			the being at index
 	 */
 	public A get(int index) {
-		return getBeings().get(index);
+		return getObjects().get(index);
 	}
 	
 	/**
@@ -33,7 +33,7 @@ public class Group<A extends Being> extends GenericGroup<A, ArrayList<A>> {
 	 * @return			the index at which the being is stored
 	 */
 	public int getIndex(A being) {
-		return getBeings().indexOf(being);
+		return getObjects().indexOf(being);
 	}
 	
 }
