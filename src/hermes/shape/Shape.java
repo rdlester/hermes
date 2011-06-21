@@ -49,6 +49,20 @@ public abstract class Shape {
 	public abstract PVector projectionVector(Polygon other);
 	
 	/**
+	 * whether the Shape contains the given point coordinates (boundary is inclusive)
+	 * @param point     the point vector
+	 * @return          true if (x,y) lies within the Shape
+	 */
+	public abstract boolean contains(PVector point);
+	
+	/**
+	 * @param x         the x coordinate
+	 * @param y         the y coordinate
+	 * @return          true if (x,y) lies within the Shape
+	 */
+	public abstract boolean contains(float x, float y);
+	
+	/**
 	 * finds the smallest Rectangle that encloses the shape
 	 * @return	the bounding box
 	 */

@@ -60,6 +60,29 @@ public class Circle extends Shape {
 		return _radius;
 	}
 	
+	/**
+	 * whether the Circle contains the given point (boundary is inclusive)
+	 * @param p - location of point
+	 * @return true if (x,y) lies within the Circle
+	 */
+	public boolean contains(PVector point) {
+	    float distX = point.x - _position.x;
+	    float distY = point.y - _position.y;
+	    return distX*distX + distY*distY <= _radius*_radius;
+	}
+	
+	/**
+	 * whether the Circle contains the given point (boundary is inclusive)
+	 * @param x - x coordinate of point
+	 * @param y - y coordinate of point
+	 * @return true if (x,y) lies within the Circle
+	 */
+	public boolean contains(float x, float y) {
+	    float distX = x - _position.x;
+	    float distY = y - _position.y;
+	    return distX*distX + distY*distY <= _radius*_radius;
+	}
+	
 	@Override
 	public PVector projectionVector(Shape other) {
 		assert other != null : "Circle.collide: other must be a valid Shape";

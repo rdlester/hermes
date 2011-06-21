@@ -506,6 +506,14 @@ public class Polygon extends Shape {
 		return new PVector(min,max);
 	}
 	
+	public boolean contains(PVector point) {
+	    //TODO
+	}
+	
+	public boolean contains(float x, float y) {
+	    //TODO
+	}
+	
 	public Rectangle getBoundingBox() {
 		float xMax = Float.NEGATIVE_INFINITY;
 		float xMin = Float.POSITIVE_INFINITY;
