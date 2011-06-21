@@ -50,7 +50,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Maps that associate subscribers with messages they want to receive
 	private HashMultimap<Integer, KeySubscriber> _keySubs;
-	private HashMultimap<Integer, MouseSubscriber> _mouseSubs;
+	private HashMultimap<Integer, Pair<MouseSubscriber, Shape>> _mouseSubs;
 	private ArrayList<MouseWheelSubscriber> _mouseWheelSubs;
 	private HashMultimap<String, OscSubscriber> _oscSubs;
 	
@@ -78,7 +78,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param applet - Top Processing PApplet running the PostOffice
 	 * @param portIn - port to receive messages on
 	 * @param portOut - port to send messages on
-	 * @throws OscServerException 
 	 */
 	public PostOffice(int portIn, int portOut) {
 		assert portIn > 1000 : "PostOffice constructor: portIn must be a valid port number, greater than 1000";
@@ -185,11 +184,12 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_keySubs.put(keyCode, sub);
 	}
 	
-	//TODO: should MouseSubscription take a shape defining location to listen for? (bring back mouse entered / mouse exited events?)
 	/**
 	 * Registers a subscription to messages sent by a specific mouse button
 	 * Buttons are defined by constants in the Post Office class
 	 * Subscribe with "NO_BUTTON" to receive information about mouse movements when no button is pressed
+	 * When only two arguments are given, all mouse events corresponding to the subscribed button
+	 *      will be sent to the subscriber regardless of location
 	 * @param sub - the MouseSubscriber signing up
 	 * @param button - an integer corresponding to a mouse button whose messages the subscriber wants
 	 */
@@ -200,8 +200,26 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				button == MIDDLE_BUTTON ||
 				button == RIGHT_BUTTON :
 					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
-		_mouseSubs.put((Integer)button, sub);
+		_mouseSubs.put((Integer)button, new Pair(sub, null));
 	}
+	
+	/**
+	 * A version of registerMouseSubscription that subscribes only to the requested button events
+	 *      that occur in the given region
+	 * @param sub - the MouseSubscriber signing up
+	 * @param button - an integer corresponding to a mouse button whose messages the subscriber wants
+	 * @param region - the region on screen the subscriber wants to limit its subscription to
+	 */
+    public void registerMouseSubscription(MouseSubscriber sub, int button, Shape region) {
+        assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
+		assert button == NO_BUTTON ||
+				button == LEFT_BUTTON ||
+				button == MIDDLE_BUTTON ||
+				button == RIGHT_BUTTON :
+					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
+        assert region != null : "PostOffice.registerMouseSubscription: region must be a valid Shape";
+        _mouseSubs.put((Integer)button, new Pair(sub, region));
+    }
 	
 	/**
 	 * Registers a subscription to the mouse wheel (one subscription gets you everything)
@@ -343,9 +361,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			while(!_mouseQueue.isEmpty()) {
 				MouseMessage m = _mouseQueue.poll();
 				int button = m.getButton();
-				Set<MouseSubscriber> subs = _mouseSubs.get(button);
-				for(MouseSubscriber sub : subs) {
-					sub.handleMouseMessage(m);
+				Set<Pair<MouseSubscriber, Shape>> subs = _mouseSubs.get(button);
+				for(Pair p : subs) {
+				    Shape region = p.getSecond();
+					if(region == null || region.contains(m.getX, m.getY())) p.getFirst().handleMouseMessage(m);
 				}
 			}
 		}
