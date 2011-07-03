@@ -49,7 +49,6 @@ public class OptimizerTest {
 	
 	class OptTestCollider extends Collider<OptTestBeing, OptTestBeing> {
 
-		@Override
 		public boolean handle(OptTestBeing being1, OptTestBeing being2) {
 			return true;
 		}

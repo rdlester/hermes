@@ -10,7 +10,7 @@ import processing.core.*;
  * @author Sam
  *
  */
-public abstract class Shape {
+public abstract class HShape {
 	
 	protected PVector _position; // the shape's position
 		// all points in the shape are defined relative to the position
@@ -20,8 +20,8 @@ public abstract class Shape {
 	 * @param position  the shape's position
 	 * when position is attached to a being, the shape's position should reference the being's position
 	 */
-	protected Shape(PVector position) {
-		assert position != null : "In Shape constructor: position must be a valid PVector";
+	protected HShape(PVector position) {
+		assert position != null : "InHShape constructor: position must be a valid PVector";
 		
 		_position = position;
 	}
@@ -31,8 +31,8 @@ public abstract class Shape {
 	 * @param other		the shape to collide with
 	 * @return			whether the shapes have collided
 	 */
-	public boolean collide(Shape other) {
-		assert other != null : "Shape.collide: other must be a valid shape";
+	public boolean collide(HShape other) {
+		assert other != null : "HShape.collide: other must be a validHShape";
 		return projectionVector(other) != null;
 	}
 
@@ -43,7 +43,7 @@ public abstract class Shape {
 	 * @param other		the shape to collide with
 	 * @return			the projection vector from this body to other, or null if they aren't colliding
 	 */
-	public abstract PVector projectionVector(Shape other);
+	public abstract PVector projectionVector(HShape other);
 	public abstract PVector projectionVector(Rectangle other);
 	public abstract PVector projectionVector(Circle other);
 	public abstract PVector projectionVector(Polygon other);

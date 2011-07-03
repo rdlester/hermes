@@ -2,7 +2,7 @@ package src.hermes.physics;
 
 import processing.core.PVector;
 import src.hermes.*;
-import src.hermes.shape.Shape;
+import src.hermes.shape.HShape;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -20,7 +20,7 @@ public class GravityEnvironment extends Being {
 	 * @param shape			the shape, objects intersecting with this shape will be accelerated
 	 * @param velocity		the velocity of the environment
 	 */
-	public GravityEnvironment(PVector acceleration, Shape shape, PVector velocity) {
+	public GravityEnvironment(PVector acceleration, HShape shape, PVector velocity) {
 		super(shape, velocity);
 		
 		_acceleration = acceleration;
@@ -31,7 +31,7 @@ public class GravityEnvironment extends Being {
 	 * @param acceleration	the acceleration
 	 * @param shape			the shape, objects intersecting with this shape will be accelerated
 	 */
-	public GravityEnvironment(PVector acceleration, Shape shape) {
+	public GravityEnvironment(PVector acceleration, HShape shape) {
 		super(shape, zeroVector());
 		
 		_acceleration = acceleration;
@@ -41,7 +41,7 @@ public class GravityEnvironment extends Being {
 		return _acceleration;
 	}
 	
-	public static Group<GravityEnvironment> makeGravityGroup(PVector acceleration, Shape shape, World world) {
+	public static Group<GravityEnvironment> makeGravityGroup(PVector acceleration, HShape shape, World world) {
 		Group<GravityEnvironment> group = new Group<GravityEnvironment>(world);
 		group.add(new GravityEnvironment(acceleration, shape));
 		return group;

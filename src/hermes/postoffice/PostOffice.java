@@ -19,6 +19,8 @@ import javax.swing.SwingUtilities;
 
 import com.google.common.collect.HashMultimap;
 import src.hermes.Hermes;
+import src.hermes.Pair;
+import src.hermes.shape.HShape;
 
 /**
  * Listens for and sends OSC, mouse, and keyboard messages
@@ -50,7 +52,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Maps that associate subscribers with messages they want to receive
 	private HashMultimap<Integer, KeySubscriber> _keySubs;
-	private HashMultimap<Integer, Pair<MouseSubscriber, Shape>> _mouseSubs;
+	private HashMultimap<Integer, Pair<MouseSubscriber,HShape>> _mouseSubs;
 	private ArrayList<MouseWheelSubscriber> _mouseWheelSubs;
 	private HashMultimap<String, OscSubscriber> _oscSubs;
 	
@@ -210,7 +212,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param button - an integer corresponding to a mouse button whose messages the subscriber wants
 	 * @param region - the region on screen the subscriber wants to limit its subscription to
 	 */
-    public void registerMouseSubscription(MouseSubscriber sub, int button, Shape region) {
+    public void registerMouseSubscription(MouseSubscriber sub, int button,HShape region) {
         assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
 		assert button == NO_BUTTON ||
 				button == LEFT_BUTTON ||
@@ -361,10 +363,11 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			while(!_mouseQueue.isEmpty()) {
 				MouseMessage m = _mouseQueue.poll();
 				int button = m.getButton();
-				Set<Pair<MouseSubscriber, Shape>> subs = _mouseSubs.get(button);
+				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
 				for(Pair p : subs) {
-				    Shape region = p.getSecond();
-					if(region == null || region.contains(m.getX, m.getY())) p.getFirst().handleMouseMessage(m);
+				   HShape region = (HShape) p.getSecond();
+					if(region == null || region.contains(m.getX(), m.getY()))
+						((MouseSubscriber) p.getFirst()).handleMouseMessage(m);
 				}
 			}
 		}

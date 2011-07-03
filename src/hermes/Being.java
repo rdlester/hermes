@@ -1,8 +1,8 @@
 package src.hermes;
 
 import src.hermes.postoffice.*;
+import src.hermes.shape.HShape;
 import src.hermes.shape.Rectangle;
-import src.hermes.shape.Shape;
 import processing.core.*;
 
 /**
@@ -14,7 +14,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	protected PVector _position; // the being's position
 	protected PVector _velocity; // the being's velocity
 	
-	protected Shape _shape; 		 // the being's shape
+	protected HShape _shape; 		 // the being's shape
 	
 	private boolean _done = true;	// if the Being does not need more steps this update
 	protected long _time;			// the time of the last step	
@@ -25,7 +25,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	 * @param collisionShape	Shape used to determine Being's position and collision detection
 	 * @param velocity			The Being's initial velocity. Velocity gets updated automatically every timestep.
 	 */
-	public Being(Shape collisionShape, PVector velocity) {
+	public Being(HShape collisionShape, PVector velocity) {
 		initialize(collisionShape, velocity);
 	}
 
@@ -35,12 +35,12 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	 * <br><br>NOTE: If this Being's velocity is later set to something other than 0, it will then have its position updated automatically
 	 * @param collisionShape		Shape used to determine Being's position and collision detection
 	 */
-	public Being(Shape collisionShape) { 
+	public Being(HShape collisionShape) { 
 		//Defaults to 0 velocity, so update won't move this Being
 		initialize(collisionShape, new PVector(0,0));
 	}
 	
-	private void initialize(Shape collisionShape, PVector velocity) {
+	private void initialize(HShape collisionShape, PVector velocity) {
 		assert collisionShape != null : "Being constructor: shape must be a valid Shape";
 		assert velocity != null : "Being constructor: velocity must be a valid PVector";
 		
@@ -70,7 +70,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	/**
 	 * returns a being's shape
 	 */
-	public Shape getShape() {
+	public HShape getShape() {
 		return _shape;
 	}
 	

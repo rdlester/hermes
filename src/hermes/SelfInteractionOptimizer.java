@@ -16,7 +16,6 @@ package src.hermes;
  */
 public class SelfInteractionOptimizer<A extends Being> implements Optimizer<A, A, Group<A>, Group<A>> {
 
-	@Override
 	public void detect(Group<A> group1, Group<A> group2,
 			InteractionHandler<A, A> handler) {
 		

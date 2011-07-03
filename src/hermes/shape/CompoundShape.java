@@ -9,9 +9,9 @@ import processing.core.PVector;
  * @author Sam
  *
  *//*
-public class CompoundShape extends Shape {
+public class CompoundShape extendsHShape {
 
-	private List<Shape> _shapes;
+	private ListHShape> _shapes;
 	
 	*//**
 	 * creates a new compound shape
@@ -19,23 +19,23 @@ public class CompoundShape extends Shape {
 	 *//*
 	public CompoundShape(PVector position) {
 		super(position);
-		_shapes = new ArrayList<Shape>();
+		_shapes = new ArrayListHShape>();
 	}
 
 	*//**
 	 * adds a shape to the compound
 	 * @param shape		
 	 *//*
-	public void addShape(Shape shape) {
+	public void addShapeHShape shape) {
 		_shapes.add(shape);
 	}
 	
 	@Override
-	public boolean collide(Shape other) {
+	public boolean collideHShape other) {
 		assert other != null : "In CompoundShape.collide: other must be a valid shape";
 		
 		// collide individually with each of our shapes
-		for(Iterator<Shape> iter = _shapes.iterator(); iter.hasNext(); ) {
+		for(IteratorHShape> iter = _shapes.iterator(); iter.hasNext(); ) {
 			if(other.collide(iter.next()))
 				return true;
 		}

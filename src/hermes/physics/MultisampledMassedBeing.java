@@ -36,7 +36,7 @@ public abstract class MultisampledMassedBeing extends MassedBeing {
 	 * 							performance. Increasing the sample length allows lower maxSamples values, but
 	 * 							decreases accuracy.
 	 */
-	public MultisampledMassedBeing(Shape shape, PVector velocity, float mass,
+	public MultisampledMassedBeing(HShape shape, PVector velocity, float mass,
 			float elasticity, float sampleLength, int maxSamples) {
 		super(shape, velocity, mass, elasticity);
 		
@@ -56,7 +56,7 @@ public abstract class MultisampledMassedBeing extends MassedBeing {
 	 * 							is a reasonable value
 	 */
 
-	public MultisampledMassedBeing(Shape shape, PVector velocity, float mass,
+	public MultisampledMassedBeing(HShape shape, PVector velocity, float mass,
 			float elasticity, float sampleLength) {
 		super(shape, velocity, mass, elasticity);
 		

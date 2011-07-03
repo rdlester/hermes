@@ -96,12 +96,10 @@ public class worldTest {
 	
 	class TestInteractor1 implements Interactor<TestBeing2,TestBeing2> {
 
-		@Override
 		public boolean detect(TestBeing2 being1, TestBeing2 being2) {
 			return true;
 		}
 
-		@Override
 		public boolean handle(TestBeing2 being1, TestBeing2 being2) {
 			being1.interacted = true;
 			being2.interacted = true;

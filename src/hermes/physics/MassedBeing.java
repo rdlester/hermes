@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import processing.core.*;
 import src.hermes.*;
-import src.hermes.shape.Shape;
+import src.hermes.shape.HShape;
 import static src.hermes.HermesMath.*;
 
 /**
@@ -33,7 +33,7 @@ public abstract class MassedBeing extends Being {
 	 * @param mass
 	 * @param elasticity
 	 */
-	public MassedBeing(Shape shape, PVector velocity,
+	public MassedBeing(HShape shape, PVector velocity,
 			float mass, float elasticity) {
 		super(shape, velocity);
 		
