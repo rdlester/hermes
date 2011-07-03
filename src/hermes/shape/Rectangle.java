@@ -40,12 +40,12 @@ public class Rectangle extends HShape {
 	/**
 	 * creates a Rectangle defined by a position, representing its center, and a width a height
 	 * note: position will be stored as a reference, so changing it will move the rectangle
-	 * @param position	the center position of the rectangle
+	 * @param position	the top-left position of the rectangle
 	 * @param width		the width of the rectangle (must be positive)
 	 * @param height	the height of the rectangle (must be positive)
 	 */
 	public Rectangle(PVector position, float width, float height) {
-		this(position, new PVector(width,height,0.0f),PApplet.CENTER);
+		this(position, new PVector(width,height,0.0f),PApplet.CORNER);
 	}
 
 
@@ -58,7 +58,7 @@ public class Rectangle extends HShape {
 	 * @param height	the height of the rectangle (must be positive)
 	 */
 	public Rectangle(float x, float y, float width, float height) {
-		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CENTER);
+		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CORNER);
 	}
 	
 	
@@ -94,12 +94,12 @@ public class Rectangle extends HShape {
 		assert width > 0: "Rectangle constructor: width must be positive";
 		assert height > 0: "Rectangle constructor: height must be positive";
 
-		if(mode == PApplet.CENTER) {
-			_min = new PVector(-width / 2, -height / 2);
-			_max = new PVector(width / 2, height / 2);
-		} else if(mode == PApplet.CORNER) {
+		if(mode == PApplet.CORNER) {
 			_min = zeroVector();
 			_max = new PVector(width, height);
+		} else if(mode == PApplet.CENTER) {
+			_min = new PVector(-width / 2, -height / 2);
+			_max = new PVector(width / 2, height / 2);
 		}
 	}
 	
