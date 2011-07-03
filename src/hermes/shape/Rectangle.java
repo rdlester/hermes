@@ -10,7 +10,7 @@ import static src.hermes.HermesMath.*;
  * @author Sam
  *
  */
-public class Rectangle extends Shape {
+public class Rectangle extends HShape {
 
 	private PVector _min, _max;
 
@@ -162,7 +162,7 @@ public class Rectangle extends Shape {
 	}
 
 	@Override
-	public PVector projectionVector(Shape other) {
+	public PVector projectionVector(HShape other) {
 		assert other != null : "Rectangle.projectionVector: other must be a valid rectangle";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);

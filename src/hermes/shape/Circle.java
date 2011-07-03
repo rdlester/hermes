@@ -9,7 +9,7 @@ import static src.hermes.HermesMath.*;
  * @author Ryan
  *
  */
-public class Circle extends Shape {
+public class Circle extends HShape {
 
 	private PVector _center;
 	private float _radius;
@@ -84,8 +84,8 @@ public class Circle extends Shape {
 	}
 	
 	@Override
-	public PVector projectionVector(Shape other) {
-		assert other != null : "Circle.collide: other must be a valid Shape";
+	public PVector projectionVector(HShape other) {
+		assert other != null : "Circle.collide: other must be a validHShape";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}

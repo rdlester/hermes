@@ -18,9 +18,9 @@ public class RectangleTest {
 	@Test
 	public void test_RectangleCollide() {
 		// check one rectangle containing another
-		Shape r1 = new Rectangle(new PVector(0,0), 5, 5);
+	HShape r1 = new Rectangle(new PVector(0,0), 5, 5);
 		assertFalse(r1.collide(r1)); // self-collision
-		Shape r2 = new Rectangle(new PVector(0,0), 3, 3);
+	HShape r2 = new Rectangle(new PVector(0,0), 3, 3);
 		assertTrue(r1.collide(r2));
 		assertTrue(r2.collide(r1));
 		// corner overlap

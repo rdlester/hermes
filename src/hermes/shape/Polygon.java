@@ -24,7 +24,7 @@ import static src.hermes.HermesMath.*;
  * @author Ryan
  *
  */
-public class Polygon extends Shape {
+public class Polygon extends HShape {
 	
 	//Stores unit vectors representing direction of axes normal to edges of polygon
 	//Used for collision detection (SAT)
@@ -216,7 +216,7 @@ public class Polygon extends Shape {
 //	}
 	
 	@Override
-	public boolean collide(Shape other) {
+	public boolean collide(HShape other) {
 		assert other != null : "Polygon.collide: other must be a valid Shape";
 		return other.projectionVector(this) != null;
 	}
@@ -232,7 +232,7 @@ public class Polygon extends Shape {
 	}
 	
 	@Override
-	public PVector projectionVector(Shape other) {
+	public PVector projectionVector(HShape other) {
 		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
@@ -508,10 +508,12 @@ public class Polygon extends Shape {
 	
 	public boolean contains(PVector point) {
 	    //TODO
+		return true;
 	}
 	
 	public boolean contains(float x, float y) {
 	    //TODO
+		return true;
 	}
 	
 	public Rectangle getBoundingBox() {
