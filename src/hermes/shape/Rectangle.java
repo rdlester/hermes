@@ -20,88 +20,150 @@ public class Rectangle extends HShape {
 	public static int mode = 0;
 
 	/**
+	 * Creates a new Rectangle
+	 * Constructor Syntax depends on current rectMode
+	 * Default - a and b define the upper left corner, and c and d are width and height
+	 * see Processing reference on rectMode() for details on other modes
+	 * @param position - position of rectangle
+	 * @param a
+	 * @param b
+	 * @param c
+	 * @param d
+	 */
+	public Rectangle(PVector position, float a, float b, float c, float d) {
+		super(position);
+		int Pmode = Hermes.getPApplet().g.rectMode;
+		switch(Pmode) {
+		case PApplet.CORNER:
+			_min = new PVector(a,b,0);
+			_max = new PVector(a+c,b+d,0);
+			break;
+		case PApplet.CENTER:
+			_min = new PVector(a-c/2,b-d/2,0);
+			_max = new PVector(a+c/2,b+d/2,0);
+			break;
+		case PApplet.CORNERS:
+			_min = new PVector(a,b,0);
+			_max = new PVector(c,d,0);
+			break;
+		case PApplet.RADIUS:
+			_min = new PVector(a-c,b-d,0);
+			_max = new PVector(a+c,b+d,0);
+			break;
+		}
+	}
+	
+	/**
+	 * Creates a new Rectangle
+	 * Constructor Syntax depends on current rectMode
+	 * Default - ab.x and ab.y define the upper left corner, and c and d are width and height
+	 * see Processing reference on rectMode() for details on other modes
+	 * @param position - position of rectangle
+	 * @param ab
+	 * @param c
+	 * @param d
+	 */
+	public Rectangle(PVector position, PVector ab, float c, float d) {
+		this(position, ab.x, ab.y, c, d);
+	}
+	
+	/**
+	 * Creates a new Rectangle
+	 * Constructor Syntax depends on current rectMode
+	 * Default - ab.x and ab.y define the upper left corner, and cd.x and cd.y are width and height
+	 * see Processing reference on rectMode() for details on other modes
+	 * @param position - position of rectangle
+	 * @param ab
+	 * @param cd
+	 */
+	public Rectangle(PVector position, PVector ab, PVector cd) {
+		this(position, ab.x, ab.y, cd.x, cd.y);
+	}
+	
+	
+	/**
 	 * creates a new Rectangle defined by a position and two point coordinates
 	 * note that position, min and max will be stored as references, so changing them later will change the rectangle
 	 * @param position	the position of the rectangle
 	 * @param min		the position of the corner with the lowest x,y values
 	 * @param max		the position of the corner with the highest x,y values
 	 */
-	public Rectangle(PVector position, PVector min, PVector max) {
-		super(position);
-
-		assert min != null : "In Rectangle constructor: min must be a valid PVector";
-		assert max != null : "In Rectangle constructor: max must be a valid PVector";
-		assert min.x < max.x && min.y < max.y : "In Rectangle contructor: min must have a lower x,y position than max";
-
-		_min = min; 
-		_max = max;
-	}
-
-	/**
-	 * creates a Rectangle defined by a position, representing its center, and a width a height
-	 * note: position will be stored as a reference, so changing it will move the rectangle
-	 * @param position	the top-left position of the rectangle
-	 * @param width		the width of the rectangle (must be positive)
-	 * @param height	the height of the rectangle (must be positive)
-	 */
-	public Rectangle(PVector position, float width, float height) {
-		this(position, new PVector(width,height,0.0f),PApplet.CORNER);
-	}
-
-
-	/**
-	 * creates a Rectangle defined by a position, representing its center, and a width a height
-	 * note: position will be stored as a reference, so changing it will move the rectangle
-	 * @param x				the x coordinate of the upper left corner of the rectangle
-	 * @param y				the y coordinate of the upper left corner of the rectangle
-	 * @param width		the width of the rectangle (must be positive)
-	 * @param height	the height of the rectangle (must be positive)
-	 */
-	public Rectangle(float x, float y, float width, float height) {
-		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CORNER);
-	}
-	
-	
-
-	/**
-	 * creates a Rectangle defined by a position, representing its center, and a width a height
-	 * note: position will be stored as a reference, so changing it will move the rectangle
-	 * @param x				the x coordinate of the upper left corner of the rectangle
-	 * @param y				the y coordinate of the upper left corner of the rectangle
-	 * @param width		the width of the rectangle (must be positive)
-	 * @param height	the height of the rectangle (must be positive)
-	 * @param mode 		the rect mode to use 'CORNER' or 'CENTER' 
-	 */
-	public Rectangle(float x, float y, float width, float height, int mode) {
-		this(new PVector(x, y), new PVector(width,height,0.0f),mode);
-	}
-	
-
-
-	/**
-	 * 
-	 * @param position
-	 * @param width
-	 * @param height
-	 * @param origin
-	 */
-	public Rectangle(PVector position, PVector dimensions, int mode) {
-		super(position);
-
-		float width = dimensions.x;
-		float height = dimensions.y;
-
-		assert width > 0: "Rectangle constructor: width must be positive";
-		assert height > 0: "Rectangle constructor: height must be positive";
-
-		if(mode == PApplet.CORNER) {
-			_min = zeroVector();
-			_max = new PVector(width, height);
-		} else if(mode == PApplet.CENTER) {
-			_min = new PVector(-width / 2, -height / 2);
-			_max = new PVector(width / 2, height / 2);
-		}
-	}
+//	public Rectangle(PVector position, PVector min, PVector max) {
+//		super(position);
+//
+//		assert min != null : "In Rectangle constructor: min must be a valid PVector";
+//		assert max != null : "In Rectangle constructor: max must be a valid PVector";
+//		assert min.x < max.x && min.y < max.y : "In Rectangle contructor: min must have a lower x,y position than max";
+//
+//		_min = min; 
+//		_max = max;
+//	}
+//
+//	/**
+//	 * creates a Rectangle defined by a position, representing its center, and a width a height
+//	 * note: position will be stored as a reference, so changing it will move the rectangle
+//	 * @param position	the top-left position of the rectangle
+//	 * @param width		the width of the rectangle (must be positive)
+//	 * @param height	the height of the rectangle (must be positive)
+//	 */
+//	public Rectangle(PVector position, float width, float height) {
+//		this(position, new PVector(width,height,0.0f),PApplet.CORNER);
+//	}
+//
+//
+//	/**
+//	 * creates a Rectangle defined by a position, representing its center, and a width a height
+//	 * note: position will be stored as a reference, so changing it will move the rectangle
+//	 * @param x				the x coordinate of the upper left corner of the rectangle
+//	 * @param y				the y coordinate of the upper left corner of the rectangle
+//	 * @param width		the width of the rectangle (must be positive)
+//	 * @param height	the height of the rectangle (must be positive)
+//	 */
+//	public Rectangle(float x, float y, float width, float height) {
+//		this(new PVector(x, y), new PVector(width,height,0.0f),PApplet.CORNER);
+//	}
+//	
+//	
+//
+//	/**
+//	 * creates a Rectangle defined by a position, representing its center, and a width a height
+//	 * note: position will be stored as a reference, so changing it will move the rectangle
+//	 * @param x				the x coordinate of the upper left corner of the rectangle
+//	 * @param y				the y coordinate of the upper left corner of the rectangle
+//	 * @param width		the width of the rectangle (must be positive)
+//	 * @param height	the height of the rectangle (must be positive)
+//	 * @param mode 		the rect mode to use 'CORNER' or 'CENTER' 
+//	 */
+//	public Rectangle(float x, float y, float width, float height, int mode) {
+//		this(new PVector(x, y), new PVector(width,height,0.0f),mode);
+//	}
+//	
+//
+//
+//	/**
+//	 * 
+//	 * @param position
+//	 * @param width
+//	 * @param height
+//	 * @param origin
+//	 */
+//	public Rectangle(PVector position, PVector dimensions, int mode) {
+//		super(position);
+//
+//		float width = dimensions.x;
+//		float height = dimensions.y;
+//
+//		assert width > 0: "Rectangle constructor: width must be positive";
+//		assert height > 0: "Rectangle constructor: height must be positive";
+//
+//		if(mode == PApplet.CORNER) {
+//			_min = zeroVector();
+//			_max = new PVector(width, height);
+//		} else if(mode == PApplet.CENTER) {
+//			_min = new PVector(-width / 2, -height / 2);
+//			_max = new PVector(width / 2, height / 2);
+//		}
+//	}
 	
 
 	/**
