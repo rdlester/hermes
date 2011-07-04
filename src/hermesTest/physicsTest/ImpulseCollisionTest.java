@@ -3,7 +3,7 @@ package src.hermesTest.physicsTest;
 import static src.hermes.HermesMath.*;
 import processing.core.PVector;
 import src.hermes.physics.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 

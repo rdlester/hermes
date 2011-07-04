@@ -20,7 +20,7 @@ import javax.swing.SwingUtilities;
 import com.google.common.collect.HashMultimap;
 import src.hermes.Hermes;
 import src.hermes.Pair;
-import src.hermes.shape.HShape;
+import src.hermes.hshape.HShape;
 
 /**
  * Listens for and sends OSC, mouse, and keyboard messages

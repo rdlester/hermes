@@ -1,8 +1,8 @@
 package src.hermes;
 
 import src.hermes.postoffice.*;
-import src.hermes.shape.HShape;
-import src.hermes.shape.Rectangle;
+import src.hermes.hshape.HShape;
+import src.hermes.hshape.Rectangle;
 import processing.core.*;
 
 /**

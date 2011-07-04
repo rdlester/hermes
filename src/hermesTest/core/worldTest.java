@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 import java.util.LinkedList;
 import src.hermes.*;
 import static src.hermes.HermesMath.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import src.hermes.postoffice.PostOffice;
 import processing.core.PApplet;
 

@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 
 import src.hermes.*;
 import src.hermes.postoffice.PostOffice;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 
 public class OptimizerTest {
 
