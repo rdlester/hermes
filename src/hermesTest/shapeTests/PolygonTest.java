@@ -8,7 +8,7 @@ import org.junit.*;
 
 import processing.core.PVector;
 
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 
 public class PolygonTest {
 

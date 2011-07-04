@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import processing.core.PVector;
 import src.hermes.physics.GravityInteractor;
 import src.hermes.physics.MassedBeing;
-import src.hermes.shape.Rectangle;
+import src.hermes.hshape.Rectangle;
 import static src.hermes.HermesMath.*;
 
 public class GravityInteractorTest {

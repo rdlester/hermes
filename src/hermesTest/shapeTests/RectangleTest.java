@@ -2,7 +2,7 @@ package src.hermesTest.shapeTests;
 
 import static org.junit.Assert.*;
 import org.junit.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import processing.core.*;
 
 /**

@@ -5,7 +5,7 @@ import java.util.LinkedList;
 
 import processing.core.*;
 import src.hermes.*;
-import src.hermes.shape.HShape;
+import src.hermes.hshape.HShape;
 import static src.hermes.HermesMath.*;
 
 /**

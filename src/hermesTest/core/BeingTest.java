@@ -4,7 +4,7 @@ import org.junit.*;
 
 import static org.junit.Assert.*;
 import src.hermes.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import static src.hermes.HermesMath.*;
 
 /**

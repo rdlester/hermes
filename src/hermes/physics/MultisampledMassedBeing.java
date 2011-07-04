@@ -2,7 +2,7 @@ package src.hermes.physics;
 
 import processing.core.PVector;
 import src.hermes.Hermes;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import static src.hermes.HermesMath.*;
 
 /**

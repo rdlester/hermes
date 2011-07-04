@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Iterator;
 import processing.core.*;
-import src.hermes.shape.Rectangle;
+import src.hermes.hshape.Rectangle;
 
 /**
  * used to determine what should be drawn
