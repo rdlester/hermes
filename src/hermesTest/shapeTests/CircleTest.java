@@ -2,11 +2,21 @@ package src.hermesTest.shapeTests;
 
 import static org.junit.Assert.*;
 import processing.core.*;
+import src.hermes.Hermes;
 import src.hermes.hshape.*;
 
 import org.junit.*;
 
 public class CircleTest {
+	
+	@Before
+	public void setup() {
+		PApplet applet = new PApplet();
+		applet.g = new PGraphics();
+		Hermes.setPApplet(applet);
+		applet.rectMode(PApplet.CENTER);
+	}
+	
 	/**
 	 * Tests circle with circle collision
 	 * c1 and c2 will collide
