@@ -2,6 +2,8 @@ package src.hermesTest.shapeTests;
 
 import static org.junit.Assert.*;
 import org.junit.*;
+
+import src.hermes.Hermes;
 import src.hermes.hshape.*;
 import processing.core.*;
 
@@ -11,16 +13,24 @@ import processing.core.*;
  *
  */
 public class RectangleTest {
-
+	
+	@Before
+	public void setup() {
+		PApplet applet = new PApplet();
+		applet.g = new PGraphics();
+		Hermes.setPApplet(applet);
+		applet.rectMode(PApplet.CENTER);
+	}
+	
 	/**
 	 * tests the collision of two Rectangles
 	 */
 	@Test
 	public void test_RectangleCollide() {
 		// check one rectangle containing another
-	HShape r1 = new Rectangle(new PVector(0,0), 5, 5);
+		HShape r1 = new Rectangle(new PVector(0,0), 5, 5);
 		assertFalse(r1.collide(r1)); // self-collision
-	HShape r2 = new Rectangle(new PVector(0,0), 3, 3);
+		HShape r2 = new Rectangle(new PVector(0,0), 3, 3);
 		assertTrue(r1.collide(r2));
 		assertTrue(r2.collide(r1));
 		// corner overlap

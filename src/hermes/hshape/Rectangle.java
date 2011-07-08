@@ -6,8 +6,7 @@ import src.hermes.Hermes;
 import static src.hermes.HermesMath.*;
 
 /**
- * represents an axis-aligned bounding rectangle
- * @author Sam
+ * Represents an axis-aligned bounding rectangle.
  *
  */
 public class Rectangle extends HShape {
@@ -20,8 +19,8 @@ public class Rectangle extends HShape {
 	public static int mode = 0;
 
 	/**
-	 * Creates a new Rectangle
-	 * Constructor Syntax depends on current rectMode
+	 * Creates a new Rectangle. 
+	 * Constructor Syntax depends on current rectMode.
 	 * Default - a and b define the upper left corner, and c and d are width and height
 	 * see Processing reference on rectMode() for details on other modes
 	 * @param position - position of rectangle
@@ -34,20 +33,20 @@ public class Rectangle extends HShape {
 		super(new PVector(a,b,0));
 		switch(Hermes.getPApplet().g.rectMode) {
 		case PApplet.CORNER:
-			_min = new PVector(a,b,0);
-			_max = new PVector(a+c,b+d,0);
+			_min = zeroVector();
+			_max = new PVector(c,d);
 			break;
 		case PApplet.CENTER:
-			_min = new PVector(a-c/2,b-d/2,0);
-			_max = new PVector(a+c/2,b+d/2,0);
+			_min = new PVector(-c/2,-d/2);
+			_max = new PVector(c/2,d/2);
 			break;
 		case PApplet.CORNERS:
-			_min = new PVector(a,b,0);
-			_max = new PVector(c,d,0);
+			_min = zeroVector();
+			_max = new PVector(c-a,d-b);
 			break;
 		case PApplet.RADIUS:
-			_min = new PVector(a-c,b-d,0);
-			_max = new PVector(a+c,b+d,0);
+			_min = new PVector(-c,-d,0);
+			_max = new PVector(c,d,0);
 			break;
 		}
 	}
