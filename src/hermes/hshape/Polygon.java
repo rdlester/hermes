@@ -21,7 +21,6 @@ import static src.hermes.HermesMath.*;
  * A Polygon must be convex,
  * Concave polygons will break collision detection.
  * CompoundShape must be used for concave polygons.
- * @author Ryan
  *
  */
 public class Polygon extends HShape {

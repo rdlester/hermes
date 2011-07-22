@@ -6,20 +6,29 @@ import java.util.List;
 import java.util.Collection;
 import java.util.ListIterator;
 
-import processing.core.*;
 import src.hermes.postoffice.PostOffice;
 
 
 /**
- * Defines a 'game state'
- * Examples include: Levels, menu screens
- * User creates the necessary Beings, Interactors, and Optimizers in setup
- * The other functions are implemented by us; we handle the running and drawing of the world
+ * <p>The World defines a 'game state', it keeps track of all the Beings,
+ * 	Groups, and their interaction. This is done through registration, HObjects and 
+ * 	Interactors must be registered with the World in order to be drawn or updated.</p>
+ * <p>The World is a <code>Thread</code>. When <code>start</code> is called, the World
+ * will automatically update all registered objects and apply all Interactors between
+ * them. This runs on the World's thread, which is separate from the Processing's draw
+ * thread. This multithreading can be bypassed by not calling <code>start</code>,
+ * and instead calling <code>update</code> within Processing's <code>draw</code> method.
+ * By default to update rate is locked to 60Hz. You can change this, or unlock the rate,
+ * by calling <code>lockUpdateRate</code> and <code>unlockUpdateRate</code>.</p>
+ * <p>There are two basic ways of working with a World. One is to set up all of your
+ * objects and Interactors outside of the World, and register them in Processing's <code>setup</code>.
+ * The other is to create a subclass of World, declare many variables inside this class,
+ * and override the empty World <code>setup</code> and <code>shutdown</code> methods. This allows for
+ * more control as additional computations can be done in the <code>preUpdate</code> and <code>postUpdate</code>
+ * methods, called by the thread before and after <code>update</code>, respectively.
  */
 public class World extends Thread {
 	
-	@SuppressWarnings("unused")
-	private PApplet _parentApplet; //active PApplet sketch
 	private PostOffice _postOffice; //post office
 
 	// these hold add and delete operations until the end of the update
@@ -41,7 +50,7 @@ public class World extends Thread {
 	private long _updateLength = 0;
 	
 	/**
-	 * instantiates the world with a PostOffice to handle I/O and a Camera to handle drawing
+	 * Instantiates the world with a PostOffice to handle I/O and a Camera to handle drawing.
 	 * @param postOffice	the PostOffice that will handle mouse, keyboard and OSC I/O
 	 * @param view			the camera that will be used for drawing
 	 */
@@ -52,7 +61,6 @@ public class World extends Thread {
 		assert view != null : "World constructor: camera must be a valid Camera";
 		
 		//set the World's PApplet to the one set in Hermes
-		_parentApplet = Hermes.getPApplet();
 		_postOffice = postOffice;
 		_camera = view;
 		
@@ -83,29 +91,23 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * tells the world to stop running
-	 * you should always use this to terminate the world (not world.stop(),
-	 *	which is inherited from Thread)
+	 * Tells the world to stop running.
+	 * Use this to terminate the world (not the deprecated <code>stop</code> method).
 	 */
 	public void deActivate() {
 		_active = false;
 	}
-
-	/**
-	 * @return	the group used to wrap the camera object
-	 */
-	public Group<Camera> getCameraGroup() {
-		return _cameraGroup;
-	}
 	
 	/**
 	 * Registers a being with the world, making it be drawn when it is on camera,
-	 *   its update() method will be called by the loop if update is true.
+	 *   its <code>update</code> method will be called by the loop if update is true.
 	 * @param being		the being to register
 	 * @param update	whether or not to update the being during the update loop
 	 * @return 			the registered being
 	 */
 	public Being registerBeing(Being being, boolean update) {
+		assert being != null : "World.registerBeing: being must be valid.";
+		
 		addToGroup(being, _masterGroup);
 		if(update)
 			addToGroup(being, _updateGroup);
@@ -251,7 +253,7 @@ public class World extends Thread {
 
 	/**
 	 * DO NOT CALL THIS METHOD. <br>
-	 * This starts the update loop, but this should be done by calling World.start() 
+	 * This starts the update loop, but this should be done by calling <code>World.start</code> 
 	 * 	instead, for threading purposes.
 	 */
 	public void run() {
@@ -287,7 +289,8 @@ public class World extends Thread {
 	public void postUpdate() {}
 	
 	/**
-	 * executes the update loop
+	 * Executes the update loop. Should only be called manually if <code>start</code> has not been called
+	 * and threading is not desired.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void update() {
@@ -354,7 +357,6 @@ public class World extends Thread {
 		
 		// deal with anything unresolved
 		while(!unresolvedInteractions.isEmpty() && !unresolvedUpdates.isEmpty()) {
-			// TODO: deal with optimization
 			// perform updates
 			unresolvedUpdates = updateHelper(unresolvedUpdates);
 			// check for new interactions
@@ -421,14 +423,22 @@ public class World extends Thread {
 		return unresolvedUpdates;
 	}
 	
-	// locks the update rate to happen no more than rate times per second
+	/**
+	 *  Locks the update rate to happen no more than <code>rate</code> times per second.
+	 *  Default value is 60Hz.
+	 */
 	public void lockUpdateRate(int rate) {
 		assert rate > 0 : "World.lockUpdateRate: rate must be greater than zero";
 		
 		_updateLength = (long)(1.0f / ((float)rate) * 1000.0f);
 	}
 
-	// unlocks the update rate (the rate is set to 60 by default)
+	/**
+	 *  Unlocks the update rate (the rate is set to 60Hz by default). Being velocities are 
+	 *  generally constant regardless of the update rate, BUT if the update can be calculated
+	 *  quickly enough, objects may freeze because the update is faster than the smallest
+	 *  unit of time the computer can record. Use with caution.
+	 */
 	public void unlockUpdateRate() {
 		_updateLength = 0;
 	}
