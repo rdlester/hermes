@@ -23,7 +23,6 @@ public class Rectangle extends HShape {
 	 * Constructor Syntax depends on current rectMode.
 	 * Default - a and b define the upper left corner, and c and d are width and height
 	 * see Processing reference on rectMode() for details on other modes
-	 * @param position - position of rectangle
 	 * @param a
 	 * @param b
 	 * @param c
@@ -56,7 +55,6 @@ public class Rectangle extends HShape {
 	 * Constructor Syntax depends on current rectMode
 	 * Default - ab.x and ab.y define the upper left corner, and c and d are width and height
 	 * see Processing reference on rectMode() for details on other modes
-	 * @param position - position of rectangle
 	 * @param ab
 	 * @param c
 	 * @param d
@@ -177,7 +175,7 @@ public class Rectangle extends HShape {
 	
 
 	/**
-	 * Getter for position of corner with lowest x,y values
+	 * Getter for position of corner with lowest x,y values in Rectangle coordinates (shape's position is (0,0)).
 	 * @return
 	 */
 	public PVector getMin() {
@@ -185,17 +183,25 @@ public class Rectangle extends HShape {
 	}
 
 	/**
-	 * Getter for position of corner with highest x,y values
+	 * Getter for position of corner with highest x,y values in Rectangle coordinates (shape's position is (0,0)).
 	 * @return
 	 */
 	public PVector getMax() {
 		return _max;
 	}
 
+	/**
+	 * Getter for position of corner with lowest x,y values in world coordinates.
+	 * @return
+	 */
 	public PVector getAbsMin() {
 		return PVector.add(_min, _position);
 	}
 	
+	/**
+	 * Getter for position of corner with highest x,y values in world coordinates.
+	 * @return
+	 */
 	public PVector getAbsMax() {
 		return PVector.add(_max, _position);
 	}
@@ -219,7 +225,7 @@ public class Rectangle extends HShape {
 	}
 
 	/**
-	 * scales the rectangle's width and height about its position
+	 * Scales the rectangle's width and height about its position.
 	 * @param xScale	the x-axis scale factor
 	 * @param yScale	the y-axis scale factor
 	 */
@@ -252,6 +258,7 @@ public class Rectangle extends HShape {
 		return opposite == null ? null : reverse(opposite);
 	}
 
+	@Override
 	public PVector projectionVector(Rectangle other) {
 		if(other == this)	// no self-projection
 			return null;
@@ -272,13 +279,14 @@ public class Rectangle extends HShape {
 					new PVector(0.0f, yProject * sign(yDist))); 
 	}	
 
+	@Override
 	public Rectangle getBoundingBox() {
 		return this;
 	}
 	
 	/**
-	 * whether this rectangle completely encloses another 
-	 * (no part of other protrudes from this)
+	 * Whether this rectangle completely encloses another 
+	 * (no part of other protrudes from this).
 	 * @param other		the other rectangle
 	 * @return			whether it is completely contained
 	 */
@@ -296,25 +304,17 @@ public class Rectangle extends HShape {
 				maxX1 >= maxX2 && maxY1 >= maxY2;
 	}
 
-	/**
-	 * whether the Rectangle contains the given point coordinates (boundary is inclusive)
-	 * @param x		the x coordinate
-	 * @param y		the y coordinate
-	 * @return		true if (x,y) lies within the Rectangle
-	 */
+	@Override
 	public boolean contains(float x, float y) {
 		return x >= getAbsMin().x && y >= getAbsMin().y && x <= getAbsMax().x && y <= getAbsMax().y;
 	}
 	
-	/**
-	 * whether the Rectangle contains the given point vector (boundary is inclusive)
-	 * @param point		the point vector
-	 * @return			true if (x,y) lies within the Rectangle
-	 */
+	@Override
 	public boolean contains(PVector point) {
 		return contains(point.x, point.y);
 	}
 	
+	@Override
 	public void draw() {
 		Hermes.getPApplet().rect(_min.x,_min.y,_max.x-_min.x,_max.y-_min.y);
 	}
