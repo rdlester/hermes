@@ -31,7 +31,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 
 	/**
 	 * Alternate constructor that defaults to 0 velocity. 
-	 * <br><br>When a Being's velocity in 0, the World that it is in won't'update the Being's position automatically. Thus, all motion must be handled through setX, setY, or setPosition
+	 * <br><br>When a Being's velocity in 0, the World that it is in won't update the Being's position automatically. Thus, all motion must be handled through setX, setY, or setPosition
 	 * <br><br>NOTE: If this Being's velocity is later set to something other than 0, it will then have its position updated automatically
 	 * @param collisionShape		Shape used to determine Being's position and collision detection
 	 */
