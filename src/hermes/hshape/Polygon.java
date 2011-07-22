@@ -11,17 +11,16 @@ import src.hermes.HermesMath;
 import static src.hermes.HermesMath.*;
 
 /**
- * Represents an arbitrary convex polygon
- * Position represents 'center'
+ * Represents an arbitrary convex polygon.
+ * <p>Position represents 'center.'
  * 
- * Vertex Points are positioned relative center
- * Each point is assumed to be next to points before and after it in list
+ * <p>Vertex Points are positioned relative center.
+ * Each point is assumed to be next to points before and after it in list.
  * Make sure your List of points is ordered correctly!
  * 
- * A Polygon must be convex,
+ * <p>A Polygon must also be convex,
  * Concave polygons will break collision detection.
  * CompoundShape must be used for concave polygons.
- * @author Ryan
  *
  */
 public class Polygon extends HShape {
@@ -33,9 +32,9 @@ public class Polygon extends HShape {
 	private ArrayList<PVector> _points;
 	
 	/**
-	 * Constructor for Polygon
-	 * List of vertex points must be ordered such that
-	 * each point is connected to points before and after it in list
+	 * Creates a new Polygon.
+	 * <p>List of vertex points must be ordered such that
+	 * each point is connected to points before and after it in list.
 	 * @param position - Reference to Shape's position
 	 * @param points - List of vertex points defined relative to position, must be ordered
 	 */
@@ -67,10 +66,10 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Constructor for Polygon
-	 * Takes a variable number of PVectors (must give at least 3)
-	 * Vertex points must be given in order such that
-	 * each point is connected to points given before and after it
+	 * Creates a new Polygon.
+	 * <p>Takes a variable number of PVectors (must give at least 3) for vertices.
+	 * <p>Vertex points must be given in order such that
+	 * each point is connected to points given before and after it.
 	 * @param position - Reference to Shape's position
 	 * @param points - the PVectors defining the verticies of the polygon
 	 */
@@ -103,7 +102,7 @@ public class Polygon extends HShape {
 	
 	/**
 	 * Given two points, finds the 'axis' normal to the line between them
-	 * and adds it to an internal list
+	 * and adds it to an internal list.
 	 * @param start
 	 * @param end
 	 * @param preStart - the extra point used to correctly orient axis
@@ -122,7 +121,7 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Getter for list of vertex points
+	 * Getter for list of vertex points.
 	 * @return _points
 	 */
 	public ArrayList<PVector> getPoints() {
@@ -138,9 +137,9 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Adds a point to the polygon
+	 * Adds a point to the polygon.
 	 * Point is assumed to be connected to the last point added
-	 * and the first point added
+	 * and the first point added.
 	 * @param point - point to be added
 	 */
 	public void addPoint(PVector point) {
@@ -164,7 +163,7 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Public getter for axes list
+	 * Public getter for axes list.
 	 * @return copy of axes list
 	 */
 	public ArrayList<PVector> getAxesCopy() {
@@ -176,8 +175,8 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Rotates polygon counter-clockwise around polygon's position ((0,0) in polygon coordinates)
-	 * @param theta
+	 * Rotates polygon counter-clockwise around polygon's position ((0,0) in polygon coordinates).
+	 * @param theta		Angle to rotate by
 	 */
 	public void rotate(double theta) {
 		for(PVector p : _points) {
@@ -189,17 +188,17 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Rotates polygon counter-clockwise around given position in polygon coordinates (same coordinates defining location of points)
-	 * @param position
+	 * Rotates polygon counter-clockwise around given position in polygon coordinates ((0,0) is polygon's position).
+	 * @param pivotLoc	The point to rotate polygon around
 	 * @param theta
 	 */
-	public void rotate(PVector position, double theta) {
+	public void rotate(PVector pivotLoc, double theta) {
 		for(PVector p : _points) {
-			//translate points into coordinates where position is now (0,0)
-			PVector translatedP = PVector.sub(p, position);
+			//translate points into coordinates where given position is now (0,0)
+			PVector translatedP = PVector.sub(p, pivotLoc);
 			HermesMath.rotate(translatedP, theta);
 			//translate back
-			p.add(position);
+			p.add(pivotLoc);
 		}
 		for(PVector p : _axes) {
 			HermesMath.rotate(p,theta);
@@ -237,14 +236,8 @@ public class Polygon extends HShape {
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
-	
-	/**
-	 * Collides a polygon and a rectangle
-	 * by turning the rectangle into a polygon
-	 * and using the polygon collide method
-	 * @param other - the rectangle
-	 * @return projection vector moving other out of this if colliding, null otherwise
-	 */
+
+	@Override
 	public PVector projectionVector(Rectangle other) {
 		//Turn Rectangle into a Polygon
 		PVector otherPos = other.getPosition();
@@ -262,13 +255,7 @@ public class Polygon extends HShape {
 		return projectionVector(rect);
 	}
 	
-	/**
-	 * Collides a polygon and a circle
-	 * Uses SAT to collide polygon and circle along normal axes
-	 * Uses voronoi regions to check collisions at vertices
-	 * @param other
-	 * @return projection vector moving other out of this if colliding, null otherwise
-	 */
+	@Override
 	public PVector projectionVector(Circle other) {
 		//Get distance between shapes
 		PVector dist = PVector.sub(_position, other.getPosition());
@@ -397,13 +384,7 @@ public class Polygon extends HShape {
 		return (projPos1 > projPre1 && projPos2 < projPre2);
 	}
 
-	/**
-	 * Collides two polygons using SAT
-	 * Projects polygons along each axis, and checks projections collide
-	 * If polygons do not collide along an axis, escapes check and returns false
-	 * @param other
-	 * @return projection vector moving other out of this if colliding, null otherwise
-	 */
+	@Override
 	public PVector projectionVector(Polygon other) {
 		//Get distance between polygons
 		PVector dist = PVector.sub(_position, other.getPosition());
@@ -506,16 +487,19 @@ public class Polygon extends HShape {
 		return new PVector(min,max);
 	}
 	
+	@Override
 	public boolean contains(PVector point) {
 	    //TODO
 		return true;
 	}
 	
+	@Override
 	public boolean contains(float x, float y) {
 	    //TODO
 		return true;
 	}
 	
+	@Override
 	public Rectangle getBoundingBox() {
 		float xMax = Float.NEGATIVE_INFINITY;
 		float xMin = Float.POSITIVE_INFINITY;
@@ -537,6 +521,7 @@ public class Polygon extends HShape {
 		return new Rectangle(_position, min, max);
 	}
 	
+	@Override
 	public void draw() {
 		PApplet papp = Hermes.getPApplet();
 		papp.beginShape(PApplet.POLYGON);
@@ -561,11 +546,11 @@ public class Polygon extends HShape {
 	//Factories for Polygons
 	///////////////////////////////
 	/**
-	 * Creates a new regular polygon with a given number of sides at the given location
-	 * Radius determines how far away the vertices are from the center
-	 * @param pos - position of polygon
-	 * @param sides - number of sides in the polygon
-	 * @param radius - determines size of polygon
+	 * Creates a new regular polygon with a given number of sides at the given location.
+	 * Radius determines how far away the vertices are from the center.
+	 * @param pos		position of polygon
+	 * @param sides		number of sides in the polygon
+	 * @param radius	determines size of polygon
 	 */
 	public static Polygon createRegularPolygon(PVector pos, int sides, float radius) {
 		ArrayList<PVector> points = new ArrayList<PVector>();
