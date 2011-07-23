@@ -259,7 +259,9 @@ public class Polygon extends HShape {
 	public PVector projectionVector(Circle other) {
 		//Get distance between shapes
 		PVector dist = PVector.sub(_position, other.getPosition());
-		ArrayList<PVector> resolutionList = new ArrayList<PVector>();
+		//Set up variables for keeping track of smallest resolution
+        PVector resolution = null;
+        float resolutionSize = Float.MAX_VALUE;
 		
 		PVector center = other.getCenter();
 		float radius = other.getRadius();
@@ -267,8 +269,14 @@ public class Polygon extends HShape {
 		//Check for collision along all axes in this polygon
 		for(PVector axis : _axes) {
 			PVector result = checkSepAxis(axis, dist, center, radius);
-			if(result == null) return null;
-			else resolutionList.add(result);
+			if(result == null) {
+			    return null;
+			} else { //Determine if result is smaller than current min resolution
+			    float temp = mag2(resolution);
+			    if(temp < resolutionSize) {
+		            resolution = result;
+                }
+			}
 		}
 		
 		//Check for collisions along axes between circle center and vertices
@@ -276,45 +284,55 @@ public class Polygon extends HShape {
 			PVector axis = PVector.sub(center, PVector.add(p, dist));
 			axis.normalize();
 			PVector result = checkSepAxis(axis, dist, center, radius);
-			if(result == null) return null;
-			else resolutionList.add(result);
-		}
-//		
-//		center = PVector.sub(center, dist);
-//		PVector pre = _points.get(1);
-//		PVector sidePre = PVector.sub(pre, _points.get(0));
-//		sidePre.normalize();
-//		
-//		int size = _points.size();
-//		for(int i = 2; i < size + 2; i++) {
-//			PVector p = _points.get(i % size);
-//			PVector side = PVector.sub(p, pre);
-//			side.normalize();
-//			if(checkEdge(center, pre, sidePre, side)) {
-//				//Check if distance between center and vertex is less than radius
-//				PVector axis = PVector.sub(center, pre);
-//				float overlap = other.getRadius() - axis.mag(); 
-//				if(overlap >= 0) {
-//					//Create and return projection vector
-//					axis.normalize();
-//					axis.mult(overlap);
-//					resolutionList.add(axis);
-//				}
-//				else return null;
-//			}
-//		}
-//		
-		//Figure out which resolution vector is smallest
-		float min = Float.MAX_VALUE;
-		PVector use = null;
-		for(PVector resolution : resolutionList) {
-			float temp = mag2(resolution);
-			if(temp < min) {
-				min = temp;
-				use = resolution;
+			if(result == null) {
+			    return null;
+			} else { //Determine if result is smaller than current min resolution
+			    float temp = mag2(resolution);
+			    if(temp < resolutionSize) {
+		            resolution = result;
+                }
 			}
 		}
-		return use;
+		
+		return resolution;
+	}
+	
+	@Override
+	public PVector projectionVector(Polygon other) {
+		//Get distance between polygons
+		PVector dist = PVector.sub(_position, other.getPosition());
+		//Set up variables for keeping track of smallest resolution
+        PVector resolution = null;
+        float resolutionSize = Float.MAX_VALUE;
+		
+		//Check for collision along all axes in this polygon
+		for(PVector axis : _axes) {
+			PVector result = checkSepAxis(axis, dist, other);
+			if(result == null) {
+			    return null;
+			} else { //Determine if result is smaller than current min resolution
+			    float temp = mag2(resolution);
+			    if(temp < resolutionSize) {
+		            resolution = result;
+                }
+			}
+		}
+		
+		//Check for collision along all axes in other polygon
+		ArrayList<PVector> axes = other.getAxes();
+		for(PVector axis : axes) {
+			PVector result = checkSepAxis(axis, dist, other);
+			if(result == null) {
+			    return null;
+			} else { //Determine if result is smaller than current min resolution
+			    float temp = mag2(resolution);
+			    if(temp < resolutionSize) {
+		            resolution = result;
+                }
+			}
+		}
+		
+		return resolution;
 	}
 
 	/**
@@ -347,76 +365,6 @@ public class Polygon extends HShape {
 					PVector.mult(axis, top));
 		}
 	}
-
-	/**
-	 * NO LONGER USED but still works
-	 * Checks if circle is in a voronoi region of polygon side specified by pre, linePre, and line
-	 * @param circlePos - position of circle
-	 * @param pre - Point in common between linePre and line
-	 * @param p - current point
-	 * @param line - line between pre and p (was already calculated in method)
-	 * @return true if circle is in voronoi region, otherwise false
-	 */
-//	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
-//		
-//		float projPos = circlePos.dot(line);
-//		float projPre = pre.dot(line);
-//		float projP = p.dot(line);
-//		
-//		return (projPos <= projP && projPre <= projPos);
-//	}
-
-	/**
-	 * Checks if circle is in an edge/vertex voronoi region of polygon specified by pre, linePre, and line
-	 * @param circlePos - position of circle
-	 * @param pre - Point in common between linePre and line
-	 * @param linePre - line defining previous edge
-	 * @param line - line defining current edge
-	 * @return true if circle is in voronoi region, otherwise false
-	 */
-	private boolean checkEdge(PVector circlePos, PVector pre, PVector linePre, PVector line) {
-		
-		float projPre1 = pre.dot(linePre);
-		float projPre2 = pre.dot(line);
-		float projPos1 = circlePos.dot(linePre);
-		float projPos2 = circlePos.dot(line);
-		
-		return (projPos1 > projPre1 && projPos2 < projPre2);
-	}
-
-	@Override
-	public PVector projectionVector(Polygon other) {
-		//Get distance between polygons
-		PVector dist = PVector.sub(_position, other.getPosition());
-		ArrayList<PVector> resolutionList = new ArrayList<PVector>();
-		
-		//Check for collision along all axes in this polygon
-		for(PVector axis : _axes) {
-			PVector result = checkSepAxis(axis, dist, other);
-			if(result == null) return null;
-			else resolutionList.add(result);
-		}
-		
-		//Check for collision along all axes in other polygon
-		ArrayList<PVector> axes = other.getAxes();
-		for(PVector axis : axes) {
-			PVector result = checkSepAxis(axis, dist, other);
-			if(result == null) return null;
-			else resolutionList.add(result);
-		}
-		
-		//Figure out which resolution vector is smallest
-		float min = Float.MAX_VALUE;
-		PVector use = null;
-		for(PVector resolution : resolutionList) {
-			float temp = mag2(resolution);
-			if(temp < min) {
-				min = temp;
-				use = resolution;
-			}
-		}
-		return use;
-	}
 	
 	/**
 	 * Checks if this polygon and other polygon collide along given axis
@@ -439,9 +387,7 @@ public class Polygon extends HShape {
 		if(top > 0 ||  bottom > 0) {
 			//Found a separating axis! Not colliding.
 			return null;
-		}
-		
-		else {
+		} else {
 			return (top < bottom ?
 					PVector.mult(axis, -bottom):
 					PVector.mult(axis, top));
@@ -482,10 +428,44 @@ public class Polygon extends HShape {
 	 */
 	private PVector getProjection(PVector axis, PVector center, float radius) {
 		float project = center.dot(axis);
-		float min = project - radius;
-		float max = project + radius;
-		return new PVector(min,max);
+		return new PVector(project - radius, project + radius);
 	}
+
+	/**
+	 * NO LONGER USED but still works
+	 * Checks if circle is in a voronoi region of polygon side specified by pre, linePre, and line
+	 * @param circlePos - position of circle
+	 * @param pre - Point in common between linePre and line
+	 * @param p - current point
+	 * @param line - line between pre and p (was already calculated in method)
+	 * @return true if circle is in voronoi region, otherwise false
+	 */
+//	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
+//		
+//		float projPos = circlePos.dot(line);
+//		float projPre = pre.dot(line);
+//		float projP = p.dot(line);
+//		
+//		return (projPos <= projP && projPre <= projPos);
+//	}
+
+    // /**
+    //  * Checks if circle is in an edge/vertex voronoi region of polygon specified by pre, linePre, and line
+    //  * @param circlePos - position of circle
+    //  * @param pre - Point in common between linePre and line
+    //  * @param linePre - line defining previous edge
+    //  * @param line - line defining current edge
+    //  * @return true if circle is in voronoi region, otherwise false
+    //  */
+    // private boolean checkEdge(PVector circlePos, PVector pre, PVector linePre, PVector line) {
+    //  
+    //  float projPre1 = pre.dot(linePre);
+    //  float projPre2 = pre.dot(line);
+    //  float projPos1 = circlePos.dot(linePre);
+    //  float projPos2 = circlePos.dot(line);
+    //  
+    //  return (projPos1 > projPre1 && projPos2 < projPre2);
+    // }
 	
 	@Override
 	public boolean contains(PVector point) {
