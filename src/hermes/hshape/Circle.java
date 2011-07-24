@@ -6,10 +6,6 @@ import static src.hermes.HermesMath.*;
 
 /**
  * Represents a circle.
- * <p>
- * Defined by two values:
- * <ul>
- * <li> Center - PVector 
  */
 public class Circle extends HShape {
 
@@ -18,7 +14,22 @@ public class Circle extends HShape {
 	
 	/**
 	 * Constructor defining center of circle
-	 * to be a certain distance away from the position
+	 * as position of object.
+	 * @param position
+	 * @param radius
+	 */
+	public Circle(PVector position, float radius) {
+		super(position);
+		
+		assert radius >= 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
+		
+		_center = new PVector(0,0);
+		_radius = radius;
+	}
+	
+	/**
+	 * Constructor defining center of circle
+	 * to be a certain distance away from the position.
 	 * @param position
 	 * @param center
 	 * @param radius
@@ -30,21 +41,6 @@ public class Circle extends HShape {
 		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
 		
 		_center = center;
-		_radius = radius;
-	}
-	
-	/**
-	 * Constructor defining center of circle
-	 * as position of object
-	 * @param position
-	 * @param radius
-	 */
-	public Circle(PVector position, float radius) {
-		super(position);
-		
-		assert radius >= 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
-		
-		_center = new PVector(0,0);
 		_radius = radius;
 	}
 	
@@ -181,6 +177,13 @@ public class Circle extends HShape {
 		return null;
 	}
 	
+	/**
+	 * Helper method.
+	 * Finds overlap between a circle and the corner of a rectangle.
+	 * @param worldCenter
+	 * @param vertex
+	 * @return projection vector when colliding, null when not
+	 */
 	private PVector getOverlap(PVector worldCenter, PVector vertex) {
 		//Get vector from circle to vertex and overlap of shapes
 		PVector axis = PVector.sub(vertex, worldCenter);

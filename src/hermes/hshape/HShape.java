@@ -18,7 +18,8 @@ public abstract class HShape {
 	
 	/**
 	 * Creates a new shape.
-	 * When the shape represents a Being's collision area, the shape's position should reference the being's position.
+	 * When the shape represents a Being's collision area,
+	 * the shape's position should reference the being's position.
 	 * @param position  the shape's position
 	 */
 	protected HShape(PVector position) {
