@@ -19,7 +19,7 @@ import static src.hermes.HermesMath.*;
  * Make sure your List of points is ordered correctly!
  * 
  * <p>A Polygon must also be convex,
- * Concave polygons will break collision detection.
+ * concave polygons will break collision detection.
  * CompoundShape must be used for concave polygons.
  *
  */
@@ -121,13 +121,15 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Getter for list of vertex points.
-	 * @return _points
+	 * @return List of vertex points.
 	 */
 	public ArrayList<PVector> getPoints() {
 		return _points;
 	}
 	
+	/**
+	 * @return Copy of list of vertex points.
+	 */
 	public ArrayList<PVector> getPointsCopy() {
 		ArrayList<PVector> copy = new ArrayList<PVector>();
 		for(PVector p : _points) {
@@ -138,6 +140,7 @@ public class Polygon extends HShape {
 	
 	/**
 	 * Adds a point to the polygon.
+	 * <p>
 	 * Point is assumed to be connected to the last point added
 	 * and the first point added.
 	 * @param point - point to be added
@@ -156,15 +159,14 @@ public class Polygon extends HShape {
 	
 	/**
 	 * Getter for axes list - only for internal use within shape classes
-	 * @return _axes itself, do not modify contents!
+	 * @return Axes list, do not modify contents!
 	 */
 	protected ArrayList<PVector> getAxes() {
 		return _axes;
 	}
 	
 	/**
-	 * Public getter for axes list.
-	 * @return copy of axes list
+	 * @return Copy of axes list.
 	 */
 	public ArrayList<PVector> getAxesCopy() {
 		ArrayList<PVector> copy = new ArrayList<PVector>();
@@ -175,7 +177,8 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Rotates polygon counter-clockwise around polygon's position ((0,0) in polygon coordinates).
+	 * Rotates polygon counter-clockwise around polygon's position
+	 * ((0,0) in polygon coordinates).
 	 * @param theta		Angle to rotate by
 	 */
 	public void rotate(double theta) {
@@ -188,9 +191,10 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Rotates polygon counter-clockwise around given position in polygon coordinates ((0,0) is polygon's position).
+	 * Rotates polygon counter-clockwise around given position in polygon coordinates
+	 * ((0,0) is polygon's position).
 	 * @param pivotLoc	The point to rotate polygon around
-	 * @param theta
+	 * @param theta		Angle to rotate by
 	 */
 	public void rotate(PVector pivotLoc, double theta) {
 		for(PVector p : _points) {
@@ -272,9 +276,10 @@ public class Polygon extends HShape {
 			if(result == null) {
 			    return null;
 			} else { //Determine if result is smaller than current min resolution
-			    float temp = mag2(resolution);
+			    float temp = mag2(result);
 			    if(temp < resolutionSize) {
 		            resolution = result;
+		            resolutionSize = temp;
                 }
 			}
 		}
@@ -287,9 +292,10 @@ public class Polygon extends HShape {
 			if(result == null) {
 			    return null;
 			} else { //Determine if result is smaller than current min resolution
-			    float temp = mag2(resolution);
+			    float temp = mag2(result);
 			    if(temp < resolutionSize) {
 		            resolution = result;
+		            resolutionSize = temp;
                 }
 			}
 		}
@@ -311,9 +317,10 @@ public class Polygon extends HShape {
 			if(result == null) {
 			    return null;
 			} else { //Determine if result is smaller than current min resolution
-			    float temp = mag2(resolution);
+			    float temp = mag2(result);
 			    if(temp < resolutionSize) {
 		            resolution = result;
+		            resolutionSize = temp;
                 }
 			}
 		}
@@ -325,9 +332,10 @@ public class Polygon extends HShape {
 			if(result == null) {
 			    return null;
 			} else { //Determine if result is smaller than current min resolution
-			    float temp = mag2(resolution);
+			    float temp = mag2(result);
 			    if(temp < resolutionSize) {
 		            resolution = result;
+		            resolutionSize = temp;
                 }
 			}
 		}
@@ -527,6 +535,7 @@ public class Polygon extends HShape {
 	///////////////////////////////
 	/**
 	 * Creates a new regular polygon with a given number of sides at the given location.
+	 * <p>
 	 * Radius determines how far away the vertices are from the center.
 	 * @param pos		position of polygon
 	 * @param sides		number of sides in the polygon
