@@ -6,7 +6,7 @@ import src.hermes.hshape.Rectangle;
 import processing.core.*;
 
 /**
- * Basic game object class
+ * Basic game object class.
  * Anything that is getting drawn or interacting with other game objects is a Being
  */
 public abstract class Being extends HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {

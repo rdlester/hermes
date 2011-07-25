@@ -3,6 +3,16 @@ package src.hermes;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * Basic game object class.
+ * <p>
+ * All parts of game are represented as HObjects.
+ * <p>
+ * For most uses, extend the Being class
+ * <p>
+ * Extend HObject directly when you want to represent something more abstract,
+ * like game state.
+ */
 public abstract class HObject {
 	
 	private LinkedList<GenericGroup<?,?>> _groups;	// groups the being is a member of
