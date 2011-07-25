@@ -4,9 +4,10 @@ import processing.core.*;
 
 /**
  * An abstraction for a 2D shape, used for collision detection and response. 
- * When the shape is linked to a being, position should be a reference to the being's position.
+ * <p>
+ * When the shape is linked to a being, shape's position should be a reference to the being's position.
+ * <p>
  * In order for collision to work, all shapes must know how to collide with all other shapes.
- *
  */
 public abstract class HShape {
 	
@@ -16,9 +17,10 @@ public abstract class HShape {
 		// 	this should be a reference to the Being's position
 	
 	/**
-	 * Creates a new shape
+	 * Creates a new shape.
+	 * When the shape represents a Being's collision area,
+	 * the shape's position should reference the being's position.
 	 * @param position  the shape's position
-	 * When the shape represents a Being's collision area, the shape's position should reference the being's position.
 	 */
 	protected HShape(PVector position) {
 		assert position != null : "In HShape constructor: position must be a valid PVector";
@@ -37,9 +39,10 @@ public abstract class HShape {
 	}
 
 	/**
-	 * Finds the projection vector for a collision with another shape. 
+	 * Finds the projection vector for a collision with another shape.
+	 * <p>
 	 * The projection vector is the vector by which one body could be displaced such that
-	 *  it no longer intersects the other body, by the shortest possible distance.
+	 * it no longer intersects the other body, by the shortest possible distance.
 	 * @param other		the shape to collide with
 	 * @return			the projection vector from this body to other, or null if they aren't colliding
 	 */
@@ -49,14 +52,13 @@ public abstract class HShape {
 	public abstract PVector projectionVector(Polygon other);
 	
 	/**
-	 * whether the Shape contains the given point coordinates (boundary is inclusive)
+	 * Whether the Shape contains the given point coordinates (boundary is inclusive).
 	 * @param point     the point vector
 	 * @return          true if (x,y) lies within the Shape
 	 */
 	public abstract boolean contains(PVector point);
 	
 	/**
-	 * whether the Shape contains the given point coordinates (boundary is inclusive)
 	 * @param x         the x coordinate
 	 * @param y         the y coordinate
 	 * @return          true if (x,y) lies within the Shape
@@ -64,7 +66,7 @@ public abstract class HShape {
 	public abstract boolean contains(float x, float y);
 	
 	/**
-	 * finds the smallest Rectangle that encloses the shape
+	 * Finds the smallest Rectangle that encloses the shape.
 	 * @return	the bounding box
 	 */
 	public abstract Rectangle getBoundingBox();

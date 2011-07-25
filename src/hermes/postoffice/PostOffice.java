@@ -202,7 +202,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				button == MIDDLE_BUTTON ||
 				button == RIGHT_BUTTON :
 					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
-		_mouseSubs.put((Integer)button, new Pair(sub, null));
+		_mouseSubs.put((Integer)button, new Pair<MouseSubscriber, HShape>(sub, null));
 	}
 	
 	/**
@@ -220,7 +220,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				button == RIGHT_BUTTON :
 					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
         assert region != null : "PostOffice.registerMouseSubscription: region must be a valid Shape";
-        _mouseSubs.put((Integer)button, new Pair(sub, region));
+        _mouseSubs.put((Integer)button, new Pair<MouseSubscriber, HShape>(sub, region));
     }
 	
 	/**
@@ -364,7 +364,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				MouseMessage m = _mouseQueue.poll();
 				int button = m.getButton();
 				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
-				for(Pair p : subs) {
+				for(Pair<?, ?> p : subs) {
 				   HShape region = (HShape) p.getSecond();
 					if(region == null || region.contains(m.getX(), m.getY()))
 						((MouseSubscriber) p.getFirst()).handleMouseMessage(m);
