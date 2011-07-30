@@ -4,11 +4,9 @@ import processing.core.*;
 
 /**
  * A collection of helpful math utilities.
- * 
- * HINT: import static src.hermes.HermesMath.*; to access these methods like you would processing library functions.
- * 
- * @author Sam
- *
+ * <p>
+ * <i>HINT:</i> Use <code>import static src.hermes.HermesMath.*;</code>
+ * to access these methods like you would Processing library functions.
  */
 public class HermesMath {
 
@@ -16,8 +14,8 @@ public class HermesMath {
 	public static final float MINUS_INFINITY = Float.NEGATIVE_INFINITY;
 	
 	/**
-	 * Rotates vector counter-clockwise by an angle theta
-	 * Mutates the vector and returns it
+	 * Rotates vector counter-clockwise by an angle theta;
+	 * mutates the vector and returns it.
 	 * @param vector	the vector to rotate
 	 * @param theta		the angle to rotate counter-clockwise by
 	 * @return			the rotated vector (not a new vector, merely a reference to the vector passed in)
@@ -30,11 +28,12 @@ public class HermesMath {
 	}
 	
 	/**
-	 * Rotates vector counter-clockwise by an angle theta
-	 * Returns an entirely new vector (does not mutate)
-	 * @param vector
-	 * @param theta
-	 * @return
+	 * Same as rotate() but returns an entirely new vector
+	 * (does not mutate).
+	 * @param vector	the vector to rotate
+	 * @param theta		the angle to rotate counter-clockwise by
+	 * @return			the new rotated vector
+	 * @see				src.hermes.HermesMath#rotate(PVector, double)
 	 */
 	public static PVector getRotate(PVector vector, double theta) {
 		float x = (float) (vector.x * Math.cos(theta) - vector.y * Math.sin(theta));
@@ -43,16 +42,18 @@ public class HermesMath {
 	}
 	
 	/**
-	 * reverses the direction of a PVector in the coordinate system,
-	 *  so the signs of each component are inverted
-	 * @param vector	the vector to invert
-	 * @return			the vector (not a new vector, merely a reference to the vector passed in)
-	 * example:
+	 * Reverses the direction of a PVector in the coordinate system,
+	 * so the signs of each component are inverted;
+	 * returns a mutated vector.
+	 * <p>
+	 * Example:
 	 * 	<code>
 	 * 	PVector v = new PVector(3,-2);
 	 *  Math.reverse(v);
 	 *  // v.x will now be -3, and v.y will be 2
 	 *  </code>
+	 * @param vector	the vector to invert
+	 * @return			the vector (not a new vector, merely a reference to the vector passed in)
 	 */
 	public static PVector reverse(PVector vector) {
 		vector.x = -vector.x;
@@ -62,26 +63,27 @@ public class HermesMath {
 	}
 	
 	/**
-	 * as reverse(), but does not modify vector, instead returns a new vector that is opposite vector
-	 * @param vector	the vector to find the reverse of
+	 * Same as reverse(), but does not modify vector.
+	 * @param vector	the vector to invert
 	 * @return			a new vector that points in the opposite direction of vector
+	 * @see				src.hermes.HermesMath#reverse(PVector)
 	 */
 	public static PVector getReverse(PVector vector) {
 		return new PVector(-vector.x, -vector.y, -vector.z);
 	}
 	
 	/**
-	 * creates a new PVector at (0,0,0)
-	 * @return
+	 * Creates a new PVector at (0,0,0).
+	 * @return zero vector
 	 */
 	public static PVector zeroVector() {
 		return new PVector(0,0,0);
 	}
 	
 	/**
-	 * sets a vector to the zero vector
+	 * Mutates a vector to the zero vector
 	 * @param vector	the vector
-	 * @return			the vector 
+	 * @return			the altered vector
 	 */
 	public static PVector zeroVector(PVector vector) {
 		vector.set(0,0,0);
@@ -89,11 +91,11 @@ public class HermesMath {
 	}
 	
 	/**
-	 * nothing but syntatic sugar for new PVector(x,y,z)
+	 * Factory method for creating PVectors
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @return
+	 * @return PVector
 	 */
 	public static PVector makeVector(float x, float y, float z) {
 		return new PVector(x,y,z);
@@ -112,8 +114,8 @@ public class HermesMath {
 	}
 	
 	/**
-	 * instantiates a new vector that is a carbon copy of a given vector
-	 * @param vector	the vector the copy
+	 * Instantiates a new vector that is a carbon copy of a given vector.
+	 * @param vector	the vector to copy
 	 * @return			the new copy
 	 */
 	public static PVector cloneVector(PVector vector) {
@@ -121,18 +123,19 @@ public class HermesMath {
 	}
 	
 	/**
-	 * Gets the square of the magnitude of a PVector
-	 * Useful when taking the square root to find the true magnitude is not important
-	 * (saves time)
-	 * @param vector
-	 * @return
+	 * Gets the square of the magnitude of a PVector.
+	 * Useful when taking the square root to find the true magnitude is not important,
+	 * ie. when trying to identify the largest or smallest PVector in a set
+	 * (saves time).
+	 * @param 	vector
+	 * @return	The square of the magnitude of the vector
 	 */
 	public static float mag2(PVector vector) {
 		return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z; 
 	}
 	
 	/**
-	 * returns the sign of a float, assigns zero a sign of one
+	 * Returns the sign of a float, assigns zero a sign of one.
 	 * @param x		the float
 	 * @return		1 if x is positive or zero, -1 if x is negative
 	 */
@@ -141,7 +144,7 @@ public class HermesMath {
 	}
 	
 	/**
-	 * averages two float values
+	 * Averages two float values.
 	 * @param v1	the first value
 	 * @param v2	the second value
 	 * @return		the average
@@ -151,7 +154,7 @@ public class HermesMath {
 	}
 	
 	/**
-	 * averages an array of floats
+	 * Averages an array of floats.
 	 * @param values	the values to average
 	 * @return			the average
 	 */
@@ -163,11 +166,13 @@ public class HermesMath {
 	}
 
 	/**
-	 * returns the angle of the vector
+	 * Returns the angle of the vector.
+	 * <p>
 	 * (1,0) is 0
+	 * <p>
 	 * (0,1) is PI/2, etc.
-	 * @param dir
-	 * @return
+	 * @param dir	the vector
+	 * @return		angle
 	 */
 	public static float angle(PVector dir) {
 		float angle = (float) Math.atan2(dir.y, dir.x);
@@ -182,13 +187,13 @@ public class HermesMath {
 	}
 	
 	/**
-	 * Determines if a point is inside a circle
-	 * @param x - x location of point
-	 * @param y - y location of point
-	 * @param cirX - x location of center of circle
-	 * @param cirY - y location of center of circle
-	 * @param radius - radius of circle
-	 * @return true if point is in circle, false otherwise
+	 * Determines if a point is inside a circle.
+	 * @param x			x location of point
+	 * @param y			y location of point
+	 * @param cirX		x location of center of circle
+	 * @param cirY		y location of center of circle
+	 * @param radius	radius of circle
+	 * @return			true if point is in circle, false otherwise
 	 */
 	public static boolean inCircle(float x, float y, float cirX, float cirY, float radius) {
 		float distX = x - cirX;
@@ -197,11 +202,11 @@ public class HermesMath {
 	}
 	
 	/**
-	 * Determines if a point is inside a circle
-	 * @param point - location of point
-	 * @param circleCenter - location of center of circle
-	 * @param radius - radius of circle
-	 * @return true if point is in circle, false otherwise
+	 * Determines if a point is inside a circle.
+	 * @param point			location of point
+	 * @param circleCenter	location of center of circle
+	 * @param radius		radius of circle
+	 * @return 				true if point is in circle, false otherwise
 	 */
 	public static boolean inCircle(PVector point, PVector circleCenter, float radius) {
 		float distX = point.x - circleCenter.x;
