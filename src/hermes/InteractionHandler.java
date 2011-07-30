@@ -37,7 +37,7 @@ public class InteractionHandler<A extends HObject, B extends HObject> {
 	public boolean interactionHandler(A being1, B being2) {
 		// see if an interaction was detected
 		if(being1 != being2 && _interaction.getInteractor().detect(being1, being2)) {
-			if(_interaction.isImmediate()) { // if immediate, handle it now
+			if(_interaction.getInteractor().appliedImmediately()) { // if immediate, handle it now
 					synchronized(being1) {
 						synchronized(being2) {
 							_interaction.getInteractor().handle(being1, being2);
