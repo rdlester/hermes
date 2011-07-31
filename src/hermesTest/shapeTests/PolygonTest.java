@@ -389,4 +389,22 @@ public class PolygonTest {
 		Circle c7 = new Circle(pos9,5);
 		assertFalse(s1.collide(c7));
 	}
+	
+	@Test
+	public void test_contains() {
+		//Triangle
+		PVector pos1 = new PVector(0,0);
+		ArrayList<PVector> points1 = new ArrayList<PVector>();
+		points1.add(new PVector(0,0));
+		points1.add(new PVector(10,0));
+		points1.add(new PVector(0,10));
+		Polygon p1 = new Polygon(pos1, points1);
+		
+		//Contains own corner?
+		assertTrue(p1.contains(new PVector(10,0,0)));
+		//Contains inside
+		assertTrue(p1.contains(3,3));
+		//Does not contain
+		assertFalse(p1.contains(10,10));
+	}
 }
