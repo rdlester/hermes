@@ -243,6 +243,65 @@ public class Polygon extends HShape {
 
 	@Override
 	public PVector projectionVector(Rectangle other) {
+		/*//Get distance between shapes
+		PVector dist = PVector.sub(_position, other.getPosition());
+		//Set up variables for keeping track of smallest resolution
+		PVector resolution = null;
+		float resolutionSize = Float.MAX_VALUE;
+		
+		for(PVector axis: _axes) {
+			PVector result = checkSepAxis(axis, dist, other);
+			if(result == null) {
+			    return null;
+			} else { //Determine if result is smaller than current min resolution
+			    float temp = mag2(result);
+			    if(temp < resolutionSize) {
+		            resolution = result;
+		            resolutionSize = temp;
+                }
+			}
+		}
+		
+		PVector xAxis = new PVector(1,0,0);
+		PVector projectX = getProjection(xAxis, this);
+		projectX.add(dist.x, dist.x, 0);
+		float right = projectX.x - other.getMax().x;
+		float left = other.getMin().x - projectX.y;
+		if(right > 0 ||  left > 0) {
+			//Found a separating axis! Not colliding.
+			return null;
+		} else {
+			PVector result = (right < left ?
+							PVector.mult(xAxis, -left):
+							PVector.mult(xAxis, right));
+			float temp = mag2(result);
+			if(temp < resolutionSize) {
+				resolution = result;
+	            resolutionSize = temp;
+			}
+		}
+		
+		PVector yAxis = new PVector(0,1,0);
+		PVector projectY = getProjection(yAxis, this);
+		projectY.add(dist.x, dist.x, 0);
+		float top = projectY.x - other.getMax().y;
+		float bottom = other.getMin().y - projectY.y;
+		if(top > 0 ||  bottom > 0) {
+			//Found a separating axis! Not colliding.
+			return null;
+		} else {
+			PVector result = (top < bottom ?
+					PVector.mult(xAxis, -bottom):
+					PVector.mult(xAxis, top));
+			float temp = mag2(result);
+			if(temp < resolutionSize) {
+				resolution = result;
+				resolutionSize = temp;
+			}
+		}
+		
+		return resolution;*/
+		
 		//Turn Rectangle into a Polygon
 		PVector otherPos = other.getPosition();
 		PVector min = other.getMin();
@@ -343,6 +402,10 @@ public class Polygon extends HShape {
 		return resolution;
 	}
 
+	/*private PVector checkSepAxis(PVector axis, PVector dist, Rectangle other) {
+		
+	}*/
+	
 	/**
 	 * Checks for collision between a polygon and a circle along a certain axis
 	 * @param axis - axis to check along
@@ -477,14 +540,21 @@ public class Polygon extends HShape {
 	
 	@Override
 	public boolean contains(PVector point) {
-	    //TODO
-		return true;
+	    PVector dist = PVector.sub(point, _position);
+	    for(PVector axis : _axes) {
+	    	PVector project1 = getProjection(axis, this);
+	    	float projectP = PVector.dot(axis, dist);
+	    	if(!(project1.x <= projectP && projectP <= project1.y)) {
+	    		return false;
+	    	}
+	    }
+	    
+	    return true;
 	}
 	
 	@Override
 	public boolean contains(float x, float y) {
-	    //TODO
-		return true;
+		return contains(new PVector(x,y,0));
 	}
 	
 	@Override
