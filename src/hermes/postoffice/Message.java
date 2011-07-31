@@ -1,7 +1,7 @@
 package src.hermes.postoffice;
 
 /**
- * Basic interface to connect all message types
+ * Basic interface to connect all message types.
  */
 public interface Message {
 	
