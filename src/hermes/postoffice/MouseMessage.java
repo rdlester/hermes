@@ -1,10 +1,12 @@
 package src.hermes.postoffice;
 
 /**
- * Message representing mouse actions
- * Type of MouseMessage determined by the button pressed
- * Subscription to a mouse button gets you press, release, and drag events
- * Subscription to nobutton gets you mouse moved events
+ * Message representing mouse actions.
+ * <p>
+ * Type of MouseMessage determined by the button pressed.
+ * <p>
+ * Subscription to a mouse button gets you press, release, and drag events;
+ * subscription to nobutton gets you mouse moved events.
  */
 public class MouseMessage implements Message {
 
@@ -18,7 +20,7 @@ public class MouseMessage implements Message {
 	private int _x, _y;
 	
 	/**
-	 * Creates a new MouseMessage
+	 * Creates a new MouseMessage.
 	 * @param buttonClicked
 	 * @param x
 	 * @param y
@@ -31,18 +33,18 @@ public class MouseMessage implements Message {
 	}
 	
 	/**
-	 * Gets the button pressed on the mouse
-	 * Use BUTTON1, BUTTON2, BUTTON3 constants defined in MouseMessage
+	 * Gets the button pressed on the mouse.
+	 * Use BUTTON1, BUTTON2, BUTTON3 constants defined in POConstants
 	 * to figure out what button has been pressed
-	 * @return      int corresponding to button, use LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON and NO_BUTTON constants in PostOffice to determine which button has been pressed
+	 * @return      int corresponding to button, use LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON and NO_BUTTON constants in POConstants to determine which button has been pressed
 	 */
 	public int getButton() {
 		return _buttonClicked;
 	}
 	/**
-	 * Gets the action designated by the event
+	 * Gets the action designated by the event.
 	 * Use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED
-	 * to determined actions
+	 * to determined actions.
 	 * @return      int corresponding to action, use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED constants in PostOffice to determine which action has been committed
 	 */
 	public int getAction() {
@@ -50,7 +52,7 @@ public class MouseMessage implements Message {
 	}
 	
 	/**
-	 * Gets the x location of the mouse sending this message
+	 * Gets the x location of the mouse sending this message.
 	 * @return      int corresponding to x location
 	 */
 	public int getX() {
@@ -58,7 +60,7 @@ public class MouseMessage implements Message {
 	}
 	
 	/**
-	 * Gets the y location of the mouse sending this message
+	 * Gets the y location of the mouse sending this message.
 	 * @return      int corresponding to y location
 	 */
 	public int getY() {
@@ -66,7 +68,7 @@ public class MouseMessage implements Message {
 	}
 	
 	/**
-	 * Checks for equality of MouseMessages by comparing mouse button
+	 * Checks for equality of MouseMessages by comparing mouse button.
 	 */
 	public boolean equals(Object o) {
 		if(o instanceof MouseMessage) {

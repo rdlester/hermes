@@ -2,10 +2,16 @@ package src.hermes.postoffice;
 
 
 /**
- * Message representing an OSC message
- * <br>Implements Message so that it can be used in PostOffice
- * <br>OSCMessages have arguments, which can be untyped, so great care must be taken by the user to ensure types 
- * <br>Behavior for retrieving messages is First In, Last Out, meaning if you call a getAndRemove method, you'll receive arguments in the order that they were added to the message before it was sent.
+ * Message representing an OSC message.
+ * <br>Implements Message so that it can be used in PostOffice.
+ * <br>OSCMessages have arguments, which can be untyped, so great care must be taken by the user to ensure types.
+ * <p>
+ * Behavior for retrieving messages is First In, Last Out, meaning if you call a getAndRemove method, you'll receive arguments in the order that they were added to the message before it was sent.
+ * <br/>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C.
+ * <br/>First, you would call "getAndRemoveInt()" which would return the int value of A.
+ * <br/>Next, you would call "getAndRemoveString()" which would return string B.
+ * <br/>Lastly, you would call getAndRemoveFloat()" which would return string C.
+ * <br/>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has.
  */
 
 public class OscMessage implements Message {
@@ -21,9 +27,9 @@ public class OscMessage implements Message {
 	//
 	
 	/**
-	 * Basic constructor for unpacked OSCMessage
-	 * @param address - Address of OSCMessage
-	 * @param contents - Contents of OSCMessage
+	 * Basic constructor for unpacked OSCMessage.
+	 * @param address	Address of OSCMessage
+	 * @param contents	Contents of OSCMessage
 	 */
 	public OscMessage(String address, Object[] contents) {
 		_address = address;
@@ -31,8 +37,8 @@ public class OscMessage implements Message {
 	}
 	
 	/**
-	 * Constructor taking an illposed OSCMessage
-	 * @param message - a packed OSCMessage in illposed's format
+	 * Constructor taking an illposed OSCMessage.
+	 * @param message	a packed OSCMessage in illposed's format
 	 */
 	protected OscMessage(com.illposed.osc.OSCMessage message) {
 		_address = message.getAddress();
@@ -41,7 +47,7 @@ public class OscMessage implements Message {
 	
 	
 	/**
-	 * returns the number of arguments available for extraction from this OSCMessage.
+	 * Returns the number of arguments available for extraction from this OSCMessage.
 	 * @return		the number of arguments left to extract from this OSCMessage
 	 */
 	public int getNumberOfRemainingArguments() {
@@ -49,7 +55,7 @@ public class OscMessage implements Message {
 	}
 	
 	/**
-	 * method to find out if the user has any remaining arguments in the OSCMessage
+	 * Method to find out if the user has any remaining arguments in the OSCMessage.
 	 * @return		true if the message has remaining arguments
 	 */
 	public boolean hasRemainingArguments() {
@@ -58,17 +64,10 @@ public class OscMessage implements Message {
 	
 	
 	/**
-	 * Retrieves an int argument contained in the OSCMessage you've received
-	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
-	 *</p>
-	 *<p>The "getAndRemove" methods are "First In, Last Out" 
-	 *<br/>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
-	 *<br/>First, you would call "getAndRemoveInt()" which would return the int value of A 
-	 *<br/>Next, you would call "getAndRemoveString()" which would return string B
-	 *<br/>Lastly, you would call getAndRemoveFloat()" which would return string C
-	 *<br/>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
-	 *</p>
-	 * 
+	 * Retrieves an int argument contained in the OSCMessage you've received.
+	 * <p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument.
+	 * </p>
+	 *
 	 * @return		 the int argument in the OSCMessage
 	 */
 	public int getAndRemoveInt() {
@@ -91,16 +90,9 @@ public class OscMessage implements Message {
 	
 	
 	/**
-	 * Retrieves a String argument contained in the OSCMessage you've received
-	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
-	 *</p>
-	 *<p>The "getAndRemove" methods are "First In, Last Out" 
-	 *<br>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
-	 *<br>First, you would call "getAndRemoveInt()" which would return the int value of A 
-	 *<br>Next, you would call "getAndRemoveString()" which would return string B
-	 *<br>Lastly, you would call getAndRemoveFloat()" which would return string C
-	 *<br>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
-	 *</p>
+	 * Retrieves a String argument contained in the OSCMessage you've received.
+	 * <p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument.
+	 * </p>
 	 * 
 	 * @return		 the String argument in the OSCMessage
 	 */
@@ -123,16 +115,9 @@ public class OscMessage implements Message {
 	
 
 	/**
-	 * Retrieves a float argument contained in the OSCMessage you've received
-	 *<p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument
-	 *</p>
-	 *<p>The "getAndRemove" methods are "First In, Last Out" 
-	 *<br>Example: imagine your OSCMessage has a list of arguments: int A, string B, float C
-	 *<br>First, you would call "getAndRemoveInt()" which would return the int value of A 
-	 *<br>Next, you would call "getAndRemoveString()" which would return string B
-	 *<br>Lastly, you would call getAndRemoveFloat()" which would return string C
-	 *<br>Take great care!!!! You should be well-aware of how many arguments a message will contain, and what types it has
-	 *</p>
+	 * Retrieves a float argument contained in the OSCMessage you've received.
+	 * <p>If your OSCMessage contains multiple arguments, call another "getAndRemove" method corresponding to the type of the next argument.
+	 * </p>
 	 * 
 	 * @return		 the float argument in the OSCMessage
 	 */
@@ -155,11 +140,11 @@ public class OscMessage implements Message {
 	
 	
 
-/**
- * Get the typetag of the next argument in this OSCMessage. This means: "i" for int, "f" for float, and "s" for string
- * <br>NOTE: if you have extracted all the arguments from this OSCMessage, calling this method will give an error
- * @return		the typetag of the next argument in this OSCmessage
- */
+	/**
+	 * Get the typetag of the next argument in this OSCMessage. This means: "i" for int, "f" for float, and "s" for string.
+	 * <br>NOTE: if you have extracted all the arguments from this OSCMessage, calling this method will give an error.
+	 * @return		the typetag of the next argument in this OSCmessage
+	 */
 	public String getTypeTagOfNextArgument() {
 		
 		assert hasRemainingArguments() : "OSCmessage error: You tried to call getTypeTagOfNextArgument(), but this OSCmessage has no arguments. Be careful with OSCmessages!";
@@ -185,7 +170,7 @@ public class OscMessage implements Message {
 	
 	
 	/**
-	 * Gets the OSCAddress that this message pertains to
+	 * Gets the OSCAddress that this message pertains to.
 	 * @return      address
 	 */
 	public String getAddress() {
@@ -193,16 +178,16 @@ public class OscMessage implements Message {
 	}
 	
 	/**
-	 * Gets an object[] of the inner contents of an OSCMessage
+	 * Gets an object[] of the inner contents of an OSCMessage.
 	 * Be very careful using this! Please use getAndRemove methods instead! 
-	 * @return      contents
+	 * @return      contents of message
 	 */
 	protected Object[] getContents() {
 		return _contents;
 	}
 	
 	/**
-	 * Get an illposed version of this message
+	 * Get an illposed version of this message.
 	 * @return      An illposed equivalent of this message
 	 */
 	protected com.illposed.osc.OSCMessage toIllposed() {
@@ -211,7 +196,7 @@ public class OscMessage implements Message {
 	}
 	
 	/**
-	 * Equality check for OscMessage, compares messages based on Address string
+	 * Equality check for OscMessage, compares messages based on Address string.
 	 */
 	public boolean equals(Object o) {
 		if(o instanceof OscMessage) {
@@ -220,8 +205,4 @@ public class OscMessage implements Message {
 		}
 		return false;
 	}
-	
-	
-
-	
 }

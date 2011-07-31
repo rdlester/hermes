@@ -1,8 +1,8 @@
 package src.hermes.postoffice;
 
 /**
- * Message representing a key stroke
- * The type of the key message is determined by the key it corresponds to
+ * Message representing a key stroke.
+ * The type of the key message is determined by the key it corresponds to.
  */
 public class KeyMessage implements Message {
 
@@ -16,10 +16,10 @@ public class KeyMessage implements Message {
 	private boolean _isPressed;
 	
 	/**
-	 * Creates a new KeyMessage
-	 * @param keyCode - int corresponding to key, use PostOffice constants to determine key
-	 * @param keyChar - char corresponding to key, PostOffice.CHAR_UNDEFINED if key is non-unicode
-	 * @param b - true when key is pressed, false when key is released
+	 * Creates a new KeyMessage.
+	 * @param keyCode	int corresponding to key, use PostOffice constants to determine key
+	 * @param keyChar	char corresponding to key, PostOffice.CHAR_UNDEFINED if key is non-unicode
+	 * @param b			true when key is pressed, false when key is released
 	 */
 	public KeyMessage(int keyCode, char keyChar, boolean isPressed) {
 		_keyCode = keyCode;
@@ -28,13 +28,15 @@ public class KeyMessage implements Message {
 	}
 
 	/**
-	 * @return integer corresponding to key pressed, use key constants in PostOffice to determine key
+	 * Gets code listed in POConstants corresponding to key
+	 * @return integer corresponding to key
 	 */
 	public int getKeyCode() {
 		return _keyCode;
 	}
 	
 	/**
+	 * Gets character representing the key acted upon if key is unicode.
 	 * @return char representing the key acted upon if key is unicode
 	 */
 	public char getKeyChar() {
@@ -43,7 +45,7 @@ public class KeyMessage implements Message {
 	}
 	
 	/**
-	 * Tells if key is pressed or not
+	 * Tells if key is pressed or not.
 	 * @return true is key is pressed, false if key is released
 	 */
 	public boolean isPressed() {
@@ -51,7 +53,7 @@ public class KeyMessage implements Message {
 	}
 	
 	/**
-	 * Checks for equality of KeyMessage by comparing key codes
+	 * Checks for equality of KeyMessage by comparing key codes.
 	 */
 	public boolean equals(Object o) {
 		if(o instanceof KeyMessage) {

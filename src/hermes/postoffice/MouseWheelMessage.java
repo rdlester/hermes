@@ -1,8 +1,8 @@
 package src.hermes.postoffice;
 
 /**
- * Message representing a movement of the Mouse Wheel
- * All MouseWheelMessages are of the same type
+ * Message representing a movement of the Mouse Wheel.
+ * All MouseWheelMessages are of the same type.
  */
 public class MouseWheelMessage implements Message {
 	
@@ -10,7 +10,7 @@ public class MouseWheelMessage implements Message {
 	private int _wheelRotation;
 	
 	/**
-	 * Creates a new MouseWheelMessage
+	 * Creates a new MouseWheelMessage.
 	 * @param wheelRotation
 	 */
 	public MouseWheelMessage(int wheelRotation) {
@@ -18,14 +18,14 @@ public class MouseWheelMessage implements Message {
 	}
 	
 	/**
-	 * Gets the amount the wheel has been rotated
+	 * Gets the amount the wheel has been rotated.
 	 */
 	public int getWheelRotation() {
 		return _wheelRotation;
 	}
 	
 	/**
-	 * Checks for the equality of MouseWheelMessage types
+	 * Checks for the equality of MouseWheelMessage types.
 	 */
 	public boolean equals(Object o) {
 		if(o instanceof MouseWheelMessage) return true;
