@@ -15,10 +15,10 @@ import java.util.LinkedList;
  */
 public abstract class HObject {
 	
-	private LinkedList<GenericGroup<?,?>> _groups;	// groups the being is a member of
+	private LinkedList<GenericGroup> _groups;	// groups the being is a member of
 	
 	protected HObject() {
-		_groups = new LinkedList<GenericGroup<?,?>>();
+		_groups = new LinkedList<GenericGroup>();
 	}
 	
 	/**
@@ -52,14 +52,26 @@ public abstract class HObject {
 	 */
 	protected void delete() {
 		// go through all the groups, deleting this being
-		for(Iterator<GenericGroup<?,?>> iter = _groups.iterator(); iter.hasNext(); ) {
-			GenericGroup<?,?> group = iter.next();
+		for(Iterator<GenericGroup> iter = _groups.iterator(); iter.hasNext(); ) {
+			GenericGroup group = iter.next();
 			// need to lock on the group
 			synchronized(group) {
 				group.getObjects().remove(this);
 				iter.remove();
 			}
 		}
+	}
+	
+	/**
+	 * Returns an iterator over all the groups the object is a member of.
+	 * @return	iterators over the groups containing this object
+	 */
+	protected Iterator<GenericGroup> getGroups() {
+		return _groups.iterator();
+	}
+	
+	public boolean needsMoreSamples() {
+		return false;
 	}
 	
 }

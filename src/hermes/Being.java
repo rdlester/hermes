@@ -1,5 +1,7 @@
 package src.hermes;
 
+import java.util.Iterator;
+
 import src.hermes.postoffice.*;
 import src.hermes.hshape.HShape;
 import src.hermes.hshape.Rectangle;
@@ -180,11 +182,20 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 		_done = done;
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean processUpdate() {
-		if(_done)
+		boolean firstStep = _done;
+		if(firstStep)
 			update();
 		setDone(true);
 		step();
+		if(!_done && firstStep)
+			for(Iterator<GenericGroup> iter = getGroups(); iter.hasNext(); )
+				iter.next().addNeedsMoreSamples(this);
+		return _done;
+	}
+	
+	public boolean needsMoreSamples() {
 		return _done;
 	}
 	
