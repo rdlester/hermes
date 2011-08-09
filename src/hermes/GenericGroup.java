@@ -2,17 +2,21 @@ package src.hermes;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
+
 import src.hermes.postoffice.*;
 
 /**
- * Defines a generic "group" of beings that wraps a collection of beings.
- * The primary purpose of grouping is to allow creation and removal of beings from updates
- * without threading issues. However, groups are also often used to store data about or provide
- * access to the contained beings. 
+ * <p>Defines a generic "group" of beings that wraps a collection of <code>HObject</code>s.
+ * Interactions are registered with the world between groups. Objects can be added to or removed
+ * from groups while the loop is running, but these operations will not be applied until the
+ * end of the current update.</p>
  * 
- * @author Sam
+ * <p>The primary purpose of grouping is to allow addition and removal of objects from updates
+ * without threading issues. However, groups can also be used to store data about or provide
+ * access to the contained objects.</p> 
  *
- * @param <A>	the type of the beings in the group
+ * @param <A>	the type of the objects in the group
  * @param <B>	the type of underlying collection used
  */
 public class GenericGroup<A extends HObject, B extends Collection<A>> 
@@ -20,43 +24,47 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 
 	private B _objects;		// the underlying collection
 	private World _world;	// the world containing the groups
+	private LinkedList<A> _needsMoreSamples;	// keeps track of any beings that need 
+													// more samples this update
 	
 	/**
-	 * instantiates a group storing beings in a given collection
-	 * 	@param beings	the collection beings will be stored in
+	 * Instantiates a group storing object in a given collection.
+	 * 	@param objects	the collection objects will be stored in
+	 *  @param world	the world where the group will be used
 	 */
 	public GenericGroup(B objects, World world) {
 		_objects = objects;
 		_world = world;
+		_needsMoreSamples = new LinkedList<A>();
 	}
 	
 	/**
-	 * returns the underlying collection containing all beings in the group
-	 * WARNING -- DO NOT ADD TO OR REMOVE FROM THIS COLLECTION DIRECTLY DURING THE UPDATE LOOP
-	 * @return	the beings
+	 * Returns the underlying collection containing all objects in the group.
+	 * WARNING -- DO NOT ADD TO OR REMOVE FROM THIS COLLECTION DIRECTLY
+	 * @return	the data structure containing all objects in the group
 	 */
 	public B getObjects() {
 		return _objects;
 	}
 	
 	/**
-	 * an iterator over the underlying collection
+	 * An iterator over the underlying collection.
 	 * WARNING -- DO NOT REMOVE BEINGS USING Iterator.remove()
-	 * @return	an iterator
+	 * @return	an iterator over all elements in the group
 	 */
 	public Iterator<A> iterator() {
 		return getObjects().iterator();
 	}
 	
 	/**
-	 * performs an update on the group
+	 * Performs an update on the group. Override to use.
 	 */
 	public void update() {}
 
 	/**
-	 * adds a being to a group at the end of the next update loop
-	 * @param being		the being to add
-	 * @return			the added being
+	 * Adds an object to a group at the end of the next update loop.
+	 * @param object	the object to add
+	 * @return			the added object
 	 */
 	public A add(A being) {
 		_world.addToGroup(being, this);
@@ -64,13 +72,16 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * removes a being from the group at the end of the next update loop
-	 * @param being		the being to remove
-	 * @return			the removed being
+	 * Removes a object from the group at the end of the next update loop.
+	 * @param object	the object to remove
+	 * @return			the removed object
 	 */
-	public A remove(A being) {
-		_world.removeFromGroup(being, this);
-		return being;
+	public A remove(A object) {
+		_world.removeFromGroup(object, this);
+		if(hasNeedsMoreSamples() && object.needsMoreSamples()) {
+			_needsMoreSamples.remove(object);
+		}
+		return object;
 	}
 	
 	/**
@@ -90,7 +101,11 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	 */
 	public void removeAll(GenericGroup<A,?> group) {
 		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
-			_world.removeFromGroup(iter.next(), this);
+			A object = iter.next();
+			if(hasNeedsMoreSamples() && object.needsMoreSamples()) {
+				_needsMoreSamples.remove(object);
+			}
+			_world.removeFromGroup(object, this);
 		}
 	}
 	
@@ -102,6 +117,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ){
 			_world.removeFromGroup(iter.next(), this);
 		}
+		_needsMoreSamples.clear();
 	}
 	
 	/**
@@ -114,6 +130,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ) {
 			_world.deleteFromGroups(iter.next());
 		}
+		_needsMoreSamples.clear();
 	}
 	
 	/**
@@ -131,6 +148,22 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 		return _world;
 	}
 
+	void addNeedsMoreSamples(A object) {
+		_needsMoreSamples.addLast(object);
+	}
+	
+	Iterator<A> getNeedsMoreSamples() {
+		return _needsMoreSamples.iterator();
+	}
+	
+	/**
+	 * Whether the group contains objects that need more samples on this update.
+	 * @return	true if objects within the group need more samples, false if no objects do
+	 */
+	public boolean hasNeedsMoreSamples() {
+		return !_needsMoreSamples.isEmpty();
+	}
+	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
 	//Left blank here, must be overrided by user to add functionality
 	public void handleOscMessage(OscMessage m) {

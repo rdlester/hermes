@@ -167,61 +167,49 @@ public class World extends Thread {
 	 * Register an interaction to be handled on the update loop.
 	 * @param A					the first interacting group
 	 * @param B					the second interacting group
-	 * @param inter				the interaction handler
-	 * @param applyImmediate	whether to apply the interaction immediately
-	 * 								upon detection or later
+	 * @param inter				the Interactor that detects and handles this interaction
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, 
-			boolean applyImmediate) {
-		_interactions.add(new Interaction(A, B, inter, applyImmediate, null));
+	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter) {
+		_interactions.add(new Interaction(A, B, inter, null));
 	}
 	
 	/**
 	 * Register an interaction to be handled on the update loop.
 	 * @param A			the first interacting group
 	 * @param B			the second interacting group
-	 * @param inter		the interaction handler
-	 * @param applyImmediate	whether to apply the interaction immediately
-	 * 								upon detection or later
+	 * @param inter		the Interactor that detects and handles this interaction
 	 * @param optimizer	optimizer to use for the interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, 
-			boolean applyImmediate, Optimizer optimizer) {
-		_interactions.add(new Interaction(A, B, inter, applyImmediate, optimizer));
+	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, Optimizer optimizer) {
+		_interactions.add(new Interaction(A, B, inter, optimizer));
 	}
 	
 	/**
 	 * register an interaction between A and all objects in B
 	 * @param A					an HObjects
 	 * @param B					a group
-	 * @param inter				an interaction between the type of A and the type of B's elements 
-	 * @param applyImmediate	whether to apply the interaction immediately
-	 * 								upon detection or later
+	 * @param inter				the Interactor that detects and handles this interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(HObject A, GenericGroup B, Interactor inter, 
-			boolean applyImmediate) {
+	public void registerInteraction(HObject A, GenericGroup B, Interactor inter) {
 		Group groupA = new Group(this);
 		groupA.add(A);
-		_interactions.add(new Interaction(groupA, B, inter, applyImmediate, null));
+		_interactions.add(new Interaction(groupA, B, inter, null));
 	}
 	
 	/**
 	 * register an interaction between B and all objects in A
 	 * @param A					a group
 	 * @param B					a being
-	 * @param inter				the interaction handler 
-	 * @param applyImmediate	whether to apply the interaction immediately
-	 * 								upon detection or later
+	 * @param inter				the Interactor that detects and handles this interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(GenericGroup A, HObject B, Interactor inter, 
-			boolean applyImmediate) {
+	public void registerInteraction(GenericGroup A, HObject B, Interactor inter) {
 		Group groupB = new Group(this);
 		groupB.add(B);
-		_interactions.add(new Interaction(A, groupB, inter, applyImmediate, null));
+		_interactions.add(new Interaction(A, groupB, inter, null));
 	}
 	
 	/**
@@ -233,13 +221,12 @@ public class World extends Thread {
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(HObject A, HObject B, Interactor inter, 
-			boolean applyImmediate) {
+	public void registerInteraction(HObject A, HObject B, Interactor inter) {
 		Group groupA = new Group(this);
 		groupA.add(A);
 		Group groupB = new Group(this);
 		groupB.add(B);
-		_interactions.add(new Interaction(groupA, groupB, inter, applyImmediate, null));
+		_interactions.add(new Interaction(groupA, groupB, inter, null));
 	}
 	
 	/**
@@ -300,18 +287,16 @@ public class World extends Thread {
 		// 1. handle the message queue from the post office
 		_postOffice.checkMail();
 		
-		// 2. go through the registered groups to update beings individually
+		// 2. go through the registered groups and update them
 		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
 			GenericGroup group = iter.next();
 			group.update();
 		}
-		
-		LinkedList<DetectedInteraction> unresolvedInteractions = new LinkedList<DetectedInteraction>();
 				
 		// 3. apply being updates
 		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
 		
-		// 3. go through the registered interactions in order
+		// 4. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
