@@ -164,6 +164,10 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 		return !_needsMoreSamples.isEmpty();
 	}
 	
+	void clearNeedsMoreSamples() {
+		_needsMoreSamples.clear();
+	}
+	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
 	//Left blank here, must be overrided by user to add functionality
 	public void handleOscMessage(OscMessage m) {

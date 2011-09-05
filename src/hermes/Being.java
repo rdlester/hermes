@@ -196,7 +196,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	public boolean needsMoreSamples() {
-		return _done;
+		return !_done;
 	}
 	
 	public void update() {}

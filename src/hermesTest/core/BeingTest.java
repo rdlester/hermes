@@ -2,6 +2,9 @@ package src.hermesTest.core;
 
 import org.junit.*;
 
+import processing.core.PApplet;
+import processing.core.PGraphics;
+
 import static org.junit.Assert.*;
 import src.hermes.*;
 import src.hermes.hshape.*;
@@ -13,17 +16,35 @@ import static src.hermes.HermesMath.*;
  * @author Sam
  *
  */
-public class BeingTest extends Being {
+public class BeingTest {
 
-	public BeingTest() {
-		super(new Rectangle(zeroVector(),1.0f,1.0f), zeroVector());
-	}
+	public class TestBeing extends Being {
 	
-	BeingTest being;
+		public TestBeing() {
+			super(new Rectangle(zeroVector(),1.0f,1.0f), zeroVector());
+		}
+	
+		public long updateTime() {
+			return super.updateTime();
+		}
+		
+		public void step() {
+			super.step();
+		}
+		
+		public void EulerIntegratePosition(double dt) {
+			super.EulerIntegratePosition(dt);
+		}
+		
+		public void draw() {}
+	}
 	
 	@Before
 	public void setup() {
-		being = new BeingTest();
+		PApplet applet = new PApplet();
+		applet.g = new PGraphics();
+		Hermes.setPApplet(applet);
+		applet.rectMode(PApplet.CENTER);
 	}
 	
 	/**
@@ -31,6 +52,7 @@ public class BeingTest extends Being {
 	 */
 	@Test
 	public void test_updateTime() {
+		TestBeing being = new TestBeing();	
 		being.updateTime();
 		try {
 			Thread.sleep(10);
@@ -41,6 +63,7 @@ public class BeingTest extends Being {
 
 	@Test
 	public void test_EulerIntegratePosition() {
+		TestBeing being = new TestBeing();	
 		being.setVelocity(makeVector(0.5f,0.0f,0.0f));
 		being.EulerIntegratePosition(0.5);
 		assertEquals(being.getPosition().x, 0.25f, 1e-8);
@@ -50,6 +73,7 @@ public class BeingTest extends Being {
 	
 	@Test
 	public void test_step() {
+		TestBeing being = new TestBeing();	
 		being.setVelocity(makeVector(0.5f,0.0f,0.0f));
 		being.updateTime();
 		try {
@@ -63,6 +87,7 @@ public class BeingTest extends Being {
 	
 	@Test
 	public void test_processUpdate() {
+		TestBeing being = new TestBeing();	
 		being.setVelocity(makeVector(0.5f,0.0f,0.0f));
 		being.updateTime();
 		try {
@@ -74,7 +99,5 @@ public class BeingTest extends Being {
 		assertEquals(being.getPosition().z, 0.0f, 1e-2);
 	}
 	
-	@Override
-	public void draw() {}
 	
 }

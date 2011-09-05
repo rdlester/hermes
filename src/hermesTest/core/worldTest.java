@@ -2,13 +2,17 @@ package src.hermesTest.core;
 
 
 import org.junit.*;
+
 import static org.junit.Assert.*;
+
+import java.util.Hashtable;
 import java.util.LinkedList;
 import src.hermes.*;
 import static src.hermes.HermesMath.*;
 import src.hermes.hshape.*;
 import src.hermes.postoffice.PostOffice;
 import processing.core.PApplet;
+import processing.core.PGraphics;
 
 public class worldTest {
 
@@ -94,33 +98,86 @@ public class worldTest {
 		
 	}
 	
-	class TestInteractor1 implements Interactor<TestBeing2,TestBeing2> {
+	class TestBeing3 extends Being {
+		
+		int _stepsPerUpdate;
+		int _steps;
+		Hashtable<TestBeing3,Integer> _checkedInteractions;
+		
+		public TestBeing3(int numSteps) {
+			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
+			_stepsPerUpdate = numSteps;
+			_checkedInteractions = new Hashtable<TestBeing3,Integer>();
+		}
+		
+		public void update() {
+			_steps = 0;
+		}
+		
+		public void step() {
+			_steps++;
+			if(_steps < _stepsPerUpdate)
+				setDone(false);
+		}
+		
+		public void interactWith(TestBeing3 other) {
+			Integer previous = _checkedInteractions.get(other);
+			if(previous == null) 
+				_checkedInteractions.put(other, 1);
+			else 
+				_checkedInteractions.put(other, previous + 1);
+		}
+		
+		public int getInteractionsWith(TestBeing3 other) {
+			Integer interactions = _checkedInteractions.get(other);
+			return (interactions != null ? interactions : 0);
+		}
+		
+	}
+	
+	class MultisampleTestInteractor extends Interactor<TestBeing3,TestBeing3> {
+		
+		public boolean detect(TestBeing3 being1, TestBeing3 being2) {
+			return true;
+		}
+		
+		public void handle(TestBeing3 being1, TestBeing3 being2) {
+			being1.interactWith(being2);
+			being2.interactWith(being1);
+		}
+		
+	}
+	
+	class TestInteractor1 extends Interactor<TestBeing2,TestBeing2> {
 
 		public boolean detect(TestBeing2 being1, TestBeing2 being2) {
 			return true;
 		}
 
-		public boolean handle(TestBeing2 being1, TestBeing2 being2) {
+		public void handle(TestBeing2 being1, TestBeing2 being2) {
 			being1.interacted = true;
 			being2.interacted = true;
-			return true;
 		}
 		
 	}
 	
 	class TestInteractor2 extends TestInteractor1 {
 		
-		public boolean handle(TestBeing2 being1, TestBeing2 being2) {
-			return true;
-		}
+		public void handle(TestBeing2 being1, TestBeing2 being2) {}
 		
+	}
+	
+	@Before
+	public void setup() {
+		PApplet applet = new PApplet();
+		applet.g = new PGraphics();
+		Hermes.setPApplet(applet);
+		applet.rectMode(PApplet.CENTER);
 	}
 	
 	@Test
 	public void test_UpdateBeings() {
 		updated1 = new LinkedList<TestBeing1>();
-		PApplet papp = new PApplet();
-		Hermes.setPApplet(papp);
 		TestWorld1 tw1 = new TestWorld1(3);
 		TestBeing1 b1 = new TestBeing1();
 		TestBeing1 b2 = new TestBeing1();
@@ -184,7 +241,7 @@ public class worldTest {
 		World w = new World(new PostOffice(), new Camera());
 		TestBeing2 b1 = new TestBeing2();
 		TestBeing2 b2 = new TestBeing2();
-		w.registerInteraction(b1, b2, new TestInteractor1(), true);
+		w.registerInteraction(b1, b2, new TestInteractor1());
 		w.update();
 		w.update();
 		assertTrue(b1.interacted);
@@ -192,7 +249,7 @@ public class worldTest {
 		w = new World(new PostOffice(), new Camera());
 		b1 = new TestBeing2();
 		b2 = new TestBeing2();
-		w.registerInteraction(b1, b2, new TestInteractor1(), false);
+		w.registerInteraction(b1, b2, new TestInteractor1());
 		w.update();
 		w.update();
 		assertTrue(b1.interacted);
@@ -200,11 +257,33 @@ public class worldTest {
 		w = new World(new PostOffice(), new Camera());
 		b1 = new TestBeing2();
 		b2 = new TestBeing2();
-		w.registerInteraction(b1, b2, new TestInteractor2(), false);
+		w.registerInteraction(b1, b2, new TestInteractor2());
 		w.update();
 		w.update();
 		assertFalse(b1.interacted);
 		assertFalse(b2.interacted);
+	}
+	
+	@Test
+	public void test_multisampledInteractions() {
+		World w = new World(new PostOffice(), new Camera());
+		Group<TestBeing3> g1 = new Group<TestBeing3>(w);
+		Group<TestBeing3> g2 = new Group<TestBeing3>(w);
+		TestBeing3[] beings = new TestBeing3[7];
+		g1.add(beings[0] = new TestBeing3(1));
+		g1.add(beings[1] = new TestBeing3(2));
+		g1.add(beings[2] = new TestBeing3(3));
+		g2.add(beings[3] = new TestBeing3(1));
+		g2.add(beings[4] = new TestBeing3(2));
+		g2.add(beings[5] = new TestBeing3(3));
+		g2.add(beings[6] = new TestBeing3(4));
+		w.registerInteraction(g1, g2, new MultisampleTestInteractor());
+		w.update();
+		assertEquals(beings[0].getInteractionsWith(beings[1]), 0);
+		assertEquals(beings[0].getInteractionsWith(beings[2]), 0);
+		assertEquals(beings[0].getInteractionsWith(beings[3]), 1);
+		assertEquals(beings[0].getInteractionsWith(beings[4]), 2);
+		assertEquals(beings[0].getInteractionsWith(beings[5]), 0);
 	}
 	
 	@Test

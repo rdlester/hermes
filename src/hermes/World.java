@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Collection;
-import java.util.ListIterator;
 
 import src.hermes.postoffice.PostOffice;
 
@@ -78,7 +77,7 @@ public class World extends Thread {
 		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
-		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor(), true);
+		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor());
 
 		lockUpdateRate(60); // lock the update rate to 60 updates/sec by default
 	}
@@ -287,16 +286,7 @@ public class World extends Thread {
 		// 1. handle the message queue from the post office
 		_postOffice.checkMail();
 		
-		// 2. go through the registered groups and update them
-		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
-			GenericGroup group = iter.next();
-			group.update();
-		}
-				
-		// 3. apply being updates
-		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
-		
-		// 4. go through the registered interactions in order
+		// 2. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 			Interaction interaction = iter.next();
@@ -334,52 +324,110 @@ public class World extends Thread {
 			HObject being2 = di.get_being2();
 			synchronized(being1) {
 				synchronized(being2) {
-					if(!interactor.handle(being1, being2))
-							unresolvedInteractions.add(di);
+					interactor.handle(being1, being2);
 				}
 			}
 		}
 		
-		// deal with anything unresolved
-		while(!unresolvedInteractions.isEmpty() && !unresolvedUpdates.isEmpty()) {
-			// perform updates
-			unresolvedUpdates = updateHelper(unresolvedUpdates);
-			// check for new interactions
-			LinkedList<DetectedInteraction> newInteractions = new LinkedList<DetectedInteraction>();
-			for(ListIterator<DetectedInteraction> iter = unresolvedInteractions.listIterator(); iter.hasNext(); ) {
-				// go through all unresolved interactions
-				DetectedInteraction inter = iter.next();
-				GenericGroup groupA = inter.getInteraction().getA();
-				GenericGroup groupB = inter.getInteraction().getB();
-				HObject A = inter.get_being1();
-				HObject B = inter.get_being2();
-				// check A against all members of groupB for new interactions
-				for(Iterator<Being> iterB = groupB.iterator(); iterB.hasNext(); ) {
-					Being beingB = iterB.next();
-					if(inter.get_interactor().detect(A, beingB)) // if we find a new one, add it
-						newInteractions.add(new DetectedInteraction(A, beingB, inter.getInteraction()));
-				}
-				// check B against all members of groupA for new interactions
-				for(Iterator<Being> iterA = groupA.iterator(); iterA.hasNext(); ) {
-					Being beingA = iterA.next(); 
-					if(inter.get_interactor().detect(beingA, B) && beingA != A)
-						newInteractions.add(new DetectedInteraction(beingA, B, inter.getInteraction()));
-				}
-			}
-			// try to resolve everything
-			for(ListIterator<DetectedInteraction> iter = newInteractions.listIterator(); iter.hasNext(); ) {
-				// go through all unresolved interactions
-				DetectedInteraction inter = iter.next();
-				HObject A = inter.get_being1();
-				HObject B = inter.get_being2();
-				// try to resolve the interaction
-				if(inter.get_interactor().handle(A, B))
-					iter.remove(); // if it is resolved, get rid of it
-			}
-			unresolvedInteractions = newInteractions;
+		// 3. go through the registered groups and update them
+		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
+			GenericGroup group = iter.next();
+			group.update();
 		}
 		
 		resolveGroupQueues();
+		
+		// 4. apply being updates
+		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
+		
+		// deal with anything unresolved
+		while(!unresolvedUpdates.isEmpty()) {
+			
+			// handle unresolved interactions
+			detectedInteractionsQ = new LinkedList<DetectedInteraction>();
+			for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
+				Interaction interaction = iter.next();
+				
+				// we only do an interaction if we need to
+				if(!interaction.getA().hasNeedsMoreSamples() && ! interaction.getB().hasNeedsMoreSamples())
+					continue;
+				
+				InteractionHandler handler = new InteractionHandler(interaction, detectedInteractionsQ);
+				
+				if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
+					for(Iterator iterA = interaction.getA().getNeedsMoreSamples(); iterA.hasNext(); ) {
+						HObject object1 = (HObject)iterA.next();
+						if(!object1.needsMoreSamples()) {
+							// if A is done updating, remove it
+							iterA.remove();
+							continue;
+						}
+						for(Iterator iterB = interaction.getB().iterator(); iterB.hasNext(); ) {
+							HObject object2 = (HObject)iterB.next();
+							handler.interactionHandler(object1, object2);
+						}
+					}
+					for(Iterator iterB = interaction.getB().getNeedsMoreSamples(); iterB.hasNext(); ) {
+						HObject object2 = (HObject)iterB.next();
+						if(!object2.needsMoreSamples()) {
+							// if A is done updating, remove it
+							iterB.remove();
+							continue;
+						}
+						for(Iterator iterA = interaction.getA().iterator(); iterA.hasNext(); ) {
+							HObject object1 = (HObject)iterA.next();
+							if(object1.needsMoreSamples()) // if obj1 is multisampled its already been checked with obj2
+								continue;
+							handler.interactionHandler(object1, object2);
+						}
+					}
+				} else { // if this is an optimized interaction
+					Optimizer optimizer = interaction.getOptimizer();
+					optimizer.detect(interaction.getA(), interaction.getB(), handler);
+				}
+				
+				//handle all detected interactions here (for not immediate interactions)
+				for(Iterator<DetectedInteraction> diIter = detectedInteractionsQ.iterator(); diIter.hasNext();) {
+					DetectedInteraction di = diIter.next();
+					Interactor interactor = di.get_interactor();
+					HObject being1 = di.get_being1();
+					HObject being2 = di.get_being2();
+					synchronized(being1) {
+						synchronized(being2) {
+							interactor.handle(being1, being2);
+						}
+					}
+				}
+				
+				resolveGroupQueues();
+				
+				// perform updates
+				unresolvedUpdates = updateHelper(unresolvedUpdates);
+				
+			}
+			//handle all detected interactions here (for not immediate interactions)
+			for(Iterator<DetectedInteraction> iter = detectedInteractionsQ.iterator(); iter.hasNext();) {
+				DetectedInteraction di = iter.next();
+				Interactor interactor = di.get_interactor();
+				HObject being1 = di.get_being1();
+				HObject being2 = di.get_being2();
+				synchronized(being1) {
+					synchronized(being2) {
+						interactor.handle(being1, being2);
+					}
+				}
+			}
+		}
+		
+		// make sure there's nothing list in the needsMoreSamples lists
+		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
+			Interaction interaction = iter.next();
+			// we only do an interaction if we need to
+			if(interaction.getA().hasNeedsMoreSamples())
+				interaction.getA().clearNeedsMoreSamples();
+			if(interaction.getB().hasNeedsMoreSamples())
+				interaction.getB().clearNeedsMoreSamples();
+		}
 		
 		long elapsed = System.currentTimeMillis() - time;
 		if(elapsed < _updateLength) {
