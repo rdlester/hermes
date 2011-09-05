@@ -10,7 +10,7 @@ import src.hermes.hshape.Rectangle;
 /**
  * used to determine what should be drawn
  */
-public class Camera extends Being {
+public class HCamera extends Being {
 
 	//width & height of user's world coordinates
 	private float _worldCoordinateWidth;
@@ -26,12 +26,12 @@ public class Camera extends Being {
 	Boolean _switchToBeingsPending;
 
 	//Camera's default constructor which uses 1 to 1 world pixel ratio
-	public Camera() {
+	public HCamera() {
 		this(0,0,Hermes.getPApplet().width,Hermes.getPApplet().height);
 	}
 
 	//Camera's constructor with world coordinates for translation
-	public Camera(float x, float y, float worldCoordinateWidth, float worldCoordinateHeight) {
+	public HCamera(float x, float y, float worldCoordinateWidth, float worldCoordinateHeight) {
 		super(new Rectangle(new PVector(x,y), new PVector(0,0), new PVector(worldCoordinateWidth, worldCoordinateHeight)),
 				HermesMath.zeroVector());
 		_worldCoordinateWidth = worldCoordinateWidth;
