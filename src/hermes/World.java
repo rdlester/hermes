@@ -142,7 +142,7 @@ public class World extends Thread {
 	/**
 	 * resolves the add, remove, and delete queues, in that order
 	 */
-	private void resolveGroupQueues() {
+	public void resolveGroupQueues() {
 		// resolve the add queue first
 		for(Iterator<Pair<HObject,GenericGroup<?,?>>> iter = _addQueue.iterator(); iter.hasNext(); ) {
 			Pair<HObject,GenericGroup<?,?>> pair = iter.next();
@@ -342,14 +342,14 @@ public class World extends Thread {
 		
 		// deal with anything unresolved
 		while(!unresolvedUpdates.isEmpty()) {
-			
+	
 			// handle unresolved interactions
 			detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 			for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
 				Interaction interaction = iter.next();
-				
 				// we only do an interaction if we need to
-				if(!interaction.getA().hasNeedsMoreSamples() && ! interaction.getB().hasNeedsMoreSamples())
+				if(!interaction.getInteractor().multisampled() || 
+						(!interaction.getA().hasNeedsMoreSamples() && !interaction.getB().hasNeedsMoreSamples()))
 					continue;
 				
 				InteractionHandler handler = new InteractionHandler(interaction, detectedInteractionsQ);
@@ -399,24 +399,13 @@ public class World extends Thread {
 					}
 				}
 				
-				resolveGroupQueues();
-				
-				// perform updates
-				unresolvedUpdates = updateHelper(unresolvedUpdates);
-				
 			}
-			//handle all detected interactions here (for not immediate interactions)
-			for(Iterator<DetectedInteraction> iter = detectedInteractionsQ.iterator(); iter.hasNext();) {
-				DetectedInteraction di = iter.next();
-				Interactor interactor = di.get_interactor();
-				HObject being1 = di.get_being1();
-				HObject being2 = di.get_being2();
-				synchronized(being1) {
-					synchronized(being2) {
-						interactor.handle(being1, being2);
-					}
-				}
-			}
+			
+			resolveGroupQueues();
+			
+			// perform updates
+			unresolvedUpdates = updateHelper(unresolvedUpdates);
+			
 		}
 		
 		// make sure there's nothing list in the needsMoreSamples lists

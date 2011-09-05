@@ -102,11 +102,13 @@ public class worldTest {
 		
 		int _stepsPerUpdate;
 		int _steps;
+		int _id;
 		Hashtable<TestBeing3,Integer> _checkedInteractions;
 		
-		public TestBeing3(int numSteps) {
+		public TestBeing3(int numSteps, int id) {
 			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
 			_stepsPerUpdate = numSteps;
+			_id = id;
 			_checkedInteractions = new Hashtable<TestBeing3,Integer>();
 		}
 		
@@ -116,8 +118,11 @@ public class worldTest {
 		
 		public void step() {
 			_steps++;
-			if(_steps < _stepsPerUpdate)
+			if(_steps < _stepsPerUpdate) {
 				setDone(false);
+				System.out.println(_id + " needs more samples");
+			} else 
+				System.out.println(_id + " done sampling");
 		}
 		
 		public void interactWith(TestBeing3 other) {
@@ -137,6 +142,10 @@ public class worldTest {
 	
 	class MultisampleTestInteractor extends Interactor<TestBeing3,TestBeing3> {
 		
+		public MultisampleTestInteractor() {
+			super(true, true);
+		}
+		
 		public boolean detect(TestBeing3 being1, TestBeing3 being2) {
 			return true;
 		}
@@ -144,6 +153,7 @@ public class worldTest {
 		public void handle(TestBeing3 being1, TestBeing3 being2) {
 			being1.interactWith(being2);
 			being2.interactWith(being1);
+			System.out.println(being1._id + " interacted with " + being2._id);
 		}
 		
 	}
@@ -266,24 +276,47 @@ public class worldTest {
 	
 	@Test
 	public void test_multisampledInteractions() {
-		World w = new World(new PostOffice(), new Camera());
+		World w = new World(new PostOffice(), new HCamera());
 		Group<TestBeing3> g1 = new Group<TestBeing3>(w);
 		Group<TestBeing3> g2 = new Group<TestBeing3>(w);
 		TestBeing3[] beings = new TestBeing3[7];
-		g1.add(beings[0] = new TestBeing3(1));
-		g1.add(beings[1] = new TestBeing3(2));
-		g1.add(beings[2] = new TestBeing3(3));
-		g2.add(beings[3] = new TestBeing3(1));
-		g2.add(beings[4] = new TestBeing3(2));
-		g2.add(beings[5] = new TestBeing3(3));
-		g2.add(beings[6] = new TestBeing3(4));
+		g1.add(beings[0] = new TestBeing3(1,0));
+		g1.add(beings[1] = new TestBeing3(2,1));
+		g1.add(beings[2] = new TestBeing3(3,2));
+		g2.add(beings[3] = new TestBeing3(1,3));
+		g2.add(beings[4] = new TestBeing3(2,4));
+		g2.add(beings[5] = new TestBeing3(3,5));
+		g2.add(beings[6] = new TestBeing3(4,6));
+		for(int i = 0; i < beings.length; i++)
+			w.registerBeing(beings[i], true);
 		w.registerInteraction(g1, g2, new MultisampleTestInteractor());
+		System.out.println("multisample test");
+		w.resolveGroupQueues();
 		w.update();
+		for(int i = 0; i < beings.length; i++) {
+			for(int j = i + 1; j < beings.length; j++) {
+				//System.out.println(i + " had " + beings[i].getInteractionsWith(beings[j]) + " interactions with " + j);
+			}
+		}
+		System.out.println("done testing multisampling");
 		assertEquals(beings[0].getInteractionsWith(beings[1]), 0);
 		assertEquals(beings[0].getInteractionsWith(beings[2]), 0);
 		assertEquals(beings[0].getInteractionsWith(beings[3]), 1);
 		assertEquals(beings[0].getInteractionsWith(beings[4]), 2);
-		assertEquals(beings[0].getInteractionsWith(beings[5]), 0);
+		assertEquals(beings[0].getInteractionsWith(beings[5]), 3);
+		assertEquals(beings[0].getInteractionsWith(beings[6]), 4);
+		assertEquals(beings[1].getInteractionsWith(beings[2]), 0);
+		assertEquals(beings[1].getInteractionsWith(beings[3]), 2);
+		assertEquals(beings[1].getInteractionsWith(beings[4]), 2);
+		assertEquals(beings[1].getInteractionsWith(beings[5]), 3);
+		assertEquals(beings[1].getInteractionsWith(beings[6]), 4);
+		assertEquals(beings[2].getInteractionsWith(beings[3]), 3);
+		assertEquals(beings[2].getInteractionsWith(beings[4]), 3);
+		assertEquals(beings[2].getInteractionsWith(beings[5]), 3);
+		assertEquals(beings[2].getInteractionsWith(beings[6]), 4);
+		assertEquals(beings[5].getInteractionsWith(beings[5]), 0);
+		assertEquals(beings[5].getInteractionsWith(beings[6]), 0);
+		assertEquals(beings[5].getInteractionsWith(beings[1]), 3);
 	}
 	
 	@Test
