@@ -14,10 +14,12 @@ import processing.core.*;
  * <ul>
  * <li>Position</li>
  * <li>Velocity</li>
- * <li>Shape</li>
+ * <li>Shape</li></ul>
+ * Furthermore, beings can be: 
+ * <ul>
  * <li>Drawn to screen</li>
- * <li>Interacts with other Beings</li>
- * <li>Updates itself</li>
+ * <li>Interact with other Beings</li>
+ * <li>Update themselves</li>
  * </ul>
  * Subclasses of <code>Being</code> should be game entities that have at least one of these properties.
  * Subclass <code>HObject</code> directly only if the entity has none of these properties.
