@@ -66,7 +66,7 @@ public class AnimatedSprite {
 	 * Sets the active animation that the Sprite will use when drawn
 	 * <p>Note: This uses parameters internal to the specified animation for :
 	 * millisecondsPerFrame, interruptible, isLooping, numberOfLoops.
-	 * If you want to override any of these temporarily (ie just for this playback, this does
+	 * If you want to override any of these temporarily (ie: just for this playback, this does
 	 * not change the Animation's internal parameters) use the override methods described
 	 * in this class following your call to this method. Eg.</p> 
 	 * <code>
