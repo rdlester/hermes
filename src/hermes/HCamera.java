@@ -207,11 +207,14 @@ public class HCamera extends Being {
 				//pApplet.scale(_zoomFactor);
 				//save this state
 				pApplet.pushMatrix();
+				//Push style
+				pApplet.pushStyle();
 
 				//draw being (will draw itself as though it were at (0,0))
 				being.draw();
 
-				//pop the two states
+				//pop the two states and styles
+				pApplet.popStyle();
 				pApplet.popMatrix();
 				pApplet.popMatrix();
 			
