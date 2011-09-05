@@ -7,14 +7,14 @@ import java.util.LinkedList;
 import src.hermes.postoffice.*;
 
 /**
- * <p>Defines a generic "group" of beings that wraps a collection of <code>HObject</code>s.
+ * Defines a generic "group" of beings that wraps a collection of <code>HObject</code>s.
  * Interactions are registered with the world between groups. Objects can be added to or removed
  * from groups while the loop is running, but these operations will not be applied until the
- * end of the current update.</p>
- * 
- * <p>The primary purpose of grouping is to allow addition and removal of objects from updates
+ * end of the current update.
+ * <p>
+ * The primary purpose of grouping is to allow addition and removal of objects from updates
  * without threading issues. However, groups can also be used to store data about or provide
- * access to the contained objects.</p> 
+ * access to the contained objects.
  *
  * @param <A>	the type of the objects in the group
  * @param <B>	the type of underlying collection used

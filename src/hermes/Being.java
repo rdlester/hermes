@@ -19,12 +19,12 @@ import processing.core.*;
  * <li>Interacts with other Beings</li>
  * <li>Updates itself</li>
  * </ul>
- * Subclasses of Being should be game entities that have at least one of these properties.
- * Subclass HObject directly only if the entity has none of these properties.
+ * Subclasses of <code>Being</code> should be game entities that have at least one of these properties.
+ * Subclass <code>HObject</code> directly only if the entity has none of these properties.
  * <p>
  * If you want your Being to draw itself to screen, override the draw() method.
  * If you want your Being to update itself, override the update() method.
- * If you want your Being to receive input messages from the PostOffice,
+ * If you want your Being to receive input messages from the <code>PostOffice</code>,
  * override the message handler method specific to the type of message you want.
  */
 public abstract class Being extends HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
