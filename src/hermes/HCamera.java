@@ -8,18 +8,21 @@ import processing.core.*;
 import src.hermes.hshape.Rectangle;
 
 /**
- * <code>HCamera</code> determines which <code>Being</code>s get drawn. You can think of it as a window into the <code>World</code>, and any <code>Being</code>s that are inside of its bounding box will have their <code>draw()</code> methods called automatically.
+ * <code>HCamera</code> determines which <code>Being</code>s get drawn. You can think of it as a window into the <code>World</code>, 
+ * and any <code>Being</code>s that are inside of its bounding box will have their <code>draw()</code> methods called automatically.
  * 
  * <p>
  * The <code>World</code> class needs to be passed an <code>HCamera</code> when constructed.  
- * Any <code>Being</code>(s) registered with that <code>World</code> will automatically get drawn if they are spatially within that <code>HCamera</code>'s bounding box. 
+ * Any <code>Being</code>(s) registered with that <code>World</code> will automatically get drawn if they are
+ * spatially within that <code>HCamera</code>'s bounding box. 
  * 
  * <p>
  * An <code>HCamera</code>'s bounding box is determined at construction - by default, it uses the pixel width and height of the PApplet that was passed to <code>Hermes</code>.
  * Alternatively, <code>HCamera</code> has an alternate constructor that allows you to set your own custom screen to world coordinate ratio. 
+ * If you wish to use a coordinate system other than pixels coordinates, simply set the width and height of the camera to the area of the world you want the camera to see at a time.
  * 
  * <p>
- * Furthermore, <code>HCamera</code> extends <code>Being</code>, which allows it to interact with other entities in the game. 
+ * <code>HCamera</code> extends <code>Being</code>, which allows it to move around and interact with other entities in the game. 
  * This opens interesting possibilities, such as having a camera follow a character, having the camera move based on game events or other logic, etc. 
  * 
  * 
@@ -44,7 +47,7 @@ public class HCamera extends Being {
 	
 /**
 	Default HCamera constructor. 
-	Passing no arguments gives HCamera a 1-to-1 world pixel ratio (the world coordinates are the same as the screen's pixel coordinates)
+	Passing no arguments gives HCamera a 1-to-1 world pixel ratio (the world coordinate units are the same size as the screen's pixel coordinates)
 	 
  */
 	public HCamera() {
@@ -53,11 +56,11 @@ public class HCamera extends Being {
 
 
 	/**
-	 * 
+	 * Constructs an HCamera with a custom coordinate unit size.
 	 * @param x					the starting x coordinate of the camera
 	 * @param y					the starting y coordinate of the camera
-	 * @param cameraWidth		the width of the camera. this will determine the screen to world coordinate ratio's width
-	 * @param cameraHeight		the height of the camera. this will determine the screen to world coordinate ratio's height
+	 * @param cameraWidth		the width of the camera view, in world coordinate units. This determines how far the camera can see in the x direction.
+	 * @param cameraHeight		the height of the camera view. This determines how far the camera can see in the y direction.
 	 */
 	public HCamera(float x, float y, float cameraWidth, float cameraHeight) {
 		super(new Rectangle(new PVector(x,y), new PVector(0,0), new PVector(cameraWidth, cameraHeight)),
