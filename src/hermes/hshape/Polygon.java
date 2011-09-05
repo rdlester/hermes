@@ -12,15 +12,15 @@ import static src.hermes.HermesMath.*;
 
 /**
  * Represents an arbitrary convex polygon.
- * <p>Position represents 'center.'
- * 
- * <p>Vertex Points are positioned relative center.
+ * <p>
+ * Position represents 'center.'
+ * <p>
+ * Vertex Points are positioned relative center.
  * Each point is assumed to be next to points before and after it in list.
  * Make sure your List of points is ordered correctly!
- * 
- * <p>A Polygon must also be convex,
+ * <p>
+ * A Polygon must also be convex,
  * concave polygons will break collision detection.
- * CompoundShape must be used for concave polygons.
  *
  */
 public class Polygon extends HShape {
