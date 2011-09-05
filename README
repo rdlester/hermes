@@ -1,6 +1,10 @@
 HERMES
 
-by skeilert, jkovnats, rdlester, cnovello
+by
+Sam Eilertsen
+Jennifer Kovnats
+Ryan Lester
+Chris Novello (http://paperkettle.com)
 
 DOCUMENTATION
 
@@ -9,6 +13,9 @@ web/howto.txt and web/index.html contain basic documentation about the library. 
 SOURCE
 
 The full source code of the library is in src/. The library itself is in the package src/hermes, and testing code is in src/hermesTest.
+
+TO BUILD:
+Use the provided Ant build script in the Resources folder. You may have to do some tweaking to get it working on your operating system. At the least, you'll have to update the properties defined in build.properties to the correct paths for your computer. You may have to tweak build.xml as well to get it working. The build is currently configured to exclude the tests; please don't change this.
 
 EXAMPLES
 

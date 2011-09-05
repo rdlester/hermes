@@ -2,10 +2,13 @@ package src.hermes;
 
 /**
  * Determines which beings are compared and potentially interacted by <code>Interactor</code>.
- * Group B is given as argument to constructor and organized according to optimizer type.
  * Unoptimized interactions check all members of A against all the members of B (order n^2).
- * Sample advanced optimizers include quadtree.
+ * Optimizers allow for the creation of data structures which will speed interactions.
+ * <p>
+ * Group B is given as argument to constructor and organized according to optimizer type.
  * Detect checks body A against the structure formed from Group B.
+ * <p>
+ * Sample advanced optimizers include quadtree.
  */
 public interface Optimizer<A extends HObject, B extends HObject, 
 				GroupA extends GenericGroup<A,?>, GroupB extends GenericGroup<B,?>> {
