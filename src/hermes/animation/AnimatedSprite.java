@@ -68,10 +68,12 @@ public class AnimatedSprite {
 	 * millisecondsPerFrame, interruptible, isLooping, numberOfLoops.
 	 * If you want to override any of these temporarily (ie just for this playback, this does
 	 * not change the Animation's internal parameters) use the override methods described
-	 * in this class following your call to this method. Eg.</p>
+	 * in this class following your call to this method. Eg.</p> 
+	 * <code>
 	 * <p>setActiveAnimation(3);
 	 * <br>overrideInterruptible(true); //allows this playback to be interrupted</p>
 	 * <br>overrideNumberOfTimesToPlay(3);//will play through the Animation 3 times
+	 * </code>
 	 * @param animationIndex numerical index used to select a specific animation of a sprite
 	 */
 	public void setActiveAnimation(int animationIndex) {
@@ -180,7 +182,7 @@ public class AnimatedSprite {
 
 	/**
 	 * Sets the initial frame for this playback. It is basically the loop's head marker. A single play of the Animation will start at the initial frame,
-	 * and play each frame in the direction specified by playDirectionLeftToRight() or playDirectionRightToLeft()
+	 * and play each frame in the direction specified by <code>playDirectionLeftToRight()</code> or <code>playDirectionRightToLeft()</code>
 	 * until the last frame is reached. If the Animation must loop again, it will start the process over
 	 * again at the initial frame.
 	 * <br>Note: by default this is set to 0, the index of the leftmost frame from the Animation
@@ -207,7 +209,7 @@ public class AnimatedSprite {
 
 	/**
 	 * Sets the last frame for this playback. It is basically the loop's end marker. A single play of the Animation will start at the initial frame,
-	 * and play each frame in the direction specified by playDirectionLeftToRight() or playDirectionRightToLeft()
+	 * and play each frame in the direction specified by <code>playDirectionLeftToRight()</code> or <code>playDirectionRightToLeft()</code>
 	 * until the last frame is reached. If the Animation must loop again, it will start the process over
 	 * again at the initial frame.
 	 * <br>Note: by default this is set to the (number of frames in the Animation - 1), the rightmost frame
@@ -273,7 +275,7 @@ public class AnimatedSprite {
 	
 	/**
 	 *  This tells the Animated Sprite to play its activeAnimation.
-	 *  It may be used after a call to pause() to restart the play.
+	 *  It may be used after a call to <code>pause()</code> to restart the play.
 	 */
 	public void unpause() {
 		_playing = true;
@@ -428,7 +430,7 @@ public class AnimatedSprite {
 
 	/**
 	 * This switches the direction of the playback and swaps the initial and final frames.
-	 * Eg. if the frames play A-B-C, then you call reverse(), they will play C-B-A.
+	 * Eg. if the frames play A-B-C, then you call <code>reverse()</code>, they will play C-B-A.
 	 * If the Animation is interruptible, the reverse will happen immediately. If the 
 	 * Animation is not interruptible, the changes will be come into effect when the Animation
 	 * has been played through. These changes are only relevant while this is the active Animation

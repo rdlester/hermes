@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 /**
  * This class contains support code for detecting interactions and handling them. The only
- * 	time you will encounter this class is when is when writing an Optimizer, where you use
+ * 	time you will encounter this class is when is when writing an <code>Optimizer</code>, where you use
  * 	this class to handle the interactions for you.
  * 
  * @author Sam
@@ -17,7 +17,7 @@ public class InteractionHandler<A extends HObject, B extends HObject> {
 	LinkedList<DetectedInteraction> _detectedInteractionsQueue;
 	
 	/**
-	 * constructs a new InteractionHandler
+	 * Constructs a new InteractionHandler.
 	 * @param interaction				the interaction being handled
 	 * @param detectedInteractionsQ		the detected interactions queue where non-immediate interactions are stored
 	 */
@@ -27,9 +27,10 @@ public class InteractionHandler<A extends HObject, B extends HObject> {
 	}
 	
 	/**
-	 * checks if an interaction is detected between being1 and being2; if the interaciton
-	 * is immediate, synchronizes on the beings and handles the interaction, otherwise
-	 * adds a new DetectedInteraction object to the detectedInteractionsQueue
+	 * Checks if an interaction is detected between being1 and being2.
+	 * If the interaction is immediate,
+	 * synchronizes on the beings and handles the interaction,
+	 * otherwise adds a new DetectedInteraction object to the detectedInteractionsQueue.
 	 * @param being1				the first interacting Being
 	 * @param being2				the second interacting Being
 	 * @return 						whether an interaction was detected

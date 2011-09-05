@@ -3,12 +3,15 @@ package src.hermes;
 import java.util.ArrayList;
 
 /**
- * Groups together Beings that share common attributes
- * and interact with another group of Beings.
+ * Groups together <code>Beings</code> that share common attributes
+ * and interact with other <code>HObject</code>s.
  * <p>
- * Group uses an ArrayList to keep track of Beings.
+ * Group uses an <code>ArrayList</code> to keep track of <code>Being</code>s.
  * Use <code>GenericGroup</code> if you want to use a different data structure
- * or keep track of things that aren't Beings.
+ * or keep track of things that aren't <code>Being</code>s.
+ * <p>
+ * Groups are used for the same reasons as <code>GenericGroup</code>s.
+ * See JavaDocs for <code>GenericGroup</code> for more details.
  * 
  * @param <A>	the type of being to be stored
  */

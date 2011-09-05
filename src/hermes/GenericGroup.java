@@ -7,14 +7,19 @@ import java.util.LinkedList;
 import src.hermes.postoffice.*;
 
 /**
- * Defines a generic "group" of beings that wraps a collection of <code>HObject</code>s.
- * Interactions are registered with the world between groups. Objects can be added to or removed
- * from groups while the loop is running, but these operations will not be applied until the
- * end of the current update.
+ * Groups together generic <code>HObject</code>s using the specified collection
+ * that share common attributes and interact with another group of <code>HObject</code>s.
  * <p>
- * The primary purpose of grouping is to allow addition and removal of objects from updates
- * without threading issues. However, groups can also be used to store data about or provide
+ * Like <code>Being</code>s, <code>GenericGroup</code>s can have their own update methods.
+ * <p>
+ * The primary purpose of grouping is for use in interactions.
+ * However, GenericGroups can also be used to store data about or provide
  * access to the contained objects.
+ * <p>
+ * See {@link src.hermes.World World} for more details on registering interactions or Updates.
+ *
+ * @see	src.hermes.Interactor Interactor
+ * @see	src.hermes.HObject HObject
  *
  * @param <A>	the type of the objects in the group
  * @param <B>	the type of underlying collection used
@@ -28,9 +33,9 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 													// more samples this update
 	
 	/**
-	 * Instantiates a group storing object in a given collection.
-	 * 	@param objects	the collection objects will be stored in
-	 *  @param world	the world where the group will be used
+	 * Instantiates a group storing HObjects in the given collection.
+	 * @param objects	the collection objects will be stored in
+	 * @param world		the world where the group will be used
 	 */
 	public GenericGroup(B objects, World world) {
 		_objects = objects;
@@ -62,7 +67,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	public void update() {}
 
 	/**
-	 * Adds an object to a group at the end of the next update loop.
+	 * Adds an object to the group at the end of the next update loop.
 	 * @param object	the object to add
 	 * @return			the added object
 	 */
@@ -72,7 +77,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * Removes a object from the group at the end of the next update loop.
+	 * Removes an object from the group at the end of the next update loop.
 	 * @param object	the object to remove
 	 * @return			the removed object
 	 */
@@ -85,9 +90,9 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * adds the contents of another group to this group
-	 * will always be O(n) regardless of the underlying collection
-	 * @param group		the beings to add
+	 * Adds the contents of another group to this group.
+	 * Will always be O(n) regardless of the underlying collection.
+	 * @param group		the objects to add
 	 */
 	public void addAll(GenericGroup<A,?> group) {
 		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
@@ -96,8 +101,8 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * removes the contents of a group from this group
-	 * @param group		the beings to remove
+	 * Removes the contents of a group from this group.
+	 * @param group		the objects to remove
 	 */
 	public void removeAll(GenericGroup<A,?> group) {
 		for(Iterator<A> iter = group.iterator(); iter.hasNext(); ) {
@@ -110,8 +115,8 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * clears everything from the group at the end of the update
-	 * this will always be O(n), regardless of the underlying collection
+	 * Clears everything from the group at the end of the update.
+	 * This will always be O(n), regardless of the underlying collection.
 	 */
 	public void clear() {
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ){
@@ -121,10 +126,10 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * deletes everything in the group from the world at the end of the update
-	 * note: this means the group and its beings are totally destroyed!
-	 * they will be removed from any other groups they are in
-	 * this will always be O(n), regardless of the underlying collection
+	 * Deletes everything in the group from the world at the end of the update.
+	 * Note: this means the group and its beings are totally destroyed!
+	 * They will be removed from any other groups they are in.
+	 * This will always be O(n), regardless of the underlying collection.
 	 */
 	public void destroy() {
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ) {
@@ -134,16 +139,22 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
-	 * @return	the number of beings contained
+	 * @return	the number of beings contained by the group
 	 */
 	public int size() {
 		return _objects.size();
 	}
 	
+	/**
+	 * @param world	the world the group should be contained by
+	 */
 	public void setWorld(World world) {
 		this._world = world;
 	}
 
+	/**
+	 * @return	the world currently containing the group
+	 */
 	public World getWorld() {
 		return _world;
 	}
@@ -170,19 +181,28 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
 	//Left blank here, must be overrided by user to add functionality
-	public void handleOscMessage(OscMessage m) {
+	/**
+	 * Override if you want your group to handle Key messages
+	 */
+	public void handleKeyMessage(KeyMessage m) {
 		//VOID
 	}
-
-	public void handleMouseWheelMessage(MouseWheelMessage m) {
-		//VOID
-	}
-
+	/**
+	 * Override if you want your group to handle Mouse messages
+	 */
 	public void handleMouseMessage(MouseMessage m) {
 		//VOID
 	}
-
-	public void handleKeyMessage(KeyMessage m) {
+	/**
+	 * Override if you want your group to handle Mouse Wheel messages
+	 */
+	public void handleMouseWheelMessage(MouseWheelMessage m) {
+		//VOID
+	}
+	/**
+	 * Override if you want your group to handle OSC messages
+	 */
+	public void handleOscMessage(OscMessage m) {
 		//VOID
 	}
 	

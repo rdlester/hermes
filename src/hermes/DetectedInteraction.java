@@ -1,7 +1,9 @@
 package src.hermes;
 
 /**
- * internal -- used to store detected interactions
+ * Used to store detected interactions when <code>applyImmediate</code> method of <code>Interactor</code> returns false.
+ * <p>
+ * Internal -- you do not need to understand this class!
  */
 class DetectedInteraction<A extends HObject, B extends HObject> {
 	A _being1;
