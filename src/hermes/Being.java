@@ -15,7 +15,7 @@ import processing.core.*;
  * <li>Position</li>
  * <li>Velocity</li>
  * <li>Shape</li></ul>
- * Furthermore, beings can be: 
+ * Furthermore, Beings can be: 
  * <ul>
  * <li>Drawn to screen</li>
  * <li>Interact with other Beings</li>
