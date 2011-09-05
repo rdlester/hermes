@@ -24,6 +24,17 @@ public abstract class MassedBeing extends Being {
 	private LinkedList<ImpulseCollision> _impulseCollisions; 	// keeps track of all collisions in this step 
 	private LinkedList<MassedBeing> _mergeCollisions;			// keeps track of all beings in a merge collision with this one
 	
+	// multisampling variables
+	private static final int DEFAULT_SAMPLES = 10;
+	
+	private float _sampleLength; // the max length the being can travel per sample
+	private int _maxSamples;	 // the maximum number of samples per update
+	
+	private int _samples = 0;	// samples taken on the current update
+	private boolean _moreSamples = false;	// whether more samples are needed
+	
+
+	
 	/**
 	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
 	 * 	bounciness of collisions, a collision between beings of elasticity 1 will be perfectly
@@ -49,6 +60,38 @@ public abstract class MassedBeing extends Being {
 		
 		_impulseCollisions = new LinkedList<ImpulseCollision>();
 		_mergeCollisions = new LinkedList<MassedBeing>();
+	}
+	
+	/**
+	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
+	 * 	bounciness of collisions, a collision between beings of elasticity 1 will be perfectly
+	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
+	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
+	 *  they will gain speed from collisions, which may produce unrealistic results 
+	 * @param mass
+	 * @param elasticity
+	 * @param sampleLength	the length of the motion sample, ie how for the being has to travel
+	 * 							before more samples are needed. The being's shortest spanning length
+	 * 							is a reasonable value
+	 * @param maxSamples	the maximum number of samples allowed. If the being can reach a very high 
+	 * 							speed, this must be very high for motion sampling to work, but this reduces
+	 * 							performance. Increasing the sample length allows lower maxSamples values, but
+	 * 							decreases accuracy.
+	 */
+	public MassedBeing(HShape shape, PVector velocity, float mass,
+			float elasticity, float sampleLength, int maxSamples) {
+		this(shape, velocity, mass, elasticity);
+		
+		_sampleLength = sampleLength;
+		_maxSamples = maxSamples;
+	}
+	
+	public MassedBeing(HShape shape, PVector velocity, float mass,
+			float elasticity, float sampleLength) {
+		this(shape, velocity, mass, elasticity);
+		
+		_sampleLength = sampleLength;
+		_maxSamples = DEFAULT_SAMPLES;
 	}
 	
 	/**
@@ -174,6 +217,44 @@ public abstract class MassedBeing extends Being {
 		EulerIntegratePosition(dt);
 		clearForce();
 		clearCollisions();
+	}
+	
+	private void multiSampledStep() {
+		// get a new time and save state
+		long t0 = _time;
+		double dt = ((double)updateTime()) / 1e9 * Hermes.timeScale;
+		// update everything
+		applyImpulse();
+		applyDisplacement();
+		PVector v0 = cloneVector(_velocity);
+		PVector x0 = cloneVector(_position);
+		EulerIntegrateVelocity(dt);
+		EulerIntegratePosition(dt);
+		PVector deltaX = PVector.sub(_position, x0);
+		// check if we need to multisample
+		float deltaX_sq = mag2(deltaX);
+		if(_samples <= _maxSamples && deltaX_sq > _sampleLength*_sampleLength) {
+			float dx = (float)Math.sqrt(deltaX_sq);
+			_position = x0; // reset position
+			_velocity = v0; // reset velocity
+			dt *= _sampleLength / dx;
+			_time = t0 + (long)(dt * 1e9);
+			EulerIntegrateVelocity(dt);
+			EulerIntegratePosition(dt);
+			_samples++;
+			setDone(false); // this will cause us to keep updating
+			_moreSamples = true;
+		} else {
+			_samples = 0;
+			_moreSamples = false;
+		}
+		clearCollisions();
+		clearForce();
+	}
+	
+	@Override
+	public boolean needsMoreSamples() {
+		return _moreSamples;
 	}
 	
 	/**
@@ -345,15 +426,6 @@ public abstract class MassedBeing extends Being {
 		assert other != null : "MassedBeing.addMergeCollisionWith: other must be a valid MassedBeing";
 	
 		_mergeCollisions.add(other);
-	}
-	
-	/**
-	 * whether the being requires more steps on this update -- used for motion multisampling
-	 * 	this will always return false, but is overriden by subclasses with multisampling support
-	 * @return
-	 */
-	public boolean needsMoreSamples() {
-		return false;
 	}
 	
 	public String toString() {
