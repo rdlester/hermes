@@ -40,7 +40,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	protected long _time;			// the time of the last step	
 	
 	/**
-	 * Creates a Being. Should be called by an class that extends <code>Being</code>.
+	 * Creates a <code>Being</code>. Should be called by a class that extends <code>Being</code>.
 	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection
 	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
 	 */
