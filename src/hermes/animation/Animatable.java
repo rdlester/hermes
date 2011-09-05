@@ -26,8 +26,6 @@ public interface Animatable {
 	public void specifyAnimation(int animationIndex);
 
 	
-	
-	
 	public void draw();
 
 }
