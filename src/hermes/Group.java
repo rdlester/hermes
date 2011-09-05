@@ -3,15 +3,19 @@ package src.hermes;
 import java.util.ArrayList;
 
 /**
- * a group of beings, backed by an ArrayList
- * @author Sam
- *
+ * Groups together Beings that share common attributes
+ * and interact with another group of Beings.
+ * <p>
+ * Group uses an ArrayList to keep track of Beings.
+ * Use <code>GenericGroup</code> if you want to use a different data structure
+ * or keep track of things that aren't Beings.
+ * 
  * @param <A>	the type of being to be stored
  */
 public class Group<A extends Being> extends GenericGroup<A, ArrayList<A>> {
 
 	/**
-	 * constructs a new empty group
+	 * Constructs a new empty group.
 	 * @param world		the world containing the group
 	 */
 	public Group(World world) {
@@ -19,7 +23,7 @@ public class Group<A extends Being> extends GenericGroup<A, ArrayList<A>> {
 	}
 	
 	/**
-	 * retrieves the being at a specific index
+	 * Retrieves the being at a specific index.
 	 * @param index		the index to fetch from
 	 * @return			the being at index
 	 */
@@ -28,7 +32,7 @@ public class Group<A extends Being> extends GenericGroup<A, ArrayList<A>> {
 	}
 	
 	/**
-	 * finds the location of being in the group
+	 * Finds the location of being in the group.
 	 * @param being		the being
 	 * @return			the index at which the being is stored
 	 */
