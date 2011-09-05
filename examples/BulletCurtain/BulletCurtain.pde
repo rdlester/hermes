@@ -54,7 +54,7 @@
 
 import processing.opengl.*;
 import src.hermes.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import src.hermes.animation.*;
 import src.hermes.postoffice.*;
 
@@ -102,7 +102,7 @@ ShotGroup shotGroup;
 
 StateBeing worldStateBeing;
 
-Camera cam;
+HCamera cam;
 
 static final int RES_WIDTH = 800;
 static final int RES_HEIGHT = 600;
@@ -123,7 +123,7 @@ void setup() {
   spriteToUseForSubject.setActiveAnimation(0);
 
 
-  cam = new Camera();
+  cam = new HCamera();
   postOffice = new PostOffice(8808, 8809);
   world = new World(postOffice, cam);
 
@@ -166,7 +166,6 @@ void setup() {
 class ShotOtherCollider extends BoundingBoxCollider<Shot, Other> {
 
   boolean handle(Shot shot, Other other) {
-
 
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyed", 1.0);
 
