@@ -1,17 +1,14 @@
 package src.hermes.physics;
 
 /**
- * an interactor for gravitational attractions using the standard coloumb force model
- * F = G * m1 * m2 / r ^ 2
- * maximum range can be set for efficiency
- * 
- * @author Sam
+ * An interactor for gravitational attractions using the standard inverse-square force model.
+ * <b>F = G * m1 * m2 / r ^ 2<b>
  *
  */
-public class GravityInteractor extends ColoumbInteractor {
+public class GravityInteractor extends InverseSquareInteractor {
 	
 	/**
-	 * set up the gravity interactor with a maximum interaction range
+	 * Sets up the gravity interactor with a maximum interaction range.
 	 * @param gravityConstant	the gravity constant G (should be positive)
 	 * @param maxRange			the maximum range of gravitational interactions
 	 */
@@ -20,7 +17,7 @@ public class GravityInteractor extends ColoumbInteractor {
 	}
 	
 	/**
-	 * sets up a gravity interactor with no range limit
+	 * Sets up a gravity interactor with no range limit.
 	 * @param gravityConstant	the gravity constant G (should be positive)
 	 */
 	public GravityInteractor(float gravityConstant) {
