@@ -43,6 +43,11 @@ public abstract class HShape {
 	 * <p>
 	 * The projection vector is the vector by which one body could be displaced such that
 	 * it no longer intersects the other body, by the shortest possible distance.
+	 * <p>
+	 * Each shape must contain methods for collision with all other types of HShapes.
+	 * If you create your own type of shape, you will have to modify HShape
+	 * (as well as its subclasses)
+	 * to contain methods colliding it with the new type.
 	 * @param other		the shape to collide with
 	 * @return			the projection vector from this body to other, or null if they aren't colliding
 	 */
