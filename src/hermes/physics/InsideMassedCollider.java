@@ -6,9 +6,17 @@ import processing.core.PVector;
 import static src.hermes.HermesMath.*;
 
 /**
- * Collider that keeps a being;'s bounding box contained inside of another.
+ * <p>
+ * A <code>Collider<code> that keeps a being's bounding box contained inside of another by projection and impulse collision.
+ * If the smaller of the beings in the interaction travels hits the inside edge of the larger it will bounce back inside.
+ * <p>
+ * This is a multisampled interaction and it is not applied immediately. (See <code>Interactor</code> documentation.)
  */
-public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing> {
+public class InsideMassedCollider extends Interactor<MassedBeing,MassedBeing> {
+	
+	public InsideMassedCollider() {
+		super(false,true);
+	}
 	
 	public boolean detect(MassedBeing being1, MassedBeing being2) {
 		//figure out which MassedBeing is smaller, which is bigger
@@ -51,7 +59,7 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 
 	}
 
-	public boolean handle(MassedBeing being1, MassedBeing being2) {
+	public void handle(MassedBeing being1, MassedBeing being2) {
 		assert being1 != null : "InsideMassedCollider.handle: being1 must be a valid MassedBeing ";
 		assert being2 != null : "InsideMassedCollider.handle: being2 must be a valid MassedBeing ";
 		
@@ -61,6 +69,5 @@ public class InsideMassedCollider implements Interactor<MassedBeing,MassedBeing>
 		
 		collision.applyImpulses();
 		collision.applyDisplacement();
-		return !being1.needsMoreSamples() && !being2.needsMoreSamples();
 	}
 }
