@@ -168,22 +168,13 @@ public class HermesMath {
 	/**
 	 * Returns the angle of the vector.
 	 * <p>
-	 * (1,0) is 0
-	 * <p>
-	 * (0,1) is PI/2, etc.
+	 * (1,0) is 0, (0,1) is PI/2, etc.
 	 * @param dir	the vector
 	 * @return		angle
 	 */
 	public static float angle(PVector dir) {
 		float angle = (float) Math.atan2(dir.y, dir.x);
-		if(angle < 0) {
-			angle += Math.PI * 2;
-			if( angle == Math.PI * 2) angle = 0;
-			return angle;
-		} 
-		else {
-			return angle;
-		}
+		return (angle < 0 ? angle + (float)Math.PI * 2 : angle);
 	}
 	
 	/**
