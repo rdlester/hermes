@@ -4,6 +4,7 @@ import java.util.Random;
 import org.junit.*;
 
 import processing.core.PApplet;
+import processing.core.PGraphics;
 import static org.junit.Assert.*;
 
 import src.hermes.*;
@@ -31,7 +32,7 @@ public class OptimizerTest {
 		
 	}
 	
-	class OptTestInter implements Interactor<OptTestBeing, OptTestBeing> {
+	class OptTestInter extends Interactor<OptTestBeing, OptTestBeing> {
 
 		public boolean detect(OptTestBeing being1, OptTestBeing being2) {
 			being1.compares++;
@@ -39,20 +40,25 @@ public class OptimizerTest {
 			return true;
 		}
 		
-		public boolean handle(OptTestBeing being1, OptTestBeing being2) {
+		public void handle(OptTestBeing being1, OptTestBeing being2) {
 			being1.handles++;
 			being2.handles++;
-			return true;
 		}
 		
 	}
 	
 	class OptTestCollider extends Collider<OptTestBeing, OptTestBeing> {
 
-		public boolean handle(OptTestBeing being1, OptTestBeing being2) {
-			return true;
-		}
+		public void handle(OptTestBeing being1, OptTestBeing being2) {}
 		
+	}
+	
+	@Before
+	public void setup() {
+		PApplet applet = new PApplet();
+		applet.g = new PGraphics();
+		Hermes.setPApplet(applet);
+		applet.rectMode(PApplet.CENTER);
 	}
 	
 	@Test
@@ -64,7 +70,7 @@ public class OptimizerTest {
 			group.add(new OptTestBeing());
 		}
 		world.update();
-		world.registerInteraction(group, group, new OptTestInter(), false, 
+		world.registerInteraction(group, group, new OptTestInter(), 
 				new SelfInteractionOptimizer<OptTestBeing>());
 		world.update();
 		for(OptTestBeing element : group.getObjects()) {
@@ -81,7 +87,7 @@ public class OptimizerTest {
 			group.add(new OptTestBeing());
 		}
 		world.update();
-		world.registerInteraction(group, group, new OptTestInter(), true);
+		world.registerInteraction(group, group, new OptTestInter());
 		long time = System.nanoTime();
 		world.update();
 		long elapsed = System.nanoTime() - time;
@@ -89,7 +95,7 @@ public class OptimizerTest {
 		
 		world = new World(new PostOffice(), new HCamera());
 		group.setWorld(world);
-		world.registerInteraction(group, group, new OptTestInter(), true,
+		world.registerInteraction(group, group, new OptTestInter(),
 				new SelfInteractionOptimizer<OptTestBeing>());
 		time = System.nanoTime();
 		world.update();
