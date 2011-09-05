@@ -272,7 +272,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
-	//Left blank here, must be overrided by user to add functionality
+	//Left blank here, must be overridden by user to add functionality
 	/**
 	 * Override if you want your Being to handle Key messages
 	 */
