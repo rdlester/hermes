@@ -4,28 +4,26 @@ import processing.core.PVector;
 import src.hermes.*;
 
 /**
- * this is a collision handler for MassedBeing and its subclasses which handles collisions
- * 	using both projection (instantly separating the bodies) and impulse (changing their velocities)
- * 
- * use GenericMassedCollider, as opposed to MassedCollider, only if you intend to override the behavior
- * 	and methods specific to a subclass of MassedBeing
- * 
- * @author Sam
+ * <p>
+ * This is a collision handler for <code>MassedBeing</code> and its subclasses which handles collisions
+ * using both projection (instantly separating the bodies) and impulse (changing their velocities).
+ * <p>
+ * Use <code>GenericMassedCollider</code>, as opposed to <code>MassedCollider</code>, only if you intend to override the behavior
+ * and methods specific to a subclass of <code>MassedBeing</code>.
  *
  * @param <A>	the first type of MassedBeing
  * @param <B>	the second type of MassedBeing
  */
-public class GenericMassedCollider<A extends MassedBeing, B extends MassedBeing> 
-	implements Interactor<A,B> {
+public class GenericMassedCollider<A extends MassedBeing, B extends MassedBeing> extends Interactor<A,B> {
 
 	private Float _elasticity = null;
 	
 	/**
-	 * creates a new MassedCollider
-	 * in this case, collision elasticity will be the average of the colliding being elasticities
+	 * <p>
+	 * Default <code>MassedCollider</code> constructor. In this case, collision elasticity will be the average of the colliding being elasticities.
 	 */
 	public GenericMassedCollider() {
-		super();
+		super(false, true);
 	}
 	
 	/**
@@ -50,11 +48,10 @@ public class GenericMassedCollider<A extends MassedBeing, B extends MassedBeing>
 		return true;
 	}
 
-	public boolean handle(A being1, B being2) {
+	public void handle(A being1, B being2) {
 		ImpulseCollision collision = being1.getImpulseCollisionWith(being2);
 		collision.applyImpulses();
 		collision.applyDisplacement();
-		return !being1.needsMoreSamples() && !being2.needsMoreSamples();
 	}
 
 	

@@ -34,10 +34,8 @@ public class MassedMergeCollider<A extends MassedBeing> extends Collider<A, A>{
 		}
 	}
 	
-	public boolean handle(A being1, A being2) {
+	public void handle(A being1, A being2) {
 		
-		
-		return true;
 	}
 	
 	public MassedBeing mergeCollide(A being1, A being2) {

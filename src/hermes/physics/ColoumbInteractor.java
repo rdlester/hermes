@@ -5,11 +5,11 @@ import processing.core.PVector;
 import src.hermes.*;
 
 /**
+ * <p>
  * A general coloumb inverse square-law force interactor.
- * @author Sam
  *
  */
-public abstract class ColoumbInteractor implements Interactor<MassedBeing, MassedBeing> {
+public abstract class ColoumbInteractor extends Interactor<MassedBeing, MassedBeing> {
 
 	private float _maxRangeSquared;	// the maximum interaction range
 	private float _k;			 	// the gravity constant
@@ -42,7 +42,7 @@ public abstract class ColoumbInteractor implements Interactor<MassedBeing, Masse
 		return d_squared <= _maxRangeSquared && d_squared != 0;
 	}
 
-	public boolean handle(MassedBeing being1, MassedBeing being2) {
+	public void handle(MassedBeing being1, MassedBeing being2) {
 		// F = k * q1 * q2 / r^2
 		PVector r = PVector.sub(being2.getPosition(), being1.getPosition());
 		double d_squared = (double)r.dot(r);
@@ -51,7 +51,6 @@ public abstract class ColoumbInteractor implements Interactor<MassedBeing, Masse
 		PVector force = PVector.mult(r, (float)F);
 		being2.addForce(force);
 		being1.addForce(reverse(force));
-		return !being1.needsMoreSamples() && !being2.needsMoreSamples();
 	}
 	
 	/**
