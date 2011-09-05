@@ -3,7 +3,7 @@ package src.hermes;
 import processing.core.PApplet;
 
 /**
- * Library class for broad scale static helpers, storage of PApplet
+ * Library class for broad scale static helpers, storage of <code>PApplet</code>
  */
 public class Hermes {
 	

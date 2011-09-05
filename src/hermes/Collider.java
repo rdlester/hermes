@@ -1,8 +1,8 @@
 package src.hermes;
 
 /**
- * An Interactor for that detects collisions between Beings based on their shape. 
- * A collision will be detected if the HShapes of the Beings overlap. Implementation of <code>handle()</code> (which gets called
+ * An <code>Interactor</code> that detects collisions between <code>Being</code>s based on their shape. 
+ * A collision will be detected if the <code>HShape</code>s of the <code>Being</code>s overlap. Implementation of <code>handle()</code> (which gets called
  * if a collision is detected) is left to the child class.
  */
 public abstract class Collider<A extends Being, B extends Being> extends Interactor<A, B>{

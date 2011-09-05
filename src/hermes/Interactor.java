@@ -1,21 +1,15 @@
 package src.hermes;
 
 /**
- * <p>An Interactor defines some conditional relationship between two HObjects.
+ * An <code>Interactor</code> defines some conditional relationship between two <code>HObject</code>s.
  * It provides a method of detecting whether the objects are interacting, and 
- * a method of executing the resultant interaction. This is the primary means of writing
- * conditional logic into the World game loop.</p>
- * <p>Interactors can be executed immediately upon detection by the World, or their handling
- * can be deferred until all possible interactions have been checked for for the current
- * step. The latter may decrease performance, and if applied to too many objects it may
- * cause a stack overflow as the World needs to keep track of all pairs of interacting
- * objects.</p>
- * <p>Interactors can also be multisampled, if this option is used the Interactor will
- * be checked for each step, with each object that still has steps being checked against
- * all objects that it can interact with (even if the other objects do not have more steps).</p> 
- 
- * @param <A>	The first type of HObject in the interaction.
- * @param <B>	The second type of HObject in the interaction.
+ * a method of executing/handling the resultant interaction.
+ * <p>
+ * This is the primary means of writing
+ * conditional logic into the <code>World</code> game loop.
+ *
+ * @param <A>	The first type of <code>HObject</code> in the interaction.
+ * @param <B>	The second type of <code>HObject</code> in the interaction.
  */
  public abstract class Interactor<A extends HObject, B extends HObject> {
 
@@ -42,8 +36,12 @@ package src.hermes;
 	}
 	
 	/**
-	 * Constructs a new Interactor, which will be applied as soon as <code>detect</code>
+	 * Constructs a new Interactor using default settings.
+	 * It will be applied as soon as <code>detect</code>
 	 * 	has returned true, and will be applied on once per update (not multisampled).
+	 * <p>
+	 * Use this constructor unless you understand multisampling and delayed application
+	 *  and need it for a specific purpose.
 	 */
 	protected Interactor() {
 		this(true, false);
