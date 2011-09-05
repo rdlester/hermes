@@ -10,7 +10,7 @@ import processing.core.*;
 /**
  * General game object class.
  * <p>
- * Represents "beings", defined as objects that have:
+ * Represents "Beings", defined as objects that have:
  * <ul>
  * <li>Position</li>
  * <li>Velocity</li>
@@ -31,10 +31,10 @@ import processing.core.*;
  */
 public abstract class Being extends HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
-	protected PVector _position; // the being's position
-	protected PVector _velocity; // the being's velocity
+	protected PVector _position; // the Being's position
+	protected PVector _velocity; // the Being's velocity
 	
-	protected HShape _shape; 		 // the being's shape
+	protected HShape _shape; 		 // the Being's shape
 	
 	private boolean _done = true;	// if the Being does not need more steps this update
 	protected long _time;			// the time of the last step	
@@ -192,7 +192,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * Sets the being's velocity to a given vector.
+	 * Sets the Being's velocity to a given vector.
 	 * <p>
 	 * NOTE: this is a deep copy;
 	 * changing velocity vector passed in after this call
