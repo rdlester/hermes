@@ -20,7 +20,7 @@ public interface Animatable {
 	public void resume();
 	
 	/**
-	 * Determines which animation should play TODO: changet o setActiveAnimation
+	 * Determines which animation should play TODO: change to setActiveAnimation
 	 * @param animationIndex a numerical index for determining which animation a sprite should play. User might want to associate these index values with variables constants for the sake of naming
 	 */
 	public void specifyAnimation(int animationIndex);

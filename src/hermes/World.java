@@ -38,8 +38,8 @@ public class World extends Thread {
 	private Group<Being> _masterGroup; //this is the group used by the camera
 	private Group<Being> _updateGroup;
 	
-	private Camera _camera; // the camera
-	private Group<Camera> _cameraGroup; // a Group with only one member: _camera (required to register an Interaction)
+	private HCamera _camera; // the camera
+	private Group<HCamera> _cameraGroup; // a Group with only one member: _camera (required to register an Interaction)
 	private boolean _active = false; // whether the world is currently running - 
 	
 	@SuppressWarnings("rawtypes")
@@ -54,7 +54,7 @@ public class World extends Thread {
 	 * @param view			the camera that will be used for drawing
 	 */
 	@SuppressWarnings("rawtypes")
-	public World(PostOffice postOffice, Camera view) {
+	public World(PostOffice postOffice, HCamera view) {
 		
 		assert postOffice != null : "World constructor: postOffice must be a valid PostOffice";
 		assert view != null : "World constructor: camera must be a valid Camera";
@@ -74,7 +74,7 @@ public class World extends Thread {
 		
 		//initialize the Camera
 		registerBeing(_camera, true);
-		_cameraGroup = new Group<Camera>(this);//make _cameraGroup
+		_cameraGroup = new Group<HCamera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
 		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor());
