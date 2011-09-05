@@ -1,14 +1,14 @@
 package src.hermes;
 
 /**
- * This Optimizer reduces the time needed to handle interactions between all members of 
+ * This <code>Optimizer</code> reduces the time needed to handle interactions between all members of 
  * 	the same group, and also eliminates duplicate interactions. Each member will be checked
  * 	against each other member of the group exactly once. This works only if the interactions
  * 	are commutative, ie handle(A,B) is equivalent to handle(B,A).
  * <br>
  * Detection under this optimizer is still an O(n^2) operation, but using it will reduce
- * 	total calculation time by a factor of approximately 1/2 (the number of compuatations
- * 	performed will be n(n-1) / 2, where n is the number of beings in the group. 
+ * 	total calculation time by a factor of approximately 1/2 (the number of computations
+ * 	performed will be n(n-1) / 2, where n is the number of beings in the group). 
  * 
  * @author Sam
  *

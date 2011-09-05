@@ -8,7 +8,22 @@ import processing.core.*;
 import src.hermes.hshape.Rectangle;
 
 /**
- * used to determine what should be drawn
+ * <code>HCamera</code> determines which <code>Being</code>s get drawn. You can think of it as a window into the <code>World</code>, and any <code>Being</code>s that are inside of its bounding box will have their <code>draw()</code> methods called automatically.
+ * 
+ * <p>
+ * The <code>World</code> class needs to be passed an <code>HCamera</code> when constructed.  
+ * Any <code>Being</code>(s) registered with that <code>World</code> will automatically get drawn if they are spatially within that <code>HCamera</code>'s bounding box. 
+ * 
+ * <p>
+ * An <code>HCamera</code>'s bounding box is determined at construction - by default, it uses the pixel width and height of the PApplet that was passed to <code>Hermes</code>.
+ * Alternatively, <code>HCamera</code> has an alternate constructor that allows you to set your own custom screen to world coordinate ratio. 
+ * 
+ * <p>
+ * Furthermore, <code>HCamera</code> extends <code>Being</code>, which allows it to interact with other entities in the game. 
+ * This opens interesting possibilities, such as having a camera follow a character, having the camera move based on game events or other logic, etc. 
+ * 
+ * 
+ * 
  */
 public class HCamera extends Being {
 
@@ -25,17 +40,30 @@ public class HCamera extends Being {
 	List<Being> _beingsDrawn;
 	Boolean _switchToBeingsPending;
 
-	//Camera's default constructor which uses 1 to 1 world pixel ratio
+	//Camera's default constructor which uses 
+	
+/**
+	Default HCamera constructor. 
+	Passing no arguments gives HCamera a 1-to-1 world pixel ratio (the world coordinates are the same as the screen's pixel coordinates)
+	 
+ */
 	public HCamera() {
 		this(0,0,Hermes.getPApplet().width,Hermes.getPApplet().height);
 	}
 
-	//Camera's constructor with world coordinates for translation
-	public HCamera(float x, float y, float worldCoordinateWidth, float worldCoordinateHeight) {
-		super(new Rectangle(new PVector(x,y), new PVector(0,0), new PVector(worldCoordinateWidth, worldCoordinateHeight)),
+
+	/**
+	 * 
+	 * @param x					the starting x coordinate of the camera
+	 * @param y					the starting y coordinate of the camera
+	 * @param cameraWidth		the width of the camera. this will determine the screen to world coordinate ratio's width
+	 * @param cameraHeight		the height of the camera. this will determine the screen to world coordinate ratio's height
+	 */
+	public HCamera(float x, float y, float cameraWidth, float cameraHeight) {
+		super(new Rectangle(new PVector(x,y), new PVector(0,0), new PVector(cameraWidth, cameraHeight)),
 				HermesMath.zeroVector());
-		_worldCoordinateWidth = worldCoordinateWidth;
-		_worldCoordinateHeight = worldCoordinateHeight;
+		_worldCoordinateWidth = cameraWidth;
+		_worldCoordinateHeight = cameraHeight;
 		
 		_zoomFactor = 1.0f;
 
@@ -45,7 +73,6 @@ public class HCamera extends Being {
 		_switchToBeingsPending = new Boolean(false);
 	}
 
-	
 	public float getWorldCoordinateWidth() {
 		return _worldCoordinateWidth;
 	}
@@ -107,7 +134,7 @@ public class HCamera extends Being {
 		}
 	}
 	
-	//TODO: make sure these work and comment properlyl
+	//TODO: make sure these work and comment properly
 	
 	/**
 	 * 

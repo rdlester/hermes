@@ -1,9 +1,10 @@
 package src.hermes;
 
 /**
- * wraps all the elements of an interaction
- * 
- * internal -- you do not need to understand this class!
+ * Wraps all the elements comprising an interaction.
+ * <p>
+ * Internal -- you do not need to understand this class!
+ * See {@link src.hermes.World World} for information on registering Interactions.
  */
 class Interaction<A extends HObject, B extends HObject> {
 
