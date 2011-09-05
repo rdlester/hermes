@@ -39,7 +39,7 @@ public class worldTest {
 		int nUpdates;
 		
 		public TestWorld1(int nUpdates) {
-			super(new PostOffice(5000,5001), new Camera());
+			super(new PostOffice(5000,5001), new HCamera());
 			this.nUpdates = nUpdates;
 		}
 		
@@ -60,7 +60,7 @@ public class worldTest {
 		boolean shutdownCalled = false;
 		
 		public TestWorld2() {
-			super(new PostOffice(), new Camera());
+			super(new PostOffice(), new HCamera());
 		}
 		
 		public void setup() {
@@ -213,7 +213,7 @@ public class worldTest {
 	
 	@Test
 	public void test_groupOperations() {
-		World w = new World(new PostOffice(), new Camera());
+		World w = new World(new PostOffice(), new HCamera());
 		Group<Being> g1 = new Group<Being>(w);
 		// group add
 		TestBeing1 tb1 = new TestBeing1();
@@ -238,7 +238,7 @@ public class worldTest {
 	
 	@Test
 	public void test_interactions() {
-		World w = new World(new PostOffice(), new Camera());
+		World w = new World(new PostOffice(), new HCamera());
 		TestBeing2 b1 = new TestBeing2();
 		TestBeing2 b2 = new TestBeing2();
 		w.registerInteraction(b1, b2, new TestInteractor1());
@@ -246,7 +246,7 @@ public class worldTest {
 		w.update();
 		assertTrue(b1.interacted);
 		assertTrue(b2.interacted);
-		w = new World(new PostOffice(), new Camera());
+		w = new World(new PostOffice(), new HCamera());
 		b1 = new TestBeing2();
 		b2 = new TestBeing2();
 		w.registerInteraction(b1, b2, new TestInteractor1());
@@ -254,7 +254,7 @@ public class worldTest {
 		w.update();
 		assertTrue(b1.interacted);
 		assertTrue(b2.interacted);
-		w = new World(new PostOffice(), new Camera());
+		w = new World(new PostOffice(), new HCamera());
 		b1 = new TestBeing2();
 		b2 = new TestBeing2();
 		w.registerInteraction(b1, b2, new TestInteractor2());
@@ -288,7 +288,7 @@ public class worldTest {
 	
 	@Test
 	public void test_LockUpdateRate() {
-		World w = new World(new PostOffice(), new Camera());
+		World w = new World(new PostOffice(), new HCamera());
 		w.lockUpdateRate(5);
 		long time = System.currentTimeMillis();
 		w.update();

@@ -63,7 +63,8 @@ public class OptimizerTest {
 	
 	@Test
 	public void test_SelfInteractionOptimizer() {
-		World world = new World(new PostOffice(), new Camera());
+		Hermes.setPApplet(new PApplet());
+		World world = new World(new PostOffice(), new HCamera());
 		Group<OptTestBeing> group = new Group<OptTestBeing>(world);
 		for(int i = 0; i < 100; i++) {
 			group.add(new OptTestBeing());
@@ -80,7 +81,7 @@ public class OptimizerTest {
 	
 	@Test
 	public void test_SelfInterOptPerformance() {
-		World world = new World(new PostOffice(), new Camera());
+		World world = new World(new PostOffice(), new HCamera());
 		Group<OptTestBeing> group = new Group<OptTestBeing>(world);
 		for(int i = 0; i < 10000; i++) {
 			group.add(new OptTestBeing());
@@ -92,7 +93,7 @@ public class OptimizerTest {
 		long elapsed = System.nanoTime() - time;
 		System.out.println("Time for 10000 unoptimized rectangle collisions: " + elapsed);
 		
-		world = new World(new PostOffice(), new Camera());
+		world = new World(new PostOffice(), new HCamera());
 		group.setWorld(world);
 		world.registerInteraction(group, group, new OptTestInter(),
 				new SelfInteractionOptimizer<OptTestBeing>());

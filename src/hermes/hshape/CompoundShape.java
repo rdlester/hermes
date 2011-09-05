@@ -4,9 +4,10 @@ import java.util.*;
 import processing.core.PVector;
 
 /**
- * represents a compound shape containing any number of shapes
- * the position of contained shapes will be defined relative to the position
- * @author Sam
+ * NOTE: do not use, does not work.
+ * <p>
+ * Represents a compound shape containing any number of shapes.
+ * The position of contained shapes will be defined relative to the position.
  *
  *//*
 public class CompoundShape extendsHShape {
