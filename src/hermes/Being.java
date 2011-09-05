@@ -14,33 +14,35 @@ import processing.core.*;
  * <ul>
  * <li>Position</li>
  * <li>Velocity</li>
- * <li>Shape</li>
+ * <li>Shape</li></ul>
+ * Furthermore, <code>Being</code>s can be: 
+ * <ul>
  * <li>Drawn to screen</li>
- * <li>Interacts with other Beings</li>
- * <li>Updates itself</li>
+ * <li>Interact with other <code>Being</code>s</li>
+ * <li>Update themselves</li>
  * </ul>
  * Subclasses of <code>Being</code> should be game entities that have at least one of these properties.
  * Subclass <code>HObject</code> directly only if the entity has none of these properties.
  * <p>
- * If you want your Being to draw itself to screen, override the draw() method.
- * If you want your Being to update itself, override the update() method.
- * If you want your Being to receive input messages from the <code>PostOffice</code>,
+ * If you want a <code>Being</code> to draw itself to screen, override the draw() method.
+ * If you want a <code>Being</code> to update itself, override the update() method.
+ * If you want a <code>Being</code> to receive input messages from the <code>PostOffice</code>,
  * override the message handler method specific to the type of message you want.
  */
 public abstract class Being extends HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
-	protected PVector _position; // the being's position
-	protected PVector _velocity; // the being's velocity
+	protected PVector _position; // the Being's position
+	protected PVector _velocity; // the Being's velocity
 	
-	protected HShape _shape; 		 // the being's shape
+	protected HShape _shape; 		 // the Being's shape
 	
 	private boolean _done = true;	// if the Being does not need more steps this update
 	protected long _time;			// the time of the last step	
 	
 	/**
-	 * Creates a Being. Should be called by an class that extends Being.
-	 * @param collisionShape	Shape used to determine Being's position and collision detection
-	 * @param velocity			The Being's initial velocity. Velocity gets updated automatically every timestep.
+	 * Creates a <code>Being</code>. Should be called by a class that extends <code>Being</code>.
+	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection
+	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
 	 */
 	public Being(HShape collisionShape, PVector velocity) {
 		initialize(collisionShape, velocity);
@@ -49,10 +51,10 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	/**
 	 * Alternate constructor that defaults to 0 velocity. 
 	 * <br><br>
-	 * When a Being's velocity in 0, the World that it is in won't update the Being's position automatically.
+	 * When a <code>Being</code>'s velocity in 0, the World that it is in won't update the <code>Being</code>'s position automatically.
 	 * Thus, all motion must be handled through setX, setY, or setPosition.
 	 * <br><br>
-	 * NOTE: If this Being's velocity is later set to something other than 0,
+	 * NOTE: If this <code>Being</code>'s velocity is later set to something other than 0,
 	 * it will then have its position updated automatically.
 	 * @param collisionShape		Shape used to determine Being's position and collision detection
 	 */
@@ -72,7 +74,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * Updates the internal recorded time of the Being using the current system time.
+	 * Updates the internal recorded time of the <code>Being</code> using the current system time.
 	 * @return	time elaspsed since the last call to updateTime
 	 */
 	protected long updateTime() { 
@@ -89,14 +91,14 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	public void draw() {}
 	
 	/**
-	 * @return	The Being's shape
+	 * @return	The <code>Being</code>'s shape
 	 */
 	public HShape getShape() {
 		return _shape;
 	}
 	
 	/**
-	 * @return	The Being's position
+	 * @return	The <code>Being</code>'s position
 	 */
 	public PVector getPosition() {
 		return _position;
@@ -119,7 +121,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * Sets the Being's position to given x,y values.
+	 * Sets the <code>Being</code>'s position to given x,y values.
 	 * @param x		x position
 	 * @param y		y position
      */
@@ -129,7 +131,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * Sets the Being's position to given x,y,z values.
+	 * Sets the <code>Being</code>'s position to given x,y,z values.
 	 * @param x		x position
 	 * @param y		y position
 	 * @param z		z position (at the currrent time a nonzero z may result in unexpected behavior)
@@ -141,56 +143,56 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * @return	The Being's x position
+	 * @return	The <code>Being</code>'s x position
 	 */
 	public float getX() {
 		return _position.x;
 	}
 	
 	/**
-	 * @return	The Being's y position
+	 * @return	The <code>Being</code>'s y position
 	 */
 	public float getY() {
 		return _position.y;
 	}
 	
 	/**
-	 * @param x	Being's new x position
+	 * @param x	<code>Being</code>'s new x position
 	 */
 	public void setX(float x) {
 		_position.x = x;
 	}
 	
 	/**
-	 * @param x	Being's new y position
+	 * @param x	<code>Being</code>'s new y position
 	 */
 	public void setY(float y) {
 		_position.y = y;
 	}
 	
 	/**
-	 * @return The Being's velocity
+	 * @return The <code>Being</code>'s velocity
 	 */
 	public PVector getVelocity() {
 		return _velocity;
 	}
 	
 	/**
-	 * @return The Being's x velocity
+	 * @return The <code>Being</code>'s x velocity
 	 */
 	public float getVelocityX() {
 	    return _velocity.x;
 	}
 	
 	/**
-	 * @return The Being's y velocity
+	 * @return The <code>Being</code>'s y velocity
 	 */
 	public float getVelocityY() {
 	    return _velocity.y;
 	}
 	
 	/**
-	 * Sets the being's velocity to a given vector.
+	 * Sets the <code>Being</code>'s velocity to a given vector.
 	 * <p>
 	 * NOTE: this is a deep copy;
 	 * changing velocity vector passed in after this call
@@ -206,21 +208,21 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * @param x Being's new x velocity
+	 * @param x <code>Being</code>'s new x velocity
 	 */
 	public void setVelocityX(float x) {
 	    _velocity.x = x;
 	}
 	
 	/**
-	 * @param x Being's new y velocity
+	 * @param x <code>Being</code>'s new y velocity
 	 */
 	public void setVelocityY(float y) {
 	    _velocity.y = y;
 	}
 
 	/**
-	 * @return	The bounding box enclosing the Being's shape
+	 * @return	The bounding box enclosing the <code>Being</code>'s shape
 	 */
 	public Rectangle getBoundingBox() {
 		return _shape.getBoundingBox();
@@ -245,11 +247,11 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	public boolean needsMoreSamples() {
-		return _done;
+		return !_done;
 	}
 	
 	/**
-	 * Override if Being should update itself on every game step
+	 * Override if <code>Being</code> should update itself on every game step
 	 */
 	public void update() {}
 	
@@ -263,34 +265,34 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * @return	String with position and velocity of Being, use for debugging
+	 * @return	String with position and velocity of <code>Being</code>, use for debugging
 	 */
 	public String toString() {
 		return "position: " + _position + " velocity: " + _velocity;
 	}
 	
 	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
-	//Left blank here, must be overrided by user to add functionality
+	//Left blank here, must be overridden by user to add functionality
 	/**
-	 * Override if you want your Being to handle Key messages
+	 * Override if you want your <code>Being</code> to handle Key messages
 	 */
 	public void handleKeyMessage(KeyMessage m) {
 		//VOID
 	}
 	/**
-	 * Override if you want your Being to handle Mouse messages
+	 * Override if you want your <code>Being</code> to handle Mouse messages
 	 */
 	public void handleMouseMessage(MouseMessage m) {
 		//VOID
 	}
 	/**
-	 * Override if you want your Being to handle Mouse Wheel messages
+	 * Override if you want your <code>Being</code> to handle Mouse Wheel messages
 	 */
 	public void handleMouseWheelMessage(MouseWheelMessage m) {
 		//VOID
 	}
 	/**
-	 * Override if you want your Being to handle OSC messages
+	 * Override if you want your <code>Being</code> to handle OSC messages
 	 */
 	public void handleOscMessage(OscMessage m) {
 		//VOID
