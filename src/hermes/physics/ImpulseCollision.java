@@ -8,7 +8,6 @@ import static src.hermes.HermesMath.*;
  * 	intended for internal use, you do not need to understand or use this class!
  * it will accumulate an impulse for a collision between two beings, and apply it equally to each
  *  when the collision is resolved. 
- * @author Sam
  *
  */
 public class ImpulseCollision {
