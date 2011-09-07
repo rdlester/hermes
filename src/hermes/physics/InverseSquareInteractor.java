@@ -6,29 +6,32 @@ import src.hermes.*;
 
 /**
  * <p>
- * A general coloumb inverse square-law force interactor.
+ * A general inverse square-law force interactor. 
+ * Each being in the interaction will receive an equal and opposite force <b>F = k * q1 * q2 / r^2</b>
+ * where <b>k</b> is a factor set in the constructor, <b>q1</b> and <b>q2</b> are determined by <code>beingFactor</code>
+ * for the first and second beings respectively, and <b>r</b> is the distance between the beings. It can also be given a maximum range.
  *
  */
-public abstract class ColoumbInteractor extends Interactor<MassedBeing, MassedBeing> {
+public abstract class InverseSquareInteractor extends Interactor<MassedBeing, MassedBeing> {
 
 	private float _maxRangeSquared;	// the maximum interaction range
 	private float _k;			 	// the gravity constant
 	
 	/**
-	 * the sets up a coloumb interactor with a range limite
-	 * @param factor	the force contant factor
-	 * @param maxRange	the maximum range of interactions
+	 * Sets up a <code>ColoumbInteractor</code> with a range limit.
+	 * @param factor	the force constant factor (k in the Coloumb equation)
+	 * @param maxRange	the maximum range of the interaction. Beings separated by a distance greater than this range will not interact.
 	 */
-	public ColoumbInteractor(float factor, float maxRange) {
+	public InverseSquareInteractor(float factor, float maxRange) {
 		_k = factor;
 		_maxRangeSquared = maxRange * maxRange;
 	}
 	
 	/**
-	 * sets up a coloumb interactor with no range limit
-	 * @param factor	the force constant
+	* Sets up a <code>ColoumbInteractor</code> with no range limit.
+	 * @param factor	the force constant factor (k in the Coloumb equation)
 	 */
-	public ColoumbInteractor(float factor) {
+	public InverseSquareInteractor(float factor) {
 		_k = factor;
 		_maxRangeSquared = Float.POSITIVE_INFINITY;
 	}
@@ -54,9 +57,9 @@ public abstract class ColoumbInteractor extends Interactor<MassedBeing, MassedBe
 	}
 	
 	/**
-	 * the factor from each being used in the numerator of the Coloumb equation
-	 * for example, charge for an electric force or mass for gravity
-	 * @param being		the being
+	 * The factor from each being used in the numerator of the Coloumb equation
+	 * for example, charge for an electric force or mass for gravity.
+	 * @param being		a being
 	 * @return			the being's factor
 	 */
 	abstract protected float beingFactor(MassedBeing being);
