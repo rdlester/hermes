@@ -5,21 +5,18 @@
 
 //import src.template.library.*;
 import src.hermes.*;
-import src.hermesTest.physicsTest.*;
-import src.hermesTest.postOfficeTests.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import src.hermes.animation.*;
-import src.hermesTest.shapeTests.*;
-import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
 import java.util.Random;
 import static src.hermes.HermesMath.*;
+import static src.hermes.postoffice.POConstants.*;
 
 //Engine parts
 World _world;
 PostOffice _postOffice;
-Camera _camera;
+HCamera _camera;
 
 //Groups
 BallGroup _ballGroup;
@@ -44,19 +41,19 @@ static final int ballSize = 25; //Size of ball, scaled by ball mass
 //Used for creating different shapes
 static int mode = 0; //Mode dictating which type of ball will get created
 static final int POLY_MODE = 0;
-static final int POLY_KEY = PostOffice.VK_1;
+static final int POLY_KEY = VK_1;
 static final int CIRCLE_MODE = 1;
-static final int CIRCLE_KEY = PostOffice.VK_2;
+static final int CIRCLE_KEY = VK_2;
 static final int RECT_MODE = 2;
-static final int RECT_KEY = PostOffice.VK_3;
-static final int DELETE_KEY = PostOffice.D;
+static final int RECT_KEY = VK_3;
+static final int DELETE_KEY = D;
 
 void setup() {
   size(WIDTH, HEIGHT);
   Hermes.setPApplet(this);
  
   //Set up the engine
-  _camera = new Camera();
+  _camera = new HCamera();
   try {
     _postOffice = new PostOffice(8080, 8000);
   } catch(Exception e) {
@@ -71,7 +68,7 @@ void setup() {
 	_postOffice.registerKeySubscription(_ballGroup, CIRCLE_KEY);
 	_postOffice.registerKeySubscription(_ballGroup, RECT_KEY);
 	_postOffice.registerKeySubscription(_ballGroup, DELETE_KEY);
-  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
+  _postOffice.registerMouseSubscription(_ballGroup, LEFT_BUTTON);
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
 	_postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetSides");
@@ -80,8 +77,8 @@ void setup() {
   _boxGroup = new BoxGroup(_world);
   
   //Set up the interactions
-  _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false, new SelfInteractionOptimizer());
-  _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider(), false);
+  _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), new SelfInteractionOptimizer());
+  _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider());
 
   smooth();
 
@@ -152,7 +149,7 @@ class BallGroup extends Group<Ball> {
 	void handleMouseMessage(MouseMessage m) {
 		int action = m.getAction();
 		switch(action) {
-			case PostOffice.MOUSE_PRESSED: //Register mouse press and initialize variables
+			case MOUSE_PRESSED: //Register mouse press and initialize variables
 				if(!_mousePressed) {
 					_mousePressed = true;
 					_origX = m.getX();
@@ -161,11 +158,11 @@ class BallGroup extends Group<Ball> {
 					_dY = m.getY();
 				}
 				break;
-			case PostOffice.MOUSE_DRAGGED: //Update mouse location
+			case MOUSE_DRAGGED: //Update mouse location
 				_dX = m.getX();
 				_dY = m.getY();
 				break;
-			case PostOffice.MOUSE_RELEASED: //Deregister mouse press and create new ball
+			case MOUSE_RELEASED: //Deregister mouse press and create new ball
 				_mousePressed = false;
 				Ball ball;
 				switch(mode) {
@@ -213,12 +210,12 @@ class BallGroup extends Group<Ball> {
  * Abstract class for balls, contains basic functionality
  * Only difference between type of balls is the type of shape used
  */
-abstract class Ball extends MultisampledMassedBeing {
+abstract class Ball extends MassedBeing {
 	
 	Group _group;
   color _color;
 
-	Ball(Shape shape, PVector velocity, float mass, float elasticity) {
+	Ball(HShape shape, PVector velocity, float mass, float elasticity) {
 		super(shape, velocity, mass, elasticity, 35, 8);
 		_color = color(random(255), random(255), random(255));
 	}

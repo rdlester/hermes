@@ -217,7 +217,6 @@ public class World extends Thread {
 	 * @param A					the first object
 	 * @param B					the second object
 	 * @param inter				the interaction handler
-	 * @param applyImmediate	whether to apply the interaction immediately
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
