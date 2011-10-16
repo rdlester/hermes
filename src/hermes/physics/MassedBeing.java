@@ -9,7 +9,7 @@ import src.hermes.hshape.HShape;
 import static src.hermes.HermesMath.*;
 
 /**
- * an extension of being representing a body with mass and elasticity
+ * An extension of <code>Being</code> representing a body with mass and elasticity.
  *
  */
 public abstract class MassedBeing extends Being {
@@ -41,8 +41,10 @@ public abstract class MassedBeing extends Being {
 	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
 	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
 	 *  they will gain speed from collisions, which may produce unrealistic results 
-	 * @param mass
-	 * @param elasticity
+	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection
+	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
+	 * @param mass				the <code>Being</code>'s mass
+	 * @param elasticity		the <code>Being</code>'s elasticity
 	 */
 	public MassedBeing(HShape shape, PVector velocity,
 			float mass, float elasticity) {
@@ -58,22 +60,34 @@ public abstract class MassedBeing extends Being {
 		_impulse = zeroVector();
 		_displacement = zeroVector();
 		
+		_sampleLength = 0;
+		_maxSamples = 0;
+		
 		_impulseCollisions = new LinkedList<ImpulseCollision>();
 		_mergeCollisions = new LinkedList<MassedBeing>();
 	}
 	
 	/**
-	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
+	 * <p>
+	 * Instantiates a new MassedBeing with given mass and elasticity, and multisampling. Elasticity determines
 	 * 	bounciness of collisions, a collision between beings of elasticity 1 will be perfectly
 	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
 	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
-	 *  they will gain speed from collisions, which may produce unrealistic results 
-	 * @param mass
-	 * @param elasticity
-	 * @param sampleLength	the length of the motion sample, ie how for the being has to travel
+	 *  they will gain speed from collisions, which may produce unrealistic results.
+	 * </p>
+	 * <p>Multisampling causes a Being to be updated and checked for interactions multiple times per update, if 
+	 * 	it is moving above a certain speed. This is used to prevent collision detection and other interactions
+	 * 	from failing due to sampling. Multisampling is determined by <code>sampleLength</code>, the distance the 
+	 * 	being must travel before multisampling is applied, and <code>maxSample</code>, the number of samples
+	 * 	allowed to prevent very long loops if a Being moves too fast.</p> 
+	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection.
+	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
+	 * @param mass				the <code>Being</code>'s mass
+	 * @param elasticity		the <code>Being</code>'s elasticity
+	 * @param sampleLength	The length of the motion sample, ie how for the being has to travel
 	 * 							before more samples are needed. The being's shortest spanning length
 	 * 							is a reasonable value
-	 * @param maxSamples	the maximum number of samples allowed. If the being can reach a very high 
+	 * @param maxSamples	The maximum number of samples allowed. If the being can reach a very high 
 	 * 							speed, this must be very high for motion sampling to work, but this reduces
 	 * 							performance. Increasing the sample length allows lower maxSamples values, but
 	 * 							decreases accuracy.
@@ -86,6 +100,27 @@ public abstract class MassedBeing extends Being {
 		_maxSamples = maxSamples;
 	}
 	
+	/**
+	 * <p>
+	 * Instantiates a new MassedBeing with given mass and elasticity, and multisampling with a default maximum samples value of 10. Elasticity determines
+	 * 	bounciness of collisions, a collision between beings of elasticity 1 will be perfectly
+	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
+	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
+	 *  they will gain speed from collisions, which may produce unrealistic results.
+	 * </p>
+	 * <p>Multisampling causes a Being to be updated and checked for interactions multiple times per update, if 
+	 * 	it is moving above a certain speed. This is used to prevent collision detection and other interactions
+	 * 	from failing due to sampling. Multisampling is determined by <code>sampleLength</code>, the distance the 
+	 * 	being must travel before multisampling is applied, and <code>maxSample</code>, the number of samples
+	 * 	allowed to prevent very long loops if a Being moves too fast.</p> 
+	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection.
+	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
+	 * @param mass				the <code>Being</code>'s mass
+	 * @param elasticity		the <code>Being</code>'s elasticity
+	 * @param sampleLength	The length of the motion sample, ie how for the being has to travel
+	 * 							before more samples are needed. The being's shortest spanning length
+	 * 							is a reasonable value
+	 */
 	public MassedBeing(HShape shape, PVector velocity, float mass,
 			float elasticity, float sampleLength) {
 		this(shape, velocity, mass, elasticity);
@@ -122,7 +157,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * Will add a mass to the being, unless this would cuase the beings mass to become
+	 * Will add a mass to the being, unless this would cause the beings mass to become
 	 * 	zero or negative, in which case it has no effect.
 	 * While convenient because you don't have to catch an exception, be careful as this
 	 * 	may make it harder to find bugs in your code that would have cause a non-positive mass.
@@ -181,7 +216,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * adds a force to the being, which will be applied at the next step
+	 * Adds a force to the being, which will be applied at the next step.
 	 * @param force		the force the add
 	 */
 	public void addForce(PVector force) {
@@ -189,7 +224,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * adds an impulse to the being, which will be applied at the next step
+	 * Adds an impulse to the being, which will be applied at the next step.
 	 * @param impulse	the impulse to add
 	 */
 	public void addImpulse(PVector impulse) {
@@ -197,7 +232,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * adds a displacement to the being, which will be applied at the next step
+	 * Adds a displacement to the being, which will be applied at the next step.
 	 * @param displacement	the displacement to add
 	 */
 	public void addDisplacement(PVector displacement) {
@@ -205,11 +240,14 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * updates the being's position and velocity based on the forces applied
-	 * 	since the last step, using Euler-Cromer integration
-	 * @param dt	the time elapsed since the last step
+	 * Updates the being's position and velocity based on the forces applied
+	 * 	since the last step, using Euler-Cromer integration.
 	 */
 	public void step() {
+		if(_sampleLength != 0) {
+			multiSampledStep();
+			return;
+		}
 		double dt = ((double)updateTime()) / 1e9 * Hermes.timeScale;
 		applyImpulse();
 		applyDisplacement();
@@ -301,8 +339,8 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * sets up a collision between two beings, with elasticity equal to the average of
-	 * 	the being's elasticity
+	 * Sets up a collision between two beings, with elasticity equal to the average of
+	 * 	the being's elasticity.
 	 * @param being1		the first being
 	 * @param being2		the second being
 	 * @param projection	the projection vector from being1 to being2
@@ -328,7 +366,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * sets up a collision between two beings, with custom elasticity
+	 * Sets up a collision between two beings, with custom elasticity.
 	 * @param being1		the first being
 	 * @param being2		the second being
 	 * @param projection	the projection vector from being1 to being2
@@ -353,7 +391,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * returns the collision between this being and another, if such a collision has been added
+	 * Returns the collision between this being and another, if such a collision has been added.
 	 * @param other		the being to check for collision with
 	 * @return			the collision
 	 */
@@ -370,6 +408,7 @@ public abstract class MassedBeing extends Being {
 	 * @param being1	the first being
 	 * @param being2	the second being
 	 */
+	/*
 	public static void addMergeCollision(MassedBeing being1, MassedBeing being2) {
 		assert being1 != null : "addCollision: being1 must be a valid being";
 		assert being2 != null : "addCollision: being2 must be a valid being";
@@ -378,35 +417,35 @@ public abstract class MassedBeing extends Being {
 			being1.addMergeCollisionWith(being2);
 			being2.addMergeCollisionWith(being1);
 		}
-	}
+	}*/
 	
 	/**
 	 * whether the being is merge colliding with another
 	 * @param other		the being to check for collision with
 	 * @return			true is they are merge colliding, otherwise false
-	 */
+	 *//*
 	public boolean hasMergeCollisionWith(MassedBeing other) {
 		for(MassedBeing being : _mergeCollisions) {
 			if(being == other)
 				return true;
 		}
 		return false;
-	}
+	}*/
 	
 	/**
 	 * clears all merge collisions in a being
-	 */
+	 *//*
 	public void clearMergeCollisions() { 
 		_mergeCollisions.clear();
-	}
+	}*/
 	
 	/**
 	 * gets an iterator over all merge collisions
 	 * @return	the merge collisions
-	 */
+	 *//*
 	public Iterator<MassedBeing> getMergeCollisions() {
 		return _mergeCollisions.iterator();
-	}
+	}*/
 	
 	/**
 	 * adds an impulse collision to the being's collision list
@@ -421,12 +460,12 @@ public abstract class MassedBeing extends Being {
 	/**
 	 * adds a merge collision to the being's collision list
 	 * @param other		the being to merge with
-	 */
+	 *//*
 	protected void addMergeCollisionWith(MassedBeing other) {
 		assert other != null : "MassedBeing.addMergeCollisionWith: other must be a valid MassedBeing";
 	
 		_mergeCollisions.add(other);
-	}
+	}*/
 	
 	public String toString() {
 		return super.toString() + " Mass: " + _mass + " Elasticity: " + _elasticity + 
