@@ -4,9 +4,10 @@ import processing.core.*;
 import static src.hermes.HermesMath.*;
 
 /**
- * this class is used to store the data for an impulse-based collision between two beings
- * 	intended for internal use, you do not need to understand or use this class!
- * it will accumulate an impulse for a collision between two beings, and apply it equally to each
+ * <p>
+ * This class is used to store the data for an impulse-based collision between two beings.<br>
+ * 	Intended for internal use, you do not need to understand or use this class!<br>
+ * It will accumulate an impulse for a collision between two beings, and apply it equally to each
  *  when the collision is resolved. 
  *
  */
@@ -20,7 +21,7 @@ public class ImpulseCollision {
 					_being2Displacement;	// the displacement on each being to project them out of collision
 	
 	/**
-	 * sets up a collision between beings
+	 * Sets up a collision between beings
 	 * @param being1		the first being (impulses and projections are from being1 to being2)
 	 * @param being2		the second being
 	 * @param projection	the projection vector from being1 to being2
