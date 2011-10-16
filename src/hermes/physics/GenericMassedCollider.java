@@ -27,7 +27,7 @@ public class GenericMassedCollider<A extends MassedBeing, B extends MassedBeing>
 	}
 	
 	/**
-	 * creates a MassedCollider with specified collision elasticity
+	 * Creates a <code>MassedCollider</code> with specified collision elasticity.
 	 * @param elasticity	collision elasticity
 	 */
 	public GenericMassedCollider(float elasticity) {

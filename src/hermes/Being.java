@@ -265,7 +265,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	 */
 	protected void step() {
 		double elapsed = (double)updateTime();
-		EulerIntegratePosition(elapsed/1e9*Hermes.timeScale);
+		EulerIntegratePosition(elapsed/1e9*Hermes.getTimeScale());
 	}
 	
 	/**

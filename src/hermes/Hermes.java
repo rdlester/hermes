@@ -8,10 +8,27 @@ import processing.core.PApplet;
 public class Hermes {
 	
 	private static PApplet _parentApplet; //Storage of sketch's PApplet. 
-	public static float timeScale = 1.0f;
+	private static float _timeScale = 1.0f; // the time scale used by Hermes motion and physics calculations
 	
 	/**
-	 * Getter for the PApplet.
+	 * Sets the time scale for calculating motion and physics. This is seconds/unit, so a value of 2 will mean
+	 * 	each 2 seconds correspond to one time unit.
+	 * @param scale
+	 */
+	public static void setTimeScale(float scale) {
+		_timeScale = scale;
+	}
+	
+	/**
+	 * Returns the Hermes time scale.
+	 * @return	the time scale
+	 */
+	public static float getTimeScale() {
+		return _timeScale;
+	}
+	
+	/**
+	 * Returns the <code>PApplet</code> that Hermes is running in.
 	 */
 	public static PApplet getPApplet() {
 		synchronized(_parentApplet) {
@@ -20,14 +37,14 @@ public class Hermes {
 	}
 	
 	/**
-	 * Set the PApplet that all utilities use.
+	 * Set the PApplet that all utilities use. Called <code>Hermes.setPApplet(this)</code> before doing anything else!
 	 */
 	public static void setPApplet(PApplet parentApplet) {
 		_parentApplet = parentApplet;		
 	}
 	
 	/**
-	 * Causes the calling thread to sleep, catches InterruptedException without any interactions.
+	 * Causes the calling thread to sleep, catches InterruptedException.
 	 * @param time	the time (in milliseconds) to sleep
 	 */
 	public static void unsafeSleep(long time) {
