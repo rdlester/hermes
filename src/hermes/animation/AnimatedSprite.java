@@ -10,7 +10,7 @@ import src.hermes.Hermes;
  * This class is used to process, store, and play animations. 
  *
  */
-public class AnimatedSprite {
+public class AnimatedSprite implements AnimationConstants {
 
 	private ArrayList<Animation> _animations; // storage container for various animations of a Sprite
 
@@ -311,7 +311,7 @@ public class AnimatedSprite {
 	//2. the current playing Animation is uninterruptible BUT it is on its final frame of its final playthrough 
 	//(or just final frame on any playthrough if on loop infinitely)
 	if(_currentInterruptible || 
-			((_numberOfPlaysRemaining==Animatable.INFINITE_LOOPS || _numberOfPlaysRemaining==0) && _currentFrameIndex==_lastFrame)) { 
+			((_numberOfPlaysRemaining==INFINITE_LOOPS || _numberOfPlaysRemaining==0) && _currentFrameIndex==_lastFrame)) { 
 
 		//check onDeck buffers, replace values, update flags.
 

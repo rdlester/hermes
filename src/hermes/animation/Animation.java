@@ -18,15 +18,15 @@ import src.hermes.Hermes;
  * By default, this is set to true on construction.
  * <p>If set to true, the AnimatedSprite will immediately switch to the new Animation.</p>
  * <p>If set to false, this Animation will play to completion before changing 
- * If numberOfTimesToPlay is set to Animatable.INFINITE_LOOPS, it will play to the end of the cycle before switching. 
+ * If numberOfTimesToPlay is set to INFINITE_LOOPS, it will play to the end of the cycle before switching. 
  * Otherwise, the Animation will play through the remaining cycles it has left before switching.
  * Upon completion of playback, if setActiveAnimation has been called one or more times, the 
  * AnimatedSprite's activeAnimation will be set to the one specified by the most recent call.</p>
  * 
  * 
  * <li><p>numberOfTimesToPlay - Specifies how many times this animation will play.
- * It can be set to any positive integer value, or Animatable.INFINITE_LOOPS for looping the Animation
- * infinitely. By default, this is set to Animatable.INFINITE_LOOPS on construction.
+ * It can be set to any positive integer value, or INFINITE_LOOPS for looping the Animation
+ * infinitely. By default, this is set to INFINITE_LOOPS on construction.
  * If the animation completes playing through its numberOfTimesToPlay and no calls
  * to AnimatedSprite's setActiveAnimation were made, the Animation will display its defaultFrame.
  * 
@@ -34,11 +34,11 @@ import src.hermes.Hermes;
  * this is set to 0 (the first frame in the Animation) on construction.
  * </ul>
  */
-public class Animation {
+public class Animation implements AnimationConstants {
 
 	private int _millisecondsPerFrame; //in milliseconds
 	private boolean _isInterruptible = true; //this specifies if the Animation can be escaped at on any frame
-	private int _numberOfTimesToPlay = Animatable.INFINITE_LOOPS;
+	private int _numberOfTimesToPlay = INFINITE_LOOPS;
 	private int _defaultFrame = 0;
 
 	ArrayList<PImage> _frames; //Collection of each frame used in the Animation
@@ -225,7 +225,7 @@ public class Animation {
 	/**
 	 * 
 	 * @param numberOfTimesToPlay 	the number of times this animation is set to play through all its frames
-	 * Note: use Animatable.INFINITE_LOOPS to set animation to loop infinitely
+	 * Note: use INFINITE_LOOPS to set animation to loop infinitely
 	 */
 	public void setNumberOfTimesToPlay(int numberOfTimesToPlay) {
 		_numberOfTimesToPlay = numberOfTimesToPlay;
