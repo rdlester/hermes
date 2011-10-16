@@ -164,7 +164,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * @param x	<code>Being</code>'s new y position
+	 * @param y	<code>Being</code>'s new y position
 	 */
 	public void setY(float y) {
 		_position.y = y;
@@ -215,7 +215,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 	
 	/**
-	 * @param x <code>Being</code>'s new y velocity
+	 * @param y <code>Being</code>'s new y velocity
 	 */
 	public void setVelocityY(float y) {
 	    _velocity.y = y;

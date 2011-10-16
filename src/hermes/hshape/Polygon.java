@@ -502,7 +502,7 @@ public class Polygon extends HShape {
 		return new PVector(project - radius, project + radius);
 	}
 
-	/**
+	/*
 	 * NO LONGER USED but still works
 	 * Checks if circle is in a voronoi region of polygon side specified by pre, linePre, and line
 	 * @param circlePos - position of circle
@@ -511,6 +511,7 @@ public class Polygon extends HShape {
 	 * @param line - line between pre and p (was already calculated in method)
 	 * @return true if circle is in voronoi region, otherwise false
 	 */
+	// / I disabled the javadoc for this - re-ebable if you change this method
 //	private boolean check(PVector circlePos, PVector pre, PVector p, PVector line) {
 //		
 //		float projPos = circlePos.dot(line);
@@ -520,7 +521,7 @@ public class Polygon extends HShape {
 //		return (projPos <= projP && projPre <= projPos);
 //	}
 
-    // /**
+    // /*
     //  * Checks if circle is in an edge/vertex voronoi region of polygon specified by pre, linePre, and line
     //  * @param circlePos - position of circle
     //  * @param pre - Point in common between linePre and line
@@ -528,6 +529,7 @@ public class Polygon extends HShape {
     //  * @param line - line defining current edge
     //  * @return true if circle is in voronoi region, otherwise false
     //  */
+	// / I disabled the javadoc for this - re-ebable if you change this method
     // private boolean checkEdge(PVector circlePos, PVector pre, PVector linePre, PVector line) {
     //  
     //  float projPre1 = pre.dot(linePre);
