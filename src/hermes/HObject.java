@@ -71,8 +71,8 @@ public abstract class HObject {
 	}
 	
 	/**
-	 * Used internally.
-	 * @return
+	 * Used for multisampling -- if true the object needs to be sampled more on the current update.
+	 * @return	whether the object needs more samples this update
 	 */
 	public boolean needsMoreSamples() {
 		return false;
