@@ -19,7 +19,7 @@ public class KeyMessage implements Message {
 	 * Creates a new KeyMessage.
 	 * @param keyCode	int corresponding to key, use PostOffice constants to determine key
 	 * @param keyChar	char corresponding to key, PostOffice.CHAR_UNDEFINED if key is non-unicode
-	 * @param b			true when key is pressed, false when key is released
+	 * @param isPressed	true when key is pressed, false when key is released
 	 */
 	public KeyMessage(int keyCode, char keyChar, boolean isPressed) {
 		_keyCode = keyCode;

@@ -58,25 +58,21 @@ public class POConstants {
 
     /**
      * Constant for the non-numpad <b>left</b> arrow key.
-     * @see #VK_KP_LEFT
      */
     public static final int LEFT = KeyEvent.VK_LEFT;
 
     /**
      * Constant for the non-numpad <b>up</b> arrow key.
-     * @see #VK_KP_UP
      */
     public static final int UP = KeyEvent.VK_UP;
 
     /**
      * Constant for the non-numpad <b>right</b> arrow key.
-     * @see #VK_KP_RIGHT
      */
     public static final int RIGHT = KeyEvent.VK_RIGHT;
 
     /**
      * Constant for the non-numpad <b>down</b> arrow key.
-     * @see #VK_KP_DOWN
      */
     public static final int DOWN = KeyEvent.VK_DOWN;
 
@@ -182,13 +178,11 @@ public class POConstants {
     /** 
      * This constant is obsolete, and is included only for backwards
      * compatibility.
-     * @see #VK_SEPARATOR
      */
     public static final int SEPARATER = KeyEvent.VK_SEPARATER;
 
     /** 
      * Constant for the Numpad Separator key. 
-     * @since 1.4
      */
     public static final int SEPARATOR = KeyEvent.VK_SEPARATOR;
 
@@ -318,29 +312,21 @@ public class POConstants {
 
     /**
      * Constant for the numeric keypad <b>up</b> arrow key.
-     * @see #VK_UP
-     * @since 1.2
      */
     public static final int KP_UP = KeyEvent.VK_KP_UP;
 
     /**
      * Constant for the numeric keypad <b>down</b> arrow key.
-     * @see #VK_DOWN
-     * @since 1.2
      */
     public static final int KP_DOWN = KeyEvent.VK_KP_DOWN;
 
     /**
      * Constant for the numeric keypad <b>left</b> arrow key.
-     * @see #VK_LEFT
-     * @since 1.2
      */
     public static final int KP_LEFT = KeyEvent.VK_KP_LEFT;
 
     /**
      * Constant for the numeric keypad <b>right</b> arrow key.
-     * @see #VK_RIGHT
-     * @since 1.2
      */
     public static final int KP_RIGHT = KeyEvent.VK_KP_RIGHT;
     
@@ -462,15 +448,12 @@ public class POConstants {
  
     /**
      * Constant for the "_" key.
-     * @since 1.2
      */
     public static final int UNDERSCORE = KeyEvent.VK_UNDERSCORE;
  
     /**
      * Constant for the Microsoft Windows "Windows" key.
      * It is used for both the left and right version of the key.  
-     * @see #getKeyLocation()
-     * @since 1.5
      */
     public static final int WINDOWS = KeyEvent.VK_WINDOWS;
  
