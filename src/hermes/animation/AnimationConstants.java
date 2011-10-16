@@ -2,7 +2,7 @@ package src.hermes.animation;
 /**
  * 
  */
-interface AnimationConstants {
+public interface AnimationConstants {
 	
 	public static final int INFINITE_LOOPS = -1;
 
