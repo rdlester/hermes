@@ -41,7 +41,7 @@ public abstract class MassedBeing extends Being {
 	 *  elastic, and a collision between beings of mass 0 will be perfectly inelastic, ie they
 	 *  will lose all velocity parallel to the collision axis. If elasticity is greater than 1, 
 	 *  they will gain speed from collisions, which may produce unrealistic results 
-	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection
+	 * @param shape				Shape used to determine <code>Being</code>'s position and collision detection
 	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
 	 * @param mass				the <code>Being</code>'s mass
 	 * @param elasticity		the <code>Being</code>'s elasticity
@@ -80,7 +80,7 @@ public abstract class MassedBeing extends Being {
 	 * 	from failing due to sampling. Multisampling is determined by <code>sampleLength</code>, the distance the 
 	 * 	being must travel before multisampling is applied, and <code>maxSample</code>, the number of samples
 	 * 	allowed to prevent very long loops if a Being moves too fast.</p> 
-	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection.
+	 * @param shape				Shape used to determine <code>Being</code>'s position and collision detection.
 	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
 	 * @param mass				the <code>Being</code>'s mass
 	 * @param elasticity		the <code>Being</code>'s elasticity
@@ -113,7 +113,7 @@ public abstract class MassedBeing extends Being {
 	 * 	from failing due to sampling. Multisampling is determined by <code>sampleLength</code>, the distance the 
 	 * 	being must travel before multisampling is applied, and <code>maxSample</code>, the number of samples
 	 * 	allowed to prevent very long loops if a Being moves too fast.</p> 
-	 * @param collisionShape	Shape used to determine <code>Being</code>'s position and collision detection.
+	 * @param shape				Shape used to determine <code>Being</code>'s position and collision detection.
 	 * @param velocity			The <code>Being</code>'s initial velocity. Velocity gets updated automatically every timestep.
 	 * @param mass				the <code>Being</code>'s mass
 	 * @param elasticity		the <code>Being</code>'s elasticity
@@ -457,10 +457,14 @@ public abstract class MassedBeing extends Being {
 		_impulseCollisions.add(collision);
 	}
 	
-	/**
+	
+	/*
 	 * adds a merge collision to the being's collision list
 	 * @param other		the being to merge with
-	 *//*
+	 */
+	
+	/*
+	 //I disabled the Javadoc for this. Re-enable it if you fix this method
 	protected void addMergeCollisionWith(MassedBeing other) {
 		assert other != null : "MassedBeing.addMergeCollisionWith: other must be a valid MassedBeing";
 	
