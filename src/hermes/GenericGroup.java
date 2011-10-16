@@ -13,8 +13,10 @@ import src.hermes.postoffice.*;
  * Like <code>Being</code>s, <code>GenericGroup</code>s can have their own update methods.
  * <p>
  * The primary purpose of grouping is for use in interactions.
- * However, GenericGroups can also be used to store data about or provide
+ * However, <code>GenericGroup</code>s can also be used to store data about or provide
  * access to the contained objects.
+ * For example, groups can keep track of the ages of the objects it contains
+ * and direct messages to either the oldest or the newest object.
  * <p>
  * See {@link src.hermes.World World} for more details on registering interactions or Updates.
  *
@@ -168,6 +170,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	}
 	
 	/**
+	 * Used internally.
 	 * Whether the group contains objects that need more samples on this update.
 	 * @return	true if objects within the group need more samples, false if no objects do
 	 */

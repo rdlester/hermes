@@ -16,6 +16,8 @@ import java.util.LinkedList;
 import java.util.Set;
 import javax.swing.SwingUtilities;
 
+import processing.core.PApplet;
+
 import com.google.common.collect.HashMultimap;
 import src.hermes.Hermes;
 import src.hermes.Pair;

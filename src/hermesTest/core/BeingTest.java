@@ -28,6 +28,10 @@ public class BeingTest {
 			return super.updateTime();
 		}
 		
+		public boolean processUpdate() {
+			return super.processUpdate();
+		}
+		
 		public void step() {
 			super.step();
 		}
