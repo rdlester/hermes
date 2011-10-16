@@ -25,8 +25,6 @@ import src.hermes.hshape.Rectangle;
  * <code>HCamera</code> extends <code>Being</code>, which allows it to move around and interact with other entities in the game. 
  * This opens interesting possibilities, such as having a camera follow a character, having the camera move based on game events or other logic, etc. 
  * 
- * 
- * 
  */
 public class HCamera extends Being {
 

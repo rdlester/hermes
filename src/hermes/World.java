@@ -9,7 +9,7 @@ import src.hermes.postoffice.PostOffice;
 
 
 /**
- * <p>The World defines a 'game state', it keeps track of all the Beings,
+ * <p>The World defines a 'game state': it keeps track of all the Beings,
  * 	Groups, and their interaction. This is done through registration, HObjects and 
  * 	Interactors must be registered with the World in order to be drawn or updated.</p>
  * <p>The World is a <code>Thread</code>. When <code>start</code> is called, the World
@@ -83,6 +83,7 @@ public class World extends Thread {
 	}
 	
 	/**
+	 * Returns true after <code>start()</code> has been called.
 	 * @return	whether the world is currently running
 	 */
 	public boolean isActive() {
@@ -140,7 +141,7 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * resolves the add, remove, and delete queues, in that order
+	 * Resolves the add, remove, and delete queues, in that order.
 	 */
 	public void resolveGroupQueues() {
 		// resolve the add queue first
@@ -255,22 +256,22 @@ public class World extends Thread {
 	}
 	
 	/**
-	 * will be called once when the world is run, before the update loop
+	 * Will be called once when the world is run, before the update loop.
 	 */
 	public void setup() {}
 	
 	/**
-	 * will be called once the world has finished running
+	 * Will be called once the world has finished running.
 	 */
 	public void shutdown() {}
 	
 	/**
-	 * will be executed on each loop before update is called
+	 * Will be executed on each loop before update is called.
 	 */
 	public void preUpdate() {}
 	
 	/**
-	 * will be executed on each loop after update is called
+	 * Will be executed on each loop after update is called.
 	 */
 	public void postUpdate() {}
 	

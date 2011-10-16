@@ -11,7 +11,7 @@ import src.hermes.Collider;
  *
  * @param <A>
  */
-
+/*
 public class MassedMergeCollider<A extends MassedBeing> extends Collider<A, A>{
 
 	public abstract class Merger {
@@ -43,3 +43,4 @@ public class MassedMergeCollider<A extends MassedBeing> extends Collider<A, A>{
 	}
 	
 }
+*/
