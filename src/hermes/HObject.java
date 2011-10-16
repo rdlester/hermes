@@ -70,6 +70,10 @@ public abstract class HObject {
 		return _groups.iterator();
 	}
 	
+	/**
+	 * Used internally.
+	 * @return
+	 */
 	public boolean needsMoreSamples() {
 		return false;
 	}

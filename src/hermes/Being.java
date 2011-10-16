@@ -10,7 +10,7 @@ import processing.core.*;
 /**
  * General game object class.
  * <p>
- * Represents "beings", defined as objects that have:
+ * Represents "beings", defined as (H)Objects that have:
  * <ul>
  * <li>Position</li>
  * <li>Velocity</li>
@@ -222,6 +222,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	}
 
 	/**
+	 * Gets the bounding box enclosing the <code>Being</code>'s shape.
 	 * @return	The bounding box enclosing the <code>Being</code>'s shape
 	 */
 	public Rectangle getBoundingBox() {
@@ -232,7 +233,9 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 		_done = done;
 	}
 	
-	
+	/**
+	 * Used internally (needed for multi-sampling).
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public boolean processUpdate() {
 		boolean firstStep = _done;

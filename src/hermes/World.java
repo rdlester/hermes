@@ -9,7 +9,7 @@ import src.hermes.postoffice.PostOffice;
 
 
 /**
- * <p>The World defines a 'game state', it keeps track of all the Beings,
+ * <p>The World defines a 'game state': it keeps track of all the Beings,
  * 	Groups, and their interaction. This is done through registration, HObjects and 
  * 	Interactors must be registered with the World in order to be drawn or updated.</p>
  * <p>The World is a <code>Thread</code>. When <code>start</code> is called, the World

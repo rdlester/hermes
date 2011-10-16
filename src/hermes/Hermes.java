@@ -11,7 +11,7 @@ public class Hermes {
 	public static float timeScale = 1.0f;
 	
 	/**
-	 * Getter for the PApplet
+	 * Getter for the PApplet.
 	 */
 	public static PApplet getPApplet() {
 		synchronized(_parentApplet) {
@@ -20,14 +20,14 @@ public class Hermes {
 	}
 	
 	/**
-	 * Set the PApplet that all utilities use
+	 * Set the PApplet that all utilities use.
 	 */
 	public static void setPApplet(PApplet parentApplet) {
 		_parentApplet = parentApplet;		
 	}
 	
 	/**
-	 * causes the calling thread to sleep, catches InterruptedException without any interactions
+	 * Causes the calling thread to sleep, catches InterruptedException without any interactions.
 	 * @param time	the time (in milliseconds) to sleep
 	 */
 	public static void unsafeSleep(long time) {
