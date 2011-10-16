@@ -58,7 +58,6 @@ public class Animation {
 	 * @param fileType					file extension including the 'dot' - supports: ".gif" ".jgp" ".tga" ".png"
 	 * @param millisecondsPerFrame		amount of time each frame in the Animation is displayed, in milliseconds
 
-	 * @return							the index of the newly created Animation
 	 */
 	public Animation(String imageSequenceNamePrefix, int numberOfImagesToLoad, String fileType, int millisecondsPerFrame) {
 		//asserts to check for valid inputs
@@ -93,7 +92,6 @@ public class Animation {
 	 * @param fileType					file extension including the 'dot' - supports: ".gif" ".jgp" ".tga" ".png"
 	 * @param millisecondsPerFrame		amount of time each frame in the Animation is displayed, in milliseconds
 
-	 * @return							the index of the newly created Animation
 	 */
 	public Animation(String imageSequenceNamePrefix, int startIndex, int endIndex, String fileType, int millisecondsPerFrame) {
 		//asserts to check for valid inputs
@@ -119,7 +117,6 @@ public class Animation {
 	 * @param someArrayListOfPImages 		an ArrayList of PImages you'd like to use as an Animation for a sprite
 	 * @param millisecondsPerFrame			amount of time each frame in the Animation is displayed
 
-	 * @return 								the index of the newly created Animation
 	 */
 	public Animation(ArrayList<PImage> someArrayListOfPImages, int millisecondsPerFrame) {	
 
@@ -137,7 +134,6 @@ public class Animation {
 	 * @param someArrayOfPImages 			a PImage[] you'd like to use as an Animation for a sprite
 	 * @param millisecondsPerFrame			amount of time each frame in the Animation is displayed
 
-	 * @return								the index of the newly created Animation
 	 */
 	public Animation(PImage[] someArrayOfPImages, int millisecondsPerFrame) {
 
@@ -211,7 +207,7 @@ public class Animation {
 	 * <li>2. Alternatively, if setActiveAnimation has been called 0 times, the behavior further depends on whether or not the Animation is looping:
 	 * <ul><li>2a. if the Animation's isLooping is set to true, it will continue looping.
 	 * <li>2b. if the Animation's isLooping is set to false, the image will be paused on the last frame of the Animation.</ul></ul></p>
-	 * @param isInterruptible		boolean to specify if Animation should be interruptible
+	 * @param interruptible		boolean to specify if Animation should be interruptible
 	 */
 	public void setInterruptible(boolean interruptible) {
 		_isInterruptible = interruptible;
@@ -247,8 +243,8 @@ public class Animation {
 	 * 
 	 * @param indexOfDefaultFrame	the index of the default frame
 	 */
-	public void setDefaultFrame(int defaultFrame) {
-		_defaultFrame = defaultFrame;
+	public void setDefaultFrame(int indexOfDefaultFrame) {
+		_defaultFrame = indexOfDefaultFrame;
 	}
 	
 
