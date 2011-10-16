@@ -69,8 +69,8 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	public void update() {}
 
 	/**
-	 * Adds an object to the group at the end of the next update loop.
-	 * @param object	the object to add
+	 * Adds a being to the group at the end of the next update loop.
+	 * @param being		the being to add
 	 * @return			the added object
 	 */
 	public A add(A being) {
