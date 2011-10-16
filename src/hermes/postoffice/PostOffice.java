@@ -65,7 +65,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	/**
 	 * Constructor with OSC running locally.
 	 * Messages can be sent to and received from other programs running on the same computer.
-	 * @param applet	Top Processing PApplet running the PostOffice
 	 * @param portIn	port to receive messages on
 	 * @param portOut	port to send messages on
 	 */
@@ -96,7 +95,6 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	/**
 	 * Constructor for PostOffice that sends messages to non-local address (ie over the internet).
-	 * @param applet		Top Processing PApplet running the PostOffice
 	 * @param portIn		port to receive messages on
 	 * @param portOut		port to send messages on
 	 * @param netAddress	url of location to send messages to
