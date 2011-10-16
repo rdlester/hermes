@@ -225,72 +225,54 @@ public class AnimatedSprite {
 	}
 
 	/**
-	 * 
-	 * @param direction
+	 * Sets the direction of play. Use "1" for left-to-right, and "-1" for right-to-left. 
+	 * <br>Eg. if the Animation sequence is A-B-C-D-E, and direction argument is given a -1,the frames will play in the following order: E,D,C,B,A
+	 * @param direction				Number used to determine direction of playback. "1" for left-to-right, and "-1" for right-to-left 
 	 */
 	public void setPlayDirection (int direction) {
 		assert _setActiveAnimationWasCalled : "setPlayDirection Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
-	assert !_animations.isEmpty() : "setPlayDirection Error: You tried to setPlayDirection but you haven't added any Animations yet";
-
-
-	if (direction == 1) {
+		assert !_animations.isEmpty() : "setPlayDirection Error: You tried to setPlayDirection but you haven't added any Animations yet";
+	
+	if (direction >= 0) {
 		_playDirectionLeftToRightOnDeck = true;
 		_playDirectionLeftToRightOnDeckFlag = true; //flag this to get updated by animate()
-	} else if (direction == -1) {
+	} else if (direction < 0) {
 		_playDirectionLeftToRightOnDeck = false;
 		_playDirectionLeftToRightOnDeckFlag = true; //flag this to get updated by animate()
 
 	}
-
 	}
 
-	/**
-	 * Sets the direction of play from left to right. Eg. if the Animation sequence is A-B-C-D-E
-	 * the frames will play in the following order: A,B,C,D,E,(if looping : A,B,C...)
-	 */
-	public void setPlayDirectionLeftToRight() {
-		assert _setActiveAnimationWasCalled : "setPlayDirectionLeftToRight Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
-	assert !_animations.isEmpty() : "setPlayDirectionLeftToRight Error: You tried to setPlayDirectionLeftToRight but you haven't added any Animations yet";
 
-
-	_playDirectionLeftToRightOnDeck = true;
-	_playDirectionLeftToRightOnDeckFlag = true; //flag this to get updated by animate()
-	}
-
-	/**
-	 * Sets the direction of play from right to left. Eg. if the Animation sequence is A-B-C-D-E
-	 * the frames will play in the following order: E,D,C,B,A,(if looping : E,D,C...)
-	 */
-	public void setPlayDirectionRightToLeft() {
-		assert _setActiveAnimationWasCalled : "setPlayDirectionRightToLeft Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
-	assert !_animations.isEmpty() : "setPlayDirectionRightToLeft Error: You tried to setPlayDirectionRightToLeft but you haven't added any Animations yet";
-
-
-	_playDirectionLeftToRightOnDeck = false;
-	_playDirectionLeftToRightOnDeckFlag = true; //flag this to get updated by animate()
-	}
 
 	/**
 	 * 
 	 * @return		true if the play direction is left to right, false if the play direction is right to left
 	 */
-	public boolean getPlayDirectionLeftToRight() {
+	public boolean isPlayDirectionLeftToRight() {
 		assert _setActiveAnimationWasCalled : "getPlayDirectionLeftToRight Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
-	assert !_animations.isEmpty() : "getPlayDirectionLeftToRight Error: You tried to getPlayDirectionLeftToRight but you haven't added any Animations yet";
+		assert !_animations.isEmpty() : "getPlayDirectionLeftToRight Error: You tried to getPlayDirectionLeftToRight but you haven't added any Animations yet";
 
 	return _playDirectionLeftToRight;
 	}
 
 	/**
 	 *
-	 * @return		true if the play direction is right to left, false if the play direction is left to right
+	 * @return		1 if the play direction is right to left, -1 if the play direction is left to right
 	 */
-	public boolean getPlayDirectionRightToLeft() {
+	public int getPlayDirection() {
 		assert _setActiveAnimationWasCalled : "getPlayDirectionRightToLeft Error: this method can only be called after you have called setActiveAnimation(int animationIndex)";
-	assert !_animations.isEmpty() : "getPlayDirectionRightToLeft Error: You tried to getPlayDirectionRightToLeft but you haven't added any Animations yet";
+		assert !_animations.isEmpty() : "getPlayDirectionRightToLeft Error: You tried to getPlayDirectionRightToLeft but you haven't added any Animations yet";
 
-
-	return !_playDirectionLeftToRight;
+		int result;
+		
+		if (_playDirectionLeftToRight) {
+			result = 1;	
+		} else {
+			result = -1;
+		}
+		
+	return result;
 	}
 
 	/**
@@ -466,10 +448,10 @@ public class AnimatedSprite {
 	setLastFrame(formerInitialFrame);
 
 	//Flip direction
-	if (getPlayDirectionRightToLeft()) {
-		setPlayDirectionLeftToRight();
+	if (isPlayDirectionLeftToRight()) {
+		setPlayDirection(-1);		
 	} else {
-		setPlayDirectionRightToLeft();
+		setPlayDirection(1);		
 	}
 	}
 }
