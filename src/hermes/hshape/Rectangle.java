@@ -12,9 +12,6 @@ public class Rectangle extends HShape {
 
 	private PVector _min, _max;
 
-	public static final int TOP_LEFT = 0;
-	public static final int CENTER = 1;
-	
 	public static int mode = 0;
 
 	/**

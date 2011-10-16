@@ -1,10 +1,8 @@
 package src.hermes.physics;
 
 /**
-* this is a collision handler for MassedBeing and its subclasses which handles collisions
- * 	using both projection (instantly separating the bodies) and impulse (changing their velocities)
-
- * @author Sam
+ * This is a collision handler for <code>MassedBeing</code> which handles collisions
+ * 	using both projection (instantly separating the bodies) and impulse (changing their velocities).
  *
  */
 public class MassedCollider extends GenericMassedCollider<MassedBeing, MassedBeing> {

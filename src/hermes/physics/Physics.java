@@ -2,10 +2,13 @@ package src.hermes.physics;
 
 import processing.core.PVector;
 
+/**
+ * A utility class for physics.
+ */
 public class Physics {
 	
 	/**
-	 * calculates the impulse from a collision between objects, without accounting for rotation
+	 * Calculates the impulse from a collision between objects, without accounting for rotation.
 	 * @param v1			the velocity of the first object
 	 * @param v2			the velocity of the second object
 	 * @param m1			the mass of the first object
@@ -44,7 +47,7 @@ public class Physics {
 	}
 	
 	/**
-	 * calculates the impulse from a collision between Massed Beings, without accounting for rotation
+	 * Calculates the impulse from a collision between Massed Beings, without accounting for rotation.
 	 * @param being1		the first being
 	 * @param being2		the second being
 	 * @param elasticity	the elasticity of collision, 1.0 is perfectly elastic 

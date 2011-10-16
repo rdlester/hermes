@@ -248,7 +248,7 @@ public abstract class MassedBeing extends Being {
 			multiSampledStep();
 			return;
 		}
-		double dt = ((double)updateTime()) / 1e9 * Hermes.timeScale;
+		double dt = ((double)updateTime()) / 1e9 * Hermes.getTimeScale();
 		applyImpulse();
 		applyDisplacement();
 		EulerIntegrateVelocity(dt);
@@ -260,7 +260,7 @@ public abstract class MassedBeing extends Being {
 	private void multiSampledStep() {
 		// get a new time and save state
 		long t0 = _time;
-		double dt = ((double)updateTime()) / 1e9 * Hermes.timeScale;
+		double dt = ((double)updateTime()) / 1e9 * Hermes.getTimeScale();
 		// update everything
 		applyImpulse();
 		applyDisplacement();
@@ -271,7 +271,7 @@ public abstract class MassedBeing extends Being {
 		PVector deltaX = PVector.sub(_position, x0);
 		// check if we need to multisample
 		float deltaX_sq = mag2(deltaX);
-		if(_samples <= _maxSamples && deltaX_sq > _sampleLength*_sampleLength) {
+		if(deltaX_sq > _sampleLength*_sampleLength) {
 			float dx = (float)Math.sqrt(deltaX_sq);
 			_position = x0; // reset position
 			_velocity = v0; // reset velocity
@@ -280,8 +280,13 @@ public abstract class MassedBeing extends Being {
 			EulerIntegrateVelocity(dt);
 			EulerIntegratePosition(dt);
 			_samples++;
-			setDone(false); // this will cause us to keep updating
-			_moreSamples = true;
+			if(_samples < _maxSamples) {
+				setDone(false); // this will cause us to keep updating
+				_moreSamples = true;
+			} else {
+				_samples = 0;
+				_moreSamples = false;
+			}
 		} else {
 			_samples = 0;
 			_moreSamples = false;
@@ -296,7 +301,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * applies the currently acccumulated impulse and clears it
+	 * Applies the currently acccumulated impulse and clears it.
 	 */
 	protected void applyImpulse() {
 		_impulse.div(_mass); 	// change in velocity from impulse
@@ -305,7 +310,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * applies the accumulated displacement and clears it
+	 * Applies the accumulated displacement and clears it.
 	 */
 	protected void applyDisplacement() {
 		_position.add(_displacement);
@@ -313,7 +318,7 @@ public abstract class MassedBeing extends Being {
 	}
 	
 	/**
-	 * integrates velocity on acceleration using Euler-Cromer
+	 * Integrates velocity on acceleration using Euler-Cromer.
 	 * @param dt	the time step
 	 */
 	protected void EulerIntegrateVelocity(double dt) {
@@ -448,7 +453,7 @@ public abstract class MassedBeing extends Being {
 	}*/
 	
 	/**
-	 * adds an impulse collision to the being's collision list
+	 * Adds an impulse collision to the being's collision list.
 	 * @param collision		the collision
 	 */
 	protected void addImpulseCollision(ImpulseCollision collision) {
