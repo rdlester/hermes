@@ -45,7 +45,7 @@ class RunButton extends Being {
   }
   
   void handleMouseMessage(MouseMessage m) {
-    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+    if(m.getAction() == MOUSE_PRESSED) {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
@@ -106,7 +106,7 @@ class RandomButton extends Being {
   }
   
   void handleMouseMessage(MouseMessage m) {
-    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+    if(m.getAction() == MOUSE_PRESSED) {
       _c.randomize();
     }
   }
@@ -124,6 +124,7 @@ class RandomButton extends Being {
     }
     getShape().draw();
     //Draw star in the center
+    translate(randomButtonSide/2,randomButtonSide/2);
     for(int i = 0; i < starNum; i++) {
       rotate(PI/starNum);
       line(randomButtonSide/4,randomButtonSide/4,-randomButtonSide/4,-randomButtonSide/4);

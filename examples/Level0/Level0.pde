@@ -1,13 +1,10 @@
 import java.util.LinkedList;
 import src.hermes.*;
-import src.hermesTest.physicsTest.*;
-import src.hermesTest.postOfficeTests.*;
-import src.hermes.shape.*;
+import src.hermes.hshape.*;
 import src.hermes.animation.*;
-import src.hermesTest.shapeTests.*;
-import src.hermesTest.core.*;
 import src.hermes.physics.*;
 import src.hermes.postoffice.*;
+import static src.hermes.postoffice.POConstants.*;
 
 /**
 Notes:
@@ -35,7 +32,7 @@ Bugs:
 ///////////////////////////////////////////////////
 
 World world;
-Camera cam;
+HCamera cam;
 PostOffice po;
 
 
@@ -100,7 +97,7 @@ class MouseHandler implements MouseSubscriber {
     int y = m.getY();
     
     // no matter where you click, deselect all tools
-    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+    if(m.getAction() == MOUSE_PRESSED) {
       selectedTool = null;
     }
     
@@ -141,14 +138,14 @@ class MouseHandler implements MouseSubscriber {
 
   void notInAContainer(MouseMessage m) {
     int action = m.getAction();
-    if(action == PostOffice.MOUSE_RELEASED && mode == BUILD) {
+    if(action == MOUSE_RELEASED && mode == BUILD) {
       //check if you are currently dragging a tool
       if(dragTool!=null) {
-        world.deleteBeing(dragTool); //delete the tool
+        world.deleteFromGroups(dragTool); //delete the tool
         dragTool = null;
       }
     }
-    if(action == PostOffice.MOUSE_DRAGGED && mode == BUILD) {
+    if(action == MOUSE_DRAGGED && mode == BUILD) {
       if(dragTool!=null) { // currently dragging a tool
         //Update location of tool being dragged
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
@@ -204,11 +201,11 @@ void setMode(int newMode) {
       bubbleGroup.destroy();
     }
     if(ball!=null) {     //delete the ball
-      world.deleteBeing(ball);
+      world.deleteFromGroups(ball);
       ball = null;
     }
     if(goal!=null) { // delete the goal
-      world.deleteBeing(goal);
+      world.deleteFromGroups(goal);
       goal = null;
     }
   } else if(newMode == RUN) {
@@ -219,13 +216,13 @@ void setMode(int newMode) {
     
     makeBubbles();//make the bubbles (note: I put this before make the ball so that ball will be drawn overtop)
     ball = new Ball();    //make the ball
-    world.addBeing(ball, ballGroup);
+    world.addToGroup(ball, ballGroup);
     goal = new Goal();    //make the goal
-    world.addBeing(goal, goalGroup);
+    world.addToGroup(goal, goalGroup);
   } else if(newMode == COMPLETED) {
     //TODO: fill in 
     if(ball!=null) {
-      world.deleteBeing(ball);
+      world.deleteFromGroups(ball);
       ball = null; 
     }
   }
@@ -242,7 +239,7 @@ void makeBubbles() {
    for(int j=0; j<canvasNumCellsY; j++) {
      if(!grid[i][j].hasTool()) {
        Bubble bubble = new Bubble(new PVector(canvasLeftX+(i*cellSideLength)+(cellSideLength/2), containerTopY+(j*cellSideLength)+(cellSideLength/2)));
-       world.addBeing(bubble, bubbleGroup);//add to bubbleGroup
+       world.addToGroup(bubble, bubbleGroup);//add to bubbleGroup
      }
    } 
   }
@@ -256,7 +253,7 @@ void setup() {
   size(frameWidth, frameHeight);
   Hermes.setPApplet(this);
  
-  cam = new Camera();
+  cam = new HCamera();
   po = new PostOffice(8080, 8000);
   world = new World(po, cam);
   world.lockUpdateRate(50);
@@ -274,34 +271,34 @@ void setup() {
   //containers
   canvas = new Canvas();
   world.registerBeing(canvas, true);
-  world.addBeing(canvas, canvasGroup);
+  world.addToGroup(canvas, canvasGroup);
   toolBox = new ToolBox();
   world.registerBeing(toolBox, false);
   
   //buttons
   RunButton runButton = new RunButton();
   world.registerBeing(runButton, true);
-  po.registerKeySubscription(runButton,PostOffice.R);
+  po.registerKeySubscription(runButton,R);
   RandomButton randomButton = new RandomButton(canvas);
   world.registerBeing(randomButton,false);
-  po.registerKeySubscription(randomButton,PostOffice.SPACE);
+  po.registerKeySubscription(randomButton,SPACE);
   
   //key for SelectedToolAttributeSwitcher
   SelectedToolAttributeSwitcher selectedToolAttributeSwitcher = new SelectedToolAttributeSwitcher();
-  po.registerKeySubscription(selectedToolAttributeSwitcher,PostOffice.E);
-  po.registerKeySubscription(selectedToolAttributeSwitcher,PostOffice.W);
+  po.registerKeySubscription(selectedToolAttributeSwitcher,E);
+  po.registerKeySubscription(selectedToolAttributeSwitcher,W);
   
   //make the mousehandler and register subscriptions with the postoffice
   MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
-  po.registerMouseSubscription(mouseHandler, PostOffice.LEFT_BUTTON);
-  po.registerMouseSubscription(mouseHandler, PostOffice.NO_BUTTON);
+  po.registerMouseSubscription(mouseHandler, LEFT_BUTTON);
+  po.registerMouseSubscription(mouseHandler, NO_BUTTON);
   
   //register interactions
-  world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider(), true);
-  world.registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider(), true);
-  world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider(), true);
-  world.registerInteraction(toolGroup, ballGroup, new MassedCollider(), true);
-  world.registerInteraction(toolGroup, bubbleGroup, new MassedCollider(), true);
+  world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider());
+  world.registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider());
+  world.registerInteraction(ballGroup, goalGroup, new BallGoalCollider());
+  world.registerInteraction(toolGroup, ballGroup, new MassedCollider());
+  world.registerInteraction(toolGroup, bubbleGroup, new MassedCollider());
    
   smooth();
 
