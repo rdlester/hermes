@@ -237,7 +237,7 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	 * Used internally (needed for multi-sampling).
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public boolean processUpdate() {
+	protected boolean processUpdate() {
 		boolean firstStep = _done;
 		if(firstStep)
 			update();
@@ -256,13 +256,22 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	/**
 	 * Override if <code>Being</code> should update itself on every game step
 	 */
-	public void update() {}
+	protected void update() {}
 	
+	/**
+	 * Updates the <code>Being</code>'s position, called for on each update, if multisampling is enabled will be for each sample.
+	 * <br>
+	 * Override if you want to perform movement manually rather than letting it move automatically.
+	 */
 	protected void step() {
 		double elapsed = (double)updateTime();
 		EulerIntegratePosition(elapsed/1e9*Hermes.timeScale);
 	}
 	
+	/**
+	 * Moves the <code>Being</code> by its velocity * the elapsed time <code>dt</code>.
+	 * @param dt	the elapsed time to use for Euler integration
+	 */
 	protected void EulerIntegratePosition(double dt) {
 		_position.add(PVector.mult(_velocity, (float)dt));
 	}
