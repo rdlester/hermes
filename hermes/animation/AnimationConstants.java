@@ -1,6 +1,6 @@
 package hermes.animation;
 /**
- * 
+ * Constants used for Animations...
  */
 public interface AnimationConstants {
 	
