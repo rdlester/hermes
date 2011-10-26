@@ -115,7 +115,7 @@ class MouseHandler implements MouseSubscriber {
       _rand.setHover(false);
       _r.setHover(true); // turn run button hover on
       _r.handleMouseMessage(m);
-    } else if(randomButtonX - randomButtonSide/2 < x && randomButtonY - randomButtonSide/2 < y && x < randomButtonX + randomButtonSide/2 && y < randomButtonY + randomButtonSide/2) { // in random button
+    } else if(randomButtonX < x && randomButtonY < y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) { // in random button
       if(mode==BUILD) _rand.setHover(true);
       _rand.handleMouseMessage(m);
       _r.setHover(false); // turn run button hover off

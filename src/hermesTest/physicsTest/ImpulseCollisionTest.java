@@ -1,9 +1,9 @@
 package src.hermesTest.physicsTest;
 
-import static src.hermes.HermesMath.*;
+import hermes.hshape.*;
+import hermes.physics.*;
 import processing.core.PVector;
-import src.hermes.physics.*;
-import src.hermes.hshape.*;
+import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
 import org.junit.*;
 
