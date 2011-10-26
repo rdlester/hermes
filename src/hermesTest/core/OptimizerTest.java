@@ -1,5 +1,9 @@
 package src.hermesTest.core;
 
+import hermes.*;
+import hermes.hshape.*;
+import hermes.postoffice.PostOffice;
+
 import java.util.Random;
 import org.junit.*;
 
@@ -7,9 +11,6 @@ import processing.core.PApplet;
 import processing.core.PGraphics;
 import static org.junit.Assert.*;
 
-import src.hermes.*;
-import src.hermes.postoffice.PostOffice;
-import src.hermes.hshape.*;
 
 public class OptimizerTest {
 

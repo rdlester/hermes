@@ -9,8 +9,8 @@ int runButtonCenterY = containerTopY - 10 - runButtonRadius;
 
 //random button
 int randomButtonSide = cellSideLength;
-int randomButtonX = canvasRightX - randomButtonSide;
-int randomButtonY = containerTopY - 10 - randomButtonSide;
+int randomButtonX = canvasRightX - 3*randomButtonSide/2;
+int randomButtonY = containerTopY - 10 - 3*randomButtonSide/2;
 
 /**
  * The user pushes the RunButton to run the simulation, changing mode to RUN
