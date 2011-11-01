@@ -235,7 +235,7 @@ public class Animation implements AnimationConstants {
 	 * 
 	 * @return		the index of the default frame
 	 */
-	public int getdefaultFrame() {
+	public int getDefaultFrame() {
 		return _defaultFrame;
 	}
 	

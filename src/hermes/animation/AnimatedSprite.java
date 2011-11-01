@@ -354,7 +354,7 @@ public class AnimatedSprite implements AnimationConstants {
 
 			//we don't want to advance the frame if the Animation's numberOfPlays is 0 and you've played last frame, otherwise, go!
 			if (_numberOfPlaysRemaining==0 && _currentFrameIndex==_lastFrame) { 
-				_currentFrameIndex = _activeAnimation.getdefaultFrame(); //always draw the default if the Animation has completed all playbacks
+				_currentFrameIndex = _activeAnimation.getDefaultFrame(); //always draw the default if the Animation has completed all playbacks
 				_timeOfLastFrameAdvance = currentTime;
 
 			} else {
