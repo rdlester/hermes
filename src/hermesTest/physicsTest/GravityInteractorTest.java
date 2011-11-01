@@ -1,12 +1,14 @@
 package src.hermesTest.physicsTest;
 
+import hermes.hshape.Rectangle;
+import hermes.physics.GravityInteractor;
+import hermes.physics.MassedBeing;
+
 import org.junit.*;
+
+import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
 import processing.core.PVector;
-import src.hermes.physics.GravityInteractor;
-import src.hermes.physics.MassedBeing;
-import src.hermes.hshape.Rectangle;
-import static src.hermes.HermesMath.*;
 
 public class GravityInteractorTest {
 

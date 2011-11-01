@@ -1,14 +1,15 @@
 package src.hermesTest.core;
 
+import hermes.*;
+import hermes.hshape.*;
+
 import org.junit.*;
 
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
+import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
-import src.hermes.*;
-import src.hermes.hshape.*;
-import static src.hermes.HermesMath.*;
 
 /**
  * test class for Hermes.Being
