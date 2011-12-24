@@ -43,7 +43,7 @@ class Player extends MassedBeing {
   
   final static float PLAYER_WIDTH = 16;
   final static float PLAYER_HEIGHT = 36;
-  final static float PLAYER_SPEED = 50;
+  final static float PLAYER_SPEED = 150;
   
   // constants used to indicate the direction the player is facing
   final static int FACING_LEFT = 1;
@@ -84,7 +84,9 @@ class Player extends MassedBeing {
   
   // we use update() to apply gravity
   void update() {
-    addForce(
+    addForce(new PVector(0, -GRAVITY * getMass(), 0));
+    if(abs(getVelocity().y) >= 5)
+      sprite.pause();
   }
   
   void handleKeyMessage(KeyMessage m) {
@@ -93,20 +95,19 @@ class Player extends MassedBeing {
       if(nKey == POConstants.D || nKey == POConstants.RIGHT) {
         getVelocity().x = PLAYER_SPEED;
         direction = FACING_RIGHT;
-        sprite.unpause();
       }
       if(nKey == POConstants.A || nKey == POConstants.LEFT) {
         getVelocity().x = -PLAYER_SPEED;
         direction = FACING_LEFT;
-        sprite.unpause();
       }
-      if((nKey == POConstants.W || nKey == POConstants.UP) && !_jumped) {
-        addImpulse(HermesMath.makeVector(0, -2*PLAYER_SPEED));
+      if((nKey == POConstants.W || nKey == POConstants.UP) && !jumped) {
+        addImpulse(new PVector(0, -PLAYER_SPEED, 0));
         jumped = true;
       }
       if(nKey == POConstants.S || nKey == POConstants.DOWN) {
         getVelocity().y = 2*PLAYER_SPEED;
       }
+      if(abs(getVelocity().y) <= 5) sprite.unpause();
     } else { // when a key is released, we stop the player
         if(nKey == POConstants.D || nKey == POConstants.A || nKey == POConstants.LEFT || nKey == POConstants.RIGHT) {
           getVelocity().x = 0;
@@ -133,11 +134,11 @@ static class Sector extends Being {
   Sector(int x, int y, PlatformGroup platforms, float density) {
     super(rectOfSector(x,y));
     
-    rectectagle = getBoundingBox();
+    rectangle = getBoundingBox();
     this.x = x;
     this.y = y;
     
-    platforms.generatePlatforms(_rect, VERTICAL_STEP, density);
+    platforms.generatePlatforms(rectangle, VERTICAL_STEP, density);
   }
   
   // the Rectangle defining the sector at this position
@@ -169,32 +170,46 @@ class SectorGrid extends Being {
   Hashtable<Integer, Sector> sectors;  // all the sectors, hashed by a number derived from their coordinates
   Sector currentSector;                // the current sector containing the character
 
+  PlatformGroup platformGroup;      // group to add platforms to
+
   // sets up the grid with a starting sector
-  SectorGrid(Sector first) {
+  SectorGrid(Sector first, PlatformGroup platforms) {
       super(first.rectangle);
       sectors = new Hashtable<Integer, Sector>(); 
       currentSector = first;
+      platformGroup = platforms;
       sectors.put(packCoors(first.x, first.y), first);
   }
     
+  // returns the sector where the camera is currently centered
   Sector getCurrentSector() {
    return currentSector;
   }
   
+  // changes the current sector where the camera is centered
   void setCurrentSector(Sector sector) {
     currentSector = sector;
   }
-
-  Hashtable<Integer, Sector> getSectors() {
-    return sectors;
+ 
+  // used for generating the hash code for sectors
+  Integer packCoors(int x, int y) {
+     return new Integer(x ^ y << 16);
+  }
+  
+  // gets the sector at the given x,y sector coordinates
+  // if the sector is not yet in the hastable, it is generated and populated
+  Sector getSector(int x, int y) {
+    Integer coors = packCoors(x, y);
+    Sector sector = sectors.get(coors); // retrieve the sector
+    if(sector == null) {        // if it does not yet exist, generate it
+      sector = new Sector(x, y, platformGroup, random(0.5, 1)); // generate with random density
+      sectors.put(coors, sector);       // add the new sector to the hastable
+    }
+    return sector;
   }
   
 }
 
-// used for generating the hash code for sectors
-Integer packCoors(int x, int y) {
-   return new Integer(x ^ y << 16);
-}
 
 ///////////////////////////////////////////////
 // GROUPS
@@ -234,7 +249,7 @@ class PlatformGroup extends Group<Platform> {
       float baseDist = random(minPlatWidth, maxPlatWidth);  // distance before the new platform
       x += platWidth / 2 + baseDist / density;              // move to the midpoint of the new platform
       while(x < area.getAbsMax().x - platWidth / 2) {       // keep going right until a platform would leave the rect
-        addPlatform(makeVector(x, y), platWidth);
+        addPlatform(new PVector(x, y, 0), platWidth);
         x += platWidth / 2;
         platWidth = random(minPlatWidth, maxPlatWidth);
         baseDist = random(minPlatWidth, maxPlatWidth);
@@ -266,39 +281,28 @@ class PlatformCollider extends GenericMassedCollider<Player, Platform> {
 }
 
 // generates platforms when the camera enters an unexplored area
-class PlatformGenerator implements Interactor<SectorGrid, Camera> {
-        
-   PlatformGroup platformGroup;      // group to add platforms to
-   
-   PlatformGenerator(PlatformGroup group) {
-    platformGroup = group;
-   }
+class PlatformGenerator extends Interactor<SectorGrid, HCamera> {
     
-   boolean detect(SectorGrid grid, Camera cam) {
+   boolean detect(SectorGrid grid, HCamera cam) {
      // we only need to do anything if the camera's box is not completely contained by the current sector
      return !grid.getCurrentSector().getBoundingBox().contains(cam.getBoundingBox());
    }
     
-   boolean handle(SectorGrid grid, Camera cam) {
+   void handle(SectorGrid grid, HCamera cam) {
      Sector current = grid.getCurrentSector();
-     Hashtable<Integer,Sector> sectors = grid.getSectors();
      // see which neighbors of this sector the camera overlaps with
      Rectangle[] neighbors = current.getNeighborRects();
      for(int i = 0; i < 8; i++) {
        if(cam.getBoundingBox().collide(neighbors[i])) {
          int x = (int)neighbors[i].getPosition().x / Sector.SECTOR_SIZE;
          int y = (int)neighbors[i].getPosition().y / Sector.SECTOR_SIZE;
-         // see if we've visited this sector yet
-         if(sectors.get(packCoors(x,y)) == null) {
-           // if not, generate platforms for it
-           sectors.put(packCoors(x,y), new Sector(x, y, platformGroup, random(0.5, 1)));
-         }
+         // make sure the overlapped sector exists
+         Sector sector = grid.getSector(x, y);
          // if the camera center is in a new bounding box, we need to change the current sector
          if(neighbors[i].contains(cam.getBoundingBox().getCenter()))
-           grid.setCurrentSector(sectors.get(packCoors(x,y)));
+           grid.setCurrentSector(sector);
        }
      }
-     return true;
    }
   
 }
@@ -311,12 +315,14 @@ class PlatformGenerator implements Interactor<SectorGrid, Camera> {
 static final int WINDOW_WIDTH = 600;
 static final int WINDOW_HEIGHT = 600;
 
+static final float GRAVITY = -200; // acceleration due to gravity
+
 ///////////////////////////////////////////////////
 // GLOBAL VARS
 ///////////////////////////////////////////////////
 
 World world;
-Camera cam;
+HCamera cam;
 PostOffice po;
 PlatformGroup platforms;
 Player player;
@@ -330,21 +336,19 @@ void setup() {
   Hermes.setPApplet(this);            // give the library the PApplet
   
   // set up the world, camera, and post office
-  cam = new Camera();
+  cam = new HCamera();
   po = new PostOffice();
   world = new World(po, cam);
   
   rectMode(CENTER);
   
-  Rectangle initialBounds = new Rectangle(HermesMath.zeroVector(), HermesMath.INFINITY, HermesMath.INFINITY);
-  
   // set up the platforms
   platforms = new PlatformGroup(world);
   Sector first = new Sector(0, 0, platforms, 0.8);
-  SectorGrid grid = new SectorGrid(first);
+  SectorGrid grid = new SectorGrid(first, platforms);
   
   // set up platform generation
-  world.registerInteraction(grid, cam, new PlatformGenerator(platforms), true);
+  world.registerInteraction(grid, cam, new PlatformGenerator());
   
   // set up the player
   player = new Player(0, 60);  
@@ -359,9 +363,9 @@ void setup() {
   po.registerKeySubscription(player, POConstants.RIGHT);
   
   // make player collide with platforms
-  world.registerInteraction(player, platforms, new PlatformCollider(0), false);
+  world.registerInteraction(player, platforms, new PlatformCollider(0));
   
-  frameRate(48);
+  frameRate(60);
   
   // run it!
   world.start();
