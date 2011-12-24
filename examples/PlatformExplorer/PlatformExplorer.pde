@@ -1,15 +1,10 @@
 import processing.opengl.*;
 
-import src.hermes.*;
-import src.hermesTest.physicsTest.*;
-import src.hermesTest.postOfficeTests.*;
-import src.hermes.shape.*;
-import src.hermes.animation.*;
-import src.hermesTest.shapeTests.*;
-import src.hermesTest.core.*;
-import src.hermes.physics.*;
-import src.hermes.postoffice.*;
-import static src.hermes.HermesMath.*;
+import hermes.*;
+import hermes.hshape.*;
+import hermes.animation.*;
+import hermes.physics.*;
+import hermes.postoffice.*;
 
 ////////////////////////////////////////
 // BEINGS
@@ -23,20 +18,20 @@ class Platform extends MassedBeing {
   static final float HEIGHT = 40.0f;              // the platform's height
   final color COLOR = color(125,125,125);  // the platform's color
 
-  float _width;   // width of this platform
+  float width;   // width of this platform
 
   /**
    * makes a Platform with given center and width
    */
   Platform(PVector center, float width) {
-    super(new Rectangle(center, width, HEIGHT), zeroVector(), INFINITY, 1);
+    super(new Rectangle(center, width, HEIGHT), HermesMath.zeroVector(), HermesMath.INFINITY, 1);
     
-    _width = width;
+    this.width = width;
   }
  
   void draw() {
     fill(COLOR);
-    rect(0, 0, _width, HEIGHT);
+    rect(0, 0, width, HEIGHT);
   }
  
 }
@@ -50,69 +45,72 @@ class Player extends MassedBeing {
   final static float PLAYER_HEIGHT = 36;
   final static float PLAYER_SPEED = 50;
   
+  // constants used to indicate the direction the player is facing
   final static int FACING_LEFT = 1;
   final static int FACING_RIGHT = 2;
   
-  boolean _jumped = false;
-  int _direction = FACING_RIGHT;
+  int direction = FACING_RIGHT; // the direction the player is facing
+  boolean jumped = false;       // whether the player can jump
   
-  AnimatedSprite _sprite;
-  int _animIndex;
+  AnimatedSprite sprite;
+  int animIndex;
   
   Player(float x, float y) {
-    super(new Rectangle(makeVector(x, y), PLAYER_WIDTH, PLAYER_HEIGHT), zeroVector(), 1.0f, 1.0f);
+    super(new Rectangle(HermesMath.makeVector(x, y), PLAYER_WIDTH, PLAYER_HEIGHT), HermesMath.zeroVector(), 1.0f, 1.0f);
     
     // load the animated character walk cycle
-    _sprite = new AnimatedSprite();
+    sprite = new AnimatedSprite();
     Animation anim = new Animation("skeilert_walk_final", 1, 24, ".png", (int)(1000.0f / 24.0f));
-    _animIndex = _sprite.addAnimation(anim);
-    println(_animIndex);
-    _sprite.setActiveAnimation(_animIndex);
-    _sprite.pause();
+    animIndex = sprite.addAnimation(anim);
+    sprite.setActiveAnimation(animIndex);
+    sprite.pause();
   }
   
   void draw() {
     scale(0.2);
     imageMode(CENTER);
     // if the character is facing left, invert the image
-    if(_direction == FACING_LEFT) {
+    if(direction == FACING_LEFT) {
       scale(-1,1);
       translate(20, 0);
     }
-    image(_sprite.animate(), 0, 0); // draw the current animation frame
+    image(sprite.animate(), 0, 0); // draw the current animation frame
   }
   
   // when this is called the player can jump again
   void resetJump() {
-    _jumped = false;
+    jumped = false;
+  }
+  
+  // we use update() to apply gravity
+  void update() {
+    addForce(
   }
   
   void handleKeyMessage(KeyMessage m) {
     int nKey = m.getKeyCode();
-    if(m.isPressed()) { // the player's movement is controlled by w/a/s/d
-      if(nKey == PostOffice.D || nKey == PostOffice.RIGHT) {
+    if(m.isPressed()) { // the player's movement is controlled by w/a/s/d or the arrows
+      if(nKey == POConstants.D || nKey == POConstants.RIGHT) {
         getVelocity().x = PLAYER_SPEED;
-        _direction = FACING_RIGHT;
-        _sprite.unpause();
+        direction = FACING_RIGHT;
+        sprite.unpause();
       }
-      if(nKey == PostOffice.A || nKey == PostOffice.LEFT) {
+      if(nKey == POConstants.A || nKey == POConstants.LEFT) {
         getVelocity().x = -PLAYER_SPEED;
-        _direction = FACING_LEFT;
-        _sprite.unpause();
+        direction = FACING_LEFT;
+        sprite.unpause();
       }
-      if((nKey == PostOffice.W || nKey == PostOffice.UP) && !_jumped) {
-        addImpulse(makeVector(0, -2*PLAYER_SPEED));
-        _jumped = true;
-        //_sprite.pause();
+      if((nKey == POConstants.W || nKey == POConstants.UP) && !_jumped) {
+        addImpulse(HermesMath.makeVector(0, -2*PLAYER_SPEED));
+        jumped = true;
       }
-      if(nKey == PostOffice.S || nKey == PostOffice.DOWN) {
+      if(nKey == POConstants.S || nKey == POConstants.DOWN) {
         getVelocity().y = 2*PLAYER_SPEED;
-        //_sprite.pause();
       }
     } else { // when a key is released, we stop the player
-        if(nKey == PostOffice.D || nKey == PostOffice.A || nKey == PostOffice.LEFT || nKey == PostOffice.RIGHT) {
+        if(nKey == POConstants.D || nKey == POConstants.A || nKey == POConstants.LEFT || nKey == POConstants.RIGHT) {
           getVelocity().x = 0;
-          _sprite.pause();
+          sprite.pause();
         }
     }
   } 
@@ -120,14 +118,14 @@ class Player extends MassedBeing {
 }
 
 // used in platform generation 
-// populates a rectangle with platform 
+// populates a rectangle with platforms 
 // sector coordinates are on a scale of 1800 pixels/unit (1/sector)
-static class Sector extends Environment {
+static class Sector extends Being {
   
   final static int SECTOR_SIZE = 1800;    // pixel width of the sectors
   final static float VERTICAL_STEP = 120; // vertical space between platforms
   
-  Rectangle _rect;   // the rectangle
+  Rectangle rectangle;   // the rectangle
   
   int x, y;         // coordinates -- these are in sector space (1 unit per sector), not pixel space
   
@@ -135,7 +133,7 @@ static class Sector extends Environment {
   Sector(int x, int y, PlatformGroup platforms, float density) {
     super(rectOfSector(x,y));
     
-    _rect = getBoundingBox();
+    rectectagle = getBoundingBox();
     this.x = x;
     this.y = y;
     
@@ -144,7 +142,7 @@ static class Sector extends Environment {
   
   // the Rectangle defining the sector at this position
   static Rectangle rectOfSector(int x, int y) {
-    return new Rectangle(makeVector((float)(x * SECTOR_SIZE), (float)(y * SECTOR_SIZE)), SECTOR_SIZE, SECTOR_SIZE);
+    return new Rectangle(new PVector((float)(x * SECTOR_SIZE), (float)(y * SECTOR_SIZE), 0), SECTOR_SIZE, SECTOR_SIZE);
   }
   
   // rectangles of the neighbors of this sector
@@ -164,31 +162,31 @@ static class Sector extends Environment {
     
 }
 
-// wraps the sector in the game, holding them in a Hashtable
-// this allows for storage of theoretically an inifinite number of sectors, allocated on the fly
-class SectorGrid extends Environment {
+// stores the sectors in the game, holding them in a Hashtable
+// this allows for storage of an indefinite number of sectors, allocated on the fly
+class SectorGrid extends Being {
  
-  Hashtable<Integer, Sector> _sectors;  // all the sectors, hashed by a number derived from their coordinates
-  Sector _currentSector;                // the current sector containing the character
+  Hashtable<Integer, Sector> sectors;  // all the sectors, hashed by a number derived from their coordinates
+  Sector currentSector;                // the current sector containing the character
 
   // sets up the grid with a starting sector
   SectorGrid(Sector first) {
-      super(first._rect);
-      _sectors = new Hashtable<Integer, Sector>(); 
-      _currentSector = first;
-      _sectors.put(packCoors(first.x, first.y), first);
+      super(first.rectangle);
+      sectors = new Hashtable<Integer, Sector>(); 
+      currentSector = first;
+      sectors.put(packCoors(first.x, first.y), first);
   }
     
   Sector getCurrentSector() {
-   return _currentSector;
+   return currentSector;
   }
   
   void setCurrentSector(Sector sector) {
-    _currentSector = sector;
+    currentSector = sector;
   }
 
   Hashtable<Integer, Sector> getSectors() {
-    return _sectors;
+    return sectors;
   }
   
 }
@@ -252,7 +250,7 @@ class PlatformGroup extends Group<Platform> {
 // Interactors
 ///////////////////////////////////////////////////
 
-// handles player-platform collidions
+// handles player-platform collisions
 class PlatformCollider extends GenericMassedCollider<Player, Platform> {
   
   PlatformCollider(float elasticity) {
@@ -260,9 +258,9 @@ class PlatformCollider extends GenericMassedCollider<Player, Platform> {
   }
   
   // reset the player's jump when he hits a platform, then do the normal projection/impulse collision stuff
-  boolean handle(Player player, Platform platform) {
-    player.resetJump();
-    return super.handle(player, platform);
+  void handle(Player player, Platform platform) {
+    player.resetJump(); // reset the jump
+    super.handle(player, platform); // have GenericMassedCollider do the rest
   }
   
 }
@@ -270,10 +268,10 @@ class PlatformCollider extends GenericMassedCollider<Player, Platform> {
 // generates platforms when the camera enters an unexplored area
 class PlatformGenerator implements Interactor<SectorGrid, Camera> {
         
-   PlatformGroup _platformGroup;      // group to add platforms to
+   PlatformGroup platformGroup;      // group to add platforms to
    
    PlatformGenerator(PlatformGroup group) {
-    _platformGroup = group;
+    platformGroup = group;
    }
     
    boolean detect(SectorGrid grid, Camera cam) {
@@ -293,7 +291,7 @@ class PlatformGenerator implements Interactor<SectorGrid, Camera> {
          // see if we've visited this sector yet
          if(sectors.get(packCoors(x,y)) == null) {
            // if not, generate platforms for it
-           sectors.put(packCoors(x,y), new Sector(x, y, _platformGroup, random(0.5, 1)));
+           sectors.put(packCoors(x,y), new Sector(x, y, platformGroup, random(0.5, 1)));
          }
          // if the camera center is in a new bounding box, we need to change the current sector
          if(neighbors[i].contains(cam.getBoundingBox().getCenter()))
@@ -336,9 +334,9 @@ void setup() {
   po = new PostOffice();
   world = new World(po, cam);
   
-  Rectangle initialBounds = new Rectangle(zeroVector(), INFINITY, INFINITY);
+  rectMode(CENTER);
   
-  //world.registerBeing(new RectBeing(initialBounds), false);
+  Rectangle initialBounds = new Rectangle(HermesMath.zeroVector(), HermesMath.INFINITY, HermesMath.INFINITY);
   
   // set up the platforms
   platforms = new PlatformGroup(world);
@@ -351,24 +349,18 @@ void setup() {
   // set up the player
   player = new Player(0, 60);  
   world.registerBeing(player, true);
-  po.registerKeySubscription(player, PostOffice.W);
-  po.registerKeySubscription(player, PostOffice.A);
-  po.registerKeySubscription(player, PostOffice.S);
-  po.registerKeySubscription(player, PostOffice.D);
-  po.registerKeySubscription(player, PostOffice.UP);
-  po.registerKeySubscription(player, PostOffice.DOWN);
-  po.registerKeySubscription(player, PostOffice.LEFT);
-  po.registerKeySubscription(player, PostOffice.RIGHT);
+  po.registerKeySubscription(player, POConstants.W);
+  po.registerKeySubscription(player, POConstants.A);
+  po.registerKeySubscription(player, POConstants.S);
+  po.registerKeySubscription(player, POConstants.D);
+  po.registerKeySubscription(player, POConstants.UP);
+  po.registerKeySubscription(player, POConstants.DOWN);
+  po.registerKeySubscription(player, POConstants.LEFT);
+  po.registerKeySubscription(player, POConstants.RIGHT);
   
   // make player collide with platforms
   world.registerInteraction(player, platforms, new PlatformCollider(0), false);
   
-  // add gravity to player
-  world.registerInteraction(GravityEnvironment.makeGravityGroup(makeVector(0, 50),
-    initialBounds, world),
-    player, GravityEnvironment.makeGravityInteractor(), false);
-  
-  rectMode(CENTER);
   frameRate(48);
   
   // run it!
