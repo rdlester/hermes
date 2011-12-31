@@ -1,11 +1,12 @@
 package src.hermesTest.physicsTest;
 
+import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
+import hermes.hshape.Rectangle;
+import hermes.physics.*;
+
 import org.junit.*;
-import src.hermes.physics.*;
-import src.hermes.hshape.Rectangle;
 import processing.core.*;
-import static src.hermes.HermesMath.*;
 
 public class PhysicsTest {
 

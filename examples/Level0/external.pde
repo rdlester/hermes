@@ -17,7 +17,7 @@ int goalj = canvasNumCellsY-1;
  * Central ball of the game
  * This is what player tries to get into the goal
  */
-class Ball extends MultisampledMassedBeing {
+class Ball extends MassedBeing {
 
   Ball() {
     super(new Circle(new PVector((canvasLeftX+balli*cellSideLength)+cellSideLength/2, 
@@ -79,8 +79,8 @@ class Ball extends MultisampledMassedBeing {
 class Goal extends Being {
   Goal() {
     super(new Rectangle(new PVector((canvasLeftX+goali*cellSideLength), 
-          (containerTopY+goalj*cellSideLength)), 
-          new PVector(cellSideLength, cellSideLength), PApplet.CORNER), 
+                        (containerTopY+goalj*cellSideLength)), 
+                        new PVector(cellSideLength, cellSideLength)), 
           new PVector(0, 0));
     world.registerBeing(this, false);
   }
@@ -111,7 +111,7 @@ class Goal extends Being {
  * Translucent balls demonstrating flow of canvas to player
  * Do not interact with the goal
  */
-class Bubble extends MultisampledMassedBeing {
+class Bubble extends MassedBeing {
 
   Bubble(PVector position) {
     super(new Circle(position, ballRadius/2), new PVector(0, 0), ballMass, ballElasticity, 35, 8);
@@ -172,9 +172,8 @@ class Bubble extends MultisampledMassedBeing {
  * If the ball hits the goal, then change mode to COMPLETED
  */
 class BallGoalCollider extends Collider<Ball, Goal> {
-  public boolean handle(Ball being1, Goal being2) {
+  public void handle(Ball being1, Goal being2) {
     setMode(COMPLETED);
-    return true;
   }
 }
 

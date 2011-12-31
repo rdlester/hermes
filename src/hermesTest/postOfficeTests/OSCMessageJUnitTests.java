@@ -2,14 +2,14 @@ package src.hermesTest.postOfficeTests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import hermes.Hermes;
+import hermes.postoffice.OscMessage;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import processing.core.PApplet;
-import src.hermes.Hermes;
-import src.hermes.postoffice.OscMessage;
 
 public class OSCMessageJUnitTests {
 

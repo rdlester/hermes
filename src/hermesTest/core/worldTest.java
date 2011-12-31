@@ -3,14 +3,15 @@ package src.hermesTest.core;
 
 import org.junit.*;
 
+import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
+
+import hermes.*;
+import hermes.hshape.*;
+import hermes.postoffice.PostOffice;
 
 import java.util.Hashtable;
 import java.util.LinkedList;
-import src.hermes.*;
-import static src.hermes.HermesMath.*;
-import src.hermes.hshape.*;
-import src.hermes.postoffice.PostOffice;
 import processing.core.PApplet;
 import processing.core.PGraphics;
 
