@@ -9,8 +9,8 @@ int runButtonCenterY = containerTopY - 10 - runButtonRadius;
 
 //random button
 int randomButtonSide = cellSideLength;
-int randomButtonX = canvasRightX - randomButtonSide;
-int randomButtonY = containerTopY - 10 - randomButtonSide;
+int randomButtonX = canvasRightX - 3*randomButtonSide/2;
+int randomButtonY = containerTopY - 10 - 3*randomButtonSide/2;
 
 /**
  * The user pushes the RunButton to run the simulation, changing mode to RUN
@@ -45,7 +45,7 @@ class RunButton extends Being {
   }
   
   void handleMouseMessage(MouseMessage m) {
-    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+    if(m.getAction() == MOUSE_PRESSED) {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
@@ -106,7 +106,7 @@ class RandomButton extends Being {
   }
   
   void handleMouseMessage(MouseMessage m) {
-    if(m.getAction() == PostOffice.MOUSE_PRESSED) {
+    if(m.getAction() == MOUSE_PRESSED) {
       _c.randomize();
     }
   }
@@ -124,6 +124,7 @@ class RandomButton extends Being {
     }
     getShape().draw();
     //Draw star in the center
+    translate(randomButtonSide/2,randomButtonSide/2);
     for(int i = 0; i < starNum; i++) {
       rotate(PI/starNum);
       line(randomButtonSide/4,randomButtonSide/4,-randomButtonSide/4,-randomButtonSide/4);

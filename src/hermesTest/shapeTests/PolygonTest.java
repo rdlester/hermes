@@ -2,13 +2,14 @@ package src.hermesTest.shapeTests;
 
 import static org.junit.Assert.*;
 
+import hermes.hshape.*;
+
 import java.util.ArrayList;
 
 import org.junit.*;
 
 import processing.core.PVector;
 
-import src.hermes.hshape.*;
 
 public class PolygonTest {
 
