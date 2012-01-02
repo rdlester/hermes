@@ -5,7 +5,7 @@ import processing.core.*;
 /**
  * A collection of helpful math utilities.
  * <p>
- * <i>HINT:</i> Use <code>import static src.hermes.HermesMath.*;</code>
+ * <i>HINT:</i> Use <code>import static hermes.HermesMath.*;</code>
  * to access these methods like you would Processing library functions.
  */
 public class HermesMath {
