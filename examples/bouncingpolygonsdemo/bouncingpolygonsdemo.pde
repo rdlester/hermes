@@ -4,14 +4,14 @@
 */
 
 //import src.template.library.*;
-import src.hermes.*;
-import src.hermes.hshape.*;
-import src.hermes.animation.*;
-import src.hermes.physics.*;
-import src.hermes.postoffice.*;
+import hermes.*;
+import hermes.hshape.*;
+import hermes.animation.*;
+import hermes.physics.*;
+import hermes.postoffice.*;
 import java.util.Random;
-import static src.hermes.HermesMath.*;
-import static src.hermes.postoffice.POConstants.*;
+import static hermes.HermesMath.*;
+import static hermes.postoffice.POConstants.*;
 
 //Engine parts
 World _world;
