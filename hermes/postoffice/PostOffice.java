@@ -22,6 +22,7 @@ import java.util.Set;
 import javax.swing.SwingUtilities;
 
 import processing.core.PApplet;
+import processing.core.PVector;
 
 import com.google.common.collect.HashMultimap;
 
@@ -55,6 +56,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Keeps track of which keys are pressed for quick tracking
 	private HashSet<Integer> _pressedKeys;
+	
+	//Keeps track of mouse location for quick tracking
+	private HashSet<PVector> _mouseLocation;
 	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
@@ -146,6 +150,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_keySubs = HashMultimap.create();
 		_pressedKeys = new HashSet<Integer>();
 		_mouseSubs = HashMultimap.create();
+		_mouseLocation = new HashSet<PVector>();
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
 		_keyQueue = new LinkedList<KeyMessage>();
 		_mouseQueue = new LinkedList<MouseMessage>();
@@ -239,7 +244,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	}
 	
 	//////////////////////////////////
-	//Utility for checking key presses
+	//Utilities for checking key presses and mouse location quickly
 	
 	/**
 	 * Utility for checking if key is pressed
@@ -247,12 +252,18 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @return			true if pressed, false otherwise
 	 */
 	public boolean isKeyPressed(int keyCode) {
-		if(_pressedKeys.contains(keyCode)) {
-			return true;
-		} else {
-			return false;
-		}
+		return _pressedKeys.contains(keyCode);
 	}
+	
+	public boolean isMouseInRegion(HShape region) {
+		for(PVector v : _mouseLocation) {
+			if(region.contains(v)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	
 	/////////////////////////////////
 	//Methods for sending OscMessages
@@ -374,8 +385,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			}
 		}
 		synchronized(_mouseQueue) {
+			_mouseLocation.clear();
 			while(!_mouseQueue.isEmpty()) {
 				MouseMessage m = _mouseQueue.poll();
+				_mouseLocation.add(new PVector(m.getX(),m.getY()));
 				int button = m.getButton();
 				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
 				for(Pair<?, ?> p : subs) {
