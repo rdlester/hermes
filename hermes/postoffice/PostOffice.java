@@ -52,6 +52,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	private LinkedList<MouseWheelMessage> _mouseWheelQueue;
 	private LinkedList<OscMessage> _oscQueue;
 	
+	//Keeps track of which keys are pressed for quick tracking
+	private ArrayList<Integer> _pressedKeys;
+	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
 	
@@ -140,6 +143,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		Hermes.getPApplet().addMouseWheelListener(this);
 		//Initialize subscription list and message queue
 		_keySubs = HashMultimap.create();
+		_pressedKeys = new ArrayList<Integer>();
 		_mouseSubs = HashMultimap.create();
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
 		_keyQueue = new LinkedList<KeyMessage>();
@@ -231,6 +235,22 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		assert address != null : "PostOffice.registerOscSubscription: address must be a valid String";
 		_oscSubs.put(address, sub);
 		_receive.addListener(address, this);
+	}
+	
+	//////////////////////////////////
+	//Utility for checking key presses
+	
+	/**
+	 * Utility for checking if key is pressed
+	 * @param keyCode	the key being checked
+	 * @return			true if pressed, false otherwise
+	 */
+	public boolean isKeyPressed(int keyCode) {
+		if(_pressedKeys.contains(keyCode)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/////////////////////////////////
@@ -339,9 +359,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public void checkMail() {
 		//Send all the messages in each queue to the corresponding subscribers
 		synchronized(_keyQueue) {
+			_pressedKeys = new ArrayList<Integer>();
 			while(!_keyQueue.isEmpty()) {
 				KeyMessage m = _keyQueue.poll();
 				int key = m.getKeyCode();
+				if(m.isPressed()) { //Add to the pressed key array if pressed
+					_pressedKeys.add(key);
+				}
 				Set<KeySubscriber> subs = _keySubs.get(key);
 				for(KeySubscriber sub : subs) {
 					sub.handleKeyMessage(m);
