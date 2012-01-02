@@ -16,6 +16,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import javax.swing.SwingUtilities;
@@ -53,7 +54,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	private LinkedList<OscMessage> _oscQueue;
 	
 	//Keeps track of which keys are pressed for quick tracking
-	private ArrayList<Integer> _pressedKeys;
+	private HashSet<Integer> _pressedKeys;
 	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
@@ -143,7 +144,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		Hermes.getPApplet().addMouseWheelListener(this);
 		//Initialize subscription list and message queue
 		_keySubs = HashMultimap.create();
-		_pressedKeys = new ArrayList<Integer>();
+		_pressedKeys = new HashSet<Integer>();
 		_mouseSubs = HashMultimap.create();
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
 		_keyQueue = new LinkedList<KeyMessage>();
