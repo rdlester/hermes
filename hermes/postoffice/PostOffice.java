@@ -359,7 +359,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public void checkMail() {
 		//Send all the messages in each queue to the corresponding subscribers
 		synchronized(_keyQueue) {
-			_pressedKeys = new ArrayList<Integer>();
+			_pressedKeys.clear();
 			while(!_keyQueue.isEmpty()) {
 				KeyMessage m = _keyQueue.poll();
 				int key = m.getKeyCode();
