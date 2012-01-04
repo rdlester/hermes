@@ -1,10 +1,10 @@
+import hermes.physics.*;
+import hermes.animation.*;
+import hermes.hshape.*;
+import hermes.postoffice.*;
+import hermes.*;
+import static hermes.postoffice.POConstants.*;
 import java.util.LinkedList;
-import src.hermes.*;
-import src.hermes.hshape.*;
-import src.hermes.animation.*;
-import src.hermes.physics.*;
-import src.hermes.postoffice.*;
-import static src.hermes.postoffice.POConstants.*;
 
 /**
 Notes:
@@ -70,89 +70,6 @@ Group<Goal> goalGroup = null;
 Group<Canvas> canvasGroup = null;
 Group<Tool> toolGroup = null;
 Group<Bubble> bubbleGroup = null;
-
-///////////////////////////////////////////////////
-// GENERAL MOUSE HANDLER
-///////////////////////////////////////////////////
-
-/**
- * Handles dispatching of mouse clicks to revelant objects
- */
-class MouseHandler implements MouseSubscriber {
-
-  Canvas _c;
-  ToolBox _b;
-  RunButton _r;
-  RandomButton _rand;
-
-  MouseHandler(Canvas c, ToolBox b, RunButton r, RandomButton rand) {
-    _c = c;
-    _b = b;
-    _r = r;
-    _rand = rand;
-  }
-
-  void handleMouseMessage(MouseMessage m) {
-    int x = m.getX();
-    int y = m.getY();
-    
-    // no matter where you click, deselect all tools
-    if(m.getAction() == MOUSE_PRESSED) {
-      selectedTool = null;
-    }
-    
-    if(canvasLeftX<x && x<canvasRightX && containerTopY<y && y<containerBottomY) {// in canvas
-      _rand.setHover(false);
-      _r.setHover(false); // turn run button hover off
-      _c.handleMouseMessage(m); 
-    } else if(toolBoxLeftX<x && x<toolBoxRightX && containerTopY<y && y<containerBottomY) { // in toolbox
-      checkCanvasHover();
-      _rand.setHover(false);
-      _r.setHover(false); // turn run button hover off
-      _b.handleMouseMessage(m);
-    } else if(HermesMath.inCircle(x,y,runButtonCenterX,runButtonCenterY,runButtonRadius)) { // in run button
-      checkCanvasHover();
-      _rand.setHover(false);
-      _r.setHover(true); // turn run button hover on
-      _r.handleMouseMessage(m);
-    } else if(randomButtonX < x && randomButtonY < y && x < randomButtonX + randomButtonSide && y < randomButtonY + randomButtonSide) { // in random button
-      if(mode==BUILD) _rand.setHover(true);
-      _rand.handleMouseMessage(m);
-      _r.setHover(false); // turn run button hover off
-    } else { // not in container
-      checkCanvasHover();
-      _rand.setHover(false);
-      _r.setHover(false); // turn run button hover off
-      notInAContainer(m); 
-    }
-    
-  } 
-  
-  //Helper methods
-  void checkCanvasHover() {
-    if(_c.getHover()) { //remove hover from canvas
-      _c.eraseHover();
-      _c.setHover(false);
-    }
-  }
-
-  void notInAContainer(MouseMessage m) {
-    int action = m.getAction();
-    if(action == MOUSE_RELEASED && mode == BUILD) {
-      //check if you are currently dragging a tool
-      if(dragTool!=null) {
-        world.deleteFromGroups(dragTool); //delete the tool
-        dragTool = null;
-      }
-    }
-    if(action == MOUSE_DRAGGED && mode == BUILD) {
-      if(dragTool!=null) { // currently dragging a tool
-        //Update location of tool being dragged
-        dragTool.setPosition(new PVector(m.getX(), m.getY()));
-      }
-    }
-  }   
-}
 
 ///////////////////////////////////////////////////
 // OTHER CLASSES
@@ -269,19 +186,27 @@ void setup() {
   bubbleGroup = new Group(world);
   
   //containers
-  canvas = new Canvas();
+  canvas = new Canvas(po);
   world.registerBeing(canvas, true);
   world.addToGroup(canvas, canvasGroup);
-  toolBox = new ToolBox();
+  po.registerMouseSubscription(canvas,NO_BUTTON,canvas.getShape());
+  po.registerMouseSubscription(canvas,LEFT_BUTTON,canvas.getShape());
+  toolBox = new ToolBox(canvas);
   world.registerBeing(toolBox, false);
+  po.registerMouseSubscription(toolBox,NO_BUTTON);
+  po.registerMouseSubscription(toolBox,LEFT_BUTTON);
   
   //buttons
-  RunButton runButton = new RunButton();
+  RunButton runButton = new RunButton(po);
   world.registerBeing(runButton, true);
   po.registerKeySubscription(runButton,R);
-  RandomButton randomButton = new RandomButton(canvas);
+  po.registerMouseSubscription(runButton,NO_BUTTON,runButton.getShape());
+  po.registerMouseSubscription(runButton,LEFT_BUTTON,runButton.getShape());
+  RandomButton randomButton = new RandomButton(canvas,po);
   world.registerBeing(randomButton,false);
   po.registerKeySubscription(randomButton,SPACE);
+  po.registerMouseSubscription(randomButton,NO_BUTTON,randomButton.getShape());
+  po.registerMouseSubscription(randomButton,LEFT_BUTTON,randomButton.getShape());
   
   //key for SelectedToolAttributeSwitcher
   SelectedToolAttributeSwitcher selectedToolAttributeSwitcher = new SelectedToolAttributeSwitcher();
@@ -289,9 +214,9 @@ void setup() {
   po.registerKeySubscription(selectedToolAttributeSwitcher,W);
   
   //make the mousehandler and register subscriptions with the postoffice
-  MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
+  /*MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);
   po.registerMouseSubscription(mouseHandler, LEFT_BUTTON);
-  po.registerMouseSubscription(mouseHandler, NO_BUTTON);
+  po.registerMouseSubscription(mouseHandler, NO_BUTTON);*/
   
   //register interactions
   world.registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider());

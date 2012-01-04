@@ -19,13 +19,19 @@ int toolBoxNumCellsY = containerHeight / cellSideLength;
 class Canvas extends MassedBeing {
   
   Cell[][] _grid;
+  int _iCellHover;
+  int _jCellHover;
   boolean _hover;
+  PostOffice _po;
 
-  Canvas() {
+  Canvas(PostOffice po) {
     super(new Rectangle(new PVector(canvasLeftX, containerTopY),
                         new PVector(canvasWidth, containerHeight)),
           new PVector(0,0), Float.POSITIVE_INFINITY, 1);
+    _po = po;
     _grid = new Cell[canvasNumCellsX][canvasNumCellsY];
+    _iCellHover = 0;
+    _jCellHover = 0;
     _hover = false;
     initialize();
   }
@@ -114,6 +120,12 @@ class Canvas extends MassedBeing {
   }
 
   void draw() {
+    if(_hover) {
+      if(!_shape.contains(_po.getCurrentMouseLocation())) {
+        _hover = false;
+        _grid[_iCellHover][_jCellHover].setHover(false);
+      }
+    }
     if(mode == BUILD) {
       //draw phantom ball
       pushMatrix();
@@ -142,8 +154,9 @@ class Canvas extends MassedBeing {
     int y = m.getY();
     x -= canvasLeftX;
     y -= containerTopY;
-    int i = x / cellSideLength;
-    int j = y / cellSideLength;
+    //constrain needed to prevent array index errors when mouse is on boundary
+    int i = constrain(x / cellSideLength,0,8);
+    int j = constrain(y / cellSideLength,0,10);
     //get corresponding cell
     Cell in = _grid[i][j];
     
@@ -153,9 +166,11 @@ class Canvas extends MassedBeing {
     //update hover graphics if cell mouse is over has changed
     if(!in.getHover()) {
       _hover = true;
-      eraseHover();
+      _grid[_iCellHover][_jCellHover].setHover(false);
       if(!prohibitedCell) {
         in.setHover(true);
+        _iCellHover = i;
+        _jCellHover = j;
       }
     }
     
@@ -251,13 +266,17 @@ class ToolBox extends Being {
   
   Cell[][] _grid;
   
+  //Used for controlling the dragging of tools
+  Canvas _canvas;
+  
   //label
   Zero zero;
   
-  ToolBox() {
+  ToolBox(Canvas canvas) {
     super(new Rectangle(new PVector(toolBoxLeftX, containerTopY),
                         new PVector(toolBoxWidth, containerHeight)));
     _grid = new Cell[toolBoxNumCellsX][toolBoxNumCellsY];
+    _canvas = canvas;
     initialize();
   }
   
@@ -318,6 +337,8 @@ class ToolBox extends Being {
   void handleMouseMessage(MouseMessage m) {
     //checks if it was a mouse pressed
     if(m.getAction() == MOUSE_PRESSED && mode == BUILD) {
+      //erase selection regardless of click location
+      selectedTool = null;
       //get pixel location of mouse press in frame
       int x = m.getX();
       int y = m.getY();
@@ -325,31 +346,37 @@ class ToolBox extends Being {
       x -= toolBoxLeftX;
       y -= containerTopY;
       //get i,j indices of cell containing mouse press
-      int i = x / cellSideLength;
-      int j = y / cellSideLength;
+      int i = constrain(x / cellSideLength,0,2);
+      int j = constrain(y / cellSideLength,0,10);
       // if that cell contains a tool, set templateTool to that tool
       if(_grid[i][j].hasTool()) {
         templateTool = _grid[i][j].getTool();
         templateTool.handleMouseMessage(m);
-      }
-    } else if(m.getAction() == MOUSE_DRAGGED && mode == BUILD) {
-      if(dragTool!=null) { //already dragging a tool
-        dragTool.setPosition(new PVector(m.getX(), m.getY()));
-      } else if(templateTool!=null) { // templateTool already set but no new tool created yet
-        //instantiate new version of that tool 
+        //instantiate dragTool
         dragTool = makeTool(templateTool.getToolCode(), new PVector(m.getX(), m.getY()),
                                 templateTool.getRotation(), templateTool.getElasticity());
         dragIniti = -1;
         dragInitj = -1;
       }
-    } else if(m.getAction() == MOUSE_RELEASED && mode == BUILD) {
+    } else if(m.getAction() == MOUSE_DRAGGED && mode == BUILD) {
+      if(dragTool!=null) { //already dragging a tool
+        dragTool.setPosition(new PVector(m.getX(), m.getY()));
+      } /*else if(templateTool!=null) { // templateTool already set but no new tool created yet
+        //instantiate new version of that tool 
+        dragTool = makeTool(templateTool.getToolCode(), new PVector(m.getX(), m.getY()),
+                                templateTool.getRotation(), templateTool.getElasticity());
+        dragIniti = -1;
+        dragInitj = -1;
+      }*/
+    } else if(m.getAction() == MOUSE_RELEASED && mode == BUILD 
+                && !canvas.getShape().contains(m.getX(),m.getY())) {
       //check if you are currently dragging a tool
       if(dragTool!=null) {
         world.deleteFromGroups(dragTool); //delete the tool
         dragTool = null;
       }
     } else {
-      //TODO: fill in 
+      
     }
   }
 
