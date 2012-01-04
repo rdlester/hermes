@@ -17,13 +17,15 @@ int randomButtonY = containerTopY - 10 - 3*randomButtonSide/2;
  */
 class RunButton extends Being {
   
+  PostOffice _po;
   float runButtonDiameter = runButtonRadius*2;
   float innerSymbolLength = runButtonDiameter/3;
   boolean _hover = false;
   boolean _keyPressed = false;
   
-  RunButton() {
+  RunButton(PostOffice po) {
     super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
+    _po = po;
   }
   
   /**
@@ -45,6 +47,7 @@ class RunButton extends Being {
   }
   
   void handleMouseMessage(MouseMessage m) {
+    _hover = true;
     if(m.getAction() == MOUSE_PRESSED) {
       //switch modes
       if(mode == BUILD) {
@@ -63,6 +66,7 @@ class RunButton extends Being {
    stroke(62, 67, 71);
    if(_hover) { //Add light highlighting when mouse is hovering over button
      fill(buttonHover);
+     _hover = _po.isMouseInRegion(this.getShape());
    } else {
      fill(bgColor);
    }
@@ -83,13 +87,15 @@ class RunButton extends Being {
 class RandomButton extends Being {
   
   Canvas _c;
+  PostOffice _po;
   boolean _hover;
   boolean _keyPressed = false;
   
-  RandomButton(Canvas c) {
+  RandomButton(Canvas c, PostOffice po) {
     super(new Rectangle(randomButtonX,randomButtonY,randomButtonSide,randomButtonSide));
     _c = c;
     _hover = false;
+    _po = po;
   }
   
   /**
@@ -106,6 +112,7 @@ class RandomButton extends Being {
   }
   
   void handleMouseMessage(MouseMessage m) {
+    _hover = true;
     if(m.getAction() == MOUSE_PRESSED) {
       _c.randomize();
     }
@@ -118,6 +125,7 @@ class RandomButton extends Being {
   void draw() {
     if(_hover) {
       fill(buttonHover);
+      _hover = _po.isMouseInRegion(this.getShape());
     }
     else {
       noFill();

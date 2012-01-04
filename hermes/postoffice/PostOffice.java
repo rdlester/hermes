@@ -58,7 +58,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	private HashSet<Integer> _pressedKeys;
 	
 	//Keeps track of mouse location for quick tracking
-	private HashSet<PVector> _mouseLocation;
+	private PVector _mouseLocation;
 	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
@@ -150,7 +150,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_keySubs = HashMultimap.create();
 		_pressedKeys = new HashSet<Integer>();
 		_mouseSubs = HashMultimap.create();
-		_mouseLocation = new HashSet<PVector>();
+		_mouseLocation = new PVector(-100,-100,0);
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
 		_keyQueue = new LinkedList<KeyMessage>();
 		_mouseQueue = new LinkedList<MouseMessage>();
@@ -255,15 +255,22 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		return _pressedKeys.contains(keyCode);
 	}
 	
+	/**
+	 * Utility for checking if mouse is in a region
+	 * @param region	region to check
+	 * @return			true if mouse is in region
+	 */
 	public boolean isMouseInRegion(HShape region) {
-		for(PVector v : _mouseLocation) {
-			if(region.contains(v)) {
-				return true;
-			}
-		}
-		return false;
+			return region.contains(_mouseLocation);
 	}
 	
+	/**
+	 * Utility for obtaining current mouse location
+	 * @return	mouse location
+	 */
+	public PVector getCurrentMouseLocation() {
+		return _mouseLocation;
+	}
 	
 	/////////////////////////////////
 	//Methods for sending OscMessages
@@ -385,10 +392,10 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			}
 		}
 		synchronized(_mouseQueue) {
-			_mouseLocation.clear();
 			while(!_mouseQueue.isEmpty()) {
 				MouseMessage m = _mouseQueue.poll();
-				_mouseLocation.add(new PVector(m.getX(),m.getY()));
+				_mouseLocation.x = m.getX();
+				_mouseLocation.y = m.getY();
 				int button = m.getButton();
 				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
 				for(Pair<?, ?> p : subs) {
