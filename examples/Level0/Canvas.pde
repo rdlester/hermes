@@ -109,7 +109,7 @@ class Canvas extends MassedBeing {
 
   void draw() {
     if(_hover) {
-      if(!_shape.contains(_po.getCurrentMouseLocation())) {
+      if(!_shape.contains(_po.getMouseLocation())) {
         _hover = false;
         _grid[_iCellHover][_jCellHover].setHover(false);
       }
@@ -246,3 +246,4 @@ class Canvas extends MassedBeing {
     _hover = hover;
   }
 }
+

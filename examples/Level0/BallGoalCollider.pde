@@ -6,3 +6,4 @@ class BallGoalCollider extends Collider<Ball, Goal> {
     setMode(COMPLETED);
   }
 }
+

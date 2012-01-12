@@ -31,3 +31,4 @@ class Goal extends Being {
     }
   }
 }
+

@@ -139,6 +139,8 @@ public class CircleTest {
 		int side = 15;
 		int corner = 12;
 		
+		
+		
 		//Calculate answer for corner cases
 		PVector dir = new PVector(1,1);
 		dir.normalize();
@@ -188,29 +190,29 @@ public class CircleTest {
 		PVector posUR = new PVector(-corner,-corner);
 		Rectangle UR = new Rectangle(posUR, width, height);
 		PVector result6 = c1.projectionVector(UR);
-		assertEquals(result6.x, dir.x, 1e-5);
-		assertEquals(result6.y, dir.y, 1e-6);
+		assertEquals(result6.x, -dir.x, 1e-5);
+		assertEquals(result6.y, -dir.y, 1e-6);
 		
 		//Top-left vr
 		PVector posUL = new PVector(corner,-corner);
 		Rectangle UL = new Rectangle(posUL, width, height);
 		PVector result7 = c1.projectionVector(UL);
-		assertEquals(result7.x, -dir.x, 1e-5);
-		assertEquals(result7.y, dir.y, 1e-6);
+		assertEquals(result7.x, dir.x, 1e-5);
+		assertEquals(result7.y, -dir.y, 1e-6);
 		
 		//Bottom-right vr
 		PVector posDR = new PVector(-corner,corner);
 		Rectangle DR = new Rectangle(posDR, width, height);
 		PVector result8 = c1.projectionVector(DR);
-		assertEquals(result8.x, dir.x, 1e-5);
-		assertEquals(result8.y, -dir.y, 1e-6);
+		assertEquals(result8.x, -dir.x, 1e-5);
+		assertEquals(result8.y, dir.y, 1e-6);
 		
 		//Bottom-Left vr
 		PVector posDL = new PVector(corner,corner);
 		Rectangle DL = new Rectangle(posDL, width, height);
 		PVector result9 = c1.projectionVector(DL);
-		assertEquals(result9.x, -dir.x, 1e-5);
-		assertEquals(result9.y, -dir.y, 1e-6);
+		assertEquals(result9.x, dir.x, 1e-5);
+		assertEquals(result9.y, dir.y, 1e-6);
 		
 		//Not colliding!
 		PVector no = new PVector(30,30);

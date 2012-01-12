@@ -54,3 +54,4 @@ class Bubble extends MassedBeing {
     }
   }
 }
+

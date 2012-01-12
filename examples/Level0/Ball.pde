@@ -6,8 +6,7 @@ class Ball extends MassedBeing {
 
   Ball() {
     super(new Circle(new PVector((canvasLeftX+balli*cellSideLength)+cellSideLength/2, 
-    (containerTopY+ballj*cellSideLength)+cellSideLength/2), 
-    ballRadius), 
+    (containerTopY+ballj*cellSideLength)+cellSideLength/2), ballRadius), 
     new PVector(0, 0), ballMass, ballElasticity, 35, 8);
     world.registerBeing(this, true);
   }
@@ -57,3 +56,4 @@ class Ball extends MassedBeing {
     ellipse(0, 0, ballRadius*2, ballRadius*2);
   }
 }
+
