@@ -59,6 +59,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Keeps track of mouse location for quick tracking
 	private PVector _mouseLocation;
+	private PVector _pMouseLocation; //previous mouse location
 	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
@@ -268,8 +269,16 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * Utility for obtaining current mouse location
 	 * @return	mouse location
 	 */
-	public PVector getCurrentMouseLocation() {
+	public PVector getMouseLocation() {
 		return _mouseLocation;
+	}
+	
+	/**
+	 * Utility for obtaining previous mouse location
+	 * @return mouse location on last update
+	 */
+	public PVector getPMouseLocation() {
+		return _pMouseLocation;
 	}
 	
 	/////////////////////////////////
