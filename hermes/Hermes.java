@@ -7,7 +7,7 @@ import processing.core.PApplet;
  */
 public class Hermes {
 	
-	private static PApplet _parentApplet; //Storage of sketch's PApplet. 
+	private static PApplet _parentApplet = null; //Storage of sketch's PApplet. 
 	private static float _timeScale = 1.0f; // the time scale used by Hermes motion and physics calculations
 	
 	/**
