@@ -7,3 +7,4 @@ class BallGoalCollider extends Collider<Ball, Goal> {
   }
 }
 
+
