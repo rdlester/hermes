@@ -3,7 +3,6 @@
 ///////////////////////////////////////////////////
 
 World world;
-HCamera cam;
 PostOffice po;
 
 
@@ -118,4 +117,5 @@ final float STICKY = 0.5;
 //cilia
 int ciliaNum = 16; //number of silia
 int csize = 3; //size of the silia
+
 
