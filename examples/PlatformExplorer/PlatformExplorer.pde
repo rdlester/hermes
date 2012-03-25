@@ -47,7 +47,7 @@ void setup() {
 }
 
 void draw() {
-  //background(230);
+  background(230);
   
   world.draw();
 }
