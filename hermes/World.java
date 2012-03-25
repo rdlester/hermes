@@ -467,7 +467,9 @@ public class World extends Thread {
 	}
 	
 	public void draw() {
-		_camera.draw();
+		if(_active) {
+			_camera.draw();
+		}
 	}
 	
 }
