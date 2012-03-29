@@ -1,17 +1,16 @@
 /**
- * 
+ * A template to get you started
+ * Define your beings, groups, interactors and worlds in separate tabs
+ * Put the pieces together in this top-level file!
  */
 
-import src.hermes.*;
-import src.hermesTest.physicsTest.*;
-import src.hermesTest.postOfficeTests.*;
-import src.hermes.shape.*;
-import src.hermes.animation.*;
-import src.hermesTest.shapeTests.*;
-import src.hermesTest.core.*;
-import src.hermes.physics.*;
-import src.hermes.postoffice.*;
-import static src.hermes.HermesMath.*;
+import hermes.*;
+import hermes.hshape.*;
+import hermes.animation.*;
+import hermes.physics.*;
+import hermes.postoffice.*;
+import static hermes.HermesMath.*;
+import static hermes.postoffice.POConstants.*;
 
 ///////////////////////////////////////////////////
 // CONSTANTS
@@ -23,72 +22,32 @@ import static src.hermes.HermesMath.*;
 static final int WINDOW_WIDTH = 600;
 static final int WINDOW_HEIGHT = 600;
 
-World _world;
-Camera _camera;
-PostOffice _postOffice;
+World world;
+HCamera camera;
+PostOffice postOffice;
 
-///////////////////////////////////////////////////
-// BEINGS
-///////////////////////////////////////////////////
-/**
- * Template being - overwrite when making your own project
- */
-class MyBeing extends Being {
-	MyBeing(Shape shape) {
-		super(shape);
-		//Add your constructor info here
-	}
-	
-	public void draw() {
-		//Add your draw method here
-	}
-}
 
-///////////////////////////////////////////////////
-// GROUPS
-///////////////////////////////////////////////////
 /**
  * Add groups here if you need custom group behavoir
  */
-
-///////////////////////////////////////////////////
-// INTERACTORS
-///////////////////////////////////////////////////
-/**
- * Template interactor between a MyBeing and another MyBeing - overwrite when making your own project
- */
-class MyInteractor implements Interactor<MyBeing,MyBeing> {
-	MyInteraction() {
-		//Add your constructor info here
-	}
-	
-	boolean detect(MyBeing being1, MyBeing being2) {
-		//Add your detect method here
-	}
-	
-	boolean handle(MyBeing being1, MyBeing being2) {
-		//Add your handle method here
-                return true;
-	}
-}
 
 ///////////////////////////////////////////////////
 // PAPPLET
 ///////////////////////////////////////////////////
 
 void setup() {
-	size(WINDOW_WIDTH, WINDOW_HEIGHT); 
-	Hermes.setPApplet(this);
+  size(WINDOW_WIDTH, WINDOW_HEIGHT); 
+  Hermes.setPApplet(this);
 
-	_camera = new Camera();
-	_postOffice = new PostOffice(8080, 8000);
-	_world = new World(_postOffice, _camera);
+  camera = new HCamera();
+  postOffice = new PostOffice(8080, 8000);
+  world = new TemplateWorld(postOffice, camera);       
 
-         //IMPORTANT: put all other setup here        
+  //Important: don't forget to add setup to TemplateWorld!
 
-        _world.start(); // this should be the last line in setup() method
+  world.start(); // this should be the last line in setup() method
 }
 
 void draw() {
-	_camera.draw();
+  world.draw();
 }
