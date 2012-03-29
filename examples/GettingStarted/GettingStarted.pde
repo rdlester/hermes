@@ -1,42 +1,53 @@
-//Here is a skeleton of the basic things you need to set up a new Hermes app. 
+/**
+ * A template to get you started
+ * Define your beings, groups, interactors and worlds in separate tabs
+ * Put the pieces together in this top-level file!
+ */
 
-import src.hermes.*;
-import src.hermes.postoffice.*;
-import src.hermes.animation.*;
-import src.hermes.physics.*;
-import src.hermes.hshape.*;
+import hermes.*;
+import hermes.hshape.*;
+import hermes.animation.*;
+import hermes.physics.*;
+import hermes.postoffice.*;
+import static hermes.HermesMath.*;
+import static hermes.postoffice.POConstants.*;
 
-//At bare minimum, you want a World, PostOffice, and HCamera:
+///////////////////////////////////////////////////
+// CONSTANTS
+///////////////////////////////////////////////////
+/**
+ * Constants should go up here
+ * Making more things constants makes them easier to adjust and play with!
+ */
+static final int WINDOW_WIDTH = 600;
+static final int WINDOW_HEIGHT = 600;
+
 World world;
+HCamera camera;
 PostOffice postOffice;
-HCamera hCamera;
+
+
+/**
+ * Add groups here if you need custom group behavoir
+ */
+
+///////////////////////////////////////////////////
+// PAPPLET
+///////////////////////////////////////////////////
 
 void setup() {
+  size(WINDOW_WIDTH, WINDOW_HEIGHT); 
+  Hermes.setPApplet(this);
 
-  //Let Hermes know about your processing sketch
-  Hermes.setPApplet(this);  
+  camera = new HCamera();
+  postOffice = new PostOffice(8080, 8000);
+  world = new TemplateWorld(postOffice, camera);       
 
-  hCamera = new HCamera(); 
-  //Using port 8700 for OSC input and 8701 for OSC output
-  //Change these if these ports are in use, or just call 'new PostOffice()' you aren't using OSC.
-  postOffice = new PostOffice(8700, 8701); 
+  //Important: don't forget to add setup to TemplateWorld!
 
-  //World takes a postOffice and an hCamera
-  world = new World(postOffice, hCamera);
-  
-  //Now, do any setup you need (make Beings and Groups, register interactions and post office subscriptions, etc), set your screen resolution with size(), etc
-  //
-  //
-  
-  //lastly, start your world!
-  world.start();
+  world.start(); // this should be the last line in setup() method
 }
 
 void draw() {
-  
-  //This will draw any beings contained within the bounds of your HCamera
-  hCamera.draw();
+  world.draw();
 }
-
-//define your Being classes here:
-
