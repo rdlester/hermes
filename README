@@ -1,30 +1,16 @@
 HERMES
+======
 
-by
-Sam Eilertsen
-Jennifer Kovnats
-Ryan Lester
-Chris Novello (http://paperkettle.com)
+Hermes is an experimental game engine leverging Java's object-oriented systems and the speed + ease of coding in Processing to provide an architecture for quicking building games and simulations.
 
-DOCUMENTATION
+Hermes-1.0.zip, available in the downloads section, contains a completely built version of the library with examples and documentation. To install, drag the unzipped folder into the 'libraries' folder in your Processing sketchbook.
 
-web/howto.txt and web/index.html contain basic documentation about the library. doc contains the full javadoc.
+TUTORIAL
+--------
+
+See: ??? for an introduction to making games with Hermes.
 
 SOURCE
+------
 
-The full source code of the library is in src/. The library itself is in the package src/hermes, and testing code is in src/hermesTest.
-
-TO BUILD:
-Rename the "default-resources" folder to "resources", then use the Ant build script provided in the folder. You may have to do some tweaking to get it working on your operating system. At the least, you'll have to update the properties defined in build.properties to the correct paths for your computer. You may have to tweak build.xml as well to get it working. The build is currently configured to exclude the tests; please don't change this.
-
-EXAMPLES
-
-The examples/ folder contains a number of examples of the library in action. These are also in the ZIP in distribution.
-
-BINARIES
-
-distribution/Hermes-0.1.1 contains all files necessary for use of the library, with installation instructions. This requires Processing 1.2 or higher, and the JRE 1.5 or higher.
-
-BUILDING
-
-Building the library requires the JDK 1.5 or higher. resources/build.xml is an Ant script for building, although it must be configured specifically for your system. Consult build_readme.html for more info.
+The full source code of the library is in src/. The library itself is in the package src/hermes, and testing code is in src/hermesTest. See the wiki for details on building the library from source.
