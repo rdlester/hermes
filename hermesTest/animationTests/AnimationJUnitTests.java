@@ -1,3 +1,4 @@
+package hermesTest.animationTests;
 //package src.hermesTest.animationTests;
 //import org.junit.After;
 //import org.junit.Before;
