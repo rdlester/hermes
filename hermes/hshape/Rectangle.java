@@ -26,23 +26,29 @@ public class Rectangle extends HShape {
 	 */
 	public Rectangle(float a, float b, float c, float d) {
 		super(new PVector(a,b,0));
-		switch(Hermes.getPApplet().g.rectMode) {
-		case PApplet.CORNER:
+		PApplet p = Hermes.getPApplet();
+		if(p != null) {
+			switch(p.g.rectMode) {
+			case PApplet.CORNER:
+				_min = zeroVector();
+				_max = new PVector(c,d);
+				break;
+			case PApplet.CENTER:
+				_min = new PVector(-c/2,-d/2);
+				_max = new PVector(c/2,d/2);
+				break;
+			case PApplet.CORNERS:
+				_min = zeroVector();
+				_max = new PVector(c-a,d-b);
+				break;
+			case PApplet.RADIUS:
+				_min = new PVector(-c,-d,0);
+				_max = new PVector(c,d,0);
+				break;
+			}
+		} else {
 			_min = zeroVector();
 			_max = new PVector(c,d);
-			break;
-		case PApplet.CENTER:
-			_min = new PVector(-c/2,-d/2);
-			_max = new PVector(c/2,d/2);
-			break;
-		case PApplet.CORNERS:
-			_min = zeroVector();
-			_max = new PVector(c-a,d-b);
-			break;
-		case PApplet.RADIUS:
-			_min = new PVector(-c,-d,0);
-			_max = new PVector(c,d,0);
-			break;
 		}
 	}
 	

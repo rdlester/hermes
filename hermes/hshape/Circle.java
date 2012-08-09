@@ -199,7 +199,7 @@ public class Circle extends HShape {
 	
 	@Override
 	public Rectangle getBoundingBox() {
-		return new Rectangle(PVector.add(_position, _center), 2*_radius, 2*_radius);
+		return new Rectangle(PVector.sub(PVector.add(_position, _center),new PVector(_radius,_radius)), 2*_radius, 2*_radius);
 	}
 	
 	@Override

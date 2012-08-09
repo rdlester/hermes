@@ -1,31 +1,6 @@
-//Constants defining the tools
-final int NOTOOL = 0;
-final int QUADRANGLE = 1;
-final int TRIANGLE = 2;
-final int HEXAGON = 3;
-final int CIRCLETOOL = 4;
-final int WEDGE = 5;
-final int PUNCHER = 6; //to be added
-final int BATON = 7; //to be added
-final int FUSE = 8; //to be added
-//Tool stored by dragging, used for placing tools on the board
-Tool templateTool = null;
-Tool dragTool = null;
-Tool selectedTool = null;
-int dragIniti = -1; // set to -1 when from toolbox,
-int dragInitj = -1; // real values when from canvas
-
-//tool elasticity
-final float SPRINGY = 1.5; //TODO: ??????set?
-final float PERFECT = 1;
-final float STICKY = 0.5;
-
-//cilia
-int ciliaNum = 16; //number of silia
-int csize = 3; //size of the silia
-
 ///////////////////////////////////////////////////
 // TOOLS (ACCESSABLE TO SELF)
+// Contains all Tool classes
 ///////////////////////////////////////////////////
  
 /**
@@ -320,3 +295,5 @@ void drawCilia(Polygon p) {
     popMatrix();
   }
 }
+
+
