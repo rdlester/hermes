@@ -1,4 +1,4 @@
-package src.hermesTest.physicsTest;
+package hermesTest.physicsTest;
 
 import hermes.hshape.*;
 import hermes.physics.*;

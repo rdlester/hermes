@@ -1,4 +1,4 @@
-package src.hermesTest.core;
+package hermesTest.core;
 
 
 import org.junit.*;
