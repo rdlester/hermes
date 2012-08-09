@@ -16,11 +16,13 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import javax.swing.SwingUtilities;
 
 import processing.core.PApplet;
+import processing.core.PVector;
 
 import com.google.common.collect.HashMultimap;
 
@@ -51,6 +53,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	private LinkedList<MouseMessage> _mouseQueue;
 	private LinkedList<MouseWheelMessage> _mouseWheelQueue;
 	private LinkedList<OscMessage> _oscQueue;
+	
+	//Keeps track of which keys are pressed for quick tracking
+	private HashSet<Integer> _pressedKeys;
+	
+	//Keeps track of mouse location for quick tracking
+	private PVector _mouseLocation;
+	private PVector _pMouseLocation; //previous mouse location
 	
 	//Boolean stating whether osc is on or off
 	private boolean _onOSC;
@@ -140,7 +149,9 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		Hermes.getPApplet().addMouseWheelListener(this);
 		//Initialize subscription list and message queue
 		_keySubs = HashMultimap.create();
+		_pressedKeys = new HashSet<Integer>();
 		_mouseSubs = HashMultimap.create();
+		_mouseLocation = new PVector(-100,-100,0);
 		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
 		_keyQueue = new LinkedList<KeyMessage>();
 		_mouseQueue = new LinkedList<MouseMessage>();
@@ -231,6 +242,43 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		assert address != null : "PostOffice.registerOscSubscription: address must be a valid String";
 		_oscSubs.put(address, sub);
 		_receive.addListener(address, this);
+	}
+	
+	//////////////////////////////////
+	//Utilities for checking key presses and mouse location quickly
+	
+	/**
+	 * Utility for checking if key is pressed
+	 * @param keyCode	the key being checked
+	 * @return			true if pressed, false otherwise
+	 */
+	public boolean isKeyPressed(int keyCode) {
+		return _pressedKeys.contains(keyCode);
+	}
+	
+	/**
+	 * Utility for checking if mouse is in a region
+	 * @param region	region to check
+	 * @return			true if mouse is in region
+	 */
+	public boolean isMouseInRegion(HShape region) {
+			return region.contains(_mouseLocation);
+	}
+	
+	/**
+	 * Utility for obtaining current mouse location
+	 * @return	mouse location
+	 */
+	public PVector getMouseLocation() {
+		return _mouseLocation;
+	}
+	
+	/**
+	 * Utility for obtaining previous mouse location
+	 * @return mouse location on last update
+	 */
+	public PVector getPMouseLocation() {
+		return _pMouseLocation;
 	}
 	
 	/////////////////////////////////
@@ -339,9 +387,13 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public void checkMail() {
 		//Send all the messages in each queue to the corresponding subscribers
 		synchronized(_keyQueue) {
+			_pressedKeys.clear();
 			while(!_keyQueue.isEmpty()) {
 				KeyMessage m = _keyQueue.poll();
 				int key = m.getKeyCode();
+				if(m.isPressed()) { //Add to the pressed key array if pressed
+					_pressedKeys.add(key);
+				}
 				Set<KeySubscriber> subs = _keySubs.get(key);
 				for(KeySubscriber sub : subs) {
 					sub.handleKeyMessage(m);
@@ -351,6 +403,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		synchronized(_mouseQueue) {
 			while(!_mouseQueue.isEmpty()) {
 				MouseMessage m = _mouseQueue.poll();
+				_mouseLocation.x = m.getX();
+				_mouseLocation.y = m.getY();
 				int button = m.getButton();
 				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
 				for(Pair<?, ?> p : subs) {

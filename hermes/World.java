@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 public class World extends Thread {
 	
-	private PostOffice _postOffice; //post office
+	protected PostOffice _postOffice; //post office
 
 	// these hold add and delete operations until the end of the update
 	private LinkedList<Pair<HObject,GenericGroup<?,?>>> _addQueue;
@@ -39,7 +39,7 @@ public class World extends Thread {
 	private Group<Being> _masterGroup; //this is the group used by the camera
 	private Group<Being> _updateGroup;
 	
-	private HCamera _camera; // the camera
+	protected HCamera _camera; // the camera
 	private Group<HCamera> _cameraGroup; // a Group with only one member: _camera (required to register an Interaction)
 	private boolean _active = false; // whether the world is currently running - 
 	
@@ -466,7 +466,11 @@ public class World extends Thread {
 		_updateLength = 0;
 	}
 	
-
+	public void draw() {
+		if(_active) {
+			_camera.draw();
+		}
+	}
 	
 }
 

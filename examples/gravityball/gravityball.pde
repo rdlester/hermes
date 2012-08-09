@@ -4,19 +4,15 @@
 */
 
 //import src.template.library.*;
-import src.hermes.*;
-import src.hermesTest.physicsTest.*;
-import src.hermesTest.postOfficeTests.*;
-import src.hermes.shape.*;
-import src.hermes.animation.*;
-import src.hermesTest.shapeTests.*;
-import src.hermesTest.core.*;
-import src.hermes.physics.*;
-import src.hermes.postoffice.*;
+import hermes.*;
+import hermes.hshape.*;
+import hermes.animation.*;
+import hermes.physics.*;
+import hermes.postoffice.*;
 
 World _world;
 PostOffice _postOffice;
-Camera _camera;
+HCamera _camera;
 
 BallGroup _ballGroup;
 BoxGroup _boxGroup;
@@ -32,20 +28,20 @@ void setup() {
   size(WIDTH, HEIGHT); 
   Hermes.setPApplet(this);
  
-  _camera = new Camera();
+  _camera = new HCamera();
   _postOffice = new PostOffice(8080, 8000); 
   _world = new World(_postOffice, _camera);
   _world.lockUpdateRate(50);
  
   _ballGroup = new BallGroup(_world);
-  _postOffice.registerMouseSubscription(_ballGroup, PostOffice.LEFT_BUTTON);
+  _postOffice.registerMouseSubscription(_ballGroup, POConstants.LEFT_BUTTON);
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetElasticity");
   _postOffice.registerOscSubscription(_ballGroup, "/BouncingBalls/SetMass");
   
   _boxGroup = new BoxGroup(_world);
   
-  _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), false);
-  _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider(), false);
+  _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider());
+  _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider());
 
   GravityEnvironment enviro = new GravityEnvironment(new PVector(0, 100),
     new Rectangle(new PVector(0,0), new PVector(0,0), new PVector(WIDTH, HEIGHT)));

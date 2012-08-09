@@ -13,7 +13,7 @@
     
 	
 
-	<property file="./resources/build.properties" />
+	<property file="./resources_default/build.properties" />
 	
 	<description>
         ${ant.description}
@@ -30,7 +30,7 @@
 	
 	
 	<property name="project.jar.name" value="${project.name}.jar"/>
-	<property name="project.src" location="src"/>
+	<property name="project.src" location="hermes"/>
 	<property name="project.tmp" location="tmp"/>
 	<property name="project.web" location="web"/>
 	<property name="project.data" location="data"/>
@@ -46,7 +46,7 @@
 	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
-			<pathelement location="./resources/code/ant-contrib-1.0b3.jar"/>
+			<pathelement location="./resources_default/code/ant-contrib-1.0b3.jar"/>
 		</classpath>
 	</taskdef>
 

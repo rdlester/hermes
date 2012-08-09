@@ -34,7 +34,7 @@ public abstract class MassedBeing extends Being {
 	private int _samples = 0;	// samples taken on the current update
 	private boolean _moreSamples = false;	// whether more samples are needed
 	
-
+	private static boolean _clampWarning = false; // whether we've warned the user about a clamped velocity
 	
 	/**
 	 * Instantiates a new MassedBeing with given mass and elasticity. Elasticity determies
@@ -287,6 +287,10 @@ public abstract class MassedBeing extends Being {
 			} else {
 				_samples = 0;
 				_moreSamples = false;
+				if(!_clampWarning) {
+					System.out.println("Warning: MassedBeing: an object may have reached its maximum samlpes, and its velocity was clamped./n MassedBeing: " + this);
+					_clampWarning = true;
+				}
 			}
 		} else {
 			_samples = 0;
