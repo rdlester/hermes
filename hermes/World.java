@@ -83,6 +83,43 @@ public class World extends Thread {
 		lockUpdateRate(60); // lock the update rate to 60 updates/sec by default
 	}
 	
+	// Simplified constructors
+	
+	/**
+	 * Constructor that automatically creates PostOffice and HCamera
+	 */
+	 public World() {
+	   this(new PostOffice(), new HCamera());
+	 }
+	 
+	 /**
+	  * Constructor that automatically creates PostOffice
+	  */
+	 public World(HCamera view) {
+	   this(new PostOffice(), view);
+	 }
+	 
+	 /**
+	  * Constructor that automatically creates PostOffice and HCamera, and sets up OSC
+	  */
+	  public World(int portIn, int portOut) {
+	    this(new PostOffice(portIn, portOut), new HCamera());
+	  }
+	  
+	  /**
+	   * Constructor that automatically creates PostOffice and sets up OSC
+	   */
+	  public World(int portIn, int portOut, HCamera view) {
+	    this(new PostOffice(portIn, portOut), view);
+	  }
+	  
+	  /**
+	   * Constructor that automatically creates HCamera
+	   */
+	  public World(PostOffice postOffice) {
+	    this(postOffice, new HCamera());
+	  }
+	
 	/**
 	 * Returns true after <code>start()</code> has been called.
 	 * @return	whether the world is currently running
@@ -284,9 +321,9 @@ public class World extends Thread {
 
 		long time = System.currentTimeMillis();
 		
-		// 1. handle the message queue from the post office
+		// 1. handle the message queue from the post office if post office is defined
 		_postOffice.checkMail();
-		
+		  
 		// 2. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
