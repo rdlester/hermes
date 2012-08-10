@@ -2,9 +2,9 @@
  * Template World
  * You'll need to add stuff to setup().
 */
-class TemplateWorld {
-  TemplateWorld(PostOffice po, HCamera cam) {
-    super(po,cam);
+class TemplateWorld extends World {
+  TemplateWorld(int portIn, int portOut) {
+    super(portIn, portOut);
   }
   
   void setup() {

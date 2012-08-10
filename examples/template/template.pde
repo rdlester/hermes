@@ -21,11 +21,10 @@ import static hermes.postoffice.POConstants.*;
  */
 static final int WINDOW_WIDTH = 600;
 static final int WINDOW_HEIGHT = 600;
+static final int PORT_IN = 8080;
+static final int PORT_OUT = 8000; 
 
-World world;
-HCamera camera;
-PostOffice postOffice;
-
+World currentWorld;
 
 /**
  * Add groups here if you need custom group behavoir
@@ -39,9 +38,7 @@ void setup() {
   size(WINDOW_WIDTH, WINDOW_HEIGHT); 
   Hermes.setPApplet(this);
 
-  camera = new HCamera();
-  postOffice = new PostOffice(8080, 8000);
-  world = new TemplateWorld(postOffice, camera);       
+  currentWorld = new TemplateWorld(PORT_IN, PORT_OUT);       
 
   //Important: don't forget to add setup to TemplateWorld!
 
