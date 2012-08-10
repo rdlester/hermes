@@ -1,7 +1,7 @@
 /*
 
 This is a generative Shoot-Em-UP or "Bullet Hell" program. 
-You have a character on the left that can move and shoot, and you can generate enemies that travel from left to right
+You have a character on the left (the "Subject") that can move and shoot, and you can generate enemies ("Others") that travel from left to right
 The system is controlled entirely with OSC, so it is ripe for exploration via strange data sets (oscillators, clocks, other games, etc)
 
 
@@ -52,8 +52,6 @@ The system is controlled entirely with OSC, so it is ripe for exploration via st
  
  */
 
-
-
 import processing.opengl.*;
 import hermes.*;
 import hermes.hshape.*;
@@ -62,15 +60,14 @@ import hermes.postoffice.*;
 
 static final String systemName = "BulletCurtain";
 
-//size.. static and final because they are constants
-
-static final int numberOfWidthBlocks = 10;
-static final int numberOfHeightBlocks = 8;
+/*Settings for character sprites. Each block is a square of pixels.
+*/
 static final int pixelsPerBlock = 4;
+static final int widthBlocks = 10;
+static final int heightBlocks = 8;
 
-
-static final int BODY_WIDTH = numberOfWidthBlocks * pixelsPerBlock;
-static final int BODY_HEIGHT = numberOfHeightBlocks * pixelsPerBlock;
+static final int BODY_WIDTH = widthBlocks * pixelsPerBlock;
+static final int BODY_HEIGHT = heightBlocks * pixelsPerBlock;
 
 static final int NUMBER_OF_ANIMATIONS_IN_LIST = 20; //several animations in each AnimatedSprite
 
@@ -78,49 +75,44 @@ static final int NUMBER_OF_ANIMATIONS_IN_LIST = 20; //several animations in each
 int animationSpeedMultiplier = 2;
 
 //Initial States... use for codebending
-color mainColor = color (random(255), random(255), random(255), 255);
-color altColor = color (random(255), random(255), random(255), 255);
+
 int numberOfAnimationFrames = 5; //how many frames an animation gets when it is created
 int millisecondsPerFrame = 500; //how many milliseconds each from plays for (set when created)
+
 AnimatedSprite spriteToUseForSubject; //use when generating the sprite of "subject"
 Animation[] commonAnimations; //use when generating the AnimatedSprites of "Others"
 
-float universalShotTravel = 10;
-
-//AnimatedSprite spriteToUseForOther; 
-
-int curtainX = RES_WIDTH/3;
-
-CharacterGraphicsGenerator characterGraphicsGenerator;
-Subject subject;
+//Basically global variables.. used for codebending changes that affect several items at once.
+float universalShotTravel = 10; //how far does each shot travel per frame
+float shotTravelMultiplier = 1.0;
+float otherTravelMultiplier = 1.0; 
 
 
+//Basic Hermes objects
 World world;
-
 PostOffice postOffice;
-OtherGroup otherGroup; 
+HCamera cam;
 
+Subject subject; //character on the left
+
+OtherGroup otherGroup; 
 ShotGroup shotGroup;
 
 StateBeing worldStateBeing;
 
-HCamera cam;
+CharacterGraphicsGenerator characterGraphicsGenerator;
 
-static final int RES_WIDTH = 800;
-static final int RES_HEIGHT = 600;
 
 void setup() { 
 
   Hermes.setPApplet(this);
-  size(RES_WIDTH, RES_HEIGHT, OPENGL);
+  size(640,480, OPENGL);
 
   characterGraphicsGenerator = new CharacterGraphicsGenerator(); //used to makes generative random patterns for AnimatedSprites
 
   initializeAnimations();
 
-  //  initializeAnimatedSprites();
-
-  subject = new Subject (RES_WIDTH / 8, RES_HEIGHT / 2, spriteToUseForSubject);
+  subject = new Subject (width / 8, height / 2, spriteToUseForSubject);
 
   spriteToUseForSubject.setActiveAnimation(0);
 
@@ -171,8 +163,8 @@ class ShotOtherCollider extends BoundingBoxCollider<Shot, Other> {
 
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyed", 1.0);
 
-    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtX", map(other.getX(), 0.0, RES_WIDTH, 0.0, 1.0));
-    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtY", map(other.getY(), 0.0, RES_HEIGHT, 0.0, 1.0));
+    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtX", map(other.getX(), 0.0, width, 0.0, 1.0));
+    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtY", map(other.getY(), 0.0, height, 0.0, 1.0));
 
     world.deleteFromGroups(shot);
     world.deleteFromGroups(other);
@@ -203,7 +195,7 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = characterGraphicsGenerator.generate(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, mainColor, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(heightBlocks, widthBlocks, pixelsPerBlock, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
@@ -213,14 +205,13 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
   }
 
 
-
   //Create a common animation pool for all 'Others'
   commonAnimations = new Animation[NUMBER_OF_ANIMATIONS_IN_LIST];
 
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = characterGraphicsGenerator.generate(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, altColor, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(widthBlocks, heightBlocks, pixelsPerBlock, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
@@ -287,7 +278,7 @@ class Subject extends SubjectObjectRelation {
       if (msgSplit[2].equals("SetSubjectX")) {
         if (message.hasRemainingArguments()) {
           float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedX = map(constrainedX, 0.0, 1.0, 0.0, curtainX - BODY_WIDTH);
+          float remappedX = map(constrainedX, 0.0, 1.0, 0.0, (width/3) - BODY_WIDTH);
           setX(remappedX);
         }
       }
@@ -295,7 +286,7 @@ class Subject extends SubjectObjectRelation {
       else if (msgSplit[2].equals("SetSubjectY")) {
         if (message.hasRemainingArguments()) {
           float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedY = map(constrainedY, 0.0, 1.0, 0.0, RES_HEIGHT - BODY_HEIGHT);
+          float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
           setY(remappedY);
         }
       }
@@ -325,7 +316,6 @@ class Subject extends SubjectObjectRelation {
 
 
 
-float shotTravelMultiplier = 1.0;
 
 class Shot extends Being {
 
@@ -343,7 +333,7 @@ class Shot extends Being {
   void update() {
     setX(getX() + (travel * shotTravelMultiplier));
 
-    if (getX() > RES_WIDTH) {
+    if (getX() > width) {
       world.deleteFromGroups(this);
     }
   }
@@ -380,7 +370,6 @@ class ShotGroup extends Group {
   }
 }
 
-float otherTravelMultiplier = 1.0;
 
 class Other extends SubjectObjectRelation {
 
@@ -408,8 +397,8 @@ class OtherGroup extends Group {
     super(world);
   }
 
-  float spawnX = RES_WIDTH;
-  float spawnY = RES_HEIGHT/2 - BODY_HEIGHT/2;
+  float spawnX = width;
+  float spawnY = height/2 - BODY_HEIGHT/2;
   int animationIndexToUseOnSpawn = 0;
 
   Float groupTravelSpeed = 1.0;
@@ -436,7 +425,7 @@ class OtherGroup extends Group {
         if (message.hasRemainingArguments()) {
 
           float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedX = map(constrainedX, 0.0, 1.0, curtainX, RES_WIDTH - BODY_WIDTH);
+          float remappedX = map(constrainedX, 0.0, 1.0, (width/3), width - BODY_WIDTH);
           spawnX = remappedX;
         }
       }
