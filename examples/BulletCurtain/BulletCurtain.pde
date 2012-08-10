@@ -53,10 +53,10 @@
 //if time, consider built in accumulators with decay
 
 import processing.opengl.*;
-import src.hermes.*;
-import src.hermes.hshape.*;
-import src.hermes.animation.*;
-import src.hermes.postoffice.*;
+import hermes.*;
+import hermes.hshape.*;
+import hermes.animation.*;
+import hermes.postoffice.*;
 
 static final String systemName = "BulletCurtain";
 
@@ -157,7 +157,7 @@ void setup() {
 
   ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
 
-  world.registerInteraction(shotGroup, otherGroup, shotOtherCollider, true);
+  world.registerInteraction(shotGroup, otherGroup, shotOtherCollider);
 
   world.lockUpdateRate(60);
   world.start();
@@ -165,17 +165,17 @@ void setup() {
 
 class ShotOtherCollider extends BoundingBoxCollider<Shot, Other> {
 
-  boolean handle(Shot shot, Other other) {
+  void handle(Shot shot, Other other) {
 
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyed", 1.0);
 
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtX", map(other.getX(), 0.0, RES_WIDTH, 0.0, 1.0));
     postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtY", map(other.getY(), 0.0, RES_HEIGHT, 0.0, 1.0));
 
-    world.deleteBeing(shot);
-    world.deleteBeing(other);
+    world.deleteFromGroups(shot);
+    world.deleteFromGroups(other);
 
-    return true;
+    //return true;
   }
 }
 
@@ -252,7 +252,7 @@ abstract class SubjectObjectRelation extends Being {
 
     //First call to a subclass must be to the super constructor
     //in this case, it takes a Shape for position and collision detection
-    super(new Rectangle(x, y, BODY_WIDTH, BODY_HEIGHT, CORNER));
+    super(new Rectangle(x, y, BODY_WIDTH, BODY_HEIGHT));
 
     this.animatedSprite = animatedSprite;
   }
@@ -334,7 +334,7 @@ class Shot extends Being {
 
   Shot(float x, float y, float travel) {
 
-    super(new Rectangle(x, y, shotWidth, shotHeight, CORNER));
+    super(new Rectangle(x, y, shotWidth, shotHeight));
     this.travel = travel;
   }
 
@@ -342,7 +342,7 @@ class Shot extends Being {
     setX(getX() + (travel * shotTravelMultiplier));
 
     if (getX() > RES_WIDTH) {
-      world.deleteBeing(this);
+      world.deleteFromGroups(this);
     }
   }
 
@@ -392,7 +392,7 @@ class Other extends SubjectObjectRelation {
     setX(getX() - (howManyPixelsToTravel * otherTravelMultiplier));
 
     if (getX() + BODY_WIDTH < 0) {
-      world.deleteBeing(this);
+      world.deleteFromGroups(this);
     }
   }
 }

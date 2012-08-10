@@ -40,6 +40,7 @@
 	<property name="project.examples" location="examples"/>
 	<property name="project.reference" location="reference"/>
 	<property name="project.dist" location="distribution"/>
+	<property name="library.properties" location="library.properties"/>
 	<property name="project.dist.version" location="distribution/${project.name}-${project.version}"/>
 	<property name="install.source" location="resources/install_instructions.txt"/>
 	<property name="install.destination" location="${project.dist.version}/INSTALL.txt"/>
@@ -156,6 +157,7 @@ ${line}
 	  	<copy todir="${project.tmp}/${project.name}/${folder}">
   			<fileset dir="${project.lib}" excludes="README" />
 	  	</copy>
+		<copy file="${library.properties}" todir="${project.tmp}/${project.name}"/>
 	</target>
 	
 	

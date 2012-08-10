@@ -1,4 +1,4 @@
-package src.hermesTest.physicsTest;
+package hermesTest.physicsTest;
 
 import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
