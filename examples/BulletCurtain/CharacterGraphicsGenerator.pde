@@ -3,7 +3,7 @@ This makes generative patterns for use as blocky pixel character graphics.
 Visually, the hope is to make something in between look classic video game aliens/spaceships, and patterns from cellular automata.
 */
 
-public class CharacterGraphicsGenerator {
+class CharacterGraphicsGenerator {
 
   //Pallette of colors used for characters
   color[] colorPalette = {
@@ -16,24 +16,24 @@ public class CharacterGraphicsGenerator {
   patterns are built out of "blocks," where each block has a number of pixels per block
   this is to basically scaling - the character generated can be any size, but still retain a classic pixelated/blocky look
   */
-  public PImage[] generate(int numberOfWidthBlocks, int numberOfHeightBlocks, int pixelsPerBlock, color mainColor, int numberOfAnimationFrames) {
+  public PImage[] generate(int numberOfWidthBlocks, int numberOfHeightBlocks, int pixelsPerBlock, int numberOfAnimationFrames) {
 
     //make a PImage[] of frames for the animation 
     PImage[] generatedFrames = new PImage[numberOfAnimationFrames];
 
     //use colors from the colorPalette
-    mainColor = colorPalette[int(random(colorPalette.length))];
+    color characterColor = colorPalette[int(random(colorPalette.length))];
 
     //for every frame.. 
     for (int frameIndex = 0; frameIndex < generatedFrames.length; frameIndex++) {
       //generate a random frame of desired width&height.
-      generatedFrames[frameIndex] = createRandomFrame(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, mainColor);
+      generatedFrames[frameIndex] = createRandomFrame(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, characterColor);
     }
 
     return generatedFrames;
   }
 
-  private PImage createRandomFrame (int numberOfWidthBlocks, int numberOfHeightBlocks, int pixelsPerBlock, color mainColor) {
+  private PImage createRandomFrame (int numberOfWidthBlocks, int numberOfHeightBlocks, int pixelsPerBlock, color characterColor) {
 
     //Make a pattern, return it as a PImage 
     PImage currentFrame = createImage(numberOfWidthBlocks*pixelsPerBlock, numberOfHeightBlocks*pixelsPerBlock, ARGB);     
@@ -63,7 +63,7 @@ public class CharacterGraphicsGenerator {
         color colorToUse = color (0, 0, 0, 0); //transparent
         //If the generated pattern has a 1, 
         if (pattern[row] == 1) {
-          colorToUse = mainColor;
+          colorToUse = characterColor;
         } // otherwise leave it as transparent;
         
         //Spice the colors up a bit...
