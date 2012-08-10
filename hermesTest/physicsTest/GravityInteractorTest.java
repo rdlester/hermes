@@ -1,4 +1,4 @@
-package src.hermesTest.physicsTest;
+package hermesTest.physicsTest;
 
 import hermes.hshape.Rectangle;
 import hermes.physics.GravityInteractor;
