@@ -1,6 +1,10 @@
-//Hi! The comments in this piece might often seem verbose. They're there to provide some clear explanations of the functions of the library!
-
 /*
+
+This is a generative Shoot-Em-UP or "Bullet Hell" program. 
+You have a character on the left that can move and shoot, and you can generate enemies that travel from left to right
+The system is controlled entirely with OSC, so it is ripe for exploration via strange data sets (oscillators, clocks, other games, etc)
+
+
 =======================================
  Inputs:
  =======================================
@@ -48,9 +52,7 @@
  
  */
 
-//todo: 
-//add camera rotation, make osc controllable.
-//if time, consider built in accumulators with decay
+
 
 import processing.opengl.*;
 import hermes.*;
@@ -89,7 +91,7 @@ float universalShotTravel = 10;
 
 int curtainX = RES_WIDTH/3;
 
-PatternGenerator patternGenerator;
+CharacterGraphicsGenerator characterGraphicsGenerator;
 Subject subject;
 
 
@@ -112,7 +114,7 @@ void setup() {
   Hermes.setPApplet(this);
   size(RES_WIDTH, RES_HEIGHT, OPENGL);
 
-  patternGenerator = new PatternGenerator(); //used to makes generative random patterns for AnimatedSprites
+  characterGraphicsGenerator = new CharacterGraphicsGenerator(); //used to makes generative random patterns for AnimatedSprites
 
   initializeAnimations();
 
@@ -201,7 +203,7 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = patternGenerator.generatePatternFrames(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, mainColor, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, mainColor, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
@@ -218,7 +220,7 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = patternGenerator.generatePatternFrames(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, altColor, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(numberOfWidthBlocks, numberOfHeightBlocks, pixelsPerBlock, altColor, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
