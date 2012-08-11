@@ -153,6 +153,14 @@ public class World extends Thread {
 	}
 	
 	/**
+	 * Shortcut for adding Being w/ update
+	 * @param being   the being to register
+	 */
+	public Being registerBeing(Being being) {
+	  return registerBeing(being, true);
+	}
+	
+	/**
 	 * Queues an HObject to be added to a group at the end of the current update.
 	 * @param object	the object to add
 	 * @param group		the group to add the object to
