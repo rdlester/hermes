@@ -2,6 +2,7 @@ package hermes.postoffice;
 
 import hermes.Hermes;
 import hermes.Pair;
+import hermes.HObject;
 import hermes.hshape.HShape;
 
 import java.awt.event.KeyEvent;
@@ -17,7 +18,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import javax.swing.SwingUtilities;
 
@@ -211,7 +214,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 * @param region	the region on screen the subscriber wants to limit its subscription to
 	 */
-    public void registerMouseSubscription(MouseSubscriber sub, int button,HShape region) {
+    public void registerMouseSubscription(MouseSubscriber sub, int button, HShape region) {
         assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
 		assert button == POConstants.NO_BUTTON ||
 				button == POConstants.LEFT_BUTTON ||
@@ -244,6 +247,116 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 		_receive.addListener(address, this);
 	}
 	
+	/**
+	 * Removes a mouse subscription
+	 * @param sub   the subscriber to be removed
+	 * @return      true if subscriber was present and removed, false otherwise
+	 */
+	public boolean removeMouseSubscriptions(MouseSubscriber sub) {
+	  if(_mouseSubs.containsValue(sub)) {
+	    // Find key-value pairs containing sub
+	    Set<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> all = _mouseSubs.entries();
+	    Set<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> toRemove = new HashSet<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>>();
+	    for(Iterator<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> iter = all.iterator(); iter.hasNext(); ) {
+	      Map.Entry<Integer, Pair<MouseSubscriber,HShape>> next = iter.next();
+	      if(next.getValue().getFirst() == sub) {
+	        toRemove.add(next);
+	      }
+	    }
+	    
+	    // Remove references
+	    for(Iterator<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> iter = toRemove.iterator(); iter.hasNext(); ) {
+	      Map.Entry<Integer, Pair<MouseSubscriber,HShape>> next = iter.next();
+	      _mouseSubs.remove(next.getKey(), next.getValue());
+	    }
+	    return true;
+	  } else {
+	    return false;
+	  }
+	}
+	
+	/**
+	 * Removes a key subscription
+	 * @param sub   the subscriber to be removed
+	 * @return      true if subscriber was present and removed, false otherwise
+	 */
+	 public boolean removeKeySubscriptions(KeySubscriber sub) {
+	   if(_keySubs.containsValue(sub)) {
+ 	    // Find key-value pairs containing sub
+ 	    Set<Map.Entry<Integer, KeySubscriber>> all = _keySubs.entries();
+ 	    Set<Map.Entry<Integer, KeySubscriber>> toRemove = new HashSet<Map.Entry<Integer, KeySubscriber>>();
+ 	    for(Iterator<Map.Entry<Integer, KeySubscriber>> iter = all.iterator(); iter.hasNext(); ) {
+ 	      Map.Entry<Integer, KeySubscriber> next = iter.next();
+ 	      if(next.getValue() == sub) {
+ 	        toRemove.add(next);
+ 	      }
+ 	    }
+
+ 	    // Remove references
+ 	    for(Iterator<Map.Entry<Integer, KeySubscriber>> iter = toRemove.iterator(); iter.hasNext(); ) {
+ 	      Map.Entry<Integer, KeySubscriber> next = iter.next();
+ 	      _keySubs.remove(next.getKey(), next.getValue());
+ 	    }
+ 	    return true;
+ 	  } else {
+ 	    return false;
+ 	  }
+	 }
+	 
+	 /**
+ 	 * Removes a mouse wheel subscription
+ 	 * @param sub   the subscriber to be removed
+ 	 * @return      true if subscriber was present and removed, false otherwise
+ 	 */
+ 	 public boolean removeMouseWheelSubscriptions(KeySubscriber sub) {
+ 	   return _mouseWheelSubs.remove(sub);
+ 	 }
+ 	 
+ 	 /**
+ 	 * Removes an OSC subscription
+ 	 * @param sub   the subscriber to be removed
+ 	 * @return      true if subscriber was present and removed, false otherwise
+ 	 */
+ 	 public boolean removeOSCSubscriptions(KeySubscriber sub) {
+ 	   if(_oscSubs.containsValue(sub)) {
+  	    // Find key-value pairs containing sub
+  	    Set<Map.Entry<String, OscSubscriber>> all = _oscSubs.entries();
+  	    Set<Map.Entry<String, OscSubscriber>> toRemove = new HashSet<Map.Entry<String, OscSubscriber>>();
+  	    for(Iterator<Map.Entry<String, OscSubscriber>> iter = all.iterator(); iter.hasNext(); ) {
+  	      Map.Entry<String, OscSubscriber> next = iter.next();
+  	      if(next.getValue() == sub) {
+  	        toRemove.add(next);
+  	      }
+  	    }
+
+  	    // Remove references
+  	    for(Iterator<Map.Entry<String, OscSubscriber>> iter = toRemove.iterator(); iter.hasNext(); ) {
+  	      Map.Entry<String, OscSubscriber> next = iter.next();
+  	      _oscSubs.remove(next.getKey(), next.getValue());
+  	    }
+  	    return true;
+  	  } else {
+  	    return false;
+  	  }
+ 	 }
+ 	 
+ 	 /**
+ 	  * Helper method to remove all subscriptions for given HObject
+ 	  * @param sub    HObject to remove from PostOffice
+ 	  * @return       true if HObject had subscriptions that were removed, false otherwise
+ 	  */
+ 	 public boolean removeAllSubscriptions(HObject sub) {
+ 	   boolean key = removeKeySubscriptions(sub);
+ 	   boolean mouse = removeMouseSubscriptions(sub);
+ 	   boolean mouseWheel = removeMouseWheelSubscriptions(sub);
+ 	   boolean osc = removeOSCSubscriptions(sub);
+ 	   
+ 	   if(key || mouse || mouseWheel || osc) {
+ 	     return true;
+ 	   } else {
+ 	     return false;
+ 	   }
+ 	 }
 	//////////////////////////////////
 	//Utilities for checking key presses and mouse location quickly
 	

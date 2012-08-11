@@ -42,9 +42,9 @@ void setup() {
 
   //Important: don't forget to add setup to TemplateWorld!
 
-  world.start(); // this should be the last line in setup() method
+  currentWorld.start(); // this should be the last line in setup() method
 }
 
 void draw() {
-  world.draw();
+  currentWorld.draw();
 }

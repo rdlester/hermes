@@ -1,5 +1,6 @@
 package hermes;
 
+import hermes.postoffice.*;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -13,7 +14,7 @@ import java.util.LinkedList;
  * Extend HObject directly when you want to represent something more abstract,
  * like game state.
  */
-public abstract class HObject {
+public abstract class HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 	
 	private LinkedList<GenericGroup> _groups;	// groups the being is a member of
 	
@@ -78,4 +79,30 @@ public abstract class HObject {
 		return false;
 	}
 	
+	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
+	//Left blank here, must be overridden by user to add functionality
+	/**
+	 * Override if you want your <code>Being</code> to handle Key messages
+	 */
+	public void handleKeyMessage(KeyMessage m) {
+		//VOID
+	}
+	/**
+	 * Override if you want your <code>Being</code> to handle Mouse messages
+	 */
+	public void handleMouseMessage(MouseMessage m) {
+		//VOID
+	}
+	/**
+	 * Override if you want your <code>Being</code> to handle Mouse Wheel messages
+	 */
+	public void handleMouseWheelMessage(MouseWheelMessage m) {
+		//VOID
+	}
+	/**
+	 * Override if you want your <code>Being</code> to handle OSC messages
+	 */
+	public void handleOscMessage(OscMessage m) {
+		//VOID
+	}
 }
