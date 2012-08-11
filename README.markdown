@@ -14,3 +14,8 @@ SOURCE
 ------
 
 The full source code of the library is in src/. The library itself is in the package src/hermes, and testing code is in src/hermesTest. See the wiki for details on building the library from source.
+
+License
+-------
+
+Hermes is available under the MIT license. See 'LICENSE' for full details.
