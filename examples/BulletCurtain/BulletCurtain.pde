@@ -1,15 +1,18 @@
 /*
 
-This is a generative Shoot-Em-UP or "Bullet Hell" program. 
-You have a character on the left (the "Subject") that can move and shoot, and you can generate enemies ("Others") that travel from left to right
-The system is controlled entirely with OSC, so it is ripe for exploration via strange data sets (oscillators, clocks, other games, etc)
-
-
-=======================================
+ This is a generative Shoot-Em-UP or "Bullet Hell" system. 
+ You have a character on the left (the "Subject") that can move and shoot. 
+ You can generate enemies ("Others") that travel from left to right
+ The system is controlled entirely with OSC, so it is ripe for exploration via strange data sets (oscillators, clocks, other games, etc).
+ 
+ This code is rough around the edges - a more (computationally) efficient design might involve creating a pool of Beings (Subjects/Others/Shots) up front.
+ Such a design might be better for a program like this, where one sometimes finds oneself spawning hundreds of objects per second.....
+ 
+ =======================================
  Inputs:
  =======================================
  
- The user will send messages to the following OSC addresses: 
+ To control this game/system, the user will send messages to the following OSC addresses: 
  
  	/SetSubjectX
  	/SetSubjectY
@@ -19,22 +22,24 @@ The system is controlled entirely with OSC, so it is ripe for exploration via st
  		specify the x and y coordinate of where new Others are generated
  	/SetOtherSpeed
  		set how fast Others travel 
- 
- 	/Fire
+ 	/MakeSubjectShoot
  		shoot a bullet from the player ship (trigger value of 1.0)
  	/GenerateOther
  		generate enemy ships (trigger value of 1.0)
  
- MAYBE
- 	/ChangeOtherStyle
- 		ability to step through a set of graphics, determining how new Others will be drawn (trigger value of 1.0)
- 	/ChangeBackgroundStyle
- 		ability to step through a minimal set of background graphics / colors (trigger value of 1.0)
  
+        **NOT currently in place, but potential future additons maybe?
+ 	-/ChangeOtherStyle
+ 		ability to step through a set of graphics, determining how new Others will be drawn (trigger value of 1.0)
+ 	-/ChangeBackgroundStyle
+ 		ability to step through a minimal set of background graphics / colors (trigger value of 1.0)
+        **
  
  =======================================
  Outputs:
  =======================================
+ 
+ To use this game to control other systems, one should monitor these addresses:
  
  	/OldestOtherX
  	/OldestOtherY
@@ -58,15 +63,15 @@ import hermes.hshape.*;
 import hermes.animation.*;
 import hermes.postoffice.*;
 
-static final String systemName = "BulletCurtain";
+static final String SYSTEM_NAME = "BulletCurtain";
 
 /*Settings for character sprites. Each block is a square of pixels.
-*/
+ */
 static final int pixelsPerBlock = 4;
-static final int widthBlocks = 10;
+static final int WIDTH_BLOCKS= 10;
 static final int heightBlocks = 8;
 
-static final int BODY_WIDTH = widthBlocks * pixelsPerBlock;
+static final int BODY_WIDTH = WIDTH_BLOCKS * pixelsPerBlock;
 static final int BODY_HEIGHT = heightBlocks * pixelsPerBlock;
 
 static final int NUMBER_OF_ANIMATIONS_IN_LIST = 20; //several animations in each AnimatedSprite
@@ -77,7 +82,7 @@ int animationSpeedMultiplier = 2;
 //Initial States... use for codebending
 
 int numberOfAnimationFrames = 5; //how many frames an animation gets when it is created
-int millisecondsPerFrame = 500; //how many milliseconds each from plays for (set when created)
+int numberOfMillisecondsFramePlaysFor = 500; //how many milliseconds each animation frame stays active (set when created)
 
 AnimatedSprite spriteToUseForSubject; //use when generating the sprite of "subject"
 Animation[] commonAnimations; //use when generating the AnimatedSprites of "Others"
@@ -106,13 +111,14 @@ CharacterGraphicsGenerator characterGraphicsGenerator;
 void setup() { 
 
   Hermes.setPApplet(this);
-  size(640,480, OPENGL);
+  size(640, 480, OPENGL);
+  rectMode(CORNER);
 
   characterGraphicsGenerator = new CharacterGraphicsGenerator(); //used to makes generative random patterns for AnimatedSprites
 
   initializeAnimations();
 
-  subject = new Subject (width / 8, height / 2, spriteToUseForSubject);
+  subject = new Subject (width / 8, height / 2, BODY_WIDTH, BODY_HEIGHT, spriteToUseForSubject);
 
   spriteToUseForSubject.setActiveAnimation(0);
 
@@ -131,9 +137,10 @@ void setup() {
 
   worldStateBeing = new StateBeing();
 
+  //Register the OSC addresses with the Post Office
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectX");
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectY");
-  postOffice.registerOscSubscription(subject, "/BulletCurtain/HaveSubjectShoot");
+  postOffice.registerOscSubscription(subject, "/BulletCurtain/MakeSubjectShoot");
 
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/GenerateAnOther");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnX");
@@ -142,35 +149,19 @@ void setup() {
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
 
-
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
 
   postOffice.registerOscSubscription(shotGroup, "/BulletCurtain/SetTravelMultiplierForAllShots");
 
   postOffice.registerOscSubscription(worldStateBeing, "/BulletCurtain/SetAnimationSpeed");
 
+  //Now the interactions...
   ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
 
   world.registerInteraction(shotGroup, otherGroup, shotOtherCollider);
-
+//
   world.lockUpdateRate(60);
   world.start();
-}
-
-class ShotOtherCollider extends BoundingBoxCollider<Shot, Other> {
-
-  void handle(Shot shot, Other other) {
-
-    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyed", 1.0);
-
-    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtX", map(other.getX(), 0.0, width, 0.0, 1.0));
-    postOffice.sendFloat("/"+systemName+"/"+"OtherDestroyedAtY", map(other.getY(), 0.0, height, 0.0, 1.0));
-
-    world.deleteFromGroups(shot);
-    world.deleteFromGroups(other);
-
-    //return true;
-  }
 }
 
 
@@ -180,7 +171,6 @@ AnimatedSprite createAnimatedSpriteForOther() {
   AnimatedSprite spriteForOther = new AnimatedSprite();
 
   for (int i = 0; i < commonAnimations.length; i++) {
-
     spriteForOther.addAnimation(commonAnimations[i]);
   }
 
@@ -195,10 +185,10 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = characterGraphicsGenerator.generate(heightBlocks, widthBlocks, pixelsPerBlock, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(WIDTH_BLOCKS, heightBlocks, pixelsPerBlock, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
-    Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
+    Animation generatedAnimation = new Animation(generatedFrames, numberOfMillisecondsFramePlaysFor * animationSpeedMultiplier);
 
     //Add this Animation to the AnimatedSpite
     spriteToUseForSubject.addAnimation(generatedAnimation); //returns an int.. aka the index in the animation. useful sometimes, but not needed here
@@ -211,10 +201,10 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
   for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = characterGraphicsGenerator.generate(widthBlocks, heightBlocks, pixelsPerBlock, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(WIDTH_BLOCKS, heightBlocks, pixelsPerBlock, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
-    Animation generatedAnimation = new Animation(generatedFrames, millisecondsPerFrame / animationSpeedMultiplier);
+    Animation generatedAnimation = new Animation(generatedFrames, numberOfMillisecondsFramePlaysFor * animationSpeedMultiplier);
 
     //Build the common animation pool for all 'Others'
     commonAnimations[i] = generatedAnimation;
@@ -222,251 +212,14 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
 }
 
 
-
 void draw() {
-
-  noSmooth();
-  // scale(3);
   background(0);
+  noSmooth();
   cam.draw();
-
-  //saveFrame();
-  // world.update();
-}
-
-
-abstract class SubjectObjectRelation extends Being {
-
-
-  //Subject has an Animated Sprite.. 
-  AnimatedSprite animatedSprite;
-
-  SubjectObjectRelation(float x, float y, AnimatedSprite animatedSprite) {
-
-    //First call to a subclass must be to the super constructor
-    //in this case, it takes a Shape for position and collision detection
-    super(new Rectangle(x, y, BODY_WIDTH, BODY_HEIGHT));
-
-    this.animatedSprite = animatedSprite;
-  }
-
-  void draw() {
-    PImage frameToDraw = animatedSprite.animate();
-    image(frameToDraw, 0, 0);
-  }
-}
-
-class Subject extends SubjectObjectRelation {
-
-
-  Subject(float x, float y, AnimatedSprite animatedSprite) {
-    super(x, y, animatedSprite);
-  }
-
-  void update() {
-  }
-
-
-  void handleOscMessage(OscMessage message) {
-
-    String[] msgSplit = message.getAddress().split("/");
-
-
-    if (msgSplit[1].equals(systemName)) {
-
-
-      if (msgSplit[2].equals("SetSubjectX")) {
-        if (message.hasRemainingArguments()) {
-          float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedX = map(constrainedX, 0.0, 1.0, 0.0, (width/3) - BODY_WIDTH);
-          setX(remappedX);
-        }
-      }
-
-      else if (msgSplit[2].equals("SetSubjectY")) {
-        if (message.hasRemainingArguments()) {
-          float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
-          setY(remappedY);
-        }
-      }
-
-      else if (msgSplit[2].equals("HaveSubjectShoot")) {
-        if (message.hasRemainingArguments()) {
-          if (message.getAndRemoveFloat() == 1.0) {       
-            shoot();
-          }
-        }
-      }
-    }
-  }
-
-
-
-  void shoot() {
-    //Create a new shot, register it in the world, and register it for collisions
-    Shot shot = new Shot(getX() + BODY_WIDTH, getY() + (BODY_HEIGHT/2), universalShotTravel);
-    world.registerBeing(shot, true);
-    shotGroup.add(shot);
-  }
 }
 
 
 
-
-
-
-
-class Shot extends Being {
-
-  float travel;
-
-  static final float shotWidth = pixelsPerBlock * 2;
-  static final float shotHeight = pixelsPerBlock * 1;
-
-  Shot(float x, float y, float travel) {
-
-    super(new Rectangle(x, y, shotWidth, shotHeight));
-    this.travel = travel;
-  }
-
-  void update() {
-    setX(getX() + (travel * shotTravelMultiplier));
-
-    if (getX() > width) {
-      world.deleteFromGroups(this);
-    }
-  }
-
-
-  void draw() {
-    noStroke();
-    fill(255);
-    rect(0, 0, shotWidth, shotHeight);
-  }
-}
-
-
-class ShotGroup extends Group {
-
-  ShotGroup(World world) {
-    super(world);
-  }
-
-  float initialTravel;
-
-  void handleOscMessage(OscMessage message) {
-    String[] msgSplit = message.getAddress().split("/");
-
-    if (msgSplit[1].equals(systemName)) {
-      if (message.hasRemainingArguments()) {
-        if (msgSplit[2].equals("SetTravelMultiplierForAllShots")) {
-          float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 10);
-          shotTravelMultiplier = newMultiplier;
-        }
-      }
-    }
-  }
-}
-
-
-class Other extends SubjectObjectRelation {
-
-  Float howManyPixelsToTravel = 1.0;
-
-  Other(float x, float y, AnimatedSprite animatedSprite) {
-    super(x, y, animatedSprite);
-  }
-
-  void update() {
-    setX(getX() - (howManyPixelsToTravel * otherTravelMultiplier));
-
-    if (getX() + BODY_WIDTH < 0) {
-      world.deleteFromGroups(this);
-    }
-  }
-}
-
-
-
-
-class OtherGroup extends Group {
-
-  OtherGroup(World world) {
-    super(world);
-  }
-
-  float spawnX = width;
-  float spawnY = height/2 - BODY_HEIGHT/2;
-  int animationIndexToUseOnSpawn = 0;
-
-  Float groupTravelSpeed = 1.0;
-
-  void handleOscMessage(OscMessage message) {
-    String[] msgSplit = message.getAddress().split("/");
-
-    if (msgSplit[1].equals(systemName)) {
-      if (msgSplit[2].equals("GenerateAnOther")) {
-        if (message.hasRemainingArguments()) {
-          if (message.getAndRemoveFloat() == 1.0) {       
-            Other other = new Other(spawnX, spawnY, createAnimatedSpriteForOther());
-            other.animatedSprite.setActiveAnimation(animationIndexToUseOnSpawn % other.animatedSprite.getNumberOfAnimations());
-            other.animatedSprite.overrideMillisecondsPerFrame(millisecondsPerFrame);
-            other.howManyPixelsToTravel = groupTravelSpeed;
-            add(other);
-
-            world.registerBeing(other, true);
-          }
-        }
-      }
-
-      else if (msgSplit[2].equals("SetOtherSpawnX")) {
-        if (message.hasRemainingArguments()) {
-
-          float constrainedX = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedX = map(constrainedX, 0.0, 1.0, (width/3), width - BODY_WIDTH);
-          spawnX = remappedX;
-        }
-      }
-
-
-      else if (msgSplit[2].equals("SetOtherSpawnY")) {
-        if (message.hasRemainingArguments()) {
-          float constrainedY = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          float remappedY = map(constrainedY, 0.0, 1.0, 0.0, height - BODY_HEIGHT);
-          spawnY = remappedY;
-        }
-      }
-
-      else if (msgSplit[2].equals("SetOtherTravelSpeed")) {
-        if (message.hasRemainingArguments()) {
-          float travel = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          travel = map(travel, 0.0, 1.0, 1.0, 20);
-          groupTravelSpeed = travel;
-        }
-      }
-
-      else if (msgSplit[2].equals("NewAnimationForSpawnedOthers")) {
-        if (message.hasRemainingArguments()) {
-          if (message.getAndRemoveFloat() == 1.0) {       
-            animationIndexToUseOnSpawn++;
-          }
-        }
-      }
-
-      else if (msgSplit[2].equals("SetTravelMultiplierForAllOthers")) {
-        if (message.hasRemainingArguments()) {
-          if (message.getAndRemoveFloat() == 1.0) {       
-            float newMultiplier = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-            newMultiplier = map(newMultiplier, 0.0, 1.0, 0.0, 5);
-            otherTravelMultiplier = newMultiplier;
-          }
-        }
-      }
-    }
-  }
-}
 
 
 
@@ -482,12 +235,12 @@ class StateBeing extends Being {
   void handleOscMessage(OscMessage message) {
 
     String[] msgSplit = message.getAddress().split("/");
-    if (msgSplit[1].equals(systemName)) {
+    if (msgSplit[1].equals(SYSTEM_NAME)) {
       if (msgSplit[2].equals("SetAnimationSpeed")) {
         if (message.hasRemainingArguments()) {
           float speed = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
           speed = map(speed, 0.0, 1.0, 10.0, 2000.0);
-          millisecondsPerFrame = int(speed);
+          numberOfMillisecondsFramePlaysFor = int(speed);
         }
       }
     }
