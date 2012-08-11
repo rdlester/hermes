@@ -3,7 +3,6 @@
 ///////////////////////////////////////////////////
 
 World world;
-PostOffice po;
 
 
 final int BUILD = 0;
@@ -33,6 +32,9 @@ int cellSideLength = 40; //gives us 9 across, 12 down in canvas ; 3 across, 12 d
 int frameWidth = 700;
 int frameHeight = 590;
 int bgColor = color(122, 131, 139);
+
+static final int PORT_IN = 8080;
+static final int PORT_OUT = 8000;
 
 //groups
 Group<Ball> ballGroup = null;

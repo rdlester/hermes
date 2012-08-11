@@ -1,7 +1,7 @@
 public class LevelWorld extends World {
   
-  public LevelWorld(PostOffice po, HCamera view) {
-    super(po,view);
+  public LevelWorld(int portIn, int portOut) {
+    super(portIn, portOut);
   }
   
   public void setup() {
