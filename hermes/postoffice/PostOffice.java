@@ -357,6 +357,19 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
  	     return false;
  	   }
  	 }
+ 	 
+ 	 /**
+ 	  * Resets all subscriptions
+ 	  * Use if passing subscriptions between Worlds
+ 	  */
+ 	public void resetSubscriptions() {
+ 	  _keySubs = HashMultimap.create();
+		_mouseSubs = HashMultimap.create();
+		_mouseWheelSubs = new ArrayList<MouseWheelSubscriber>();
+		if(_onOSC) {
+			_oscSubs = HashMultimap.create();
+		}
+ 	}
 	//////////////////////////////////
 	//Utilities for checking key presses and mouse location quickly
 	
