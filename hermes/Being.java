@@ -2,7 +2,6 @@ package hermes;
 
 import hermes.hshape.HShape;
 import hermes.hshape.Rectangle;
-import hermes.postoffice.*;
 
 import java.util.Iterator;
 
@@ -30,7 +29,7 @@ import processing.core.*;
  * If you want a <code>Being</code> to receive input messages from the <code>PostOffice</code>,
  * override the message handler method specific to the type of message you want.
  */
-public abstract class Being extends HObject implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
+public abstract class Being extends HObject {
 
 	protected PVector _position; // the Being's position
 	protected PVector _velocity; // the Being's velocity
@@ -282,32 +281,5 @@ public abstract class Being extends HObject implements KeySubscriber, MouseSubsc
 	 */
 	public String toString() {
 		return "position: " + _position + " velocity: " + _velocity;
-	}
-	
-	//Methods for receiving methods from PostOffice, defined in subscriber interfaces
-	//Left blank here, must be overridden by user to add functionality
-	/**
-	 * Override if you want your <code>Being</code> to handle Key messages
-	 */
-	public void handleKeyMessage(KeyMessage m) {
-		//VOID
-	}
-	/**
-	 * Override if you want your <code>Being</code> to handle Mouse messages
-	 */
-	public void handleMouseMessage(MouseMessage m) {
-		//VOID
-	}
-	/**
-	 * Override if you want your <code>Being</code> to handle Mouse Wheel messages
-	 */
-	public void handleMouseWheelMessage(MouseWheelMessage m) {
-		//VOID
-	}
-	/**
-	 * Override if you want your <code>Being</code> to handle OSC messages
-	 */
-	public void handleOscMessage(OscMessage m) {
-		//VOID
 	}
 }

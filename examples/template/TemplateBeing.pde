@@ -1,13 +1,18 @@
 /**
  * Template being
  */
-class MyBeing extends Being {
-	MyBeing(Shape shape) {
-		super(shape);
-		//Add your constructor info here
-	}
-	
-	public void draw() {
-		//Add your draw method here
-	}
+class TemplateBeing extends Being {
+  TemplateBeing(HShape shape) {
+    super(shape);
+    //Add your constructor info here
+  }
+
+  public void update() {
+    // Add update method here
+  }
+
+  public void draw() {
+    // Add your draw method here
+  }
 }
+

@@ -196,8 +196,15 @@ public class World extends Thread {
 		}
 		// resolve the removeFromAllGroups queue
 		for(Iterator<HObject> iter = _removeFromAllGroupsQueue.iterator(); iter.hasNext(); ) {
+		  
+		  HObject next = iter.next();
+		  _postOffice.removeAllSubscriptions(next);
+		  next.delete();
+		  iter.remove();
+		  /*
 			iter.next().delete(); // delete the being
 			iter.remove(); // remove from the queue
+      */
 		}
 	}
 	
