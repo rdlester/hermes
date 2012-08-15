@@ -132,7 +132,7 @@ public class World extends Thread {
 	 * Tells the world to stop running.
 	 * Use this to terminate the world (not the deprecated <code>stop</code> method).
 	 */
-	public void deActivate() {
+	public void deactivate() {
 		_active = false;
 	}
 	

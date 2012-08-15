@@ -119,11 +119,11 @@ public class Rectangle extends HShape {
 		return PVector.add(_max, _position);
 	}
 	
-	public float getRectWidth() {
+	public float getWidth() {
 		return _max.x - _min.x;
 	}
 	
-	public float getRectHeight() {
+	public float getHeight() {
 		return _max.y - _min.y;
 	}
 	
