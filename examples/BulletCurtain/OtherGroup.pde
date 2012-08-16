@@ -1,4 +1,4 @@
-class OtherGroup extends Group {
+class OtherGroup extends Group<Other> {
 
   OtherGroup(World world) {
     super(world);
@@ -23,7 +23,7 @@ class OtherGroup extends Group {
             other.howManyPixelsToTravel = groupTravelSpeed;
             add(other);
 
-            world.registerBeing(other, true);
+            world.register(other);
           }
         }
       }

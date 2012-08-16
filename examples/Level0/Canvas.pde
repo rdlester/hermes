@@ -33,7 +33,7 @@ class Canvas extends MassedBeing {
     for(int i=0; i<canvasNumCellsX; i++) {
       for(int j=0; j<canvasNumCellsY; j++) {
         _grid[i][j] = new Cell(new PVector(canvasLeftX + i*cellSideLength, containerTopY + j*cellSideLength),i,j);
-        world.registerBeing(_grid[i][j], false);
+        world.register(_grid[i][j], false);
       } 
     }
   }

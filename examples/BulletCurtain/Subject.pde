@@ -48,7 +48,7 @@ class Subject extends SubjectObjectRelation {
     //Create a new shot (placed to the right of the Subject and proportional to its size)
     //then register it in the world, and register it for collisions
     Shot shot = new Shot(getX() + bodyWidth, getY() + (bodyHeight/2), bodyHeight/2, bodyHeight/4, universalShotTravel);
-    world.registerBeing(shot, true);
+    world.register(shot);
     shotGroup.add(shot);
   }
 }

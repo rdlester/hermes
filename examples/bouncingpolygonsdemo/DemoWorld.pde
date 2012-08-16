@@ -19,8 +19,8 @@ class DemoWorld extends World {
     _boxGroup = new BoxGroup(_world);
 
     //Set up the interactions
-    _world.registerInteraction(_ballGroup, _ballGroup, new MassedCollider(), new SelfInteractionOptimizer());
-    _world.registerInteraction(_boxGroup, _ballGroup, new InsideMassedCollider());
+    _world.register(_ballGroup, _ballGroup, new MassedCollider(), new SelfInteractionOptimizer());
+    _world.register(_boxGroup, _ballGroup, new InsideMassedCollider());
   }
 }
 

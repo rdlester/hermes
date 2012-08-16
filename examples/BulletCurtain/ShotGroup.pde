@@ -1,4 +1,4 @@
-class ShotGroup extends Group {
+class ShotGroup extends Group<Shot> {
 
   ShotGroup(World world) {
     super(world);
