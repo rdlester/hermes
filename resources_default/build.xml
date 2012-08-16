@@ -32,8 +32,6 @@
 	<property name="project.jar.name" value="${project.name}.jar"/>
 	<property name="project.src" location="hermes"/>
 	<property name="project.tmp" location="tmp"/>
-	<property name="project.web" location="web"/>
-	<property name="project.data" location="data"/>
 	<property name="project.lib" location="lib"/>
 	<property name="project.bin" location="bin"/>
 	<property name="project.bin.data" location="${project.bin}/data"/>
@@ -127,9 +125,7 @@ ${line}
 				<path refid="classpath"/>
 			</classpath>
 		</javac>
-		<copy todir="${project.bin.data}">
-			<fileset dir="${project.data}" excludes="README" />
-		</copy>
+		<mkdir dir="${project.bin.data}" />
 	</target>
 	
 	
@@ -209,10 +205,6 @@ ${line}
   	
   		<copy todir="${project.dist.version}/web/examples">
   			<fileset dir="${project.dist.version}/${project.name}/examples" />
-	  	</copy>
-	  	
-	  	<copy todir="${project.dist.version}/web">
-  			<fileset dir="${project.web}" />
 	  	</copy>
 	  	
 	  	<!--
