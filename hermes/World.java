@@ -143,21 +143,21 @@ public class World extends Thread {
 	 * @param update	whether or not to update the being during the update loop
 	 * @return 			the registered being
 	 */
-	public Being register(Being being, boolean update) {
+	public void register(Being being, boolean update) {
 		assert being != null : "World.register: being must be valid.";
 		
 		addToGroup(being, _masterGroup);
-		if(update)
+		if(update) {
 			addToGroup(being, _updateGroup);
-		return being;
+		}
 	}
 	
 	/**
 	 * Shortcut for adding Being w/ update
 	 * @param being   the being to register
 	 */
-	public Being register(Being being) {
-	  return register(being, true);
+	public void register(Being being) {
+	  register(being, true);
 	}
 	
 	/**
