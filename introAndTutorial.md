@@ -27,7 +27,7 @@ To install Hermes, download [the zip distribution](http://github.com/paperkettle
 Tutorial
 ========
 
-NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: Interactions, and the PostOffice, all pretty important stuff. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below and take a look at our other examples to get an idea of how things work.
+NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: Interactions and the PostOffice (user or network input), both pretty important. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below and take a look at our other examples to get an idea of how things work.
 
 The Template
 ------------
@@ -110,7 +110,11 @@ Let's take a look at `TemplateWorld` to see how `World`s are defined in detail.
 	  }
 	}
 
-First, note that `TemplateWorld extends World`; this means `TemplateWorld` is a subclass of `World`. Next, the `TemplateWorld` constructor simply passes on its parameters to super. `TemplateWorld` passes the ports given to the constructor on to the super constructor, enabling networking; however, if you want to leave networking off in your game, you don't have to pass the super constructor anything at all. Finally, the class contains a blank `setup` function; this is the part you need to fill in. However, we don't yet have anything to create in our `World`! Let's now look at creating a Being and adding it to the `World`.
+First, note that `TemplateWorld extends World`; this means `TemplateWorld` is a subclass of `World`.
+
+Next, the `TemplateWorld` constructor simply passes on its parameters to super. `TemplateWorld` passes the ports given to the constructor on to the super constructor, enabling networking; however, if you want to leave networking off in your game, you don't have to pass the super constructor anything at all.
+
+Finally, the class contains a blank `setup` function; this is the part you need to fill in. However, we don't yet have anything to create in our `World`! Let's now look at creating a Being and adding it to the `World`.
 
 Being
 -----
@@ -137,7 +141,11 @@ Let's take a look at `TemplateBeing`.
 	  }
 	}
 
-As in TemplateWorld, `TemplateBeing extends Being`. Next, the constructor takes an `HShape` and passes it on to the super constructor. An `HShape` is just an object representing a shape. Shapes available for your use include `Rectangle`, `Circle`, and `Polygon`. `Being`s need `HShape`s to define both their spatial position and shape. Finally, there are two blank functions: `update` and `draw`. `update` specifies an internal update specific to the `Being` and independent of external contexts that the `Being` should run on every update cycle. An example of an update would be a pacing behavior for an enemy. An example of something that isn't an update is a fight exchange between an enemy and a player. Finally, the draw function handles drawing the `Being`, and is called on every step of the draw loop. While you can use all the same Processing commands as usual to draw here as in the Processing draw function, there's one slight difference. A `Being`'s draw function defines the origin, (0,0), as the `Being`'s position, as set in its shape, instead of the top left corner of the PApplet. As long as you draw your `Being` around its position, Hermes will automatically draw the `Being` at the right location, even when the `Being` is moving.
+As in TemplateWorld, `TemplateBeing extends Being`; `TemplateBeing` is a subclass of `Being`.
+
+Next, the constructor takes an `HShape` and passes it on to the super constructor. An `HShape` is just an object representing a shape. Shapes available for your use include `Rectangle`, `Circle`, and `Polygon`. `Being`s need `HShape`s to define both their spatial position and shape.
+
+Finally, there are two blank functions: `update` and `draw`. `update` specifies an internal update specific to the `Being` and independent of external contexts that the `Being` should run on every update cycle. An example of an update would be a pacing behavior for an enemy. An example of something that isn't an update is a fight exchange between an enemy and a player. Finally, the draw function handles drawing the `Being`, and is called on every step of the draw loop. While you can use all the same Processing commands as usual to draw here as in the Processing draw function, there's one slight difference. A `Being`'s draw function defines the origin, (0,0), as the `Being`'s position, as set in its shape, instead of the top left corner of the PApplet. As long as you draw your `Being` around its position, Hermes will automatically draw the `Being` at the right location, even when the `Being` is moving.
 
 A Simple World
 --------------
@@ -177,9 +185,15 @@ The first step is defining our `Being`. We're going to rewrite the `TemplateBein
   		}
 	}
 
-We have renamed our `TemplateBeing` to `GlitchySquare` to reflect its new identity. The above code defines a rectangular Being that picks a color every update, and appears as a square with color determined by pickColor. How does it work? First, we define some constant to define the size of our `Being`. Next, we introduce an instance variable, `_c`, that defines the square's color. In the `Being`'s constructor, we create a new `Rectangle`, with x and y set to the middle of the screen and width and height defined by our constants. The syntax for creating a `Rectangle` is the same as for Processing's `rect` command; you can even change the specifics of the syntax using Processing's `rectMode` command, as usual. Then, we set `_c` to the results of `pickColor()`, which, at the bottom of the file, picks a color at random. Updates pick a new color for the `Being`. In `draw`, we start by defining the draw style (setting fill to `_c` and removing the stroke border from our square), then calling `_shape.draw()`. `_shape` is how we access our Being's internal shape from inside the Being; `getShape()` can also be used, and can also be used to access the shape from outside the Being. Calling `draw` on our shape is shorthand for drawing the internal shape on screen, useful for debugging when Beings have more complex draw functions. Here, since our shape is a rectangle, `_shape.draw()` is equivalent to `rect(0, 0, WIDTH, HEIGHT)`. Note that, since the origin is already defined to be our Being's position inside the draw function, the position of rect is just (0,0). Also note that we have defined the shape's drawn style in the same way we would define style in a standard Processing sketch.
+We have renamed our `TemplateBeing` to `GlitchySquare` to reflect its new identity. The above code defines a rectangular Being that picks a color every update, and appears as a square with color determined by pickColor. How does it work?
 
-Now we need to instantiate our `Being` inside the World. Switch to TemplateWorld, and in `setup()`, add the line `register(new GlitchySquare())`. That's it.
+First, we define some constants to specify the size of our `Being`. Next, we introduce an instance variable, `_c`, that defines the square's color. In the `Being`'s constructor, we create a new `Rectangle`, with x and y set to the middle of the screen and width and height defined by our constants. The syntax for creating a `Rectangle` is the same as for Processing's `rect` command; you can even change the specifics of the syntax using Processing's `rectMode` command, as usual. Then, we set `_c` to the results of `pickColor()`, which, at the bottom of the file, picks a color at random.
+
+Updates simply pick a new color for the `Being`, in the same way color was picked in the constructor.
+
+In `draw`, we start by defining the draw style (setting fill to `_c` and removing the stroke border from our square), then calling `_shape.draw()`. `_shape` is how we access our Being's internal shape from inside the Being; `getShape()` can also be used, and can also be used to access the shape from outside the Being. Calling `draw` on our shape is shorthand for drawing the internal shape on screen, useful for debugging when Beings have more complex draw functions. Here, since our shape is a rectangle, `_shape.draw()` is equivalent to `rect(0, 0, WIDTH, HEIGHT)`. Note that, since the origin is already defined to be our Being's position inside the draw function, the position of rect is just (0,0). Also note that we have defined the shape's drawn style in the same way we would define style in a standard Processing sketch.
+
+Now we need to instantiate our `Being` inside the `World`. Switch to `TemplateWorld`, and in `setup()`, add the line `register(new GlitchySquare())`. That's it.
 
 Now run your sketch. Note that you'll either have to change the references to `TemplateBeing` in `TemplateInteractor` to the new name or delete the `Interactor` entirely for now in order to run without errors. There we go! There should be a spazzy lil' square flipping out right in the center of the screen.
 
@@ -219,7 +233,7 @@ Groups
 
 While we now know how to update and draw individual Beings, independent of one another, what if we want to synchronize some behavior across an entire group of Beings? Hermes provides a simple solution: `Group`s. Groups allow us to define a particular set of Beings or objects as a single entity we can update like Beings or interact with other Groups or individual Beings. At their core, `Group`s are similar to `ArrayList`s or other data structures; you can add to, remove from, and access the contained `Being`s. However, `Group`s can also have updates and interactions.
 
-Let's modify `tutorialA` to use a `Group` update to see how they work. The following example is found in the `tutorialAgrouped` folder. First, we're going to need to make a few changes to our squares in preparation. Comment out the line `_c = pickColor();` from `GlitchySquare`'s `update` function. Then, add a new function:
+Let's modify `tutorialA` to use a `Group` update to see how they work. In our new example, the color of the squares will still be chosen at random, but on every step every square will share the same color. The following example is found in the `tutorialAgrouped` folder. First, we're going to need to make a few changes to our squares in preparation. Comment out the line `_c = pickColor();` from `GlitchySquare`'s `update` function. Then, add a new function:
 
 	public void setColor(color c) {
 		_c = c;
@@ -262,7 +276,7 @@ So, how do we get our Squares into the `Group`? We'll have to make a few changes
 	    GlitchyGroup g = new GlitchyGroup(this);
 	    register(g);
     
-	    for (int i = 0; i < _squareNum; i++) {
+	    for (int i = 0; i < SQUARE_NUM; i++) {
 	      int x = (int) random(WINDOW_WIDTH - 50);
 	      int y = (int) random(WINDOW_HEIGHT - 50);
 	      GlitchySquare s = new GlitchySquare(x,y);
@@ -273,10 +287,91 @@ So, how do we get our Squares into the `Group`? We'll have to make a few changes
 
 We first construct the `Group`, passing it `this` to provide it with a reference to the containing `World`, then register it with the World. In our loop, we now save the GlitchySquare as a variable before registering it; we then add it to the `Group`. Simple enough. Once you've made the changes, hit run. The squares should all be the same color, yet still move independently, creating a morphing blob of glitchiness in the PApplet.
 
-Interactions
+Interactors
 ------------
 
+While `Being`s and `Group`s can handle many of a game's internal mechanics, your games will usually need different kinds of interactions between objects to create meaningful play. In Hermes, these interactions are handled by objects called `Interactor`s. These objects define both the conditions for interaction and the interaction itself. An example interaction would be to register a hit on the player when a player collides with an enemy. Here, the collision is the detection condition, and the application of the hit is the result of the interaction.
 
+Defining an `Interactor` is simple. Let's take a look at `TemplateInteractor` to see how it works.
+
+	/**
+	 * Template interactor between a TemplateBeing and another TemplateBeing
+	 * Don't forget to change TemplateBeing-s to
+	 * the names of the Being-types you want to interact
+	 */
+	class TemplateInteractor extends Interactor<TemplateBeing, TemplateBeing> {
+		TemplateInteractor() {
+			super();
+			//Add your constructor info here
+		}
+
+		boolean detect(TemplateBeing being1, TemplateBeing being2) {
+			//Add your detect method here
+			return true;
+		}
+
+		void handle(TemplateBeing being1, TemplateBeing being2) {
+			//Add your handle method here
+		}
+	}
+
+As usual, we define a new `Interactor` by creating a subclass of `Interactor`. Note that, like `Group`s, `Interactor`s have a type. However, this type, `<TemplateBeing, TemplateBeing>`, takes two class names! These two names define the types of Beings we want to interact. Here, because there is only one type of Being defined in the template, both type parameters are the same; however, this doesn't need to be (and often won't be) the case.
+
+The constructor doesn't require any parameters, so there's not much to worry about here. (There are in fact two parameters that can be passed in to the constructor, but these both affect low-level workings of the Interaction, and it's very probable you won't ever need to worry about them)
+
+`Interactor`s contain two functions: `detect` and `handle`. Both take two `Being`s (respectively of the types defined in the brackets). `detect` is the condition for interaction. If the condition is satisfied, `detect` should return `true`; otherwise, it returns `false`. If `detect` returns `true`, then `handle` is run, and interaction is executed.
+
+To get a sense of how this works, let's return to our spastic squares and make them communicate with one another. When two `GlitchySquare`s overlap, let's draw a white border around them. The following example can be found in the folder `tutorialB`.
+
+First, let's add more functionality to `GlitchySquare` to facilitate the interaction. Add an instance variable `boolean _stroke` to the class, then add the following method:
+
+	public void drawStroke() {
+		_stroke = true;
+	}
+
+Now, we're going to edit the `draw` function. Replace `noStroke();` with:
+
+	if(_stroke) {
+		stroke(255);
+	} else {
+		noStroke();
+	}
+
+Finally, add the line `_stroke = false;` to `update`.
+
+What did we just do? Normally, the square will behave as before, drawing no borders around itself on `draw`. However, if `drawStroke` is called during an interaction, the square will draw a white border around itself instead. `update` (which runs before interactions are detected and handled) resets the border state.
+
+Now, let's create our `Interactor`. Rewrite the `TemplateInteractor` to:
+
+	/**
+	 * When two GlitchySquares overlap,
+	 * draw a border around them
+	 */
+	class SquareInteractor extends Interactor<GlitchySquare, GlitchySquare> {
+		SquareInteractor() {
+			super();
+		}
+
+		void detect(GlitchySquare being1, GlitchySquare being2) {
+			return being1.getShape().collide(being2.getShape());
+		}
+
+		void handle(GlitchySquare being1, GlitchySquare being2) {
+			being1.drawStroke();
+			being2.drawStroke();
+		}
+	}
+
+In `detect`, we first get the shape of the first `Being`, using `getShape`, then `collide` it with the second `Being`'s shape. `collide` is another method common to `HShape`s, which checks if the two shapes collide or overlap with one another.
+
+In `handle`, we tell both `Being`s to draw a border the next time they draw.
+
+To put our `Interactor` into action, we still need to register it with the `World`. Luckily, this is done with a single line, which you should add at the end of the `World`'s `setup`: `register(g,g,new SquareInteractor());`. Recall that `g` is the `Group` of squares; this line tells the `World` to interact all squares in the `Group` with every other square. That's it. Hit run (but first change `SQUARE_NUM` to be something small so squares aren't colliding with one another all the time). It works!
+
+In fact, you can code the same interaction with even less work. Since collision is such a common condition for interactions, we've provided a helper class, `Collider`, that you can use to get the same results with less work. Instead of extending `Interactor`, just extend `Collider`; then leave out the `detect` function entirely (as that is already handled by `Collider`) and write the `handle` method as usual. The results are the same, with less boilerplate code. The adjusted demo is available in `tutorialBcollider`.
 
 The Post Office / User Input
 ----------------------------
+
+While the topics we've covered so far allow you to create a fully self-sufficient universe that runs on its own, we still haven't discussed how to add one last essential ingredient to a game: interaction. Games need to provide the player a meaningful set of interactions they can use to alter the universe. In Hermes, user input and interaction is handled with the `PostOffice`.
+
