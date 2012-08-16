@@ -7,7 +7,7 @@ class Goal extends Being {
                         (containerTopY+goalj*cellSideLength)), 
                         new PVector(cellSideLength, cellSideLength)), 
           new PVector(0, 0));
-    world.registerBeing(this, false);
+    world.register(this, false);
   }
 
   void draw() {

@@ -13,7 +13,7 @@ class PlatformGroup extends Group<Platform> {
    */
   void addPlatform(PVector center, float width) {
     Platform platform = new Platform(center, width);
-    world.registerBeing(platform, false);
+    world.register(platform, false);
     this.add(platform);
   }
   

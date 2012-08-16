@@ -74,11 +74,11 @@ public class World extends Thread {
 		_updateGroup = new Group<Being>(this);
 		
 		//initialize the Camera
-		registerBeing(_camera, true);
+		register(_camera, true);
 		_cameraGroup = new Group<HCamera>(this);//make _cameraGroup
 		_cameraGroup.add(_camera);//add _camera to _cameraGroup
 		//register an Interaction between _cameraGroup and _masterGroup
-		this.registerInteraction(_cameraGroup, _masterGroup, new CameraBeingInteractor());
+		this.register(_cameraGroup, _masterGroup, new CameraBeingInteractor());
 
 		lockUpdateRate(60); // lock the update rate to 60 updates/sec by default
 	}
@@ -143,8 +143,8 @@ public class World extends Thread {
 	 * @param update	whether or not to update the being during the update loop
 	 * @return 			the registered being
 	 */
-	public Being registerBeing(Being being, boolean update) {
-		assert being != null : "World.registerBeing: being must be valid.";
+	public Being register(Being being, boolean update) {
+		assert being != null : "World.register: being must be valid.";
 		
 		addToGroup(being, _masterGroup);
 		if(update)
@@ -156,8 +156,8 @@ public class World extends Thread {
 	 * Shortcut for adding Being w/ update
 	 * @param being   the being to register
 	 */
-	public Being registerBeing(Being being) {
-	  return registerBeing(being, true);
+	public Being register(Being being) {
+	  return register(being, true);
 	}
 	
 	/**
@@ -223,7 +223,7 @@ public class World extends Thread {
 	 * @param inter				the Interactor that detects and handles this interaction
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter) {
+	public void register(GenericGroup A, GenericGroup B, Interactor inter) {
 		_interactions.add(new Interaction(A, B, inter, null));
 	}
 	
@@ -235,7 +235,7 @@ public class World extends Thread {
 	 * @param optimizer	optimizer to use for the interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(GenericGroup A, GenericGroup B, Interactor inter, Optimizer optimizer) {
+	public void register(GenericGroup A, GenericGroup B, Interactor inter, Optimizer optimizer) {
 		_interactions.add(new Interaction(A, B, inter, optimizer));
 	}
 	
@@ -246,7 +246,7 @@ public class World extends Thread {
 	 * @param inter				the Interactor that detects and handles this interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(HObject A, GenericGroup B, Interactor inter) {
+	public void register(HObject A, GenericGroup B, Interactor inter) {
 		Group groupA = new Group(this);
 		groupA.add(A);
 		_interactions.add(new Interaction(groupA, B, inter, null));
@@ -259,7 +259,7 @@ public class World extends Thread {
 	 * @param inter				the Interactor that detects and handles this interaction
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(GenericGroup A, HObject B, Interactor inter) {
+	public void register(GenericGroup A, HObject B, Interactor inter) {
 		Group groupB = new Group(this);
 		groupB.add(B);
 		_interactions.add(new Interaction(A, groupB, inter, null));
@@ -273,7 +273,7 @@ public class World extends Thread {
 	 * 								upon detection or later
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void registerInteraction(HObject A, HObject B, Interactor inter) {
+	public void register(HObject A, HObject B, Interactor inter) {
 		Group groupA = new Group(this);
 		groupA.add(A);
 		Group groupB = new Group(this);
@@ -286,7 +286,7 @@ public class World extends Thread {
 	 * @param group		the group to update
 	 */
 	@SuppressWarnings("rawtypes")
-	public void registerGroupUpdate(GenericGroup group) {
+	public void register(GenericGroup group) {
 		_groupsToUpdate.add(group);
 	}
 

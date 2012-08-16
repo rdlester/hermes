@@ -122,14 +122,12 @@ void setup() {
 
   spriteToUseForSubject.setActiveAnimation(0);
 
-
-  cam = new HCamera();
   postOffice = new PostOffice(8808, 8809);
-  world = new World(postOffice, cam);
+  world = new World(postOffice);
 
 
   //Register these two initial entities
-  world.registerBeing(subject, true);
+  world.register(subject);
 
 
   otherGroup = new OtherGroup(world);
@@ -158,7 +156,7 @@ void setup() {
   //Now the interactions...
   ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
 
-  world.registerInteraction(shotGroup, otherGroup, shotOtherCollider);
+  world.register(shotGroup, otherGroup, shotOtherCollider);
 //
   world.lockUpdateRate(60);
   world.start();
@@ -215,7 +213,7 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
 void draw() {
   background(0);
   noSmooth();
-  cam.draw();
+  world.draw();
 }
 
 

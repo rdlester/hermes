@@ -6,7 +6,7 @@ class BoxGroup extends Group<Box> {
   BoxGroup(World world) {
     super(world);
     Box boite = new Box();
-      getWorld().registerBeing(boite, true);
+      getWorld().register(boite);
     this.add(boite);
   }
 }

@@ -67,7 +67,7 @@ class BallGroup extends Group<Ball> {
 						ball = new CircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
 						break;
 				}
-				getWorld().registerBeing(ball, true);
+				getWorld().register(ball);
 				this.add(ball);
 				break;
 		}

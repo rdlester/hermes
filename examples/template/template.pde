@@ -26,10 +26,6 @@ static final int PORT_OUT = 8000;
 
 World currentWorld;
 
-/**
- * Add groups here if you need custom group behavoir
- */
-
 ///////////////////////////////////////////////////
 // PAPPLET
 ///////////////////////////////////////////////////

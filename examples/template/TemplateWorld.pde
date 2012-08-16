@@ -8,7 +8,7 @@ class TemplateWorld extends World {
   }
 
   void setup() {
-    //IMPORTANT: put all other setup here
+    //IMPORTANT: put all other setup hereterBeing(TemplateBeing);
   }
 }
 

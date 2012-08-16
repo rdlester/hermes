@@ -24,7 +24,7 @@ class ToolBox extends Being {
      for(int i=0; i<toolBoxNumCellsX; i++) {
        for(int j=0; j<toolBoxNumCellsY; j++) {
          _grid[i][j] = new Cell(new PVector(toolBoxLeftX + i*cellSideLength, containerTopY + j*cellSideLength),-1,-1);
-         world.registerBeing(_grid[i][j], false);
+         world.register(_grid[i][j], false);
        } 
      }
      

@@ -13,7 +13,7 @@ abstract class Tool extends MassedBeing {
   Tool(HShape shp, PVector velocity, float mass, float elasticity, int toolCode) {
     super(shp, velocity, mass, elasticity); 
     _toolCode = toolCode;
-    world.registerBeing(this, true);
+    world.register(this, true);
     world.addToGroup(this, toolGroup);
   }
 

@@ -15,23 +15,23 @@ public class LevelWorld extends World {
     //containers
     canvas = new Canvas(_postOffice);
     println("canvas created");
-    registerBeing(canvas, true);
+    register(canvas, true);
     addToGroup(canvas, canvasGroup);
     _postOffice.registerMouseSubscription(canvas,NO_BUTTON,canvas.getShape());
     _postOffice.registerMouseSubscription(canvas,LEFT_BUTTON,canvas.getShape());
     toolBox = new ToolBox(canvas);
-    registerBeing(toolBox, false);
+    register(toolBox, false);
     _postOffice.registerMouseSubscription(toolBox,NO_BUTTON);
     _postOffice.registerMouseSubscription(toolBox,LEFT_BUTTON);
     
     //buttons
     RunButton runButton = new RunButton(_postOffice);
-    registerBeing(runButton, true);
+    register(runButton, true);
     _postOffice.registerKeySubscription(runButton,R);
     _postOffice.registerMouseSubscription(runButton,NO_BUTTON,runButton.getShape());
     _postOffice.registerMouseSubscription(runButton,LEFT_BUTTON,runButton.getShape());
     RandomButton randomButton = new RandomButton(canvas,_postOffice);
-    registerBeing(randomButton,false);
+    register(randomButton,false);
     _postOffice.registerKeySubscription(randomButton,SPACE);
     _postOffice.registerMouseSubscription(randomButton,NO_BUTTON,randomButton.getShape());
     _postOffice.registerMouseSubscription(randomButton,LEFT_BUTTON,randomButton.getShape());
@@ -47,11 +47,11 @@ public class LevelWorld extends World {
     _postOffice.registerMouseSubscription(mouseHandler, NO_BUTTON);*/
 
     //register interactions
-    registerInteraction(canvasGroup, ballGroup, new InsideMassedCollider());
-    registerInteraction(canvasGroup, bubbleGroup, new InsideMassedCollider());
-    registerInteraction(ballGroup, goalGroup, new BallGoalCollider());
-    registerInteraction(toolGroup, ballGroup, new MassedCollider());
-    registerInteraction(toolGroup, bubbleGroup, new MassedCollider());
+    register(canvasGroup, ballGroup, new InsideMassedCollider());
+    register(canvasGroup, bubbleGroup, new InsideMassedCollider());
+    register(ballGroup, goalGroup, new BallGoalCollider());
+    register(toolGroup, ballGroup, new MassedCollider());
+    register(toolGroup, bubbleGroup, new MassedCollider());
   }
 }
 
