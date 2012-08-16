@@ -48,7 +48,6 @@ void setup() {
 
 void draw() {
   currentWorld.draw();
-  saveFrame("F-####.gif");
 }
 
 void keyPressed() {

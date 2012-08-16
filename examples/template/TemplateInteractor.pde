@@ -1,8 +1,11 @@
 /**
- * Template interactor between a MyBeing and another MyBeing
+ * Template interactor between a TemplateBeing and another TemplateBeing
+ * Don't forget to change TemplateBeing-s to
+ * the names of the Being-types you want to interact
  */
 class TemplateInteractor extends Interactor<TemplateBeing, TemplateBeing> {
   TemplateInteractor() {
+    super();
     //Add your constructor info here
   }
 
@@ -15,4 +18,3 @@ class TemplateInteractor extends Interactor<TemplateBeing, TemplateBeing> {
     //Add your handle method here
   }
 }
-

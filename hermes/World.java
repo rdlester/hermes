@@ -224,7 +224,11 @@ public class World extends Thread {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void register(GenericGroup A, GenericGroup B, Interactor inter) {
-		_interactions.add(new Interaction(A, B, inter, null));
+	  if(A == B) {
+	    _interactions.add(new Interaction(A, B, inter, new SelfInteractionOptimizer()));
+	  } else {
+		  _interactions.add(new Interaction(A, B, inter, null));
+	  }
 	}
 	
 	/**
@@ -338,7 +342,18 @@ public class World extends Thread {
 		
 		// 1. handle the message queue from the post office if post office is defined
 		_postOffice.checkMail();
-		  
+		
+		// 3. go through the registered groups and update them
+		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
+			GenericGroup group = iter.next();
+			group.update();
+		}
+		
+		resolveGroupQueues();
+		
+		// 4. apply being updates
+		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
+		
 		// 2. go through the registered interactions in order
 		LinkedList<DetectedInteraction> detectedInteractionsQ = new LinkedList<DetectedInteraction>();
 		for(Iterator<Interaction> iter = _interactions.iterator(); iter.hasNext(); ) {
@@ -382,16 +397,16 @@ public class World extends Thread {
 			}
 		}
 		
-		// 3. go through the registered groups and update them
-		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
-			GenericGroup group = iter.next();
-			group.update();
-		}
-		
-		resolveGroupQueues();
-		
-		// 4. apply being updates
-		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
+//		// 3. go through the registered groups and update them
+//		for(Iterator<GenericGroup<?,?>> iter = _groupsToUpdate.iterator(); iter.hasNext(); ) {
+//			GenericGroup group = iter.next();
+//			group.update();
+//		}
+//		
+//		resolveGroupQueues();
+//		
+//		// 4. apply being updates
+//		List<Being> unresolvedUpdates = updateHelper(_updateGroup.getObjects());
 		
 		// deal with anything unresolved
 		while(!unresolvedUpdates.isEmpty()) {
