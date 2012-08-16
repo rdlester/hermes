@@ -27,7 +27,7 @@ To install Hermes, download [the zip distribution](http://github.com/paperkettle
 Tutorial
 ========
 
-NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: Groups, Interactions, and the PostOffice, all pretty important stuff. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below and take a look at our other examples to get an idea of how things work.
+NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: Interactions, and the PostOffice, all pretty important stuff. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below and take a look at our other examples to get an idea of how things work.
 
 The Template
 ------------
@@ -219,10 +219,64 @@ Groups
 
 While we now know how to update and draw individual Beings, independent of one another, what if we want to synchronize some behavior across an entire group of Beings? Hermes provides a simple solution: `Group`s. Groups allow us to define a particular set of Beings or objects as a single entity we can update like Beings or interact with other Groups or individual Beings. At their core, `Group`s are similar to `ArrayList`s or other data structures; you can add to, remove from, and access the contained `Being`s. However, `Group`s can also have updates and interactions.
 
-Let's modify `tutorialA` to use a `Group` update to see how they work. The following example is found in the `tutorialAgrouped` folder.
+Let's modify `tutorialA` to use a `Group` update to see how they work. The following example is found in the `tutorialAgrouped` folder. First, we're going to need to make a few changes to our squares in preparation. Comment out the line `_c = pickColor();` from `GlitchySquare`'s `update` function. Then, add a new function:
+
+	public void setColor(color c) {
+		_c = c;
+	}
+
+This is the function our Group will use to set the color of the individual Squares.
+
+Now, create a new file by clicking the arrow at the right of the tab bar in Processing, and selecting "New Tab". Name the tab "GlitchyGroup". Now, write the following code:
+
+	/**
+	 * Synchronizes the color of the GlitchySquares
+	 */
+	class GlitchyGroup extends Group<GlitchySquare> {
+  
+	  GlitchyGroup(World w) {
+	    super(w);
+	  }
+  
+	  public void update() {
+	    color c = pickColor();
+	    for (GlitchySquare s : getObjects()) {
+	      s.setColor(c);
+	    }
+	  }
+  
+	  private color pickColor() {
+	    return color(int(random(256)), int(random(256)), int(random(256)));
+	  }
+	}
+
+This is a basic Group. Again, our new `GlitchyGroup` is a subclass of `Group`; but what is `<GlitchySquare>` doing there? This part defines the type of `Being`s that will go into the `Group`. Since our Group will have `GlitchySquare`s and only `GlitchySquare`s, we put `GlitchySquares` between the brackets to tell the Group to expect these Squares. If we had a Group consisting of all kinds of different `Being`s, we'd just write `Being`.  For those of you who have worked with ArrayLists or other Java collections before, this behaves the same as it does there.
+
+Our constructor takes a World and passes it to the super. This is required for the Group to function.
+
+Now, we get to the interesting stuff. In `update`, we start by picking a color, then iterate through the objects in the group and set their color to our newly chosen one. Below, `pickColor` is simply a copy of `pickColor` in `GlitchySquare`. 
+
+So, how do we get our Squares into the `Group`? We'll have to make a few changes to the `setup` of our `World`. It should now look like:
+
+	void setup() {
+	    GlitchyGroup g = new GlitchyGroup(this);
+	    register(g);
+    
+	    for (int i = 0; i < _squareNum; i++) {
+	      int x = (int) random(WINDOW_WIDTH - 50);
+	      int y = (int) random(WINDOW_HEIGHT - 50);
+	      GlitchySquare s = new GlitchySquare(x,y);
+	      register(s);
+	      g.add(s);
+		}
+	}
+
+We first construct the `Group`, passing it `this` to provide it with a reference to the containing `World`, then register it with the World. In our loop, we now save the GlitchySquare as a variable before registering it; we then add it to the `Group`. Simple enough. Once you've made the changes, hit run. The squares should all be the same color, yet still move independently, creating a morphing blob of glitchiness in the PApplet.
 
 Interactions
 ------------
+
+
 
 The Post Office / User Input
 ----------------------------
