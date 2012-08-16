@@ -31,9 +31,9 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 							implements KeySubscriber, MouseSubscriber, MouseWheelSubscriber, OscSubscriber {
 
 	private B _objects;		// the underlying collection
-	private World _world;	// the world containing the groups
 	private LinkedList<A> _needsMoreSamples;	// keeps track of any beings that need 
 													// more samples this update
+  protected World _world;	// the world containing the groups
 	
 	/**
 	 * Instantiates a group storing HObjects in the given collection.
