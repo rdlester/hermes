@@ -1,14 +1,25 @@
 class OtherGroup extends Group {
 
-  OtherGroup(World world) {
-    super(world);
-  }
-
-  float spawnX = width;
-  float spawnY = height/2 - BODY_HEIGHT/2;
+  float spawnX;
+  float spawnY;
   int animationIndexToUseOnSpawn = 0;
 
-  Float groupTravelSpeed = 1.0;
+  float otherTravelSpeed = 1.0;
+  float otherTravelSpeedMultiplier = 2;
+
+  float bodyWidth, bodyHeight;
+
+
+  OtherGroup(World world, float bodyWidth, float bodyHeight) {
+    super(world);
+    
+    this.bodyWidth = bodyWidth;
+    this.bodyHeight = bodyHeight;
+
+    //Default spawn position (on the right side of the screen)
+    spawnX = width;
+    spawnY = height/2 - bodyHeight/2;
+  }
 
   void handleOscMessage(OscMessage message) {
     String[] msgSplit = message.getAddress().split("/");
@@ -17,10 +28,10 @@ class OtherGroup extends Group {
       if (msgSplit[2].equals("GenerateAnOther")) {
         if (message.hasRemainingArguments()) {
           if (message.getAndRemoveFloat() == 1.0) {       
-            Other other = new Other(spawnX, spawnY, BODY_WIDTH, BODY_HEIGHT, createAnimatedSpriteForOther());
+            Other other = new Other(spawnX, spawnY, bodyWidth, bodyHeight, createAnimatedSpriteForOther());
             other.animatedSprite.setActiveAnimation(animationIndexToUseOnSpawn % other.animatedSprite.getNumberOfAnimations());
             other.animatedSprite.overrideMillisecondsPerFrame(numberOfMillisecondsFramePlaysFor);
-            other.howManyPixelsToTravel = groupTravelSpeed;
+            other.howManyPixelsToTravel = otherTravelSpeed;
             add(other);
 
             world.registerBeing(other, true);
@@ -50,7 +61,7 @@ class OtherGroup extends Group {
         if (message.hasRemainingArguments()) {
           float travel = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
           travel = map(travel, 0.0, 1.0, 1.0, 20);
-          groupTravelSpeed = travel;
+          otherTravelSpeed = travel;
         }
       }
 
@@ -74,5 +85,4 @@ class OtherGroup extends Group {
     }
   }
 }
-
 

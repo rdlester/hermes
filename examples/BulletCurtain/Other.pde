@@ -1,9 +1,13 @@
-class Other extends SubjectObjectRelation {
+class Other extends Actor {
 
+  OtherGroup parentGroup;
+  
   Float howManyPixelsToTravel = 1.0;
 
   Other(float x, float y, float bodyWidth, float bodyHeight, AnimatedSprite animatedSprite) {
     super(x, y, bodyWidth, bodyHeight, animatedSprite);
+    
+    parentGroup = 
   }
 
   void update() {
