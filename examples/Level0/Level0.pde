@@ -25,8 +25,7 @@ void setup() {
   size(frameWidth, frameHeight);
   Hermes.setPApplet(this);
  
-  po = new PostOffice(8080, 8000);
-  world = new LevelWorld(po, new HCamera());
+  world = new LevelWorld(PORT_IN, PORT_OUT);
   world.lockUpdateRate(50);
   
   rectMode(CORNER);

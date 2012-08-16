@@ -21,8 +21,8 @@ class PlatformGroup extends Group<Platform> {
    * fills an area with randomly-placed platforms
    */
   void generatePlatforms(Rectangle area, float verticalStep, float density) {
-    float boxWidth = area.getRectWidth();
-    float boxHeight = area.getRectHeight();
+    float boxWidth = area.getWidth();
+    float boxHeight = area.getHeight();
     float maxPlatWidth = boxWidth / 2;
     float minPlatWidth = Platform.HEIGHT * 2;
     // iterate through rows
