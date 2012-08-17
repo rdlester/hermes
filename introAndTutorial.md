@@ -27,7 +27,7 @@ To install Hermes, download [the zip distribution](http://github.com/paperkettle
 Tutorial
 ========
 
-NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: Interactions and the PostOffice (user or network input), both pretty important. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below and take a look at our other examples to get an idea of how things work.
+NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: the PostOffice (user or network input), pretty important stuff. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below to learn the basics and take a look at our other examples to get an idea of how the rest of the things work.
 
 The Template
 ------------
