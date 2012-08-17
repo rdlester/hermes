@@ -1,11 +1,13 @@
-class Subject extends SubjectObjectRelation {
+class Subject extends Actor {
 
 
   Subject(float x, float y, float bodyWidth, float bodyHeight, AnimatedSprite animatedSprite) {
     super(x, y, bodyWidth, bodyHeight, animatedSprite);
   }
 
+
   void update() {
+    //The subject's motion is entirely determined by OSC input.. so nothing goes here.
   }
 
 
@@ -47,7 +49,7 @@ class Subject extends SubjectObjectRelation {
   void shoot() {
     //Create a new shot (placed to the right of the Subject and proportional to its size)
     //then register it in the world, and register it for collisions
-    Shot shot = new Shot(getX() + bodyWidth, getY() + (bodyHeight/2), bodyHeight/2, bodyHeight/4, universalShotTravel);
+    Shot shot = new Shot(getX() + bodyWidth, getY() + (bodyHeight/2), bodyHeight/4, bodyHeight/8, bodyWidth/16);
     world.register(shot);
     shotGroup.add(shot);
   }

@@ -5,8 +5,9 @@
  You can generate enemies ("Others") that travel from left to right
  The system is controlled entirely with OSC, so it is ripe for exploration via strange data sets (oscillators, clocks, other games, etc).
  
- This code is rough around the edges - a more (computationally) efficient design might involve creating a pool of Beings (Subjects/Others/Shots) up front.
+ This code is rough around the edges - a more (computationally) efficient design might involve creating pools of Beings (Subjects/Others/Shots) up front.
  Such a design might be better for a program like this, where one sometimes finds oneself spawning hundreds of objects per second.....
+ Also this design is 90% OO encapsulation 10% Processing wonky globals, forgive my sins. 
  
  =======================================
  Inputs:
@@ -28,12 +29,12 @@
  		generate enemy ships (trigger value of 1.0)
  
  
-        **NOT currently in place, but potential future additons maybe?
+ **NOT currently in place, but potential future additons maybe?
  	-/ChangeOtherStyle
  		ability to step through a set of graphics, determining how new Others will be drawn (trigger value of 1.0)
  	-/ChangeBackgroundStyle
  		ability to step through a minimal set of background graphics / colors (trigger value of 1.0)
-        **
+ **
  
  =======================================
  Outputs:
@@ -51,9 +52,9 @@
  		notification of player ship collision (trigger value of 1.0)
  	/OtherDestroyed
  		notification of destruction of an enemy ship (trigger value of 1.0)
-        /OtherDestroyedAtY
-        /OtherDestroyedAtX
-                x and y of the last destroyed Other 
+ /OtherDestroyedAtY
+ /OtherDestroyedAtX
+ x and y of the last destroyed Other 
  
  */
 
@@ -65,47 +66,49 @@ import hermes.postoffice.*;
 
 static final String SYSTEM_NAME = "BulletCurtain";
 
-/*Settings for character sprites. Each block is a square of pixels.
- */
-static final int pixelsPerBlock = 4;
-static final int WIDTH_BLOCKS= 10;
-static final int heightBlocks = 8;
+//Constants for OSC input and output ports - change these here if you want different ports.
+final int PORT_FOR_INCOMING_OSC_MESSAGES = 8808;
+final int PORT_FOR_OUTGOING_OSC_MESSAGES = 8809;
 
-static final int BODY_WIDTH = WIDTH_BLOCKS * pixelsPerBlock;
-static final int BODY_HEIGHT = heightBlocks * pixelsPerBlock;
+//character graphics are made of blocks..
+static final int WIDTH_BLOCKS= 12;
+static final int HEIGHT_BLOCKS = 8;
+//and each block is a square of pixels.
+static final int PIXELS_PER_BLOCK = 4;
 
-static final int NUMBER_OF_ANIMATIONS_IN_LIST = 20; //several animations in each AnimatedSprite
+//thus the width and height for each character is:
+static final int BODY_WIDTH = WIDTH_BLOCKS * PIXELS_PER_BLOCK;
+static final int BODY_HEIGHT = HEIGHT_BLOCKS * PIXELS_PER_BLOCK;
 
-//Used to increase global animation speeds
-int animationSpeedMultiplier = 2;
+//an AnimatedSprite is made up of several possible animations, which are all rendered at setup for speed's sake
+static final int NUMBER_OF_ANIMATIONS_IN_POOL = 20; 
 
-//Initial States... use for codebending
 
-int numberOfAnimationFrames = 5; //how many frames an animation gets when it is created
-int numberOfMillisecondsFramePlaysFor = 500; //how many milliseconds each animation frame stays active (set when created)
-
+//Objects that are common to all possible worlds
+Subject subject; //character on the left
+OtherGroup otherGroup; //group for "enemies" on right
+ShotGroup shotGroup; //group for shots from character on left
+WorldState worldState; 
+CharacterGraphicsGenerator characterGraphicsGenerator; //
 AnimatedSprite spriteToUseForSubject; //use when generating the sprite of "subject"
 Animation[] commonAnimations; //use when generating the AnimatedSprites of "Others"
 
+//Basic Hermes objects..
+World world;
+PostOffice postOffice;
+
+
+//note to self: these are leftover from this as a hack - if I re
+//Initial States... use for codebending
+int numberOfAnimationFrames = 5; //how many frames each character's animation gets when it is created
+int numberOfMillisecondsFramePlaysFor = 500; //how many milliseconds each animation frame stays active (set when created)
+
 //Basically global variables.. used for codebending changes that affect several items at once.
-float universalShotTravel = 10; //how far does each shot travel per frame
+int animationSpeedMultiplier = 2;
 float shotTravelMultiplier = 1.0;
 float otherTravelMultiplier = 1.0; 
 
 
-//Basic Hermes objects
-World world;
-PostOffice postOffice;
-HCamera cam;
-
-Subject subject; //character on the left
-
-OtherGroup otherGroup; 
-ShotGroup shotGroup;
-
-StateBeing worldStateBeing;
-
-CharacterGraphicsGenerator characterGraphicsGenerator;
 
 
 void setup() { 
@@ -114,60 +117,64 @@ void setup() {
   size(640, 480, OPENGL);
   rectMode(CORNER);
 
-  characterGraphicsGenerator = new CharacterGraphicsGenerator(); //used to makes generative random patterns for AnimatedSprites
-
-  initializeAnimations();
-
-  subject = new Subject (width / 8, height / 2, BODY_WIDTH, BODY_HEIGHT, spriteToUseForSubject);
-
-  spriteToUseForSubject.setActiveAnimation(0);
-
-  postOffice = new PostOffice(8808, 8809);
+  //instantiate basic Hermes objects
+  postOffice = new PostOffice(PORT_FOR_INCOMING_OSC_MESSAGES, PORT_FOR_OUTGOING_OSC_MESSAGES);
   world = new World(postOffice);
 
+  //instantiate objects used for generating graphocs
+  characterGraphicsGenerator = new CharacterGraphicsGenerator(); //used to makes generative random patterns for AnimatedSprites
+  initializeAnimations();
 
-  //Register these two initial entities
+  //Instantiate and register the "Subject" chararacter.
+  subject = new Subject (width / 8, height / 2, BODY_WIDTH, BODY_HEIGHT, spriteToUseForSubject);
+  spriteToUseForSubject.setActiveAnimation(0);
   world.register(subject);
 
-
-  otherGroup = new OtherGroup(world);
+  //and then the groups... 
+  otherGroup = new OtherGroup(world, BODY_WIDTH, BODY_HEIGHT);
   shotGroup = new ShotGroup(world);
 
-  worldStateBeing = new StateBeing();
+  //This object holds general state for manipulation via OSC
+  worldState = new WorldState();
 
   //Register the OSC addresses with the Post Office
+  //For the Subject..
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectX");
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectY");
   postOffice.registerOscSubscription(subject, "/BulletCurtain/MakeSubjectShoot");
-
+  //For the Others..
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/GenerateAnOther");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnX");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnY");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
   postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
-
+  //For Shots
   postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
-
   postOffice.registerOscSubscription(shotGroup, "/BulletCurtain/SetTravelMultiplierForAllShots");
+  //And general animation state
+  postOffice.registerOscSubscription(worldState, "/BulletCurtain/SetAnimationSpeed");
 
-  postOffice.registerOscSubscription(worldStateBeing, "/BulletCurtain/SetAnimationSpeed");
-
-  //Now the interactions...
+  //Now instantiate & register interactions...
   ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
-
   world.register(shotGroup, otherGroup, shotOtherCollider);
-//
+
   world.lockUpdateRate(60);
   world.start();
 }
 
+void draw() {
+  background(0);
+  noSmooth();
+  world.draw();
+}
 
 
 AnimatedSprite createAnimatedSpriteForOther() {
-  //make a single Other when the system begins...
+  //make a single shared AnimatedSprite for the all enemy ("Other") Beings...
   AnimatedSprite spriteForOther = new AnimatedSprite();
 
+  //then populate it with different Animations
   for (int i = 0; i < commonAnimations.length; i++) {
     spriteForOther.addAnimation(commonAnimations[i]);
   }
@@ -175,15 +182,14 @@ AnimatedSprite createAnimatedSpriteForOther() {
   return spriteForOther;
 }
 
-
 void initializeAnimations() { //helper, also, some code vaguely redundant.. 
 
   spriteToUseForSubject = new AnimatedSprite(); //animations must be added to this before it can be used!
 
-  for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
+  for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_POOL; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = characterGraphicsGenerator.generate(WIDTH_BLOCKS, heightBlocks, pixelsPerBlock, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(WIDTH_BLOCKS, HEIGHT_BLOCKS, PIXELS_PER_BLOCK, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, numberOfMillisecondsFramePlaysFor * animationSpeedMultiplier);
@@ -194,12 +200,12 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
 
 
   //Create a common animation pool for all 'Others'
-  commonAnimations = new Animation[NUMBER_OF_ANIMATIONS_IN_LIST];
+  commonAnimations = new Animation[NUMBER_OF_ANIMATIONS_IN_POOL];
 
-  for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_LIST; i++) {
+  for (int i = 0; i < NUMBER_OF_ANIMATIONS_IN_POOL; i++) {
 
     //Generate frames for an animation, in the form of a PImage[]
-    PImage[] generatedFrames = characterGraphicsGenerator.generate(WIDTH_BLOCKS, heightBlocks, pixelsPerBlock, numberOfAnimationFrames);
+    PImage[] generatedFrames = characterGraphicsGenerator.generate(WIDTH_BLOCKS, HEIGHT_BLOCKS, PIXELS_PER_BLOCK, numberOfAnimationFrames);
 
     //Use these frames to build an Animation
     Animation generatedAnimation = new Animation(generatedFrames, numberOfMillisecondsFramePlaysFor * animationSpeedMultiplier);
@@ -208,40 +214,3 @@ void initializeAnimations() { //helper, also, some code vaguely redundant..
     commonAnimations[i] = generatedAnimation;
   }
 }
-
-
-void draw() {
-  background(0);
-  noSmooth();
-  world.draw();
-}
-
-
-
-
-
-
-//Dummy being for world state 
-class StateBeing extends Being {
-  StateBeing() {
-    super(new Rectangle(1, 1, 1, 1));
-  }
-
-  void draw() {
-  };
-
-  void handleOscMessage(OscMessage message) {
-
-    String[] msgSplit = message.getAddress().split("/");
-    if (msgSplit[1].equals(SYSTEM_NAME)) {
-      if (msgSplit[2].equals("SetAnimationSpeed")) {
-        if (message.hasRemainingArguments()) {
-          float speed = constrain(message.getAndRemoveFloat(), 0.0, 1.0);
-          speed = map(speed, 0.0, 1.0, 10.0, 2000.0);
-          numberOfMillisecondsFramePlaysFor = int(speed);
-        }
-      }
-    }
-  }
-}
-
