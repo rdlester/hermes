@@ -539,6 +539,11 @@ public class World extends Thread {
 		}
 	}
 	
+	public PostOffice getPostOffice() {
+		return _postOffice;
+	}
+	
+	
 }
 
 	
