@@ -3,7 +3,6 @@ package hermes.physics;
 import hermes.*;
 import hermes.hshape.HShape;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import processing.core.*;

@@ -13,7 +13,7 @@ public class MouseMessage implements Message {
 	//Button clicked in message
 	//Get buttons from MouseEvent, 1 is button 1, etc.
 	//0 is no buttons
-	private int _buttonClicked;
+	private POConstants.Button _buttonClicked;
 	//Type of action designated by message
 	private int _actionType;
 	//Locations
@@ -25,7 +25,7 @@ public class MouseMessage implements Message {
 	 * @param x
 	 * @param y
 	 */
-	public MouseMessage(int buttonClicked, int actionType, int x, int y) {
+	public MouseMessage(POConstants.Button buttonClicked, int actionType, int x, int y) {
 		_buttonClicked = buttonClicked;
 		_actionType = actionType;
 		_x = x;
@@ -38,7 +38,7 @@ public class MouseMessage implements Message {
 	 * to figure out what button has been pressed
 	 * @return      int corresponding to button, use LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON and NO_BUTTON constants in POConstants to determine which button has been pressed
 	 */
-	public int getButton() {
+	public POConstants.Button getButton() {
 		return _buttonClicked;
 	}
 	/**
