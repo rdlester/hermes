@@ -22,11 +22,12 @@ public class POConstants {
 	/* Mouse constants */
 	/////////////////////
 	
-	//Constants representing buttons
-	public static final int NO_BUTTON = MouseEvent.NOBUTTON;
-	public static final int LEFT_BUTTON = MouseEvent.BUTTON1;
-	public static final int MIDDLE_BUTTON = MouseEvent.BUTTON2;
-	public static final int RIGHT_BUTTON = MouseEvent.BUTTON3;
+	public enum Button {
+		NO,
+		LEFT,
+		MIDDLE,
+		RIGHT
+	}
 	
 	//Constants representing type of mouse action
 	public static final int MOUSE_PRESSED = MouseEvent.MOUSE_PRESSED;

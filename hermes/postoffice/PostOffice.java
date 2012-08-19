@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.SwingUtilities;
 
-import processing.core.PApplet;
 import processing.core.PVector;
 
 import com.google.common.collect.HashMultimap;
@@ -47,7 +46,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Maps that associate subscribers with messages they want to receive
 	private HashMultimap<Integer, KeySubscriber> _keySubs;
-	private HashMultimap<Integer, Pair<MouseSubscriber,HShape>> _mouseSubs;
+	private HashMultimap<POConstants.Button, Pair<MouseSubscriber,HShape>> _mouseSubs;
 	private ArrayList<MouseWheelSubscriber> _mouseWheelSubs;
 	private HashMultimap<String, OscSubscriber> _oscSubs;
 	
@@ -173,7 +172,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param sub	the KeySubscriber signing up
 	 * @param key	the code of the keyboard key whose messages the subscriber wants (use value from POConstants)
 	 */
-	public void registerKeySubscription(KeySubscriber sub, int key) {
+	public void subscribe(KeySubscriber sub, int key) {
 		assert sub != null : "PostOffice.registerKeySubscription: sub must be a valid KeySubscriber";
 		_keySubs.put(key, sub);
 	}
@@ -183,7 +182,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param sub	the KeySubscriber signing up
 	 * @param key	the char of the keyboard key whose messages the subscriber wants
 	 */
-	public void registerKeySubscription(KeySubscriber sub, char key) {
+	public void subscribe(KeySubscriber sub, char key) {
 		assert sub != null : "PostOffice.registerKeySubscription: sub must be a valid KeySubscriber";
 		Integer keyCode = Character.getNumericValue(key);
 		_keySubs.put(keyCode, sub);
@@ -197,14 +196,14 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param sub		the MouseSubscriber signing up
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 */
-	public void registerMouseSubscription(MouseSubscriber sub, int button) {
+	public void subscribe(MouseSubscriber sub, POConstants.Button button) {
 		assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
-		assert button == POConstants.NO_BUTTON ||
-				button == POConstants.LEFT_BUTTON ||
-				button == POConstants.MIDDLE_BUTTON ||
-				button == POConstants.RIGHT_BUTTON :
+		assert button == POConstants.Button.NO ||
+			button == POConstants.Button.LEFT ||
+			button == POConstants.Button.MIDDLE ||
+			button == POConstants.Button.RIGHT :
 					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
-		_mouseSubs.put((Integer)button, new Pair<MouseSubscriber, HShape>(sub, null));
+		_mouseSubs.put(button, new Pair<MouseSubscriber, HShape>(sub, null));
 	}
 	
 	/**
@@ -214,22 +213,22 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 * @param region	the region on screen the subscriber wants to limit its subscription to
 	 */
-    public void registerMouseSubscription(MouseSubscriber sub, int button, HShape region) {
+    public void subscribe(MouseSubscriber sub, POConstants.Button button, HShape region) {
         assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
-		assert button == POConstants.NO_BUTTON ||
-				button == POConstants.LEFT_BUTTON ||
-				button == POConstants.MIDDLE_BUTTON ||
-				button == POConstants.RIGHT_BUTTON :
+		assert button == POConstants.Button.NO ||
+				button == POConstants.Button.LEFT ||
+				button == POConstants.Button.MIDDLE ||
+				button == POConstants.Button.RIGHT :
 					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
         assert region != null : "PostOffice.registerMouseSubscription: region must be a valid Shape";
-        _mouseSubs.put((Integer)button, new Pair<MouseSubscriber, HShape>(sub, region));
+        _mouseSubs.put(button, new Pair<MouseSubscriber, HShape>(sub, region));
     }
 	
 	/**
 	 * Registers a subscription to the mouse wheel (one subscription gets you everything).
 	 * @param sub	the MouseWheelSubscriber signing up
 	 */
-	public void registerMouseWheelSubscription(MouseWheelSubscriber sub) {
+	public void subscribe(MouseWheelSubscriber sub) {
 		assert sub != null : "PostOffice.registerMouseWheelSubscription: sub must be a valid MouseWheelSubscriber";
 		_mouseWheelSubs.add(sub);
 	}
@@ -239,7 +238,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param sub		the OscSubscriber signing up
 	 * @param address	the address whose messages the subscriber wants
 	 */
-	public void registerOscSubscription(OscSubscriber sub, String address) {
+	public void subscribe(OscSubscriber sub, String address) {
 		assert _onOSC : "PostOffice.registerOscSubscription: cannot register an OSC subscription unless OSC is on";
 		assert sub != null : "PostOffice.registerOscSubscription: sub must be a valid OscSubscriber";
 		assert address != null : "PostOffice.registerOscSubscription: address must be a valid String";
@@ -255,18 +254,18 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public boolean removeMouseSubscriptions(MouseSubscriber sub) {
 	  if(_mouseSubs.containsValue(sub)) {
 	    // Find key-value pairs containing sub
-	    Set<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> all = _mouseSubs.entries();
-	    Set<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> toRemove = new HashSet<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>>();
-	    for(Iterator<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> iter = all.iterator(); iter.hasNext(); ) {
-	      Map.Entry<Integer, Pair<MouseSubscriber,HShape>> next = iter.next();
+	    Set<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> all = _mouseSubs.entries();
+	    Set<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> toRemove = new HashSet<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>>();
+	    for(Iterator<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> iter = all.iterator(); iter.hasNext(); ) {
+	      Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>> next = iter.next();
 	      if(next.getValue().getFirst() == sub) {
 	        toRemove.add(next);
 	      }
 	    }
 	    
 	    // Remove references
-	    for(Iterator<Map.Entry<Integer, Pair<MouseSubscriber,HShape>>> iter = toRemove.iterator(); iter.hasNext(); ) {
-	      Map.Entry<Integer, Pair<MouseSubscriber,HShape>> next = iter.next();
+	    for(Iterator<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> iter = toRemove.iterator(); iter.hasNext(); ) {
+	      Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>> next = iter.next();
 	      _mouseSubs.remove(next.getKey(), next.getValue());
 	    }
 	    return true;
@@ -531,7 +530,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				MouseMessage m = _mouseQueue.poll();
 				_mouseLocation.x = m.getX();
 				_mouseLocation.y = m.getY();
-				int button = m.getButton();
+				POConstants.Button button = m.getButton();
 				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
 				for(Pair<?, ?> p : subs) {
 				   HShape region = (HShape) p.getSecond();
@@ -690,15 +689,15 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param e		the MouseEvent
 	 * @return		the mouse button code
 	 */
-	public static int getMouseButton(MouseEvent e) {
+	public static POConstants.Button getMouseButton(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e))
-			return POConstants.LEFT_BUTTON;
+			return POConstants.Button.LEFT;
 		else if(SwingUtilities.isMiddleMouseButton(e))
-			return POConstants.MIDDLE_BUTTON;
+			return POConstants.Button.MIDDLE;
 		else if(SwingUtilities.isRightMouseButton(e))
-			return POConstants.RIGHT_BUTTON;
+			return POConstants.Button.RIGHT;
 		else
-			return POConstants.NO_BUTTON;
+			return POConstants.Button.NO;
 	}
 	
 }

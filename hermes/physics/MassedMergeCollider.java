@@ -1,7 +1,5 @@
 package hermes.physics;
 
-import hermes.Collider;
-
 /**
  * this is a collision handler that merges beings who's shapes intersect
  * 

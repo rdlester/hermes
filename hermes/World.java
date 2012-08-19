@@ -1,5 +1,11 @@
 package hermes;
 
+import hermes.hshape.HShape;
+import hermes.postoffice.KeySubscriber;
+import hermes.postoffice.MouseSubscriber;
+import hermes.postoffice.MouseWheelSubscriber;
+import hermes.postoffice.OscSubscriber;
+import hermes.postoffice.POConstants;
 import hermes.postoffice.PostOffice;
 
 import java.util.Iterator;
@@ -292,6 +298,64 @@ public class World extends Thread {
 	@SuppressWarnings("rawtypes")
 	public void register(GenericGroup group) {
 		_groupsToUpdate.add(group);
+	}
+	
+	/**
+	 * Registers a subscription to messages sent by a specific keyboard key.
+	 * @param sub	the KeySubscriber signing up
+	 * @param key	the code of the keyboard key whose messages the subscriber wants (use value from POConstants)
+	 */
+	public void subscribe(KeySubscriber sub, int key) {
+		_postOffice.subscribe(sub, key);
+	}
+	
+	/**
+	 * Registers a subscription to messages sent by a specific keyboard key.
+	 * @param sub	the KeySubscriber signing up
+	 * @param key	the char of the keyboard key whose messages the subscriber wants
+	 */
+	public void subscribe(KeySubscriber sub, char key) {
+		_postOffice.subscribe(sub, key);
+	}
+	
+	/**
+	 * Registers a subscription to messages sent by a specific mouse button.
+	 * <p>
+	 * Buttons are defined by constants in the POConstants class;
+	 * subscribe with "NO_BUTTON" to receive information about mouse movements when no button is pressed.
+	 * @param sub		the MouseSubscriber signing up
+	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
+	 */
+	public void subscribe(MouseSubscriber sub, POConstants.Button button) {
+		_postOffice.subscribe(sub, button);
+	}
+	
+	/**
+	 * A version of registerMouseSubscription that subscribes only to the requested button events
+	 *      that occur in the given region.
+	 * @param sub		the MouseSubscriber signing up
+	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
+	 * @param region	the region on screen the subscriber wants to limit its subscription to
+	 */
+    public void subscribe(MouseSubscriber sub, POConstants.Button button, HShape region) {
+    	_postOffice.subscribe(sub, button, region);
+    }
+	
+	/**
+	 * Registers a subscription to the mouse wheel (one subscription gets you everything).
+	 * @param sub	the MouseWheelSubscriber signing up
+	 */
+	public void subscribe(MouseWheelSubscriber sub) {
+		_postOffice.subscribe(sub);
+	}
+
+	/**
+	 * Registers a subscription to messages received on a specific OSC address.
+	 * @param sub		the OscSubscriber signing up
+	 * @param address	the address whose messages the subscriber wants
+	 */
+	public void subscribe(OscSubscriber sub, String address) {
+		_postOffice.subscribe(sub, address);
 	}
 
 	/**

@@ -139,21 +139,21 @@ void setup() {
 
   //Register the OSC addresses with the Post Office
   //For the Subject..
-  postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectX");
-  postOffice.registerOscSubscription(subject, "/BulletCurtain/SetSubjectY");
-  postOffice.registerOscSubscription(subject, "/BulletCurtain/MakeSubjectShoot");
+  postOffice.subscribe(subject, "/BulletCurtain/SetSubjectX");
+  postOffice.subscribe(subject, "/BulletCurtain/SetSubjectY");
+  postOffice.subscribe(subject, "/BulletCurtain/MakeSubjectShoot");
   //For the Others..
-  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/GenerateAnOther");
-  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnX");
-  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherSpawnY");
-  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
-  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
-  postOffice.registerOscSubscription(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
+  postOffice.subscribe(otherGroup, "/BulletCurtain/GenerateAnOther");
+  postOffice.subscribe(otherGroup, "/BulletCurtain/SetOtherSpawnX");
+  postOffice.subscribe(otherGroup, "/BulletCurtain/SetOtherSpawnY");
+  postOffice.subscribe(otherGroup, "/BulletCurtain/NewAnimationForSpawnedOthers");
+  postOffice.subscribe(otherGroup, "/BulletCurtain/SetOtherTravelSpeed");
+  postOffice.subscribe(otherGroup, "/BulletCurtain/SetTravelMultiplierForAllOthers");
   //For Shots
-  postOffice.registerOscSubscription(subject, "/BulletCurtain/SetShotTravelSpeed");
-  postOffice.registerOscSubscription(shotGroup, "/BulletCurtain/SetTravelMultiplierForAllShots");
+  postOffice.subscribe(subject, "/BulletCurtain/SetShotTravelSpeed");
+  postOffice.subscribe(shotGroup, "/BulletCurtain/SetTravelMultiplierForAllShots");
   //And general animation state
-  postOffice.registerOscSubscription(worldState, "/BulletCurtain/SetAnimationSpeed");
+  postOffice.subscribe(worldState, "/BulletCurtain/SetAnimationSpeed");
 
   //Now instantiate & register interactions...
   ShotOtherCollider shotOtherCollider = new ShotOtherCollider();
