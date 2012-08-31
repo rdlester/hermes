@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * 
  * @param <A>	the type of being to be stored
  */
-public class Group<A extends Being> extends GenericGroup<A, ArrayList<A>> {
+public class Group<A extends HObject> extends GenericGroup<A, ArrayList<A>> {
 
 	/**
 	 * Constructs a new empty group.
