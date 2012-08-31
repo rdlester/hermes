@@ -433,9 +433,9 @@ public class World extends Thread {
 			if(interaction.getOptimizer() == null) { // if this is a non-optimized interaction
 				// perform the O(n^2) calculation on all the groups
 				for(Iterator iterA = A.iterator(); iterA.hasNext(); ) {
-					Being being1 = (Being)iterA.next();
+					HObject being1 = (HObject)iterA.next();
 					for(Iterator iterB = B.iterator(); iterB.hasNext(); ) {
-						Being being2 = (Being)iterB.next();
+						HObject being2 = (HObject)iterB.next();
 						handler.interactionHandler(being1, being2);
 					}
 				} 
