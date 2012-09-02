@@ -15,7 +15,7 @@ Before getting started
 
 While Hermes is designed to be accessible to newcomers and professionals alike, you'll still need to understand the basics of programming, object-oriented design and Processing to get started. The best way to learn the basics on your own is to check out one of two books: Learning Processing (by Daniel Shiffman) or Getting Started With Processing (by Ben Fry and Casey Reas).
 
-If you want a quicker way to learn, or aren't interested in buying books, take a look at the official Processing tutorials. To get started with Hermes, you should, at the least, read the Overview, Coordinate System + Shapes, Objects, and PVector tutorials. We also recommend reading the 2D transformations, Trig, and Anatomy of a Program tutorials, although they aren't strictly necessary. The video tutorials at Plethora Project are also worth checking out. You'll also need to understand how interfaces and inheritance work; take a look at [this Java tutorial](http://docs.oracle.com/javase/tutorial/java/IandI/index.html) to learn the basics of the two topics.
+If you want a quicker way to learn, or aren't interested in buying books, take a look at the official Processing tutorials. To get started with Hermes, you should, at the least, read the Overview, Coordinate System + Shapes, Objects, and PVector tutorials. We also recommend reading the 2D transformations, Trig, and Anatomy of a Program tutorials, although they aren't strictly necessary. The video tutorials at [Plethora Project](http://www.plethora-project.com/2011/09/12/processing-tutorials/) are also worth checking out. You'll also need to understand how interfaces and inheritance work; take a look at [this Java tutorial](http://docs.oracle.com/javase/tutorial/java/IandI/index.html) to learn the basics of the two topics.
 
 Finally, like the two books listed, we recommend laying out the structure of your program on paper before getting started, and building your program a single piece at a time. If possible, spend more time thinking about how your game should work than actually coding it. Trust us: it will save you a lot of frustration and time.
 
@@ -47,8 +47,6 @@ The template consists of four files: `template`, `TemplateBeing`, `TemplateInter
 	import hermes.animation.*;
 	import hermes.physics.*;
 	import hermes.postoffice.*;
-	import static hermes.HermesMath.*;
-	import static hermes.postoffice.POConstants.*;
 
 	///////////////////////////////////////////////////
 	// CONSTANTS
@@ -83,7 +81,7 @@ The template consists of four files: `template`, `TemplateBeing`, `TemplateInter
 	  currentWorld.draw();
 	}
 
-At the very top, you'll notice that Hermes is already imported, meaning you don't have to worry about importing the library into the sketch. You'll also notice two `import static` statements. These statements make it easy to access a number of helper functions and constants (which we'll discuss later), and while we recommend including them, they aren't strictly necessary. Next, several constants are defined. The first two simply define the size of the sketch. The next two define input and output ports, used for networking; we'll discuss Open Sound Control networking later in the `PostOffice` section. Then, a World variable `currentWorld` is defined.
+At the very top, you'll notice that Hermes is already imported, meaning you don't have to worry about importing the library into the sketch. Next, several constants are defined. The first two simply define the size of the sketch. The next two define input and output ports, used for networking; we'll discuss Open Sound Control networking later in the `PostOffice` section. Then, a World variable `currentWorld` is defined.
 
 The `setup` function starts by calling size, as usual. Then, `Hermes.setPApplet(this);` is called; this call is required to give Hermes access to Processing's internals, allowing Hermes to operate at full power. Finally, a `TemplateWorld` is constructed, saved as `currentWorld`, and started. The draw function only has a single line: `world.draw()`. To understand what these two functions are doing, let's learn about the `World`.
 

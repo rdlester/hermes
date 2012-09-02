@@ -147,7 +147,6 @@ public class World extends Thread {
 	 *   its <code>update</code> method will be called by the loop if update is true.
 	 * @param being		the being to register
 	 * @param update	whether or not to update the being during the update loop
-	 * @return 			the registered being
 	 */
 	public void register(Being being, boolean update) {
 		assert being != null : "World.register: being must be valid.";
