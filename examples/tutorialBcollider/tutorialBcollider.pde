@@ -9,8 +9,6 @@ import hermes.hshape.*;
 import hermes.animation.*;
 import hermes.physics.*;
 import hermes.postoffice.*;
-import static hermes.HermesMath.*;
-import static hermes.postoffice.POConstants.*;
 
 ///////////////////////////////////////////////////
 // CONSTANTS
