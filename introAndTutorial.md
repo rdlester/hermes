@@ -81,7 +81,10 @@ The template consists of four files: `template`, `TemplateBeing`, `TemplateInter
 	  currentWorld.draw();
 	}
 
-At the very top, you'll notice that Hermes is already imported, meaning you don't have to worry about importing the library into the sketch. Next, several constants are defined. The first two simply define the size of the sketch. The next two define input and output ports, used for networking; we'll discuss Open Sound Control networking later in the `PostOffice` section. Then, a World variable `currentWorld` is defined.
+At the very top, you'll notice that Hermes is already imported, meaning you don't have to worry about importing the library
+into the sketch. Next, several constants are defined. The first two simply define the size of the sketch. The next two define
+input and output ports, used for networking; we'll discuss Open Sound Control networking later in the `PostOffice` section.
+Then, a World variable `currentWorld` is defined.
 
 The `setup` function starts by calling size, as usual. Then, `Hermes.setPApplet(this);` is called; this call is required to give Hermes access to Processing's internals, allowing Hermes to operate at full power. Finally, a `TemplateWorld` is constructed, saved as `currentWorld`, and started. The draw function only has a single line: `world.draw()`. To understand what these two functions are doing, let's learn about the `World`.
 
@@ -371,5 +374,9 @@ In fact, you can code the same interaction with even less work. Since collision 
 The Post Office / User Input
 ----------------------------
 
-While the topics we've covered so far allow you to create a fully self-sufficient universe that runs on its own, we still haven't discussed how to add one last essential ingredient to a game: interaction. Games need to provide the player a meaningful set of interactions they can use to alter the universe. In Hermes, user input and interaction is handled with the `PostOffice`.
+While the topics we've covered so far allow you to create a fully self-sufficient universe that runs on its own, we still haven't discussed how to add one last essential ingredient to a game: interaction. Games need to provide the player a meaningful set of interactions they can use to alter the universe. In Hermes, user input and interaction is handled with the `PostOffice`, which manages interaction between the game World and the real world.
+
+The PostOffice collects three types of messages. The first two are types familiar to anyone who's used a computer: mouse and keyboard. The last type is OSC, which are messages sent over a network using the simple [Open Sound Control protocol](http://opensoundcontrol.org/introduction-osc). For the purposes of this tutorial, we'll stick to mouse and keyboard messages.
+
+Why do you need to use the PostOffice instead of using the standard Processing keyboard and mouse methods? First, using the PostOffice allows you to reliably detect all keyboard and mouse messages, even ones that happen simultaneously, something that is rather difficult to do in Processing. Second (and more importantly), the PostOffice synchronizes with the rest of the World, ensuring that input messages are always processed at the same time during an update of the World. This prevents un-deterministic behavior caused by input from occurring in your game. So: don't use standard Processing input handling or your game might break!
 
