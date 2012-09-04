@@ -37,7 +37,7 @@ void setup() {
   background(0); 
   Hermes.setPApplet(this);
 
-  currentWorld = new TutorialWorld(1000);       
+  currentWorld = new TutorialWorld(int(random(500)));       
 
   //Important: don't forget to add setup to TemplateWorld!
 
@@ -46,10 +46,4 @@ void setup() {
 
 void draw() {
   currentWorld.draw();
-}
-
-void keyPressed() {
-  currentWorld.deactivate();
-  currentWorld = new TutorialWorld((int)random(1000));
-  currentWorld.start();
 }

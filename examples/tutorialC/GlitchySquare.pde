@@ -27,8 +27,6 @@ class GlitchySquare extends Being {
       _position.x += round(random(SHAKE_STEP * 2)) - SHAKE_STEP;
     } 
     else {
-      _c = color(119, 205, 231);
-      ;
       if (_up) {
         _position.y -= SHAKE_STEP;
       } 
@@ -61,6 +59,7 @@ class GlitchySquare extends Being {
   }
 
   public void useKey() {
+    _c = color(119, 205, 231);
     _keyOn = true;
   }
 
@@ -76,7 +75,7 @@ class GlitchySquare extends Being {
     return color(int(random(256)), int(random(256)), int(random(256)));
   }
 
-  public void handleKeyMessage(KeyMessage m) {
+  public void receive(KeyMessage m) {
     int code = m.getKeyCode();
     if (m.isPressed()) {
       if (code == POConstants.UP) {
@@ -108,8 +107,8 @@ class GlitchySquare extends Being {
     }
   }
 
-  public void handleMouseMessage(MouseMessage m) {
-    currentWorld.deleteFromGroups(this);
+  public void receive(MouseMessage m) {
+    currentWorld.delete(this);
   }
 }
 

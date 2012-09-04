@@ -13,19 +13,10 @@ class TutorialWorld extends World {
   void setup() {
     GlitchyGroup g = new GlitchyGroup(this);
     register(g);
+    subscribe(g, POConstants.A);
     
     for (int i = 0; i < _squareNum; i++) {
-      int x = (int) random(WINDOW_WIDTH - 50);
-      int y = (int) random(WINDOW_HEIGHT - 50);
-      GlitchySquare s = new GlitchySquare(x,y);
-      s.useKey();
-      register(s);
-      subscribe(s, POConstants.UP);
-      subscribe(s, POConstants.RIGHT);
-      subscribe(s, POConstants.DOWN);
-      subscribe(s, POConstants.LEFT);
-      subscribe(s, POConstants.Button.LEFT, s.getShape());
-      g.add(s);
+      g.addSquare();
     }
     
     register(g,g,new SquareInteractor());
