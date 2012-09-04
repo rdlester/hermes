@@ -18,7 +18,7 @@ class RandomButton extends Being {
   /**
    * Tells canvas to randomize vector field on key press or mouse press
    */
-  void handleKeyMessage(KeyMessage m) {
+  void receive(KeyMessage m) {
     if(m.isPressed() && !_keyPressed) {
       _c.randomize();
       _keyPressed = true;
@@ -28,7 +28,7 @@ class RandomButton extends Being {
     }
   }
   
-  void handleMouseMessage(MouseMessage m) {
+  void receive(MouseMessage m) {
     _hover = true;
     if(m.getAction() == MOUSE_PRESSED) {
       _c.randomize();

@@ -64,14 +64,13 @@ public class OptimizerTest {
 	
 	@Test
 	public void test_SelfInteractionOptimizer() {
-		Hermes.setPApplet(new PApplet());
 		World world = new World(new PostOffice(), new HCamera());
 		Group<OptTestBeing> group = new Group<OptTestBeing>(world);
 		for(int i = 0; i < 100; i++) {
 			group.add(new OptTestBeing());
 		}
 		world.update();
-		world.registerInteraction(group, group, new OptTestInter(), 
+		world.register(group, group, new OptTestInter(), 
 				new SelfInteractionOptimizer<OptTestBeing>());
 		world.update();
 		for(OptTestBeing element : group.getObjects()) {
@@ -88,7 +87,7 @@ public class OptimizerTest {
 			group.add(new OptTestBeing());
 		}
 		world.update();
-		world.registerInteraction(group, group, new OptTestInter());
+		world.register(group, group, new OptTestInter());
 		long time = System.nanoTime();
 		world.update();
 		long elapsed = System.nanoTime() - time;
@@ -96,7 +95,7 @@ public class OptimizerTest {
 		
 		world = new World(new PostOffice(), new HCamera());
 		group.setWorld(world);
-		world.registerInteraction(group, group, new OptTestInter(),
+		world.register(group, group, new OptTestInter(),
 				new SelfInteractionOptimizer<OptTestBeing>());
 		time = System.nanoTime();
 		world.update();

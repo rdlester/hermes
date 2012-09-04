@@ -19,7 +19,7 @@ abstract class Tool extends MassedBeing {
 
   int getToolCode() {return _toolCode;}
   
-  void handleMouseMessage(MouseMessage m) {
+  void receive(MouseMessage m) {
    //note:assumes clicked in own cell 
    selectedTool = this;
   }
@@ -64,7 +64,7 @@ abstract class Tool extends MassedBeing {
  * Handles key messages changing the elasticity of a tool
  */
 class SelectedToolAttributeSwitcher implements KeySubscriber {
-  void handleKeyMessage(KeyMessage m) {
+  void receive(KeyMessage m) {
     if(selectedTool!=null) {
       
       if(m.getKeyChar()=='e') {      //if 'e', change elasticity

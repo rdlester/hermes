@@ -5,8 +5,8 @@ package hermes.postoffice;
  */
 public interface KeySubscriber {
 	/**
-	 * Receives and handles Osc message sent to object by PostOffice.
+	 * Receives and handles Key message sent to object by PostOffice.
 	 * @param m	the message sent by the PostOffice
 	 */
-	public void handleKeyMessage(KeyMessage m);
+	public void receive(KeyMessage m);
 }

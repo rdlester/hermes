@@ -6,7 +6,7 @@ class ShotGroup extends Group<Shot> {
 
   float initialTravel;
 
-  void handleOscMessage(OscMessage message) {
+  void receive(OscMessage message) {
     String[] msgSplit = message.getAddress().split("/");
 
     if (msgSplit[1].equals(SYSTEM_NAME)) {

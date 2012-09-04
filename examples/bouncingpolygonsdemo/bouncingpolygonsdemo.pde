@@ -1,6 +1,13 @@
 /*
-* This version has the "slingshot" look and a bounding box internal collisions
+* Physics demo:
+* Click and release mouse to create polygon
+* Drag to give polygon velocity
 *
+* OSC demo:
+* Open 'oscControl.pd' in puredata
+* Click the button attached to the 'connect' message
+* While this sketch is running,
+* use sliders to create polygons of different shapes and sizes
 */
 
 //import src.template.library.*;

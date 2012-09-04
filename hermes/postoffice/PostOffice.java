@@ -317,26 +317,30 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
  	 * @return      true if subscriber was present and removed, false otherwise
  	 */
  	 public boolean removeOSCSubscriptions(KeySubscriber sub) {
- 	   if(_oscSubs.containsValue(sub)) {
-  	    // Find key-value pairs containing sub
-  	    Set<Map.Entry<String, OscSubscriber>> all = _oscSubs.entries();
-  	    Set<Map.Entry<String, OscSubscriber>> toRemove = new HashSet<Map.Entry<String, OscSubscriber>>();
-  	    for(Iterator<Map.Entry<String, OscSubscriber>> iter = all.iterator(); iter.hasNext(); ) {
-  	      Map.Entry<String, OscSubscriber> next = iter.next();
-  	      if(next.getValue() == sub) {
-  	        toRemove.add(next);
-  	      }
-  	    }
+ 	   if(_onOSC) {
+ 	     if(_oscSubs.containsValue(sub)) {
+  	       // Find key-value pairs containing sub
+  	       Set<Map.Entry<String, OscSubscriber>> all = _oscSubs.entries();
+  	       Set<Map.Entry<String, OscSubscriber>> toRemove = new HashSet<Map.Entry<String, OscSubscriber>>();
+  	       for(Iterator<Map.Entry<String, OscSubscriber>> iter = all.iterator(); iter.hasNext(); ) {
+  	         Map.Entry<String, OscSubscriber> next = iter.next();
+  	         if(next.getValue() == sub) {
+  	           toRemove.add(next);
+  	         }
+  	       }
 
-  	    // Remove references
-  	    for(Iterator<Map.Entry<String, OscSubscriber>> iter = toRemove.iterator(); iter.hasNext(); ) {
-  	      Map.Entry<String, OscSubscriber> next = iter.next();
-  	      _oscSubs.remove(next.getKey(), next.getValue());
-  	    }
-  	    return true;
-  	  } else {
-  	    return false;
-  	  }
+  	       // Remove references
+  	       for(Iterator<Map.Entry<String, OscSubscriber>> iter = toRemove.iterator(); iter.hasNext(); ) {
+  	         Map.Entry<String, OscSubscriber> next = iter.next();
+  	         _oscSubs.remove(next.getKey(), next.getValue());
+  	       }
+  	       return true;
+  	     } else {
+  	       return false;
+  	     }
+ 	   } else {
+ 	     return false;
+ 	   }
  	 }
  	 
  	 /**
@@ -521,7 +525,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				}
 				Set<KeySubscriber> subs = _keySubs.get(key);
 				for(KeySubscriber sub : subs) {
-					sub.handleKeyMessage(m);
+					sub.receive(m);
 				}
 			}
 		}
@@ -535,7 +539,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				for(Pair<?, ?> p : subs) {
 				   HShape region = (HShape) p.getSecond();
 					if(region == null || region.contains(m.getX(), m.getY()))
-						((MouseSubscriber) p.getFirst()).handleMouseMessage(m);
+						((MouseSubscriber) p.getFirst()).receive(m);
 				}
 			}
 		}
@@ -543,7 +547,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 			while(!_mouseWheelQueue.isEmpty()) {
 				MouseWheelMessage m = _mouseWheelQueue.poll();
 				for(MouseWheelSubscriber sub : _mouseWheelSubs) {
-					sub.handleMouseWheelMessage(m);
+					sub.receive(m);
 				}
 			}
 		}
@@ -557,7 +561,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 					Set<OscSubscriber> subs = _oscSubs.get(address);
 
 					for(OscSubscriber sub : subs) {
-						sub.handleOscMessage(m);
+						sub.receive(m);
 					}
 				}
 			}

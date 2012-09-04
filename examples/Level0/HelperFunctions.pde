@@ -11,11 +11,11 @@ void setMode(int newMode) {
       bubbleGroup.destroy();
     }
     if(ball!=null) {     //delete the ball
-      world.deleteFromGroups(ball);
+      world.delete(ball);
       ball = null;
     }
     if(goal!=null) { // delete the goal
-      world.deleteFromGroups(goal);
+      world.delete(goal);
       goal = null;
     }
   } else if(newMode == RUN) {
@@ -32,7 +32,7 @@ void setMode(int newMode) {
   } else if(newMode == COMPLETED) {
     //TODO: fill in 
     if(ball!=null) {
-      world.deleteFromGroups(ball);
+      world.delete(ball);
       ball = null; 
     }
   }

@@ -6,15 +6,13 @@ class Other extends Actor {
 
   Other(float x, float y, float bodyWidth, float bodyHeight, AnimatedSprite animatedSprite) {
     super(x, y, bodyWidth, bodyHeight, animatedSprite);
-    
-    parentGroup = 
   }
 
   void update() {
     setX(getX() - (howManyPixelsToTravel * otherTravelMultiplier));
 
     if (getX() + bodyWidth < 0) {
-      world.deleteFromGroups(this);
+      world.delete(this);
     }
   }
 }

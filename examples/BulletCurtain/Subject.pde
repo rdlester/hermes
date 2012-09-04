@@ -11,7 +11,7 @@ class Subject extends Actor {
   }
 
 
-  void handleOscMessage(OscMessage message) {
+  void receive(OscMessage message) {
 
     String[] msgSplit = message.getAddress().split("/");
 

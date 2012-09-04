@@ -8,5 +8,5 @@ public interface MouseSubscriber {
      * Receives and handles Mouse message sent to object by PostOffice.
      * @param m	the message sent by the PostOffice
      */
-	public void handleMouseMessage(MouseMessage m);
+	public void receive(MouseMessage m);
 }

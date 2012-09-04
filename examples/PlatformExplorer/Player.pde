@@ -51,7 +51,7 @@ class Player extends MassedBeing {
       sprite.pause();
   }
   
-  void handleKeyMessage(KeyMessage m) {
+  void receive(KeyMessage m) {
     int nKey = m.getKeyCode();
     if(m.isPressed()) { // the player's movement is controlled by w/a/s/d or the arrows
       if(nKey == POConstants.D || nKey == POConstants.RIGHT) {
