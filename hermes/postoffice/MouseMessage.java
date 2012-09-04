@@ -1,12 +1,14 @@
 package hermes.postoffice;
 
+import processing.core.PVector;
+
 /**
  * Message representing mouse actions.
  * <p>
  * Type of MouseMessage determined by the button pressed.
  * <p>
  * Subscription to a mouse button gets you press, release, and drag events;
- * subscription to nobutton gets you mouse moved events.
+ * subscription to POConstants.Button.NO gets you mouse moved messages.
  */
 public class MouseMessage implements Message {
 
@@ -34,17 +36,17 @@ public class MouseMessage implements Message {
 	
 	/**
 	 * Gets the button pressed on the mouse.
-	 * Use BUTTON1, BUTTON2, BUTTON3 constants defined in POConstants
+	 * Use constants defined in POConstants.Button
 	 * to figure out what button has been pressed
-	 * @return      int corresponding to button, use LEFT_BUTTON, MIDDLE_BUTTON, RIGHT_BUTTON and NO_BUTTON constants in POConstants to determine which button has been pressed
+	 * @return      button type, compare against POConstants.Button
 	 */
 	public POConstants.Button getButton() {
 		return _buttonClicked;
 	}
 	/**
-	 * Gets the action designated by the event.
+	 * Gets the action designated by the message.
 	 * Use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED
-	 * to determined actions.
+	 * from POConstants to determined actions.
 	 * @return      int corresponding to action, use MOUSE_PRESSED, MOUSE_RELEASED, MOUSE_DRAGGED, and MOUSE_MOVED constants in PostOffice to determine which action has been committed
 	 */
 	public int getAction() {
@@ -52,7 +54,7 @@ public class MouseMessage implements Message {
 	}
 	
 	/**
-	 * Gets the x location of the mouse sending this message.
+	 * Gets the x location of the mouse
 	 * @return      int corresponding to x location
 	 */
 	public int getX() {
@@ -60,11 +62,19 @@ public class MouseMessage implements Message {
 	}
 	
 	/**
-	 * Gets the y location of the mouse sending this message.
+	 * Gets the y location of the mouse
 	 * @return      int corresponding to y location
 	 */
 	public int getY() {
 		return _y;
+	}
+	
+	/**
+	 * Gets position of mouse as PVector
+	 * @return		PVector w/ x,y coordinates
+	 */
+	public PVector getPosition() {
+		return new PVector(_x, _y);
 	}
 	
 	/**

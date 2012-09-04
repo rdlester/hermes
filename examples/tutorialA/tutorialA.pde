@@ -47,9 +47,3 @@ void setup() {
 void draw() {
   currentWorld.draw();
 }
-
-void keyPressed() {
-  currentWorld.deactivate();
-  currentWorld = new TutorialWorld((int)random(1000));
-  currentWorld.start();
-}

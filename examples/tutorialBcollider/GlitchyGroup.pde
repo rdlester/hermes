@@ -17,4 +17,12 @@ class GlitchyGroup extends Group<GlitchySquare> {
   private color pickColor() {
     return color(int(random(256)), int(random(256)), int(random(256)));
   }
+  
+  public void addSquare() {
+    int x = (int) random(WINDOW_WIDTH - 50);
+    int y = (int) random(WINDOW_HEIGHT - 50);
+    GlitchySquare s = new GlitchySquare(x, y);
+    _world.register(s);
+    this.add(s);
+  }
 }

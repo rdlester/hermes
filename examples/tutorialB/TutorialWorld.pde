@@ -15,11 +15,7 @@ class TutorialWorld extends World {
     register(g);
     
     for (int i = 0; i < _squareNum; i++) {
-      int x = (int) random(WINDOW_WIDTH - 50);
-      int y = (int) random(WINDOW_HEIGHT - 50);
-      GlitchySquare s = new GlitchySquare(x,y);
-      register(s);
-      g.add(s);
+      g.addSquare();
     }
     
     register(g,g,new SquareInteractor());
