@@ -179,7 +179,7 @@ public class World extends Thread {
 	 * @param object		the object to remove
 	 * @param group			the group to add the object to
 	 */
-	public void removeFromGroup(HObject object, GenericGroup<?,?> group) {
+	public void remove(HObject object, GenericGroup<?,?> group) {
 		_removeQueue.addLast(new Pair<HObject,GenericGroup<?,?>>(object, group));
 	}
 	
@@ -187,7 +187,7 @@ public class World extends Thread {
 	 * Queues an HObject to be removed from all of the groups it is in at the end of the current update.
 	 * @param object	the object to delete
 	 */
-	public void deleteFromGroups(HObject object) {
+	public void delete(HObject object) {
 		_removeFromAllGroupsQueue.addLast(object);
 	}
 	

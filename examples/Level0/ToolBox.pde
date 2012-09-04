@@ -73,7 +73,7 @@ class ToolBox extends Being {
   /**
    * Handles a mousemessage within the toolbox boundaries
    */
-  void handleMouseMessage(MouseMessage m) {
+  void receive(MouseMessage m) {
     //checks if it was a mouse pressed
     if(m.getAction() == MOUSE_PRESSED && mode == BUILD) {
       //erase selection regardless of click location
@@ -90,7 +90,7 @@ class ToolBox extends Being {
       // if that cell contains a tool, set templateTool to that tool
       if(_grid[i][j].hasTool()) {
         templateTool = _grid[i][j].getTool();
-        templateTool.handleMouseMessage(m);
+        templateTool.receive(m);
         //instantiate dragTool
         dragTool = makeTool(templateTool.getToolCode(), new PVector(m.getX(), m.getY()),
                                 templateTool.getRotation(), templateTool.getElasticity());
@@ -111,7 +111,7 @@ class ToolBox extends Being {
                 && !canvas.getShape().contains(m.getX(),m.getY())) {
       //check if you are currently dragging a tool
       if(dragTool!=null) {
-        world.deleteFromGroups(dragTool); //delete the tool
+        world.delete(dragTool); //delete the tool
         dragTool = null;
       }
     } else {

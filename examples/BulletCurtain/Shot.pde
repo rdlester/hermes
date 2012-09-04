@@ -17,7 +17,7 @@ class Shot extends Being {
 
     //if the shot has traveled offscreen, delete it from the groups
     if (getX() > width) {
-      world.deleteFromGroups(this);
+      world.delete(this);
     }
   }
 

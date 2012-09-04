@@ -17,7 +17,7 @@ class RunButton extends Being {
   /**
    * Switches run mode on key press or mouse press
    */
-  void handleKeyMessage(KeyMessage m) {
+  void receive(KeyMessage m) {
     if(m.isPressed() && !_keyPressed) {
       if(mode == BUILD) {
         setMode(RUN);
@@ -32,7 +32,7 @@ class RunButton extends Being {
     }
   }
   
-  void handleMouseMessage(MouseMessage m) {
+  void receive(MouseMessage m) {
     _hover = true;
     if(m.getAction() == MOUSE_PRESSED) {
       //switch modes

@@ -49,7 +49,7 @@ public class worldTest {
 			if(updated1.size() == nUpdates) {
 				trial1Success = true;
 			}
-			this.deActivate();
+			this.deactivate();
 		}
 	}
 	
@@ -194,10 +194,10 @@ public class worldTest {
 		TestBeing1 b2 = new TestBeing1();
 		TestBeing1 b3 = new TestBeing1();
 		TestBeing1 b4 = new TestBeing1();
-		tw1.registerBeing(b1, true);
-		tw1.registerBeing(b2, false);
-		tw1.registerBeing(b3, true);
-		tw1.registerBeing(b4, true);
+		tw1.register(b1, true);
+		tw1.register(b2, false);
+		tw1.register(b3, true);
+		tw1.register(b4, true);
 		tw1.start();
 		while(tw1.isAlive()) {}
 		assertTrue(trial1Success);
@@ -216,7 +216,7 @@ public class worldTest {
 		assertTrue(tw2.preUpdated);
 		assertTrue(tw2.postUpdated);
 		assertTrue(tw2.isActive());
-		tw2.deActivate();
+		tw2.deactivate();
 		Hermes.unsafeSleep(100);
 		assertFalse(tw2.isActive());
 		assertTrue(tw2.shutdownCalled);
@@ -241,7 +241,7 @@ public class worldTest {
 		Group<Being> g2 = new Group<Being>(w);
 		g1.add(tb1);
 		g2.add(tb1);
-		w.deleteFromGroups(tb1);
+		w.delete(tb1);
 		assertFalse(g1.getObjects().contains(tb1));
 		assertFalse(g2.getObjects().contains(tb1));
 		
@@ -252,7 +252,7 @@ public class worldTest {
 		World w = new World(new PostOffice(), new HCamera());
 		TestBeing2 b1 = new TestBeing2();
 		TestBeing2 b2 = new TestBeing2();
-		w.registerInteraction(b1, b2, new TestInteractor1());
+		w.register(b1, b2, new TestInteractor1());
 		w.update();
 		w.update();
 		assertTrue(b1.interacted);
@@ -260,7 +260,7 @@ public class worldTest {
 		w = new World(new PostOffice(), new HCamera());
 		b1 = new TestBeing2();
 		b2 = new TestBeing2();
-		w.registerInteraction(b1, b2, new TestInteractor1());
+		w.register(b1, b2, new TestInteractor1());
 		w.update();
 		w.update();
 		assertTrue(b1.interacted);
@@ -268,7 +268,7 @@ public class worldTest {
 		w = new World(new PostOffice(), new HCamera());
 		b1 = new TestBeing2();
 		b2 = new TestBeing2();
-		w.registerInteraction(b1, b2, new TestInteractor2());
+		w.register(b1, b2, new TestInteractor2());
 		w.update();
 		w.update();
 		assertFalse(b1.interacted);
@@ -289,8 +289,8 @@ public class worldTest {
 		g2.add(beings[5] = new TestBeing3(3,5));
 		g2.add(beings[6] = new TestBeing3(4,6));
 		for(int i = 0; i < beings.length; i++)
-			w.registerBeing(beings[i], true);
-		w.registerInteraction(g1, g2, new MultisampleTestInteractor());
+			w.register(beings[i], true);
+		w.register(g1, g2, new MultisampleTestInteractor());
 		System.out.println("multisample test");
 		w.resolveGroupQueues();
 		w.update();

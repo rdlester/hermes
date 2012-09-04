@@ -84,25 +84,25 @@ public abstract class HObject implements KeySubscriber, MouseSubscriber, MouseWh
 	/**
 	 * Override if you want your <code>Being</code> to handle Key messages
 	 */
-	public void handleKeyMessage(KeyMessage m) {
+	public void receive(KeyMessage m) {
 		//VOID
 	}
 	/**
 	 * Override if you want your <code>Being</code> to handle Mouse messages
 	 */
-	public void handleMouseMessage(MouseMessage m) {
+	public void receive(MouseMessage m) {
 		//VOID
 	}
 	/**
 	 * Override if you want your <code>Being</code> to handle Mouse Wheel messages
 	 */
-	public void handleMouseWheelMessage(MouseWheelMessage m) {
+	public void receive(MouseWheelMessage m) {
 		//VOID
 	}
 	/**
 	 * Override if you want your <code>Being</code> to handle OSC messages
 	 */
-	public void handleOscMessage(OscMessage m) {
+	public void receive(OscMessage m) {
 		//VOID
 	}
 }

@@ -14,7 +14,7 @@ class BallGroup extends Group<Ball> {
   }
 
   //Updates ball creation mode depending on key press
-	void handleKeyMessage(KeyMessage m) {
+	void receive(KeyMessage m) {
 		int key = m.getKeyCode();
 		switch(key) {
 			case POLY_KEY:
@@ -33,7 +33,7 @@ class BallGroup extends Group<Ball> {
 	}
 
   //Handles mouse messages for line drawing and ball creation
-	void handleMouseMessage(MouseMessage m) {
+	void receive(MouseMessage m) {
 		int action = m.getAction();
 		switch(action) {
 			case MOUSE_PRESSED: //Register mouse press and initialize variables
@@ -74,7 +74,7 @@ class BallGroup extends Group<Ball> {
 	}
   
   //Updates variables influencing ball creation
-	void handleOscMessage(OscMessage m) {
+	void receive(OscMessage m) {
 		String[] messages = m.getAddress().split("/");
 		if(messages[1].equals("BouncingBalls")) {
 			if(messages[2].equals("SetMass")) {

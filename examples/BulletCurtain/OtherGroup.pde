@@ -21,7 +21,7 @@ class OtherGroup extends Group<Other> {
     spawnY = height/2 - bodyHeight/2;
   }
 
-  void handleOscMessage(OscMessage message) {
+  void receive(OscMessage message) {
     String[] msgSplit = message.getAddress().split("/");
 
     if (msgSplit[1].equals(SYSTEM_NAME)) {

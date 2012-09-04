@@ -85,7 +85,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	 * @return			the removed object
 	 */
 	public A remove(A object) {
-		_world.removeFromGroup(object, this);
+		_world.remove(object, this);
 		if(hasNeedsMoreSamples() && object.needsMoreSamples()) {
 			_needsMoreSamples.remove(object);
 		}
@@ -113,7 +113,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 			if(hasNeedsMoreSamples() && object.needsMoreSamples()) {
 				_needsMoreSamples.remove(object);
 			}
-			_world.removeFromGroup(object, this);
+			_world.remove(object, this);
 		}
 	}
 	
@@ -123,7 +123,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	 */
 	public void clear() {
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ){
-			_world.removeFromGroup(iter.next(), this);
+			_world.remove(iter.next(), this);
 		}
 		_needsMoreSamples.clear();
 	}
@@ -136,7 +136,7 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	 */
 	public void destroy() {
 		for(Iterator<A> iter = iterator(); iter.hasNext(); ) {
-			_world.deleteFromGroups(iter.next());
+			_world.delete(iter.next());
 		}
 		_needsMoreSamples.clear();
 	}
@@ -188,25 +188,25 @@ public class GenericGroup<A extends HObject, B extends Collection<A>>
 	/**
 	 * Override if you want your group to handle Key messages
 	 */
-	public void handleKeyMessage(KeyMessage m) {
+	public void receive(KeyMessage m) {
 		//VOID
 	}
 	/**
 	 * Override if you want your group to handle Mouse messages
 	 */
-	public void handleMouseMessage(MouseMessage m) {
+	public void receive(MouseMessage m) {
 		//VOID
 	}
 	/**
 	 * Override if you want your group to handle Mouse Wheel messages
 	 */
-	public void handleMouseWheelMessage(MouseWheelMessage m) {
+	public void receive(MouseWheelMessage m) {
 		//VOID
 	}
 	/**
 	 * Override if you want your group to handle OSC messages
 	 */
-	public void handleOscMessage(OscMessage m) {
+	public void receive(OscMessage m) {
 		//VOID
 	}
 	

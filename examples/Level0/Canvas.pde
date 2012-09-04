@@ -137,7 +137,7 @@ class Canvas extends MassedBeing {
   /**
    * If the user has selected a tool, place the tool in the location of the mouse
    */
-  void handleMouseMessage(MouseMessage m) {
+  void receive(MouseMessage m) {
     int x = m.getX();
     int y = m.getY();
     x -= canvasLeftX;
@@ -172,7 +172,7 @@ class Canvas extends MassedBeing {
           if(in.hasTool()) {
             Tool toRemove = in.getTool();
             in.setTool(null);
-            world.deleteFromGroups(toRemove);
+            world.delete(toRemove);
           }
           dragTool.setPosition(new PVector(canvasLeftX+(i*cellSideLength)+cellSideLength/2, containerTopY+(j*cellSideLength)+cellSideLength/2));//////
           in.setTool(dragTool);
@@ -182,7 +182,7 @@ class Canvas extends MassedBeing {
           //TODO how to account for multi-cell objects? What about the baton (which doesn't actually take up a cell?)
         } else { // trying to drag into prohibited cell
           if(dragIniti<0 && dragInitj<0) { //from toolbox
-            world.deleteFromGroups(dragTool);//delete the tool
+            world.delete(dragTool);//delete the tool
             dragTool = null;
             dragIniti = -1;
             dragInitj = -1;
@@ -217,7 +217,7 @@ class Canvas extends MassedBeing {
         if(in.hasTool()) {
           Tool toRemove = in.getTool();
           in.setTool(null);
-          world.deleteFromGroups(toRemove);
+          world.delete(toRemove);
         }
         Tool newTool = makeTool(templateTool.getToolCode(), new PVector(canvasLeftX+i*cellSideLength+cellSideLength/2, containerTopY+j*cellSideLength+cellSideLength/2),
                                 templateTool.getRotation(), templateTool.getElasticity());
