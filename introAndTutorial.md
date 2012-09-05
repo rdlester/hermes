@@ -263,13 +263,25 @@ Now, create a new file by clicking the arrow at the right of the tab bar in Proc
 	  private color pickColor() {
 	    return color(int(random(256)), int(random(256)), int(random(256)));
 	  }
+	  
+	  public void addSquare() {
+	    int x = (int) random(WINDOW_WIDTH - 50);
+	    int y = (int) random(WINDOW_HEIGHT - 50);
+	    GlitchySquare s = new GlitchySquare(x, y);
+	    _world.register(s);
+	    add(s);
+	  }
 	}
 
 This is a basic Group. Again, our new `GlitchyGroup` is a subclass of `Group`; but what is `<GlitchySquare>` doing there? This part defines the type of `Being`s that will go into the `Group`. Since our Group will have `GlitchySquare`s and only `GlitchySquare`s, we put `GlitchySquares` between the brackets to tell the Group to expect these Squares. If we had a Group consisting of all kinds of different `Being`s, we'd just write `Being`.  For those of you who have worked with ArrayLists or other Java collections before, this behaves the same as it does there.
 
 Our constructor takes a World and passes it to the super. This is required for the Group to function.
 
-Now, we get to the interesting stuff. In `update`, we start by picking a color, then iterate through the objects in the group and set their color to our newly chosen one. Below, `pickColor` is simply a copy of `pickColor` in `GlitchySquare`. 
+Now, we get to the interesting stuff. In `update`, we start by picking a color, then iterate through the objects in the group and set their color to our newly chosen one. Below, `pickColor` is simply a copy of `pickColor` in `GlitchySquare`.
+
+The last function, `addSquare`, is responsible for adding `GlitchySquare`s to the group. This code is largely the same as the `World` `setup` function of the first example, with a few slight modifications. `_world` is a reference to the `World` the `Group` belongs to, passed in to the constructor. Since this code is no longer within a `World`, we have to call `_world.register()` instead of just `register`. Similarly, `g.add(s)` now becomes `g.add()`.
+
+Why move this code from the `World` into the `Group`? It's good design. Keeping the `addSquare` function around makes it easy to create new squares after the game has started. Additionally, if you require two `Group`s of the same `GlitchySquare`s to behave differently, you can simply write two different kinds of `Group` subclasses and alter the `update` and `addSquare` functions to specify the different behaviors. In this case, the class `GlitchySquare` will simply contain all the possible functionality and behavior a Square can potentially exhibit and use. Separating the `Being`'s functionality from the `Group`'s behavior makes it easier to add more `Group`s and add new behaviors.
 
 So, how do we get our Squares into the `Group`? We'll have to make a few changes to the `setup` of our `World`. It should now look like:
 
@@ -278,15 +290,11 @@ So, how do we get our Squares into the `Group`? We'll have to make a few changes
 	    register(g);
     
 	    for (int i = 0; i < SQUARE_NUM; i++) {
-	      int x = (int) random(WINDOW_WIDTH - 50);
-	      int y = (int) random(WINDOW_HEIGHT - 50);
-	      GlitchySquare s = new GlitchySquare(x,y);
-	      register(s);
-	      g.add(s);
+	      g.addSquare();
 		}
 	}
 
-We first construct the `Group`, passing it `this` to provide it with a reference to the containing `World`, then register it with the World. In our loop, we now save the GlitchySquare as a variable before registering it; we then add it to the `Group`. Simple enough. Once you've made the changes, hit run. The squares should all be the same color, yet still move independently, creating a morphing blob of glitchiness in the PApplet.
+We first construct the `Group`, passing it `this` to provide it with a reference to the containing `World`, then register it with the World. In the loop, we just call the `Group`'s `addSquare` function. Simple enough. Once you've made the changes, hit run. The squares should all be the same color, yet still move independently, creating a morphing blob of glitchiness in the PApplet.
 
 Interactors
 ------------
@@ -367,7 +375,11 @@ In `detect`, we first get the shape of the first `Being`, using `getShape`, then
 
 In `handle`, we tell both `Being`s to draw a border the next time they draw.
 
-To put our `Interactor` into action, we still need to register it with the `World`. Luckily, this is done with a single line, which you should add at the end of the `World`'s `setup`: `register(g,g,new SquareInteractor());`. Recall that `g` is the `Group` of squares; this line tells the `World` to interact all squares in the `Group` with every other square. That's it. Hit run (but first change `SQUARE_NUM` to be something small so squares aren't colliding with one another all the time). It works!
+To put our `Interactor` into action, we still need to register it with the `World`. Luckily, this is done with a single line, which you should add at the end of the `World`'s `setup`:
+
+	`register(g,g,new SquareInteractor());`
+	
+Recall that `g` is the `Group` of squares; this line tells the `World` to interact all squares in the `Group` with every other square. That's it. Hit run (but first change `SQUARE_NUM` to be something small so squares aren't colliding with one another all the time). It works!
 
 In fact, you can code the same interaction with even less work. Since collision is such a common condition for interactions, we've provided a helper class, `Collider`, that you can use to get the same results with less work. Instead of extending `Interactor`, just extend `Collider`; then leave out the `detect` function entirely (as that is already handled by `Collider`) and write the `handle` method as usual. The results are the same, with less boilerplate code. The adjusted demo is available in `tutorialBcollider`.
 
@@ -376,9 +388,64 @@ The Post Office / User Input
 
 While the topics we've covered so far allow you to create a fully self-sufficient universe that runs on its own, we still haven't discussed how to add one last essential ingredient to a game: interaction. Games need to provide the player a meaningful set of interactions they can use to alter the universe. In Hermes, user input and interaction is handled with the `PostOffice`, which manages interaction between the game World and the real world.
 
-The PostOffice collects three types of messages. The first two are types familiar to anyone who's used a computer: mouse and keyboard. The last type is OSC, which are messages sent over a network using the simple [Open Sound Control](http://opensoundcontrol.org/introduction-osc) protocol. For the purposes of this tutorial, we'll stick to mouse and keyboard messages. Then, once every update, the PostOffice dispatches all the messages it has collected on the World's signal. Your Beings can receive messages once they've "subscribed" to a message type.
+The PostOffice collects three types of messages. The first two are types familiar to anyone who's used a computer: mouse and keyboard. Tinsohe last type is OSC, which are messages sent over a network using the simple [Open Sound Control](http://opensoundcontrol.org/introduction-osc) protocol. For the purposes of this tutorial, we'll stick to mouse and keyboard messages. Then, once every update, the PostOffice dispatches all the messages it has collected on the World's signal. Your Beings can receive messages once they've "subscribed" to a message type.
 
-Why do you need to use the PostOffice instead of using the standard Processing keyboard and mouse methods? First, using the PostOffice allows you to reliably detect all keyboard and mouse messages, even ones that happen simultaneously, something that is rather difficult to do in Processing. Second (and more importantly), the PostOffice synchronizes with the rest of the World, ensuring that input messages are always processed at the same time during an update of the World. This prevents un-deterministic behavior caused by input from occurring in your game. So: don't use standard Processing input handling or your game might break!
+Why do you need to use the PostOffice instead of using the standard Processing keyboard and mouse methods? First, using the PostOffice allows you to reliably detect all keyboard and mouse messages, even ones that happen simultaneously, something that is rather difficult to do in Processing. Second (and more importantly), the PostOffice synchronizes with the rest of the World, ensuring that input messages are always processed at the same time during an update of the World. This prevents non-deterministic behavior caused by input timing from occurring in your game. So: don't use standard Processing input handling or your game might do weird things!
 
-With all this in mind, let's turn back to our demo World and make it interactive!
+With all this in mind, let's turn back to our demo World and make it interactive.
 
+First, we need to subscribe our Squares to Key and Mouse messages. Add the following lines to the end of `addSquare` in `GlitchyGroup`:
+
+	_world.subscribe(s, POConstants.UP);
+	_world.subscribe(s, POConstants.RIGHT);
+	_world.subscribe(s, POConstants.DOWN);
+	_world.subscribe(s, POConstants.LEFT);
+	_world.subscribe(s, POConstants.Button.LEFT);
+
+The `subscribe` function in `World` will tell the PostOffice to subscribe an object to the specified type of message. The first argument is always the subscriber. The next arguments specify the messages the subscriber requires using constants from `POConstants`. The first four lines of the example subscribe the Square to messages sent by the arrow keys on the Keyboard. The last line subscribes the Square to messages sent by left clicks on the Mouse. However, we don't want our Square to be notified of every left mouse click; the Square only needs to know when it is clicked on itself. We can ask the PostOffice to send location-dependent Mouse messages by altering this last line to:
+
+	_world.subscribe(s, POConstants.Button.LEFT, s.getShape());
+
+Now, the PostOffice will only notify the subscribing Square of left button clicks when the click happens on it.
+
+Now that the PostOffice is sending messages to the Squares, we need to tell the Squares what to do with the messages. Start by adding `_up`, `_right`, `_down`, and `_left` boolean variables to `GlitchySquare`, and set them all to `false` in the constructor. Now, add the following code to `GlichySquare`:
+
+	public void receive(KeyMessage m) {
+	  int code = m.getKeyCode();
+	  if (m.isPressed()) {
+	    if (code == POConstants.UP) {
+	      _up = true;
+	    } 
+	    else if (code == POConstants.RIGHT) {
+	      _right = true;
+	    } 
+	    else if (code == POConstants.DOWN) {
+	      _down = true;
+	    } 
+	    else if (code == POConstants.LEFT) {
+	      _left = true;
+	    }
+	  } 
+	  else {
+	    if (code == POConstants.UP) {
+	      _up = false;
+	    } 
+	    else if (code == POConstants.RIGHT) {
+	      _right = false;
+	    } 
+	    else if (code == POConstants.DOWN) {
+	      _down = false;
+	    } 
+	    else if (code == POConstants.LEFT) {
+	      _left = false;
+	    }
+	  }
+	}
+
+	public void receive(MouseMessage m) {
+	  currentWorld.delete(this);
+	}
+
+Subscribers receive messages through `receive` methods; all message handling should go in these. Each `receive` method handles one type of message: a KeyMessage, a MouseMessage, a MouseWheelMessage, or an OscMessage. This type is specified by the type of the parameter given as an argument to `receive`. Above, the first `receive` function handles KeyMessages and the second handles MouseMessages.
+
+In our KeyMessage handler, we start by obtaining the KeyCode from
