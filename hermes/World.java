@@ -5,7 +5,7 @@ import hermes.postoffice.KeySubscriber;
 import hermes.postoffice.MouseSubscriber;
 import hermes.postoffice.MouseWheelSubscriber;
 import hermes.postoffice.OscSubscriber;
-import hermes.postoffice.POConstants;
+import hermes.postoffice.POCodes;
 import hermes.postoffice.PostOffice;
 
 import java.util.Iterator;
@@ -325,7 +325,7 @@ public class World extends Thread {
 	 * @param sub		the MouseSubscriber signing up
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 */
-	public void subscribe(MouseSubscriber sub, POConstants.Button button) {
+	public void subscribe(MouseSubscriber sub, POCodes.Button button) {
 		_postOffice.subscribe(sub, button);
 	}
 	
@@ -336,7 +336,7 @@ public class World extends Thread {
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 * @param region	the region on screen the subscriber wants to limit its subscription to
 	 */
-    public void subscribe(MouseSubscriber sub, POConstants.Button button, HShape region) {
+    public void subscribe(MouseSubscriber sub, POCodes.Button button, HShape region) {
     	_postOffice.subscribe(sub, button, region);
     }
 	

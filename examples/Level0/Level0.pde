@@ -3,7 +3,7 @@ import hermes.animation.*;
 import hermes.hshape.*;
 import hermes.postoffice.*;
 import hermes.*;
-import static hermes.postoffice.POConstants.*;
+import static hermes.postoffice.POCodes.*;
 import java.util.LinkedList;
 
 /**

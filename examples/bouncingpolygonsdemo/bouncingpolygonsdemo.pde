@@ -1,7 +1,10 @@
 /*
 * Physics demo:
-* Click and release mouse to create polygon
+* Click and release mouse to create shapes
 * Drag to give polygon velocity
+* Use the '1', '2', and '3' keys to choose shape
+* '1' = Rectangle, '2' = Circle, '3' = Polygon
+* Use the 'd' key to delete shapes
 *
 * OSC demo:
 * Open 'oscControl.pd' in puredata
@@ -18,7 +21,7 @@ import hermes.physics.*;
 import hermes.postoffice.*;
 import java.util.Random;
 import static hermes.HermesMath.*;
-import static hermes.postoffice.POConstants.*;
+import static hermes.postoffice.POCodes.*;
 
 //////////////
 // Constants
@@ -52,11 +55,11 @@ static final int ballSize = 25; //Size of ball, scaled by ball mass
 //Used for creating different shapes
 static int mode = 0; //Mode dictating which type of ball will get created
 static final int POLY_MODE = 0;
-static final int POLY_KEY = VK_1;
+static final int POLY_KEY = Key.VK_1;
 static final int CIRCLE_MODE = 1;
-static final int CIRCLE_KEY = VK_2;
+static final int CIRCLE_KEY = Key.VK_2;
 static final int RECT_MODE = 2;
-static final int RECT_KEY = VK_3;
+static final int RECT_KEY = Key.VK_3;
 static final int DELETE_KEY = D;
 
 void setup() {
