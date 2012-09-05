@@ -16,14 +16,14 @@ class PlatformWorld extends World {
     player = new Player(0, 60);
     println("player created");
     world.register(player, true);
-    po.subscribe(player, POConstants.W);
-    po.subscribe(player, POConstants.A);
-    po.subscribe(player, POConstants.S);
-    po.subscribe(player, POConstants.D);
-    po.subscribe(player, POConstants.UP);
-    po.subscribe(player, POConstants.DOWN);
-    po.subscribe(player, POConstants.LEFT);
-    po.subscribe(player, POConstants.RIGHT);
+    po.subscribe(player, POCodes.Key.W);
+    po.subscribe(player, POCodes.Key.A);
+    po.subscribe(player, POCodes.Key.S);
+    po.subscribe(player, POCodes.Key.D);
+    po.subscribe(player, POCodes.Key.UP);
+    po.subscribe(player, POCodes.Key.DOWN);
+    po.subscribe(player, POCodes.Key.LEFT);
+    po.subscribe(player, POCodes.Key.RIGHT);
   
     // make player collide with platforms
     world.register(player, platforms, new PlatformCollider(0));

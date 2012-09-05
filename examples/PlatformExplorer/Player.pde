@@ -54,24 +54,24 @@ class Player extends MassedBeing {
   void receive(KeyMessage m) {
     int nKey = m.getKeyCode();
     if(m.isPressed()) { // the player's movement is controlled by w/a/s/d or the arrows
-      if(nKey == POConstants.D || nKey == POConstants.RIGHT) {
+      if(nKey == POCodes.Key.D || nKey == POCodes.Key.RIGHT) {
         getVelocity().x = PLAYER_SPEED;
         direction = FACING_RIGHT;
       }
-      if(nKey == POConstants.A || nKey == POConstants.LEFT) {
+      if(nKey == POCodes.Key.A || nKey == POCodes.Key.LEFT) {
         getVelocity().x = -PLAYER_SPEED;
         direction = FACING_LEFT;
       }
-      if((nKey == POConstants.W || nKey == POConstants.UP) && !jumped) {
+      if((nKey == POCodes.Key.W || nKey == POCodes.Key.UP) && !jumped) {
         addImpulse(new PVector(0, -PLAYER_SPEED, 0));
         jumped = true;
       }
-      if(nKey == POConstants.S || nKey == POConstants.DOWN) {
+      if(nKey == POCodes.Key.S || nKey == POCodes.Key.DOWN) {
         getVelocity().y = 2*PLAYER_SPEED;
       }
       if(abs(getVelocity().y) <= 5) sprite.unpause();
     } else { // when a key is released, we stop the player
-        if(nKey == POConstants.D || nKey == POConstants.A || nKey == POConstants.LEFT || nKey == POConstants.RIGHT) {
+        if(nKey == POCodes.Key.D || nKey == POCodes.Key.A || nKey == POCodes.Key.LEFT || nKey == POCodes.Key.RIGHT) {
           getVelocity().x = 0;
           sprite.pause();
         }

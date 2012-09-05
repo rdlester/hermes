@@ -26,11 +26,11 @@ class GlitchyGroup extends Group<GlitchySquare> {
     GlitchySquare s = new GlitchySquare(x, y);
     s.useKey();
     _world.register(s);
-    _world.subscribe(s, POConstants.UP);
-    _world.subscribe(s, POConstants.RIGHT);
-    _world.subscribe(s, POConstants.DOWN);
-    _world.subscribe(s, POConstants.LEFT);
-    _world.subscribe(s, POConstants.Button.LEFT, s.getShape());
+    _world.subscribe(s, POCodes.Key.UP);
+    _world.subscribe(s, POCodes.Key.RIGHT);
+    _world.subscribe(s, POCodes.Key.DOWN);
+    _world.subscribe(s, POCodes.Key.LEFT);
+    _world.subscribe(s, POCodes.Button.LEFT, s.getShape());
     add(s);
   }
 

@@ -27,19 +27,19 @@ public class LevelWorld extends World {
     //buttons
     RunButton runButton = new RunButton(_postOffice);
     register(runButton, true);
-    _postOffice.subscribe(runButton,R);
+    _postOffice.subscribe(runButton,Key.R);
     _postOffice.subscribe(runButton,Button.NO,runButton.getShape());
     _postOffice.subscribe(runButton,Button.LEFT,runButton.getShape());
     RandomButton randomButton = new RandomButton(canvas,_postOffice);
     register(randomButton,false);
-    _postOffice.subscribe(randomButton,SPACE);
+    _postOffice.subscribe(randomButton,Key.SPACE);
     _postOffice.subscribe(randomButton,Button.NO,randomButton.getShape());
     _postOffice.subscribe(randomButton,Button.LEFT,randomButton.getShape());
 
     //key for SelectedToolAttributeSwitcher
     SelectedToolAttributeSwitcher selectedToolAttributeSwitcher = new SelectedToolAttributeSwitcher();
-    _postOffice.subscribe(selectedToolAttributeSwitcher,E);
-    _postOffice.subscribe(selectedToolAttributeSwitcher,W);
+    _postOffice.subscribe(selectedToolAttributeSwitcher,Key.E);
+    _postOffice.subscribe(selectedToolAttributeSwitcher,Key.W);
 
     //make the mousehandler and register subscriptions with the postoffice
     /*MouseHandler mouseHandler = new MouseHandler(canvas, toolBox, runButton, randomButton);

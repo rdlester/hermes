@@ -46,7 +46,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	
 	//Maps that associate subscribers with messages they want to receive
 	private HashMultimap<Integer, KeySubscriber> _keySubs;
-	private HashMultimap<POConstants.Button, Pair<MouseSubscriber,HShape>> _mouseSubs;
+	private HashMultimap<POCodes.Button, Pair<MouseSubscriber,HShape>> _mouseSubs;
 	private ArrayList<MouseWheelSubscriber> _mouseWheelSubs;
 	private HashMultimap<String, OscSubscriber> _oscSubs;
 	
@@ -196,13 +196,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param sub		the MouseSubscriber signing up
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 */
-	public void subscribe(MouseSubscriber sub, POConstants.Button button) {
+	public void subscribe(MouseSubscriber sub, POCodes.Button button) {
 		assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
-		assert button == POConstants.Button.NO ||
-			button == POConstants.Button.LEFT ||
-			button == POConstants.Button.MIDDLE ||
-			button == POConstants.Button.RIGHT :
-					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
 		_mouseSubs.put(button, new Pair<MouseSubscriber, HShape>(sub, null));
 	}
 	
@@ -213,13 +208,8 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param button	the code of the button whose messages the subscriber wants (use value from POContants)
 	 * @param region	the region on screen the subscriber wants to limit its subscription to
 	 */
-    public void subscribe(MouseSubscriber sub, POConstants.Button button, HShape region) {
+    public void subscribe(MouseSubscriber sub, POCodes.Button button, HShape region) {
         assert sub != null : "PostOffice.registerMouseSubscription: sub must be a valid MouseSubscriber";
-		assert button == POConstants.Button.NO ||
-				button == POConstants.Button.LEFT ||
-				button == POConstants.Button.MIDDLE ||
-				button == POConstants.Button.RIGHT :
-					"PostOffice.registerMouseSubscription: button must be one of the buttons defined in PostOffice";
         assert region != null : "PostOffice.registerMouseSubscription: region must be a valid Shape";
         _mouseSubs.put(button, new Pair<MouseSubscriber, HShape>(sub, region));
     }
@@ -254,18 +244,18 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	public boolean removeMouseSubscriptions(MouseSubscriber sub) {
 	  if(_mouseSubs.containsValue(sub)) {
 	    // Find key-value pairs containing sub
-	    Set<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> all = _mouseSubs.entries();
-	    Set<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> toRemove = new HashSet<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>>();
-	    for(Iterator<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> iter = all.iterator(); iter.hasNext(); ) {
-	      Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>> next = iter.next();
+	    Set<Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>>> all = _mouseSubs.entries();
+	    Set<Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>>> toRemove = new HashSet<Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>>>();
+	    for(Iterator<Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>>> iter = all.iterator(); iter.hasNext(); ) {
+	      Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>> next = iter.next();
 	      if(next.getValue().getFirst() == sub) {
 	        toRemove.add(next);
 	      }
 	    }
 	    
 	    // Remove references
-	    for(Iterator<Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>>> iter = toRemove.iterator(); iter.hasNext(); ) {
-	      Map.Entry<POConstants.Button, Pair<MouseSubscriber,HShape>> next = iter.next();
+	    for(Iterator<Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>>> iter = toRemove.iterator(); iter.hasNext(); ) {
+	      Map.Entry<POCodes.Button, Pair<MouseSubscriber,HShape>> next = iter.next();
 	      _mouseSubs.remove(next.getKey(), next.getValue());
 	    }
 	    return true;
@@ -534,7 +524,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 				MouseMessage m = _mouseQueue.poll();
 				_mouseLocation.x = m.getX();
 				_mouseLocation.y = m.getY();
-				POConstants.Button button = m.getButton();
+				POCodes.Button button = m.getButton();
 				Set<Pair<MouseSubscriber,HShape>> subs = _mouseSubs.get(button);
 				for(Pair<?, ?> p : subs) {
 				   HShape region = (HShape) p.getSecond();
@@ -613,7 +603,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * On a mouse press, make a new MouseMessage and add it to the queue.
 	 */
 	public void mousePressed(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(getMouseButton(e), POConstants.MOUSE_PRESSED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), POCodes.Click.PRESSED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -622,7 +612,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * On a mouse button release, make a new MouseMessage and add it to the queue.
 	 */
 	public void mouseReleased(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(getMouseButton(e), POConstants.MOUSE_RELEASED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), POCodes.Click.RELEASED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -646,7 +636,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is dragged, create a MouseMessage and add it to the group.
 	 */
 	public void mouseDragged(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(getMouseButton(e), POConstants.MOUSE_DRAGGED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), POCodes.Click.DRAGGED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -655,7 +645,7 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * When the mouse is moved, create a MouseMessage and add it to the queue.
 	 */
 	public void mouseMoved(MouseEvent e) {
-		MouseMessage m  = new MouseMessage(getMouseButton(e), POConstants.MOUSE_MOVED, e.getX(), e.getY());
+		MouseMessage m  = new MouseMessage(getMouseButton(e), POCodes.Click.MOVED, e.getX(), e.getY());
 		synchronized(_mouseQueue) {
 			_mouseQueue.add(m);
 		}
@@ -693,15 +683,15 @@ public class PostOffice implements KeyListener, MouseListener, MouseMotionListen
 	 * @param e		the MouseEvent
 	 * @return		the mouse button code
 	 */
-	public static POConstants.Button getMouseButton(MouseEvent e) {
+	public static POCodes.Button getMouseButton(MouseEvent e) {
 		if(SwingUtilities.isLeftMouseButton(e))
-			return POConstants.Button.LEFT;
+			return POCodes.Button.LEFT;
 		else if(SwingUtilities.isMiddleMouseButton(e))
-			return POConstants.Button.MIDDLE;
+			return POCodes.Button.MIDDLE;
 		else if(SwingUtilities.isRightMouseButton(e))
-			return POConstants.Button.RIGHT;
+			return POCodes.Button.RIGHT;
 		else
-			return POConstants.Button.NO;
+			return POCodes.Button.NO;
 	}
 	
 }

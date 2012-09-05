@@ -78,30 +78,30 @@ class GlitchySquare extends Being {
   public void receive(KeyMessage m) {
     int code = m.getKeyCode();
     if (m.isPressed()) {
-      if (code == POConstants.UP) {
+      if (code == POCodes.Key.UP) {
         _up = true;
       } 
-      else if (code == POConstants.RIGHT) {
+      else if (code == POCodes.Key.RIGHT) {
         _right = true;
       } 
-      else if (code == POConstants.DOWN) {
+      else if (code == POCodes.Key.DOWN) {
         _down = true;
       } 
-      else if (code == POConstants.LEFT) {
+      else if (code == POCodes.Key.LEFT) {
         _left = true;
       }
     } 
     else {
-      if (code == POConstants.UP) {
+      if (code == POCodes.Key.UP) {
         _up = false;
       } 
-      else if (code == POConstants.RIGHT) {
+      else if (code == POCodes.Key.RIGHT) {
         _right = false;
       } 
-      else if (code == POConstants.DOWN) {
+      else if (code == POCodes.Key.DOWN) {
         _down = false;
       } 
-      else if (code == POConstants.LEFT) {
+      else if (code == POCodes.Key.LEFT) {
         _left = false;
       }
     }
