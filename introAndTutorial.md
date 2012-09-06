@@ -297,7 +297,7 @@ So, how do we get our Squares into the `Group`? We'll have to make a few changes
 We first construct the `Group`, passing it `this` to provide it with a reference to the containing `World`, then register it with the World. In the loop, we just call the `Group`'s `addSquare` function. Simple enough. Once you've made the changes, hit run. The squares should all be the same color, yet still move independently, creating a morphing blob of glitchiness in the PApplet.
 
 Interactors
-------------
+-----------
 
 While `Being`s and `Group`s can handle many of a game's internal mechanics, your games will usually need different kinds of interactions between objects to create meaningful play. In Hermes, these interactions are handled by objects called `Interactor`s. These objects define both the conditions for interaction and the interaction itself. An example interaction would be to register a hit on the player when a player collides with an enemy. Here, the collision is the detection condition, and the application of the hit is the result of the interaction.
 
@@ -396,13 +396,17 @@ With all this in mind, let's turn back to our demo World and make it interactive
 
 First, we need to subscribe our Squares to Key and Mouse messages. Add the following lines to the end of `addSquare` in `GlitchyGroup`:
 
-	_world.subscribe(s, POConstants.UP);
-	_world.subscribe(s, POConstants.RIGHT);
-	_world.subscribe(s, POConstants.DOWN);
-	_world.subscribe(s, POConstants.LEFT);
-	_world.subscribe(s, POConstants.Button.LEFT);
+	_world.subscribe(s, POCodes.Key.UP);
+	_world.subscribe(s, POCodes.Key.RIGHT);
+	_world.subscribe(s, POCodes.Key.DOWN);
+	_world.subscribe(s, POCodes.Key.LEFT);
+	_world.subscribe(s, POCodes.Button.LEFT);
 
-The `subscribe` function in `World` will tell the PostOffice to subscribe an object to the specified type of message. The first argument is always the subscriber. The next arguments specify the messages the subscriber requires using constants from `POConstants`. The first four lines of the example subscribe the Square to messages sent by the arrow keys on the Keyboard. The last line subscribes the Square to messages sent by left clicks on the Mouse. However, we don't want our Square to be notified of every left mouse click; the Square only needs to know when it is clicked on itself. We can ask the PostOffice to send location-dependent Mouse messages by altering this last line to:
+The `subscribe` function in `World` will tell the PostOffice to subscribe an object to the specified type of message. The first argument is always the subscriber. The next arguments specify the messages the subscriber requires using values from `POCodes`. These values are a little like zip codes on an address: they nicely specify where the message was sent from. There are four categories of `POCodes`: `Key`, which denotes keyboard buttons; `Button`, which denotes buttons on a mouse (with the special value `NO` denoting mouse movements independent of buttons); `Click`, which denotes mouse actions such as `PRESSED`, `RELEASED`, and `DRAGGED`, and also includes `MOVED`, the action that occurs when the mouse is moved while no button is held down; and `OSC`, which contains default ports for networking. In addition to specifying subscriptions, `POCodes` are also used to check and compare messages, which is needed when something is subscribed to multiple addresses.
+
+In the above example, the first four lines subscribes our Square (`s`) to the four arrow keys, using the `UP`, `RIGHT`, `DOWN`, and `LEFT` codes from `POCodes.Key`. The last line subscribes the Square to messages from the left mouse button, using the code `LEFT` from `POCodes.LEFT`.
+
+ The first four lines of the example subscribe the Square to messages sent by the arrow keys on the Keyboard. The last line subscribes the Square to messages sent by left clicks on the Mouse. However, we don't want our Square to be notified of every left mouse click; the Square only needs to know when it is clicked on itself. We can ask the PostOffice to send location-dependent Mouse messages by altering this last line to:
 
 	_world.subscribe(s, POConstants.Button.LEFT, s.getShape());
 
@@ -413,39 +417,84 @@ Now that the PostOffice is sending messages to the Squares, we need to tell the 
 	public void receive(KeyMessage m) {
 	  int code = m.getKeyCode();
 	  if (m.isPressed()) {
-	    if (code == POConstants.UP) {
+	    if (code == POCodes.Key.UP) {
 	      _up = true;
 	    } 
-	    else if (code == POConstants.RIGHT) {
+	    else if (code == POCodes.Key.RIGHT) {
 	      _right = true;
 	    } 
-	    else if (code == POConstants.DOWN) {
+	    else if (code == POCodes.Key.DOWN) {
 	      _down = true;
 	    } 
-	    else if (code == POConstants.LEFT) {
+	    else if (code == POCodes.Key.LEFT) {
 	      _left = true;
 	    }
 	  } 
 	  else {
-	    if (code == POConstants.UP) {
+	    if (code == POCodes.Key.UP) {
 	      _up = false;
 	    } 
-	    else if (code == POConstants.RIGHT) {
+	    else if (code == POCodes.Key.RIGHT) {
 	      _right = false;
 	    } 
-	    else if (code == POConstants.DOWN) {
+	    else if (code == POCodes.Key.DOWN) {
 	      _down = false;
 	    } 
-	    else if (code == POConstants.LEFT) {
+	    else if (code == POCodes.Key.LEFT) {
 	      _left = false;
 	    }
 	  }
 	}
 
 	public void receive(MouseMessage m) {
-	  currentWorld.delete(this);
+	  if (m.getAction() == POCodes.Click.PRESSED) {
+	    currentWorld.delete(this);
+	  }
 	}
 
 Subscribers receive messages through `receive` methods; all message handling should go in these. Each `receive` method handles one type of message: a KeyMessage, a MouseMessage, a MouseWheelMessage, or an OscMessage. This type is specified by the type of the parameter given as an argument to `receive`. Above, the first `receive` function handles KeyMessages and the second handles MouseMessages.
 
-In our KeyMessage handler, we start by obtaining the KeyCode from
+In the KeyMessage handler, we start by obtaining the code of the key responsible for the message with `getKeyCode`. Then, if the message is telling us the key is now pressed (found using `isPressed`), we set the corresponding direction boolean to `true`; otherwise, we set it to `false`.
+
+In the MouseMessage handler, we simply delete the Square from the World using `delete` if it is clicked on. First, we check that the mouse is being pressed down on the Square using `getAction`. The `delete` function then removes the Square from all registered Groups, unschedules its updates, and unsubscribes the Square from the PostOffice. Note that we do not need to check the mouse button since we have only subscribed to a single button and only have a single action that will occur when the mouse interacts with the Square. If we wanted to ensure that deletion only occurs on left button clicks, we can check the button sending the message using `getButton`. Also note that we do not need to check if the mouse is inside the square, since we registered the Square's shape and location with the PostOffice when we subscribed. We could use the functions `getX`, `getY` or `getPosition` to check this, however.
+
+Finally, we need to add the key-controlled movement code to `update`. The function should now look like:
+
+	public void update() {
+	  if (_up) {
+	    _position.y -= SHAKE_STEP;
+	  } 
+	  if (_right) {
+	    _position.x += SHAKE_STEP;
+	  } 
+	  if (_down) {
+	    _position.y += SHAKE_STEP;
+	  } 
+	  if (_left) {
+	    _position.x -= SHAKE_STEP;
+	  }
+	  _stroke = false;
+	}
+
+The new code adds and substracts a constant step-size from the Square's position on every update given the keys currently held down.
+
+Now hit run and experiment with moving and destroying Squares!
+
+While there's some pleasure in destroying Squares, any act of destruction should be met with an act of creation. So, let's add a way to create Squares. Add the following code to `GlitchyGroup`:
+
+	public void receive(KeyMessage m) {
+	  if (m.isPressed()) {
+	    addSquare();
+	  }
+	}
+
+Now, in the World's `setup`, add the line:
+
+	subscribe(g, POCodes.Key.A);
+
+Groups, like Beings, can also subscribe to and receive messages from the PostOffice. Here, we're simply leveraging the `addSquare` method we've already written to create a new Square every time the Group receives a key-pressed message from the `A` key. Hit run and tap the `A` key a few times to see the new code at work.
+
+Conclusion
+----------
+
+This 
