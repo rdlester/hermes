@@ -17,8 +17,6 @@ class TutorialWorld extends World {
     for (int i = 0; i < _squareNum; i++) {
       g.addSquare();
     }
-    
-    register(g,g,new SquareInteractor());
   }
   
   void draw() {

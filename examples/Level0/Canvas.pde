@@ -162,9 +162,9 @@ class Canvas extends MassedBeing {
       }
     }
     
-    int action = m.getAction();
+    POCodes.Click action = m.getAction();
 
-    if(action == MOUSE_RELEASED && mode == BUILD) { 
+    if(action == POCodes.Click.RELEASED && mode == BUILD) { 
       if(dragTool != null) { //tool is being dropped into a cell
         //NOTE: dragTool's CENTER is at the mouse location
         if(!prohibitedCell) {
@@ -195,7 +195,7 @@ class Canvas extends MassedBeing {
           }
         }
       }
-    } else if(action == MOUSE_PRESSED && mode == BUILD) {
+    } else if(action == POCodes.Click.PRESSED && mode == BUILD) {
       //check if pressed on cell containing tool
       if(in.hasTool()) {
         dragTool = in.getTool();//set dragTool to the tool therein
@@ -209,7 +209,7 @@ class Canvas extends MassedBeing {
         in.setTool(newTool);
         selectedTool = newTool;
       }    
-    } else if(action == MOUSE_DRAGGED && mode == BUILD) {
+    } else if(action == POCodes.Click.DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //TODO: this code is identical in 3 places, probably a better way to do this
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
       } else if(templateTool!=null && !prohibitedCell) {

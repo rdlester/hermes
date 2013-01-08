@@ -1,4 +1,5 @@
 import processing.opengl.*;
+import java.util.Hashtable;
 
 import hermes.*;
 import hermes.hshape.*;

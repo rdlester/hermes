@@ -34,7 +34,7 @@ class RunButton extends Being {
   
   void receive(MouseMessage m) {
     _hover = true;
-    if(m.getAction() == MOUSE_PRESSED) {
+    if(m.getAction() == POCodes.Click.PRESSED) {
       //switch modes
       if(mode == BUILD) {
         setMode(RUN);
