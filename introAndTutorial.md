@@ -3,7 +3,6 @@ Hermes
 
 Hermes is an experimental game engine/framework for [Processing](http://processing.org/). It was designed to make your life easier. If you're new to building games, are making a game for a game jam, are already familiar with Processing, or have an idea you'd like to quickly prototype for play and experimentation, Hermes is for you. Hermes thinks of a game as a universe, consisting of worlds, beings, and interactions. Each piece is an easy-to-use block to which you, the game creator, simply need to add the rules defining your game. Once you've provided these rules, Hermes will bring the various worlds you've defined to life with little to no extra input.
 
-
 The library consists of two parts: Hermes (the engine), and Worlds (the part you design, using our framework). When designing games with Hermes, you'll define a World, consisting of Beings that inhabit the world and Interactions between them, then hand over the World to Hermes, which will bring the World to life. Worlds must be defined and written in a somewhat specific way, although there is still plenty of room for hacking. Our specification for Worlds has been defined in such a way that it mirrors the way we design and think about games at a low level, making it easy to translate your ideas into code. In addition, the animation/sprite sub-library can be used independent of the rest of the library, and offers a number of advanced features for building and controlling sprites (see the Animation tutorial for more details).
 
 If you have experience with other game design tools, you might think of Hermes as occupying a middle-ground - it doesn't hide code  like Game Maker or Stencyl, but it does take care of several essential functions (the game loop, separation of graphics & update threads, etc), and provides unique and helpful tools (user input, animations, physics). We've also worked to make our library easier to work with, understand, read, and comprehend than other game libraries we've worked with in the past (Cocos2D \**shakes fist*\*).
@@ -24,10 +23,17 @@ Installing Hermes
 
 To install Hermes, download [the zip distribution](http://github.com/paperkettle/hermes/Hermes.zip), then move the unzipped folder into the "libraries" folder of your Processing sketchbook. To import Hermes into a Processing sketch, select Sketch > Import Library > Hermes from the menu bar. However, we recommend using our template sketch to create new sketches with Hermes.
 
+Example games
+-------------
+
+A number of simple game-prototypes/demos created with Hermes can be found in the `examples` folder. `BulletCurtain`, by Chris Novello, is a `circuit-bendable` version of Space Invaders designed for use with the [Illucia](http://illucia.com) system. `Level0`, by Ryan Lester and Jennifer Kovnats, is a prototype level designer (inspired by Marble Run) developed in a day exploring the use of arbitrary gravity fields. `bouncingpolygonsdemo` is a simple demo of the physics system. `PlatformExplorer` is a simple platformer demo of the animation system.
+
 Tutorial
 ========
 
-NOTE: this is currently a work in progress, will be finished soon! Topics yet to be covered include: the PostOffice (user or network input), pretty important stuff. We're also getting started on separate tutorials, covering the Animation and Physics modules. In the meantime, read what's below to learn the basics and take a look at our other examples to get an idea of how the rest of the things work.
+The following tutorial lays out the basics of using Hermes through a series of 4 examples, each of which iterates on the previous one. It should be enough to get you up and running with the framework. The completed examples can be found in the `examples` folder, named `tutorialA`, `tutorialB`, `tutorialC`, and `tutorialD`.
+
+A number of advanced topics, such as Physics and Animation, are not covered; we're currently working on tutorials for both.
 
 The Template
 ------------
@@ -234,7 +240,7 @@ Groups
 
 While we now know how to update and draw individual Beings, independent of one another, what if we want to synchronize some behavior across an entire group of Beings? Hermes provides a simple solution: `Group`s. Groups allow us to define a particular set of Beings or objects as a single entity we can update like Beings or interact with other Groups or individual Beings. At their core, `Group`s are similar to `ArrayList`s or other data structures; you can add to, remove from, and access the contained `Being`s. However, `Group`s can also have updates and interactions.
 
-Let's modify `tutorialA` to use a `Group` update to see how they work. In our new example, the color of the squares will still be chosen at random, but on every step every square will share the same color. The following example is found in the `tutorialAgrouped` folder. First, we're going to need to make a few changes to our squares in preparation. Comment out the line `_c = pickColor();` from `GlitchySquare`'s `update` function. Then, add a new function:
+Let's modify `tutorialA` to use a `Group` update to see how they work (the finished code can be found in `tutorialB`). In our new example, the color of the squares will still be chosen at random, but on every step every square will share the same color. The following example is found in the `tutorialAgrouped` folder. First, we're going to need to make a few changes to our squares in preparation. Comment out the line `_c = pickColor();` from `GlitchySquare`'s `update` function. Then, add a new function:
 
 	public void setColor(color c) {
 		_c = c;
@@ -335,15 +341,16 @@ To get a sense of how this works, let's return to our spastic squares and make t
 First, let's add more functionality to `GlitchySquare` to facilitate the interaction. Add an instance variable `boolean _stroke` to the class, then add the following method:
 
 	public void drawStroke() {
-		_stroke = true;
+        _stroke = true;
 	}
 
 Now, we're going to edit the `draw` function. Replace `noStroke();` with:
 
 	if(_stroke) {
-		stroke(255);
+        strokeWidth(5);
+        stroke(255);
 	} else {
-		noStroke();
+        noStroke();
 	}
 
 Finally, add the line `_stroke = false;` to `update`.
@@ -492,9 +499,4 @@ Now, in the World's `setup`, add the line:
 
 	subscribe(g, POCodes.Key.A);
 
-Groups, like Beings, can also subscribe to and receive messages from the PostOffice. Here, we're simply leveraging the `addSquare` method we've already written to create a new Square every time the Group receives a key-pressed message from the `A` key. Hit run and tap the `A` key a few times to see the new code at work.
-
-Conclusion
-----------
-
-This 
+Groups, like Beings, can also subscribe to and receive messages from the PostOffice. Here, we're simply leveraging the `addSquare` method we've already written to create a new Square every time the Group receives a key-pressed message from the `A` key. Hit run and tap the `A` key a few times to see the new code at work. 
