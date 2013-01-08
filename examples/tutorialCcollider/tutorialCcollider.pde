@@ -1,7 +1,6 @@
 /**
- * A template to get you started
- * Define your beings, groups, interactors and worlds in separate tabs
- * Put the pieces together in this top-level file!
+ * Tutorial 3.5
+ * Demo of a built-in interaction
  */
 
 import hermes.*;

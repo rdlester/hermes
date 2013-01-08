@@ -60,7 +60,7 @@ static final int CIRCLE_MODE = 1;
 static final int CIRCLE_KEY = Key.VK_2;
 static final int RECT_MODE = 2;
 static final int RECT_KEY = Key.VK_3;
-static final int DELETE_KEY = D;
+static final int DELETE_KEY = Key.D;
 
 void setup() {
   size(WIDTH, HEIGHT);

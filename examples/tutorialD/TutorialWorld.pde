@@ -13,10 +13,13 @@ class TutorialWorld extends World {
   void setup() {
     GlitchyGroup g = new GlitchyGroup(this);
     register(g);
+    subscribe(g, POCodes.Key.A);
     
     for (int i = 0; i < _squareNum; i++) {
       g.addSquare();
     }
+    
+    register(g,g,new SquareInteractor());
   }
   
   void draw() {

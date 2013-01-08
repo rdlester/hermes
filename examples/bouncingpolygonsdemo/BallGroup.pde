@@ -34,9 +34,9 @@ class BallGroup extends Group<Ball> {
 
   //Handles mouse messages for line drawing and ball creation
 	void receive(MouseMessage m) {
-		int action = m.getAction();
+		POCodes.Click action = m.getAction();
 		switch(action) {
-			case MOUSE_PRESSED: //Register mouse press and initialize variables
+			case PRESSED: //Register mouse press and initialize variables
 				if(!_mousePressed) {
 					_mousePressed = true;
 					_origX = m.getX();
@@ -45,11 +45,11 @@ class BallGroup extends Group<Ball> {
 					_dY = m.getY();
 				}
 				break;
-			case MOUSE_DRAGGED: //Update mouse location
+			case DRAGGED: //Update mouse location
 				_dX = m.getX();
 				_dY = m.getY();
 				break;
-			case MOUSE_RELEASED: //Deregister mouse press and create new ball
+			case RELEASED: //Deregister mouse press and create new ball
 				_mousePressed = false;
 				Ball ball;
 				switch(mode) {

@@ -1,7 +1,6 @@
 /**
- * A template to get you started
- * Define your beings, groups, interactors and worlds in separate tabs
- * Put the pieces together in this top-level file!
+ * Tutorial example 2
+ * Groups - you'll have more fun together!
  */
 
 import hermes.*;
@@ -37,7 +36,7 @@ void setup() {
   background(0); 
   Hermes.setPApplet(this);
 
-  currentWorld = new TutorialWorld(10);       
+  currentWorld = new TutorialWorld(int(random(500)));       
 
   //Important: don't forget to add setup to TemplateWorld!
 

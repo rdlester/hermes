@@ -75,7 +75,7 @@ class ToolBox extends Being {
    */
   void receive(MouseMessage m) {
     //checks if it was a mouse pressed
-    if(m.getAction() == MOUSE_PRESSED && mode == BUILD) {
+    if(m.getAction() == POCodes.Click.PRESSED && mode == BUILD) {
       //erase selection regardless of click location
       selectedTool = null;
       //get pixel location of mouse press in frame
@@ -97,7 +97,7 @@ class ToolBox extends Being {
         dragIniti = -1;
         dragInitj = -1;
       }
-    } else if(m.getAction() == MOUSE_DRAGGED && mode == BUILD) {
+    } else if(m.getAction() == POCodes.Click.DRAGGED && mode == BUILD) {
       if(dragTool!=null) { //already dragging a tool
         dragTool.setPosition(new PVector(m.getX(), m.getY()));
       } /*else if(templateTool!=null) { // templateTool already set but no new tool created yet
@@ -107,7 +107,7 @@ class ToolBox extends Being {
         dragIniti = -1;
         dragInitj = -1;
       }*/
-    } else if(m.getAction() == MOUSE_RELEASED && mode == BUILD 
+    } else if(m.getAction() == POCodes.Click.RELEASED && mode == BUILD 
                 && !canvas.getShape().contains(m.getX(),m.getY())) {
       //check if you are currently dragging a tool
       if(dragTool!=null) {
