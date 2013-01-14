@@ -8,7 +8,7 @@ Hermes is an experimental game engine leveraging Java's object-oriented systems 
 Getting Started
 ---------------
 
-See the [Tutorial](https://github.com/rdlester/hermes/wiki/An-Introduction-to-Hermes) for an introduction to making games with Hermes. The [Javadocs can be found here](http://rdlester.github.com/hermes/doc).
+See the [Tutorial](https://github.com/rdlester/hermes/wiki/An-Introduction-to-Hermes) for an introduction to making games with Hermes. See [the javadocs](http://rdlester.github.com/hermes/doc) for full code and API documentation.
 
 Source
 ------
