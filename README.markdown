@@ -13,7 +13,7 @@ See the [Tutorial](https://github.com/rdlester/hermes/wiki/An-Introduction-to-He
 Source
 ------
 
-The full source code of the library is in the hermes/ folder (also included in the download); unit tests are in hermesTest/. The library itself is in the package `hermes`, and testing code is in `hermesTest`. In the download, source is included in the src/ folder. See [the wiki](https://github.com/rdlester/hermes/wiki/Building-from-Source) for details on building the library from source.
+The full source code of the library is in the hermes/ folder; unit tests are in hermesTest/. The library itself is in the package `hermes`, and testing code is in `hermesTest`. In the pre-built download, source is included in the src/ folder. See [the wiki](https://github.com/rdlester/hermes/wiki/Building-from-Source) for details on building the library from source.
 
 License
 -------
