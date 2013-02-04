@@ -1,6 +1,7 @@
 /**
  * Tutorial example 1
  * Beings doing stuff!
+ * https://github.com/rdlester/hermes/wiki/Tutorial-Pt.-2:-A-Simple-World
  */
 
 import hermes.*;
