@@ -1,6 +1,7 @@
 /**
  * Tutorial 4
  * PostOffice / mouse+keyboard inputs - speak to me!
+ * https://github.com/rdlester/hermes/wiki/Tutorial-Pt.-5:-Post-Office-&-User-Input
  */
 
 import hermes.*;

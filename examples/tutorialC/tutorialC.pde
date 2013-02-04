@@ -1,6 +1,7 @@
 /**
  * Tutorial example 3
  * Interactions - for every action there's always a...
+ * https://github.com/rdlester/hermes/wiki/Tutorial-Pt.-4:-Interactors
  */
 
 import hermes.*;
