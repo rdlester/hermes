@@ -2,6 +2,9 @@
  * A template to get you started
  * Define your beings, groups, interactors and worlds in separate tabs
  * Put the pieces together in this top-level file!
+ *
+ * See the tutorial for details:
+ * https://github.com/rdlester/hermes/wiki/Tutorial-Pt.-1:-Worlds-and-Beings
  */
 
 import hermes.*;

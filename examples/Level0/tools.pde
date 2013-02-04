@@ -64,19 +64,29 @@ abstract class Tool extends MassedBeing {
  * Handles key messages changing the elasticity of a tool
  */
 class SelectedToolAttributeSwitcher implements KeySubscriber {
+  boolean epressed = false, wpressed = false;
+  
   void receive(KeyMessage m) {
     if(selectedTool!=null) {
-      
-      if(m.getKeyChar()=='e') {      //if 'e', change elasticity
+      if (!m.isPressed()) {
+        if (m.getKeyChar()=='e') {
+          epressed = false;
+        } else if (m.getKeyChar()=='w') {
+          wpressed = false;
+        }
+      }
+      else if (m.getKeyChar()=='e' && !epressed) {      //if 'e', change elasticity
+        epressed = true;
         float elasticity = selectedTool.getElasticity();
         if (elasticity==SPRINGY) {
           selectedTool.setElasticity(STICKY);             
-        } else if(elasticity==PERFECT) {
+        } else if (elasticity==PERFECT) {
           selectedTool.setElasticity(SPRINGY);
-        } else if(elasticity==STICKY) {
+        } else if (elasticity==STICKY) {
           selectedTool.setElasticity(PERFECT);
         }
-      } else if(m.getKeyChar()=='w') {     //if 'w', rotate by PI/2
+      } else if (m.getKeyChar()=='w' && !wpressed) {     //if 'w', rotate by PI/2
+        wpressed = true;
         selectedTool.rotate(PI/4);
       }
     }

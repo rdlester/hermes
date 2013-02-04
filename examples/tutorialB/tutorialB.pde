@@ -1,6 +1,7 @@
 /**
  * Tutorial example 2
  * Groups - you'll have more fun together!
+ * https://github.com/rdlester/hermes/wiki/Tutorial-Pt.-3:-Groups
  */
 
 import hermes.*;
