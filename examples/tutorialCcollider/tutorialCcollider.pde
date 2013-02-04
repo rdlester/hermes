@@ -1,6 +1,7 @@
 /**
  * Tutorial 3.5
  * Demo of a built-in interaction
+ * https://github.com/rdlester/hermes/wiki/Tutorial-Pt.-4:-Interactors
  */
 
 import hermes.*;
