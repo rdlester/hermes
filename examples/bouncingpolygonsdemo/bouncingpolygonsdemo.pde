@@ -62,6 +62,9 @@ static final int RECT_MODE = 2;
 static final int RECT_KEY = Key.VK_3;
 static final int DELETE_KEY = Key.D;
 
+// instructions
+String instruct = "Click and drag!";
+
 void setup() {
   size(WIDTH, HEIGHT);
   Hermes.setPApplet(this);
@@ -84,13 +87,17 @@ void setup() {
 
 void draw() {
   background(230); //Overwrite what's already been drawn
-	
+  
   if(_mousePressed) {
     //Draw line indicating velocity of created ball
     line(_origX, _origY, _dX, _dY);
   }
     
   _camera.draw(); //Camera object handles drawing all the appropriate Beings
+  
+  // draw instructions
+  fill(0);
+  text(instruct, 10, 20);
 
 }
 
