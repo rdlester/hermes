@@ -149,7 +149,7 @@ public class Rectangle extends HShape {
 		_min.x *= xScale;
 		_max.x *= xScale;
 		_min.y *= yScale;
-		_min.y *= yScale;
+		_max.y *= yScale;
 	}
 
 	@Override
