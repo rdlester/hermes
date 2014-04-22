@@ -3,12 +3,12 @@ HERMES
 
 Hermes is an experimental game engine leveraging Java's object-oriented systems and the simplicity of Processing to provide an architecture for rapid sketching and prototyping of games and simulations.
 
-[Hermes.zip](http://rdlester.github.com/hermes/downloads/hermes.zip) contains a completely built version of the library with examples and documentation. To install, drag the unzipped folder into the 'libraries' folder in your Processing sketchbook.
+[Hermes.zip](https://rdlester.github.io/hermes/downloads/hermes.zip) contains a completely built version of the library with examples and documentation. To install, drag the unzipped folder into the 'libraries' folder in your Processing sketchbook.
 
 Getting Started
 ---------------
 
-See the [Tutorial](https://github.com/rdlester/hermes/wiki/An-Introduction-to-Hermes) for an introduction to making games with Hermes. See [the javadocs](http://rdlester.github.com/hermes/doc) for full code and API documentation.
+See the [Tutorial](https://github.com/rdlester/hermes/wiki/An-Introduction-to-Hermes) for an introduction to making games with Hermes. See [the javadocs](https://rdlester.github.io/hermes/doc) for full code and API documentation.
 
 Source
 ------

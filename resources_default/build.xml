@@ -40,8 +40,6 @@
 	<property name="project.dist" location="distribution"/>
 	<property name="library.properties" location="library.properties"/>
 	<property name="project.dist.version" location="distribution/${project.name}-${project.version}"/>
-	<property name="install.source" location="resources/install_instructions.txt"/>
-	<property name="install.destination" location="${project.dist.version}/INSTALL.txt"/>
 	
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 		<classpath>
@@ -291,7 +289,6 @@ ${line}
 	
 	
 	<target name="generate.install.library" if="is.normal">	
-		<copy file="${install.source}" tofile="${project.dist.version}/INSTALL.txt" />
 		<replaceregexp file="${install.destination}" match="##name##" replace="${project.name}" flags="g" />
 		<replaceregexp file="${install.destination}" match="##folder##" replace="libraries" flags="g" />
 	</target>	
@@ -303,7 +300,6 @@ ${line}
   			<fileset dir="${project.dist.version}/${project.name}" />
   		</move> 
   		
-  		<move file="${install.destination}" tofile="${project.dist.version}/tmp/${project.name}-${project.version}/INSTALL.txt" />
 	  	<zip destfile="${project.dist.version}/${project.name}-${project.version}.zip"
   	       basedir="${project.dist.version}/tmp/${project.name}-${project.version}"
   	       excludes="**/.DS_Store"
