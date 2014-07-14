@@ -9,7 +9,7 @@ class RandomButton extends Being {
   boolean _keyPressed = false;
   
   RandomButton(Canvas c, PostOffice po) {
-    super(new Rectangle(randomButtonX,randomButtonY,randomButtonSide,randomButtonSide));
+    super(new HRectangle(randomButtonX,randomButtonY,randomButtonSide,randomButtonSide));
     _c = c;
     _hover = false;
     _po = po;

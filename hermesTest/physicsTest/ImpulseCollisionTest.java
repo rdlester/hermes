@@ -13,7 +13,7 @@ public class ImpulseCollisionTest {
 	class MyBeing extends MassedBeing {
 
 		public MyBeing(PVector pos, PVector vel, float mass, float elasticity) {
-			super(new Circle(pos, 1.0f),
+			super(new HCircle(pos, 1.0f),
 					vel, mass, elasticity);
 		}
 

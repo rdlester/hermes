@@ -31,21 +31,21 @@ abstract class Ball extends MassedBeing {
 
 /**
  * Creates a polygonal ball
- * Uses factory method inside of Polygon to create the polygons
+ * Uses factory method inside of HPolygon to create the polygons
  */
 class PolyBall extends Ball {
   PolyBall(PVector center, PVector velocity, float mass, float elasticity) {
-    super(Polygon.createRegularPolygon(center,polyPoint,ballSize * mass), velocity, mass, elasticity);
-    ((Polygon) getShape()).rotate(polyRot);
+    super(HPolygon.createRegularHPolygon(center,polyPoint,ballSize * mass), velocity, mass, elasticity);
+    ((HPolygon) getShape()).rotate(polyRot);
   }
 }
 
 /**
  * Creates a circular ball
  */
-class CircleBall extends Ball {
-	CircleBall(PVector center, PVector velocity, float mass, float elasticity) {
-		super(new Circle(center, ballSize * mass), velocity, mass, elasticity);
+class HCircleBall extends Ball {
+	HCircleBall(PVector center, PVector velocity, float mass, float elasticity) {
+		super(new HCircle(center, ballSize * mass), velocity, mass, elasticity);
 	}
 }
 
@@ -54,6 +54,6 @@ class CircleBall extends Ball {
  */
 class RectBall extends Ball {
 	RectBall(PVector center, PVector velocity, float mass, float elasticity) {
-		super(new Rectangle(center, ballSize * mass, ballSize * mass), velocity, mass, elasticity);
+		super(new HRectangle(center, ballSize * mass, ballSize * mass), velocity, mass, elasticity);
 	}
 }

@@ -13,7 +13,7 @@ class Canvas extends MassedBeing {
   PostOffice _po;
 
   Canvas(PostOffice po) {
-    super(new Rectangle(new PVector(canvasLeftX, containerTopY),
+    super(new HRectangle(new PVector(canvasLeftX, containerTopY),
                         new PVector(canvasWidth, containerHeight)),
           new PVector(0,0), Float.POSITIVE_INFINITY, 1);
     _po = po;

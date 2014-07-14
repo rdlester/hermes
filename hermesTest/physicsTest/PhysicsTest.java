@@ -2,7 +2,7 @@ package hermesTest.physicsTest;
 
 import static hermes.HermesMath.*;
 import static org.junit.Assert.*;
-import hermes.hshape.Rectangle;
+import hermes.hshape.HRectangle;
 import hermes.physics.*;
 
 import org.junit.*;
@@ -13,7 +13,7 @@ public class PhysicsTest {
 	class MyBeing extends MassedBeing {
 
 		public MyBeing(float mass, float elasticity) {
-			super(new Rectangle(zeroVector(),1.0f,1.0f),
+			super(new HRectangle(zeroVector(),1.0f,1.0f),
 					zeroVector(), mass, elasticity);
 		}
 

@@ -10,7 +10,7 @@ class RunButton extends Being {
   boolean _keyPressed = false;
   
   RunButton(PostOffice po) {
-    super(new Circle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
+    super(new HCircle(new PVector(runButtonCenterX, runButtonCenterY), runButtonRadius));
     _po = po;
   }
   

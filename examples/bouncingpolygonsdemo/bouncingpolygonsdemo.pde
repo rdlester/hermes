@@ -3,7 +3,7 @@
 * Click and release mouse to create shapes
 * Drag to give polygon velocity
 * Use the '1', '2', and '3' keys to choose shape
-* '1' = Rectangle, '2' = Circle, '3' = Polygon
+* '1' = HRectangle, '2' = HCircle, '3' = HPolygon
 * Use the 'd' key to delete shapes
 *
 * OSC demo:

@@ -5,7 +5,7 @@
 class Bubble extends MassedBeing {
 
   Bubble(PVector position) {
-    super(new Circle(position, ballRadius/2), new PVector(0, 0), ballMass, ballElasticity, 35, 8);
+    super(new HCircle(position, ballRadius/2), new PVector(0, 0), ballMass, ballElasticity, 35, 8);
     world.register(this, true);
   }
 

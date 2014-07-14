@@ -12,7 +12,7 @@ class ToolBox extends Being {
   Zero zero;
   
   ToolBox(Canvas canvas) {
-    super(new Rectangle(new PVector(toolBoxLeftX, containerTopY),
+    super(new HRectangle(new PVector(toolBoxLeftX, containerTopY),
                         new PVector(toolBoxWidth, containerHeight)));
     _grid = new Cell[toolBoxNumCellsX][toolBoxNumCellsY];
     _canvas = canvas;
@@ -54,11 +54,11 @@ class ToolBox extends Being {
      _grid[1][5].setTool(templateHexagon);     
      
      //circletool
-     Tool templateCircleTool = makeTool(CIRCLETOOL,
+     Tool templateHCircleTool = makeTool(CIRCLETOOL,
                                 new PVector(toolBoxLeftX + 1*cellSideLength+cellSideLength/2, 
                                             containerTopY + 7*cellSideLength+cellSideLength/2),
                                 0, PERFECT);
-     _grid[1][7].setTool(templateCircleTool);   
+     _grid[1][7].setTool(templateHCircleTool);   
      
      //wedge
      Tool templateWedge = makeTool(WEDGE,

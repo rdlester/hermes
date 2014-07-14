@@ -52,9 +52,9 @@ public abstract class HShape {
 	 * @return			the projection vector from this body to other, or null if they aren't colliding
 	 */
 	public abstract PVector projectionVector(HShape other);
-	public abstract PVector projectionVector(Rectangle other);
-	public abstract PVector projectionVector(Circle other);
-	public abstract PVector projectionVector(Polygon other);
+	public abstract PVector projectionVector(HRectangle other);
+	public abstract PVector projectionVector(HCircle other);
+	public abstract PVector projectionVector(HPolygon other);
 	
 	/**
 	 * Whether the Shape contains the given point coordinates (boundary is inclusive).
@@ -74,7 +74,7 @@ public abstract class HShape {
 	 * Finds the smallest Rectangle that encloses the shape.
 	 * @return	the bounding box
 	 */
-	public abstract Rectangle getBoundingBox();
+	public abstract HRectangle getBoundingBox();
 	
 	/**
 	 * Returns the shape's position. 

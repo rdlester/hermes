@@ -22,7 +22,7 @@ public class BeingTest {
 	public class TestBeing extends Being {
 	
 		public TestBeing() {
-			super(new Rectangle(zeroVector(),1.0f,1.0f), zeroVector());
+			super(new HRectangle(zeroVector(),1.0f,1.0f), zeroVector());
 		}
 	
 		public long updateTime() {

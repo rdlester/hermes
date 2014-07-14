@@ -1,6 +1,6 @@
 package hermes;
 
-import hermes.hshape.Rectangle;
+import hermes.hshape.HRectangle;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -62,7 +62,7 @@ public class HCamera extends Being {
 	 * @param cameraHeight		the height of the camera view. This determines how far the camera can see in the y direction.
 	 */
 	public HCamera(float x, float y, float cameraWidth, float cameraHeight) {
-		super(new Rectangle(new PVector(x,y), new PVector(0,0), new PVector(cameraWidth, cameraHeight)),
+		super(new HRectangle(new PVector(x,y), new PVector(0,0), new PVector(cameraWidth, cameraHeight)),
 				HermesMath.zeroVector());
 		_worldCoordinateWidth = cameraWidth;
 		_worldCoordinateHeight = cameraHeight;

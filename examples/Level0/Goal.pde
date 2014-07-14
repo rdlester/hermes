@@ -3,7 +3,7 @@
  */
 class Goal extends Being {
   Goal() {
-    super(new Rectangle(new PVector((canvasLeftX+goali*cellSideLength), 
+    super(new HRectangle(new PVector((canvasLeftX+goali*cellSideLength), 
                         (containerTopY+goalj*cellSideLength)), 
                         new PVector(cellSideLength, cellSideLength)), 
           new PVector(0, 0));

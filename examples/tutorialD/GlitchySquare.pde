@@ -16,7 +16,7 @@ class GlitchySquare extends Being {
   boolean _left;
 
   GlitchySquare(int x, int y) {
-    super(new Rectangle(x, y, WIDTH, HEIGHT));
+    super(new HRectangle(x, y, WIDTH, HEIGHT));
     _c = color(0, 0, 0);
     _stroke = false;
     _keyOn = false;

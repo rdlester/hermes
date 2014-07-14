@@ -8,7 +8,7 @@ static class Sector extends Being {
   final static int SECTOR_SIZE = 1800;    // pixel width of the sectors
   final static float VERTICAL_STEP = 120; // vertical space between platforms
   
-  Rectangle rectangle;   // the rectangle
+  HRectangle rectangle;   // the rectangle
   
   int x, y;         // coordinates -- these are in sector space (1 unit per sector), not pixel space
   
@@ -23,14 +23,14 @@ static class Sector extends Being {
     platforms.generatePlatforms(rectangle, VERTICAL_STEP, density);
   }
   
-  // the Rectangle defining the sector at this position
-  static Rectangle rectOfSector(int x, int y) {
-    return new Rectangle(new PVector((float)(x * SECTOR_SIZE), (float)(y * SECTOR_SIZE), 0), SECTOR_SIZE, SECTOR_SIZE);
+  // the HRectangle defining the sector at this position
+  static HRectangle rectOfSector(int x, int y) {
+    return new HRectangle(new PVector((float)(x * SECTOR_SIZE), (float)(y * SECTOR_SIZE), 0), SECTOR_SIZE, SECTOR_SIZE);
   }
   
   // rectangles of the neighbors of this sector
-  Rectangle[] getNeighborRects() {
-    Rectangle[] rects = new Rectangle[8];
+  HRectangle[] getNeighborRects() {
+    HRectangle[] rects = new HRectangle[8];
     rects[0] = rectOfSector(x, y - 1); // north
     rects[1] = rectOfSector(x, y + 1); // south
     rects[2] = rectOfSector(x + 1, y); // east

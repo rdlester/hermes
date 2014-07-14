@@ -12,7 +12,7 @@ class Platform extends MassedBeing {
    * makes a Platform with given center and width
    */
   Platform(PVector center, float width) {
-    super(new Rectangle(center, width, HEIGHT), HermesMath.zeroVector(), HermesMath.INFINITY, 1);
+    super(new HRectangle(center, width, HEIGHT), HermesMath.zeroVector(), HermesMath.INFINITY, 1);
     
     this.width = width;
   }

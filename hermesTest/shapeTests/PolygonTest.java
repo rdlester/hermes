@@ -11,22 +11,22 @@ import org.junit.*;
 import processing.core.PVector;
 
 
-public class PolygonTest {
+public class HPolygonTest {
 
 	
 	/**
 	 * Tests polygon versus polygon collision
 	 */
 	@Test
-	public void test_collidePolygon() {
-		//More extensive testing in test_projectionVectorPolygon
+	public void test_collideHPolygon() {
+		//More extensive testing in test_projectionVectorHPolygon
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
 		//Triangle will collide with first along hypotenuse
 		PVector pos2 = new PVector(10,10);
@@ -34,7 +34,7 @@ public class PolygonTest {
 		points2.add(new PVector(0,0));
 		points2.add(new PVector(0,-10));
 		points2.add(new PVector(-10,0));
-		Polygon p2 = new Polygon(pos2, points2);
+		HPolygon p2 = new HPolygon(pos2, points2);
 		
 		//Triangle will collide with second at vertex
 		PVector pos3 = new PVector(10,0);
@@ -42,7 +42,7 @@ public class PolygonTest {
 		points3.add(new PVector(10,0));
 		points3.add(new PVector(0,0));
 		points3.add(new PVector(0,20));
-		Polygon p3 = new Polygon(pos3, points3);
+		HPolygon p3 = new HPolygon(pos3, points3);
 		
 		//Square, will not collide with first or second
 		PVector posNo = new PVector(20,20);
@@ -51,9 +51,9 @@ public class PolygonTest {
 		pointsNo.add(new PVector(0,0));
 		pointsNo.add(new PVector(10,0));
 		pointsNo.add(new PVector(30,20));
-		Polygon pNo = new Polygon(posNo, pointsNo);
+		HPolygon pNo = new HPolygon(posNo, pointsNo);
 		
-		//Polygon p3 = new Polygon(pos3, points3);
+		//HPolygon p3 = new HPolygon(pos3, points3);
 		
 		assertTrue(p1.collide(p2));
 		assertTrue(p2.collide(p1));
@@ -72,33 +72,33 @@ public class PolygonTest {
 	 * Tests polygon versus rectangle collision
 	 */
 	@Test
-	public void test_collideRectangle() {
-		//More extensive testing in test_projectionVectorRectangle
+	public void test_collideHRectangle() {
+		//More extensive testing in test_projectionVectorHRectangle
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
 		//Will collide at vertex
 		PVector pos2 = new PVector(10,0);
 		PVector min1 = new PVector(0,0);
 		PVector max1 = new PVector(10,10);
-		Rectangle r1 = new Rectangle(pos2, min1, max1);
+		HRectangle r1 = new HRectangle(pos2, min1, max1);
 		
 		//Will collide through hypotenuse
 		PVector pos3 = new PVector(10,10);
 		PVector min2 = new PVector(-5,-5);
 		PVector max2 = new PVector(5,5);
-		Rectangle r2 = new Rectangle(pos3, min2, max2);
+		HRectangle r2 = new HRectangle(pos3, min2, max2);
 		
 		//Does not collide
 		PVector pos4 = new PVector(10,10);
 		PVector min3 = new PVector(0,0);
 		PVector max3 = new PVector(20,20);
-		Rectangle r3 = new Rectangle(pos4,min3,max3);
+		HRectangle r3 = new HRectangle(pos4,min3,max3);
 		
 		assertTrue(p1.collide(r1));
 		assertTrue(p1.collide(r2));
@@ -106,42 +106,42 @@ public class PolygonTest {
 	}
 	
 	@Test 
-	public void test_collideCircle() {
-		//More extensive testing in test_projectionVectorCircle
+	public void test_collideHCircle() {
+		//More extensive testing in test_projectionVectorHCircle
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
-		//Circle that collides
+		//HCircle that collides
 		PVector pos2 = new PVector(10,10);
-		Circle c1 = new Circle(pos2,8);
+		HCircle c1 = new HCircle(pos2,8);
 		assertTrue(p1.collide(c1));
 		
-		//Circle that does not collide
-		Circle c2 = new Circle(pos2,4);
+		//HCircle that does not collide
+		HCircle c2 = new HCircle(pos2,4);
 		assertFalse(p1.collide(c2));
 		
 		//Other circles that collide
 		PVector pos3 = new PVector(20,0);
-		Circle c3 = new Circle(pos3,10);
+		HCircle c3 = new HCircle(pos3,10);
 		assertTrue(p1.collide(c3));
 		
 		
 	}
 	
 	@Test
-	public void test_projectionVectorPolygon() {
+	public void test_projectionVectorHPolygon() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
 		//Triangle will collide with first along hypotenuse
 		PVector pos2 = new PVector(10,10);
@@ -149,7 +149,7 @@ public class PolygonTest {
 		points2.add(new PVector(0,0));
 		points2.add(new PVector(0,-10));
 		points2.add(new PVector(-10,0));
-		Polygon p2 = new Polygon(pos2, points2);
+		HPolygon p2 = new HPolygon(pos2, points2);
 		//Test
 		assertTrue(p1.collide(p2));
 		PVector projectV1 = p1.projectionVector(p2);
@@ -162,7 +162,7 @@ public class PolygonTest {
 		points3.add(new PVector(10,0));
 		points3.add(new PVector(0,0));
 		points3.add(new PVector(0,20));
-		Polygon p3 = new Polygon(pos3, points3);
+		HPolygon p3 = new HPolygon(pos3, points3);
 		//Test
 		PVector projectV2 = p1.projectionVector(p3);
 		assertEquals(projectV2.x,0,1e-8);
@@ -176,7 +176,7 @@ public class PolygonTest {
 		points4.add(new PVector(-1,0));
 		points4.add(new PVector(1,0));
 		points4.add(new PVector(2,5));
-		Polygon p4 = new Polygon(pos4, points4);
+		HPolygon p4 = new HPolygon(pos4, points4);
 		//Test
 		PVector projectV4 = p1.projectionVector(p4);
 		assertEquals(projectV4.x,0,1e-8);
@@ -189,7 +189,7 @@ public class PolygonTest {
 		points5.add(new PVector(1,-1));
 		points5.add(new PVector(1,1));
 		points5.add(new PVector(-2,1));
-		Polygon p5 = new Polygon(pos5, points5);
+		HPolygon p5 = new HPolygon(pos5, points5);
 		//Test
 		PVector projectV5 = p1.projectionVector(p5);
 		assertEquals(projectV5.x,-4,1e-8);
@@ -203,7 +203,7 @@ public class PolygonTest {
 		points6.add(new PVector(0,0));
 		points6.add(new PVector(1,0));
 		points6.add(new PVector(2,5));
-		Polygon p6 = new Polygon(pos6, points6);
+		HPolygon p6 = new HPolygon(pos6, points6);
 		//Test
 		PVector projectV6 = p1.projectionVector(p6);
 		assertEquals(projectV6.x,2.5,1e-8);
@@ -224,52 +224,52 @@ public class PolygonTest {
 		pointsSquare.add(new PVector(-radius,0));
 		
 		PVector pos90 = new PVector(0,0);
-		Polygon s1 = new Polygon(pos90,pointsSquare);
+		HPolygon s1 = new HPolygon(pos90,pointsSquare);
 		
 		PVector pos7 = new PVector(50,0);
-		Polygon s2 = new Polygon(pos7,pointsSquare);
+		HPolygon s2 = new HPolygon(pos7,pointsSquare);
 		PVector projectS1 = s1.projectionVector(s2);
 		assertEquals(projectS1.x,0,1e-8);
 		assertEquals(projectS1.y,0,1e-8);
 		
 		PVector pos8 = new PVector(49,0);
-		Polygon s3 = new Polygon(pos8,pointsSquare);
+		HPolygon s3 = new HPolygon(pos8,pointsSquare);
 		PVector projectS2 = s1.projectionVector(s3);
 		assertEquals(projectS2.x,0.5,1e-6);
 		assertEquals(projectS2.y,-0.5,1e-6);
 		
 		PVector pos9 = new PVector(30,0);
-		Polygon s4 = new Polygon(pos9,pointsSquare);
+		HPolygon s4 = new HPolygon(pos9,pointsSquare);
 		PVector projectS3 = s1.projectionVector(s4);
 		assertEquals(projectS3.x,10,1e-6);
 		assertEquals(projectS3.y,-10,1e-6);
 		
 		PVector pos10 = new PVector(20,20);
-		Polygon s5 = new Polygon(pos10,pointsSquare);
+		HPolygon s5 = new HPolygon(pos10,pointsSquare);
 		PVector projectS4 = s1.projectionVector(s5);
 		assertEquals(projectS4.x,5,1e-6);
 		assertEquals(projectS4.y,5,1e-6);
 		
 		PVector pos11 = new PVector(51,0);
-		Polygon s6 = new Polygon(pos11,pointsSquare);
+		HPolygon s6 = new HPolygon(pos11,pointsSquare);
 		assertFalse(s1.collide(s6));
 	}
 	
 	@Test
-	public void test_projectionVectorRectangle() {
+	public void test_projectionVectorHRectangle() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
 		//Will collide at vertex
 		PVector pos2 = new PVector(10,0);
 		PVector min1 = new PVector(0,0);
 		PVector max1 = new PVector(10,10);
-		Rectangle r1 = new Rectangle(pos2, min1, max1);
+		HRectangle r1 = new HRectangle(pos2, min1, max1);
 		//Test
 		PVector projectV1 = p1.projectionVector(r1);
 		assertEquals(projectV1.x,0,1e-8);
@@ -279,7 +279,7 @@ public class PolygonTest {
 		PVector pos3 = new PVector(10,10);
 		PVector min2 = new PVector(-5,-5);
 		PVector max2 = new PVector(5,5);
-		Rectangle r2 = new Rectangle(pos3, min2, max2);
+		HRectangle r2 = new HRectangle(pos3, min2, max2);
 		//Test
 		PVector projectV2 = p1.projectionVector(r2);
 		assertEquals(projectV2.x,0,1e-8);
@@ -287,13 +287,13 @@ public class PolygonTest {
 		
 		//New displaced triangle
 		PVector pos4 = new PVector(10,10);
-		Polygon p2 = new Polygon(pos4,points1);
+		HPolygon p2 = new HPolygon(pos4,points1);
 		
 		//Overlaps at corner
 		PVector pos5 = new PVector(5,5);
 		PVector min3 = new PVector(-2,-2);
 		PVector max3 = new PVector(6,6);
-		Rectangle r3 = new Rectangle(pos5,min3,max3);
+		HRectangle r3 = new HRectangle(pos5,min3,max3);
 		//Test
 		PVector projectV3 = p2.projectionVector(r3);
 		assertEquals(projectV3.x,-1,1e-8);
@@ -301,18 +301,18 @@ public class PolygonTest {
 	}
 	
 	@Test 
-	public void test_projectionVectorCircle() {
+	public void test_projectionVectorHCircle() {
 		//Triangle
 		PVector pos1 = new PVector(0,0);
 		ArrayList<PVector> points1 = new ArrayList<PVector>();
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
-		//Circle that collides at hypotenuse
+		//HCircle that collides at hypotenuse
 		PVector pos2 = new PVector(10,10);
-		Circle c1 = new Circle(pos2,8);
+		HCircle c1 = new HCircle(pos2,8);
 		PVector projectV1 = p1.projectionVector(c1);
 		float result = (float) 0.656854212284881;
 		System.out.println(projectV1);
@@ -321,7 +321,7 @@ public class PolygonTest {
 		
 		//Collides at vertex
 		PVector pos3 = new PVector(20,0);
-		Circle c2 = new Circle(pos3,10);
+		HCircle c2 = new HCircle(pos3,10);
 		assertTrue(p1.collide(c2));
 		PVector projectV2 = p1.projectionVector(c2);
 		assertEquals(projectV2.x,0,1e-8);
@@ -329,7 +329,7 @@ public class PolygonTest {
 		
 		//Is located just inside triangle
 		PVector pos4 = new PVector(1,1);
-		Circle c3 = new Circle(pos4, 5);
+		HCircle c3 = new HCircle(pos4, 5);
 		assertTrue(p1.collide(c3));
 		PVector projectV3 = p1.projectionVector(c3);
 		assertEquals(projectV3.x,-6,1e-8);
@@ -337,7 +337,7 @@ public class PolygonTest {
 		
 		//Is inside triangle
 		PVector posIn = new PVector(3,3);
-		Circle cIn = new Circle(posIn, 1);
+		HCircle cIn = new HCircle(posIn, 1);
 		assertTrue(p1.collide(cIn));
 		PVector projectVIn = p1.projectionVector(cIn);
 		float res = (float)(5-(3-Math.sqrt(2)/2));
@@ -346,7 +346,7 @@ public class PolygonTest {
 		
 		//Into hypotenuse
 		PVector pos5 = new PVector(20,1);
-		Circle c4 = new Circle(pos5,12);
+		HCircle c4 = new HCircle(pos5,12);
 		PVector projectV4 = p1.projectionVector(c4);
 		PVector result4 = new PVector(10,1);
 		result4.normalize();
@@ -359,11 +359,11 @@ public class PolygonTest {
 		points2.add(new PVector(0,0));
 		points2.add(new PVector(10,0));
 		points2.add(new PVector(0,10));
-		Polygon p2 = new Polygon(pos2, points2);
+		HPolygon p2 = new HPolygon(pos2, points2);
 		
-		//Collides behind Polygon 2
+		//Collides behind HPolygon 2
 		PVector pos6 = new PVector(0,10);
-		Circle c5 = new Circle(pos6,11);
+		HCircle c5 = new HCircle(pos6,11);
 		PVector projectV5 = p2.projectionVector(c5);
 		assertEquals(projectV5.x,-1,1e-8);
 		assertEquals(projectV5.y,0,1e-8);
@@ -378,16 +378,16 @@ public class PolygonTest {
 		pointsSquare.add(new PVector(-radius,0));
 		
 		PVector pos7 = new PVector(0,0);
-		Polygon s1 = new Polygon(pos7,pointsSquare);
+		HPolygon s1 = new HPolygon(pos7,pointsSquare);
 		
 		PVector pos8 = new PVector(30,0);
-		Circle c6 = new Circle(pos8,5);
+		HCircle c6 = new HCircle(pos8,5);
 		PVector projectS1 = s1.projectionVector(c6);
 		assertEquals(projectS1.x,0,1e-8);
 		assertEquals(projectS1.y,0,1e-8);
 		
 		PVector pos9 = new PVector(31,0);
-		Circle c7 = new Circle(pos9,5);
+		HCircle c7 = new HCircle(pos9,5);
 		assertFalse(s1.collide(c7));
 	}
 	
@@ -399,7 +399,7 @@ public class PolygonTest {
 		points1.add(new PVector(0,0));
 		points1.add(new PVector(10,0));
 		points1.add(new PVector(0,10));
-		Polygon p1 = new Polygon(pos1, points1);
+		HPolygon p1 = new HPolygon(pos1, points1);
 		
 		//Contains own corner?
 		assertTrue(p1.contains(new PVector(10,0,0)));

@@ -8,7 +8,7 @@ class GlitchySquare extends Being {
   static final int SHAKE_STEP = 10;
 
   GlitchySquare(int x, int y) {
-    super(new Rectangle(x, y, WIDTH, HEIGHT));
+    super(new HRectangle(x, y, WIDTH, HEIGHT));
     _c = color(0,0,0);
   }
 

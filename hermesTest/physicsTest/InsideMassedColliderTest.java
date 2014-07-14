@@ -14,7 +14,7 @@ public class InsideMassedColliderTest {
 	class TestBeing extends MassedBeing {
 
 		public TestBeing(PVector position, float width, float height, float mass) {
-			super(new Rectangle(position, width, height), zeroVector(), mass, 1);
+			super(new HRectangle(position, width, height), zeroVector(), mass, 1);
 		}
 
 		public void draw() {}

@@ -18,7 +18,7 @@ class Player extends MassedBeing {
   int animIndex;
   
   Player(float x, float y) {
-    super(new Rectangle(HermesMath.makeVector(x, y), PLAYER_WIDTH, PLAYER_HEIGHT), HermesMath.zeroVector(), 1.0f, 1.0f);
+    super(new HRectangle(HermesMath.makeVector(x, y), PLAYER_WIDTH, PLAYER_HEIGHT), HermesMath.zeroVector(), 1.0f, 1.0f);
     
     // load the animated character walk cycle
     sprite = new AnimatedSprite();

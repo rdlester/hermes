@@ -8,7 +8,7 @@ import static hermes.HermesMath.*;
 /**
  * Represents an axis-aligned bounding rectangle.
  */
-public class Rectangle extends HShape {
+public class HRectangle extends HShape {
 
 	private PVector _min, _max;
 
@@ -24,7 +24,7 @@ public class Rectangle extends HShape {
 	 * @param c
 	 * @param d
 	 */
-	public Rectangle(float a, float b, float c, float d) {
+	public HRectangle(float a, float b, float c, float d) {
 		super(new PVector(a,b,0));
 		PApplet p = Hermes.getPApplet();
 		if(p != null) {
@@ -61,7 +61,7 @@ public class Rectangle extends HShape {
 	 * @param c
 	 * @param d
 	 */
-	public Rectangle(PVector ab, float c, float d) {
+	public HRectangle(PVector ab, float c, float d) {
 		this(ab.x, ab.y, c, d);
 	}
 	
@@ -73,7 +73,7 @@ public class Rectangle extends HShape {
 	 * @param ab
 	 * @param cd
 	 */
-	public Rectangle(PVector ab, PVector cd) {
+	public HRectangle(PVector ab, PVector cd) {
 		this(ab.x, ab.y, cd.x, cd.y);
 	}
 	
@@ -85,7 +85,7 @@ public class Rectangle extends HShape {
 	 * @param min - location of top left corner in relation to position
 	 * @param max - location of bottom right corner in relation to position
 	 */
-	public Rectangle(PVector position, PVector min, PVector max) {
+	public HRectangle(PVector position, PVector min, PVector max) {
 		super(position);
 		_min = min;
 		_max = max;
@@ -160,19 +160,19 @@ public class Rectangle extends HShape {
 	}
 
 	@Override
-	public PVector projectionVector(Circle other) {
+	public PVector projectionVector(HCircle other) {
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
 
 	@Override
-	public PVector projectionVector(Polygon other) {
+	public PVector projectionVector(HPolygon other) {
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
 
 	@Override
-	public PVector projectionVector(Rectangle other) {
+	public PVector projectionVector(HRectangle other) {
 		if(other == this)	// no self-projection
 			return null;
 		// calculate the distance between rect centers
@@ -193,7 +193,7 @@ public class Rectangle extends HShape {
 	}	
 
 	@Override
-	public Rectangle getBoundingBox() {
+	public HRectangle getBoundingBox() {
 		return this;
 	}
 	
@@ -203,7 +203,7 @@ public class Rectangle extends HShape {
 	 * @param other		the other rectangle
 	 * @return			whether it is completely contained
 	 */
-	public boolean contains(Rectangle other) {
+	public boolean contains(HRectangle other) {
 		float minX1 = getAbsMin().x;
 		float minY1 = getAbsMin().y;
 		float maxX1 = getAbsMax().x;

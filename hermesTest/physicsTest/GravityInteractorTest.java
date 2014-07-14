@@ -1,6 +1,6 @@
 package hermesTest.physicsTest;
 
-import hermes.hshape.Rectangle;
+import hermes.hshape.HRectangle;
 import hermes.physics.GravityInteractor;
 import hermes.physics.MassedBeing;
 
@@ -15,7 +15,7 @@ public class GravityInteractorTest {
 	public class TestBeing extends MassedBeing {
 
 		public TestBeing(PVector position, PVector velocity, float mass) {
-			super(new Rectangle(position, 4, 4), velocity, mass, 1);
+			super(new HRectangle(position, 4, 4), velocity, mass, 1);
 		}
 
 		public void draw() {}

@@ -13,7 +13,7 @@ class Cell extends Being {
   int _j;
   
   Cell(PVector cellTopLeft, int i, int j) {
-    super(new Rectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength)));
+    super(new HRectangle(cellTopLeft, new PVector(cellSideLength, cellSideLength)));
     _flowDir = INIT_DIR;
     _flowStr = INIT_STR;
     _tool = null;

@@ -25,10 +25,10 @@ public class OptimizerTest {
 			super(makeRect());
 		}
 		
-		private static Rectangle makeRect() {
+		private static HRectangle makeRect() {
 			float x = r.nextFloat() * 100;
 			float y = r.nextFloat() * 100;
-			return new Rectangle(x, y, 1, 1);
+			return new HRectangle(x, y, 1, 1);
 		}
 		
 	}

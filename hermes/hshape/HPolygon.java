@@ -20,11 +20,11 @@ import static hermes.HermesMath.*;
  * Each point is assumed to be next to points before and after it in list.
  * Make sure your List of points is ordered correctly!
  * <p>
- * A Polygon must also be convex,
+ * A HPolygon must also be convex,
  * concave polygons will break collision detection.
  *
  */
-public class Polygon extends HShape {
+public class HPolygon extends HShape {
 	
 	//Stores unit vectors representing direction of axes normal to edges of polygon
 	//Used for collision detection (SAT)
@@ -33,17 +33,17 @@ public class Polygon extends HShape {
 	private ArrayList<PVector> _points;
 	
 	/**
-	 * Creates a new Polygon.
+	 * Creates a new HPolygon.
 	 * <p>List of vertex points must be ordered such that
 	 * each point is connected to points before and after it in list.
 	 * @param position - Reference to Shape's position
 	 * @param points - List of vertex points defined relative to position, must be ordered
 	 */
-	public Polygon(PVector position, ArrayList<PVector> points) {
+	public HPolygon(PVector position, ArrayList<PVector> points) {
 		super(position);
 		
-		assert points != null : "In Polygon constructor, points must be valid List";
-		assert points.size() > 2 : "In Polygon constructor, points must contain at least three point";
+		assert points != null : "In HPolygon constructor, points must be valid List";
+		assert points.size() > 2 : "In HPolygon constructor, points must contain at least three point";
 		
 		_points = points;
 		
@@ -67,18 +67,18 @@ public class Polygon extends HShape {
 	}
 	
 	/**
-	 * Creates a new Polygon.
+	 * Creates a new HPolygon.
 	 * <p>Takes a variable number of PVectors (must give at least 3) for vertices.
 	 * <p>Vertex points must be given in order such that
 	 * each point is connected to points given before and after it.
 	 * @param position - Reference to Shape's position
 	 * @param points - the PVectors defining the verticies of the polygon
 	 */
-	public Polygon(PVector position, PVector... points) {
+	public HPolygon(PVector position, PVector... points) {
 		super(position);
 		
-		assert points != null : "In Polygon constructor, points must be valid PVectors";
-		assert points.length > 2 : "In Polygon constructor, points must contain at least three point";
+		assert points != null : "In HPolygon constructor, points must be valid PVectors";
+		assert points.length > 2 : "In HPolygon constructor, points must contain at least three point";
 		
 		_points = (ArrayList<PVector>) Arrays.asList(points);
 		
@@ -114,7 +114,7 @@ public class Polygon extends HShape {
 		axis = HermesMath.rotate(axis,Math.PI/2);
 		float project1 = axis.dot(start);
 		float projectpre = axis.dot(preStart);
-		assert project1 != projectpre : "Polygon must be convex!";
+		assert project1 != projectpre : "HPolygon must be convex!";
 		if(project1 < projectpre) {
 			reverse(axis);
 		}
@@ -221,29 +221,29 @@ public class Polygon extends HShape {
 	
 	@Override
 	public boolean collide(HShape other) {
-		assert other != null : "Polygon.collide: other must be a valid Shape";
+		assert other != null : "HPolygon.collide: other must be a valid Shape";
 		return other.projectionVector(this) != null;
 	}
 	
-	public boolean collide(Rectangle other) {
+	public boolean collide(HRectangle other) {
 		return projectionVector(other) != null;
 	}
-	public boolean collide(Circle other) {
+	public boolean collide(HCircle other) {
 		return projectionVector(other) != null;
 	}
-	public boolean collide(Polygon other) {
+	public boolean collide(HPolygon other) {
 		return projectionVector(other) != null;
 	}
 	
 	@Override
 	public PVector projectionVector(HShape other) {
-		assert other != null : "Polygon.projectionVector: other must be a valid Shape";
+		assert other != null : "HPolygon.projectionVector: other must be a valid Shape";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
 
 	@Override
-	public PVector projectionVector(Rectangle other) {
+	public PVector projectionVector(HRectangle other) {
 		/*//Get distance between shapes
 		PVector dist = PVector.sub(_position, other.getPosition());
 		//Set up variables for keeping track of smallest resolution
@@ -303,7 +303,7 @@ public class Polygon extends HShape {
 		
 		return resolution;*/
 		
-		//Turn Rectangle into a Polygon
+		//Turn HRectangle into a HPolygon
 		PVector otherPos = other.getPosition();
 		PVector min = other.getMin();
 		PVector max = other.getMax();
@@ -314,13 +314,13 @@ public class Polygon extends HShape {
 		points.add(v2);
 		points.add(max);
 		points.add(v4);	
-		Polygon rect = new Polygon(otherPos, points);
+		HPolygon rect = new HPolygon(otherPos, points);
 		
 		return projectionVector(rect);
 	}
 	
 	@Override
-	public PVector projectionVector(Circle other) {
+	public PVector projectionVector(HCircle other) {
 		//Get distance between shapes
 		PVector dist = PVector.sub(_position, other.getPosition());
 		//Set up variables for keeping track of smallest resolution
@@ -364,7 +364,7 @@ public class Polygon extends HShape {
 	}
 	
 	@Override
-	public PVector projectionVector(Polygon other) {
+	public PVector projectionVector(HPolygon other) {
 		//Get distance between polygons
 		PVector dist = PVector.sub(_position, other.getPosition());
 		//Set up variables for keeping track of smallest resolution
@@ -403,7 +403,7 @@ public class Polygon extends HShape {
 		return resolution;
 	}
 
-	/*private PVector checkSepAxis(PVector axis, PVector dist, Rectangle other) {
+	/*private PVector checkSepAxis(PVector axis, PVector dist, HRectangle other) {
 		
 	}*/
 	
@@ -445,7 +445,7 @@ public class Polygon extends HShape {
 	 * @param other - the other polygon
 	 * @return PVector - the "projection vector" of the two shapes along specific axis if colliding, null otherwise 
 	 */
-	private PVector checkSepAxis(PVector axis, PVector dist, Polygon other) {
+	private PVector checkSepAxis(PVector axis, PVector dist, HPolygon other) {
 		PVector project1 = getProjection(axis, this);
 		PVector project2 = getProjection(axis, other);
 		
@@ -472,7 +472,7 @@ public class Polygon extends HShape {
 	 * @param poly
 	 * @return PVector with min as x, max as y 
 	 */
-	private PVector getProjection(PVector axis, Polygon poly) {
+	private PVector getProjection(PVector axis, HPolygon poly) {
 		float min;
 		float max;
 		
@@ -561,7 +561,7 @@ public class Polygon extends HShape {
 	}
 	
 	@Override
-	public Rectangle getBoundingBox() {
+	public HRectangle getBoundingBox() {
 		float xMax = Float.NEGATIVE_INFINITY;
 		float xMin = Float.POSITIVE_INFINITY;
 		float yMax = Float.NEGATIVE_INFINITY;
@@ -579,7 +579,7 @@ public class Polygon extends HShape {
 		}
 		PVector min = makeVector(xMin, yMin);
 		PVector max = makeVector(xMax, yMax);
-		return new Rectangle(_position, min, max);
+		return new HRectangle(_position, min, max);
 	}
 	
 	@Override
@@ -604,7 +604,7 @@ public class Polygon extends HShape {
 	}
 	
 	///////////////////////////////
-	//Factories for Polygons
+	//Factories for HPolygons
 	///////////////////////////////
 	/**
 	 * Creates a new regular polygon with a given number of sides at the given location.
@@ -614,7 +614,7 @@ public class Polygon extends HShape {
 	 * @param sides		number of sides in the polygon
 	 * @param radius	determines size of polygon
 	 */
-	public static Polygon createRegularPolygon(PVector pos, int sides, float radius) {
+	public static HPolygon createRegularHPolygon(PVector pos, int sides, float radius) {
 		ArrayList<PVector> points = new ArrayList<PVector>();
 		PVector vertex = new PVector(0,-radius);
 		points.add(vertex);
@@ -624,6 +624,6 @@ public class Polygon extends HShape {
 			points.add(next);
 			vertex = next;
 		}
-		return new Polygon(pos,points);
+		return new HPolygon(pos,points);
 	}
 }

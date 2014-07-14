@@ -1,7 +1,7 @@
 package hermes;
 
 import hermes.hshape.HShape;
-import hermes.hshape.Rectangle;
+import hermes.hshape.HRectangle;
 
 import java.util.Iterator;
 
@@ -225,7 +225,7 @@ public abstract class Being extends HObject {
 	 * Gets the bounding box enclosing the <code>Being</code>'s shape.
 	 * @return	The bounding box enclosing the <code>Being</code>'s shape
 	 */
-	public Rectangle getBoundingBox() {
+	public HRectangle getBoundingBox() {
 		return _shape.getBoundingBox();
 	}
 	

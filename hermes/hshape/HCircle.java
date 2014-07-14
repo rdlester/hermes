@@ -7,7 +7,7 @@ import static hermes.HermesMath.*;
 /**
  * Represents a circle.
  */
-public class Circle extends HShape {
+public class HCircle extends HShape {
 
 	private PVector _center;
 	private float _radius;
@@ -18,10 +18,10 @@ public class Circle extends HShape {
 	 * @param position
 	 * @param radius
 	 */
-	public Circle(PVector position, float radius) {
+	public HCircle(PVector position, float radius) {
 		super(position);
 		
-		assert radius >= 0 : "In Circle constructor, radius must be positive"; //TODO can radius be 0?
+		assert radius >= 0 : "In HCircle constructor, radius must be positive"; //TODO can radius be 0?
 		
 		_center = new PVector(0,0);
 		_radius = radius;
@@ -34,11 +34,11 @@ public class Circle extends HShape {
 	 * @param center
 	 * @param radius
 	 */
-	public Circle(PVector position, PVector center, float radius) {
+	public HCircle(PVector position, PVector center, float radius) {
 		super(position);
 		
-		assert center != null : "In Circle constructor, center must be a valid PVector";
-		assert radius >= 0 : "In Circle constructor, radius must be non-negative"; //TODO can radius be 0?
+		assert center != null : "In HCircle constructor, center must be a valid PVector";
+		assert radius >= 0 : "In HCircle constructor, radius must be non-negative"; //TODO can radius be 0?
 		
 		_center = center;
 		_radius = radius;
@@ -74,25 +74,25 @@ public class Circle extends HShape {
 	
 	@Override
 	public PVector projectionVector(HShape other) {
-		assert other != null : "Circle.collide: other must be a validHShape";
+		assert other != null : "HCircle.collide: other must be a validHShape";
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
 
 	@Override
-	public PVector projectionVector(Polygon other) {
+	public PVector projectionVector(HPolygon other) {
 		PVector opposite = other.projectionVector(this);
 		return opposite == null ? null : reverse(opposite);
 	}
 	
 	@Override
-	public PVector projectionVector(Circle other) {
+	public PVector projectionVector(HCircle other) {
 		//Get the center of this circle
 		PVector worldCenterThis = PVector.add(_position, _center);
 		//Get the center of the other circle
 		PVector worldCenterOther = PVector.add(other.getPosition(), other.getCenter());
 		
-		//Circles are colliding if distance between them is less than sum of radii
+		//HCircles are colliding if distance between them is less than sum of radii
 		PVector dir = PVector.sub(worldCenterOther, worldCenterThis);
 		float distance = dir.mag();
 		float sumRadii = _radius + other._radius;
@@ -109,7 +109,7 @@ public class Circle extends HShape {
 	}
 	
 	@Override
-	public PVector projectionVector(Rectangle other) {
+	public PVector projectionVector(HRectangle other) {
 		//Get the center of this circle
 		PVector worldCenter = PVector.add(_center, _position);
 		//Figure out what voronoi region of the rectangle the circle is in
@@ -198,8 +198,8 @@ public class Circle extends HShape {
 	}
 	
 	@Override
-	public Rectangle getBoundingBox() {
-		return new Rectangle(PVector.sub(PVector.add(_position, _center),new PVector(_radius,_radius)), 2*_radius, 2*_radius);
+	public HRectangle getBoundingBox() {
+		return new HRectangle(PVector.sub(PVector.add(_position, _center),new PVector(_radius,_radius)), 2*_radius, 2*_radius);
 	}
 	
 	@Override

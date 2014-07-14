@@ -5,7 +5,7 @@ class Shot extends Being {
 
   Shot(float x, float y, float shotWidth, float shotHeight, float travel) {
 
-    super(new Rectangle(x, y, shotWidth, shotHeight));
+    super(new HRectangle(x, y, shotWidth, shotHeight));
     this.travel = travel;
     this.shotWidth = shotWidth;
     this.shotHeight = shotHeight;

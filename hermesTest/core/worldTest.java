@@ -23,7 +23,7 @@ public class worldTest {
 	class TestBeing1 extends Being {
 
 		public TestBeing1() {
-			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
+			super(new HRectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
 		}
 
 		@Override
@@ -91,7 +91,7 @@ public class worldTest {
 		boolean interacted = false;
 		
 		public TestBeing2() {
-			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
+			super(new HRectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
 		}
 
 		@Override
@@ -107,7 +107,7 @@ public class worldTest {
 		Hashtable<TestBeing3,Integer> _checkedInteractions;
 		
 		public TestBeing3(int numSteps, int id) {
-			super(new Rectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
+			super(new HRectangle(zeroVector(), 1.0f, 1.0f), zeroVector());
 			_stepsPerUpdate = numSteps;
 			_id = id;
 			_checkedInteractions = new Hashtable<TestBeing3,Integer>();

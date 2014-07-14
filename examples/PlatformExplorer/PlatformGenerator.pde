@@ -9,7 +9,7 @@ class PlatformGenerator extends Interactor<SectorGrid, HCamera> {
    void handle(SectorGrid grid, HCamera cam) {
      Sector current = grid.getCurrentSector();
      // see which neighbors of this sector the camera overlaps with
-     Rectangle[] neighbors = current.getNeighborRects();
+     HRectangle[] neighbors = current.getNeighborRects();
      for(int i = 0; i < 8; i++) {
        if(cam.getBoundingBox().collide(neighbors[i])) {
          int x = (int)neighbors[i].getPosition().x / Sector.SECTOR_SIZE;

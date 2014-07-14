@@ -57,14 +57,14 @@ class BallGroup extends Group<Ball> {
 						ball = new PolyBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
 						break;
 					case CIRCLE_MODE:
-						ball = new CircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
+						ball = new HCircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
 						break;
 					case RECT_MODE:
 						ball = new RectBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
 						break;
 					default:
 						System.out.println("In an invalid mode");
-						ball = new CircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
+						ball = new HCircleBall(new PVector(_origX, _origY), new PVector(_origX-_dX, _origY-_dY), _newMass, _newElasticity);
 						break;
 				}
 				getWorld().register(ball);

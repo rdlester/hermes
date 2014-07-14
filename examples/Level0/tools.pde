@@ -106,7 +106,7 @@ Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
                       break;
      case HEXAGON:    toReturn = new Hexagon(position, theta, elasticity);
                       break;
-     case CIRCLETOOL: toReturn = new CircleTool(position, theta, elasticity);
+     case CIRCLETOOL: toReturn = new HCircleTool(position, theta, elasticity);
                       break;
      case WEDGE:      toReturn = new Wedge(position, theta, elasticity);
                       break;
@@ -122,21 +122,21 @@ Tool makeTool(int toolCode, PVector position, double theta, float elasticity) {
 class Quadrangle extends Tool {
  
   Quadrangle(PVector center, double theta, float elasticity) {
-   super(Polygon.createRegularPolygon(center, 4, cellSideLength/2),
+   super(HPolygon.createRegularHPolygon(center, 4, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, QUADRANGLE);
    this.rotate(theta);
   } 
  
   void rotate(double theta) {
     super.rotate(theta);
-   ((Polygon)this.getShape()).rotate(theta);
+   ((HPolygon)this.getShape()).rotate(theta);
   } 
   
   void draw() {
     super.draw();
     getShape().draw();
     /*if(getElasticity() == STICKY) {
-      Polygon p = (Polygon) getShape();
+      HPolygon p = (HPolygon) getShape();
       drawCilia(p);
     }*/
   }
@@ -152,21 +152,21 @@ class Triangle extends Tool {
   boolean _doubleClick = false;
   
  Triangle(PVector center, double theta, float elasticity) {
-   super(Polygon.createRegularPolygon(center, 3, cellSideLength/2),
+   super(HPolygon.createRegularHPolygon(center, 3, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, TRIANGLE);
    this.rotate(theta);
  }
 
  void rotate(double theta) {
    super.rotate(theta);
-   ((Polygon)this.getShape()).rotate(theta);
+   ((HPolygon)this.getShape()).rotate(theta);
  } 
  
  void draw() {
   super.draw();
   getShape().draw();
   /*if(getElasticity() == STICKY) {
-    Polygon p = (Polygon) getShape();
+    HPolygon p = (HPolygon) getShape();
     drawCilia(p);
   }*/
   //TODO: add handle
@@ -179,21 +179,21 @@ class Triangle extends Tool {
 class Hexagon extends Tool {
  
   Hexagon(PVector center, double theta, float elasticity) {
-   super(Polygon.createRegularPolygon(center, 6, cellSideLength/2),
+   super(HPolygon.createRegularHPolygon(center, 6, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, HEXAGON);
    this.rotate(theta);
   } 
  
   void rotate(double theta) {
    super.rotate(theta);
-   ((Polygon)this.getShape()).rotate(theta);
+   ((HPolygon)this.getShape()).rotate(theta);
   } 
   
   void draw() {
     super.draw();
     getShape().draw();
     /*if(getElasticity() == STICKY) {
-      Polygon p = (Polygon) getShape();
+      HPolygon p = (HPolygon) getShape();
       drawCilia(p);
     }*/
   }
@@ -203,10 +203,10 @@ class Hexagon extends Tool {
 /**
  * Circular tool
  */
-class CircleTool extends Tool {
+class HCircleTool extends Tool {
  
-  CircleTool(PVector center, double theta, float elasticity) {
-   super(new Circle(center, cellSideLength/2),
+  HCircleTool(PVector center, double theta, float elasticity) {
+   super(new HCircle(center, cellSideLength/2),
          new PVector(0, 0), Float.POSITIVE_INFINITY, elasticity, CIRCLETOOL);
   } 
   
@@ -217,7 +217,7 @@ class CircleTool extends Tool {
     popMatrix();
     /*if(getElasticity() == STICKY) {
       stroke(0);
-      Circle c = (Circle) getShape();
+      HCircle c = (HCircle) getShape();
       float r = c.getRadius();
       PVector initDir = new PVector(0,1); //Set the initial direction for silia
       initDir.mult(r); // Multiply it out to the edge of the circle
@@ -247,11 +247,11 @@ class Wedge extends Tool {
   
   void rotate(double theta) {
     super.rotate(theta);
-    ((Polygon) getShape()).rotate(theta);
+    ((HPolygon) getShape()).rotate(theta);
     /*double rot = (_totalRotation + PI/4) % (2*PI);
     int sector = ((Double) (rot/(PI*2))).intValue();
     if(sector != _sector) {
-      Polygon p = (Polygon) getShape();
+      HPolygon p = (HPolygon) getShape();
       int alter = sector - _sector;
       p.rotate(PI/2 * alter);
     }*/
@@ -261,7 +261,7 @@ class Wedge extends Tool {
     super.draw();
     getShape().draw();
     /*if(getElasticity() == STICKY) {
-      Polygon p = (Polygon) getShape();
+      HPolygon p = (HPolygon) getShape();
       drawCilia(p);
     }*/
   }
@@ -271,19 +271,19 @@ class Wedge extends Tool {
  * Factory method for generating wedge polygons
  * Required for super of wedge
  */
-Polygon generateWedge(PVector center) {
+HPolygon generateWedge(PVector center) {
   ArrayList<PVector> points = new ArrayList<PVector>();
   points.add(new PVector(cellSideLength/2,cellSideLength/2));
   points.add(new PVector(-cellSideLength/2,cellSideLength/2));
   points.add(new PVector(-cellSideLength/2,-cellSideLength/2));
-  return new Polygon(center,points);
+  return new HPolygon(center,points);
 }
 
 /**
  * Helper method for drawing cilia on sides of sticky objects
  * Currently not used
  */
-void drawCilia(Polygon p) {
+void drawCilia(HPolygon p) {
   stroke(0);
   ArrayList<PVector> points = p.getPointsCopy();
   int psize = points.size();
