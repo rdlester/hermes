@@ -46,15 +46,15 @@ import java.util.LinkedList;
 ///////////////////////////////////////////////////
 
 void setup() {
-  size(frameWidth, frameHeight);
+  size(600, 600);
   Hermes.setPApplet(this);
- 
+
   world = new LevelWorld();
   world.lockUpdateRate(50);
-  
+
   rectMode(CORNER);
   setMode(BUILD);
-   
+
   smooth();
 
   world.start(); // gets the World thread running

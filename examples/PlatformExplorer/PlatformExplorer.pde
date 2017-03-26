@@ -31,24 +31,24 @@ Player player;
 ///////////////////////////////////////////////////
 
 void setup() {
-  size(WINDOW_WIDTH, WINDOW_HEIGHT, JAVA2D);  // set window size
+  size(600, 600);  // set window size
   Hermes.setPApplet(this);            // give the library the PApplet
-  
+
   // set up the world, camera, and post office
   cam = new PlatformCamera();
   po = new PostOffice();
   world = new PlatformWorld(po, cam);
-  
+
   rectMode(CENTER);
-  
+
   frameRate(60);
-  
+
   //Sets up and starts world
   world.start();
 }
 
 void draw() {
   background(230);
-  
+
   world.draw();
 }

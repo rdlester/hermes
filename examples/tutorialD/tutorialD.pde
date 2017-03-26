@@ -33,7 +33,7 @@ World currentWorld;
 ///////////////////////////////////////////////////
 
 void setup() {
-  size(WINDOW_WIDTH, WINDOW_HEIGHT);
+  size(600, 600);
   background(0); 
   Hermes.setPApplet(this);
 

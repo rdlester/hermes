@@ -32,7 +32,7 @@ World currentWorld;
 ///////////////////////////////////////////////////
 
 void setup() {
-  size(WINDOW_WIDTH, WINDOW_HEIGHT); 
+  size(600, 600);
   Hermes.setPApplet(this);
 
   currentWorld = new TemplateWorld(PORT_IN, PORT_OUT);       
