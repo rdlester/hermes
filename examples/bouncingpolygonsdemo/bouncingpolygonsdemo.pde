@@ -68,7 +68,7 @@ String instruct = "Click and drag!";
 void setup() {
   size(WIDTH, HEIGHT);
   Hermes.setPApplet(this);
- 
+
   //Set up the engine
   _camera = new HCamera();
   try {
@@ -84,27 +84,17 @@ void setup() {
   _world.start(); // gets the World thread running
 }
 
-
 void draw() {
   background(230); //Overwrite what's already been drawn
-  
+
   if(_mousePressed) {
     //Draw line indicating velocity of created ball
     line(_origX, _origY, _dX, _dY);
   }
-    
+
   _camera.draw(); //Camera object handles drawing all the appropriate Beings
-  
+
   // draw instructions
   fill(0);
   text(instruct, 10, 20);
-
 }
-
-
-
-
-
-
-
-
